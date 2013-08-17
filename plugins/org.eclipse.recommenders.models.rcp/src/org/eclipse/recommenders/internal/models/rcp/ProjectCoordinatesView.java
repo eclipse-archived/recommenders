@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Iterables.*;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.eclipse.recommenders.models.DependencyInfo.*;
+import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
@@ -28,17 +32,18 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -51,12 +56,12 @@ import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
@@ -70,6 +75,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
@@ -91,7 +97,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
     private final EclipseDependencyListener dependencyListener;
     private final ProjectCoordinateAdvisorService pcAdvisors;
-    private ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor;
+    private ManualProjectCoordinateAdvisor manualPcAdvisor;
 
     private Table table;
     private TableViewerColumn locationColumn;
@@ -106,7 +112,7 @@ public class ProjectCoordinatesView extends ViewPart {
             final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus) {
         this.dependencyListener = dependencyListener;
         this.pcAdvisors = pcAdvisors;
-        this.manualProjectCoordinateAdvisor = manualProjectCoordinateAdvisor;
+        manualPcAdvisor = manualProjectCoordinateAdvisor;
         this.bus = bus;
     }
 
@@ -142,6 +148,7 @@ public class ProjectCoordinatesView extends ViewPart {
         tableLayout.setColumnData(tableColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
 
         coordinateColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+        coordinateColumn.setEditingSupport(new ProjectCoordinateEditing(tableViewer));
         tableColumn = coordinateColumn.getColumn();
         tableColumn.setText("Coordinate");
         tableLayout.setColumnData(tableColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
@@ -153,9 +160,87 @@ public class ProjectCoordinatesView extends ViewPart {
         addSortingFunctionality();
         addFilterFunctionality();
         addRefreshButton();
-        addCellEditorFunctionality();
 
         refreshData();
+    }
+
+    class ProjectCoordinateEditing extends EditingSupport {
+
+        private String formerValue;
+        private ComboBoxViewerCellEditor editor;
+
+        public ProjectCoordinateEditing(TableViewer viewer) {
+            super(viewer);
+            editor = new ComboBoxViewerCellEditor(viewer.getTable());
+            editor.setLabelProvider(new LabelProvider());
+            editor.setContentProvider(ArrayContentProvider.getInstance());
+        }
+
+        @Override
+        protected CellEditor getCellEditor(Object element) {
+            if (element instanceof Entry) {
+                Set<String> values = Sets.newHashSet();
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
+                for (ProjectCoordinate pc : presentInstances(entry.getValue())) {
+                    values.add(pc.toString());
+                }
+                editor.setInput(values);
+            }
+            return editor;
+        }
+
+        @Override
+        protected boolean canEdit(Object element) {
+            return true;
+        }
+
+        @Override
+        protected Object getValue(Object element) {
+            if (element instanceof Entry) {
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
+                Optional<ProjectCoordinate> optionalFirstMatchingCoordinate = findFirstMatchingCoordinate(entry);
+                if (optionalFirstMatchingCoordinate.isPresent()) {
+                    formerValue = optionalFirstMatchingCoordinate.get().toString();
+                } else {
+                    formerValue = "";
+                }
+                return formerValue;
+            }
+            return null;
+        }
+
+        @Override
+        protected void setValue(Object element, Object value) {
+            if (value == null) {
+                if (editor.getControl() instanceof CCombo) {
+                    value = ((CCombo) editor.getControl()).getText();
+                }
+            }
+            if (value.equals(formerValue)) {
+                return;
+            }
+            if (element instanceof Entry) {
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
+                if ("".equals(value)) {
+                    manualPcAdvisor.removeManualMapping(entry.getKey());
+                } else {
+                    try {
+                        ProjectCoordinate valueOf = ProjectCoordinate.valueOf((String) value);
+                        manualPcAdvisor.setManualMapping(entry.getKey(), valueOf);
+                    } catch (Exception e) {
+                        MessageDialog.openError(table.getShell(), "Input value has wrong format!",
+                                String.format("The value '%s' did not have the right format.", value));
+                        return;
+                    }
+                }
+                bus.post(new ProjectCoordinateChangeEvent());
+            }
+            /*
+             * It is needed to make a total refresh (resolve all dependencies again) because the modification of the
+             * data model isn't possible here (Entry is Immutable)
+             */
+            refreshData();
+        }
     }
 
     private void addSortingFunctionality() {
@@ -266,8 +351,8 @@ public class ProjectCoordinatesView extends ViewPart {
                 return 0;
             }
             if (e1 instanceof Entry && e2 instanceof Entry) {
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = castToEntry(e1);
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = castToEntry(e2);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = cast(e1);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = cast(e2);
 
                 switch (column) {
                 case COLUMN_LOCATION:
@@ -345,26 +430,17 @@ public class ProjectCoordinatesView extends ViewPart {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
                 if (element instanceof Entry) {
-                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(element);
+                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
                     return isManualMapping(entry);
                 }
                 return false;
             }
 
             private boolean isManualMapping(Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry) {
-                int indexOfManualMapping = pcAdvisors.getAdvisors().indexOf(manualProjectCoordinateAdvisor);
-                int i = 0;
-                for (Optional<ProjectCoordinate> optionalCoordinate : entry.getValue()) {
-                    if (optionalCoordinate.isPresent()) {
-                        if (i == indexOfManualMapping) {
-                            return true;
-                        }
-                    }
-                    i++;
-                }
-                return false;
+                int indexOfManualMapping = pcAdvisors.getAdvisors().indexOf(manualPcAdvisor);
+                Optional<ProjectCoordinate> opc = get(entry.getValue(), indexOfManualMapping);
+                return opc.isPresent();
             }
-
         };
 
         final ViewerFilter unclearMappingFilter = new ViewerFilter() {
@@ -372,19 +448,8 @@ public class ProjectCoordinatesView extends ViewPart {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
                 if (element instanceof Entry) {
-                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(element);
-                    ProjectCoordinate coordinate = null;
-                    for (Optional<ProjectCoordinate> opc : entry.getValue()) {
-                        if (opc.isPresent()) {
-                            if (coordinate == null) {
-                                coordinate = opc.get();
-                            } else {
-                                if (!coordinate.equals(opc.get())) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
+                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
+                    return newHashSet(presentInstances(entry.getValue())).size() > 1;
                 }
                 return false;
             }
@@ -395,12 +460,8 @@ public class ProjectCoordinatesView extends ViewPart {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
                 if (element instanceof Entry) {
-                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(element);
-                    for (Optional<ProjectCoordinate> optionalCoordinate : entry.getValue()) {
-                        if (optionalCoordinate.isPresent()) {
-                            return false;
-                        }
-                    }
+                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
+                    return isEmpty(presentInstances(entry.getValue()));
                 }
                 return true;
             }
@@ -478,77 +539,6 @@ public class ProjectCoordinatesView extends ViewPart {
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
 
-    private void addCellEditorFunctionality() {
-        final String COORDINATE_COLUMN = "coordinate";
-        tableViewer.setColumnProperties(new String[] { "", COORDINATE_COLUMN });
-        tableViewer.setCellModifier(new ICellModifier() {
-
-            private Object oldValue;
-
-            @Override
-            public void modify(Object element, String property, Object value) {
-                if (isCoordinateColumn(property)) {
-                    if (value.equals(oldValue)) {
-                        return;
-                    }
-                    if (element instanceof Item) {
-                        Object data = ((Item) element).getData();
-                        if (data instanceof Entry) {
-                            Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(data);
-                            if ("".equals(value)) {
-                                manualProjectCoordinateAdvisor.removeManualMapping(entry.getKey());
-                            } else {
-                                try {
-                                    ProjectCoordinate valueOf = ProjectCoordinate.valueOf((String) value);
-                                    manualProjectCoordinateAdvisor.setManualMapping(entry.getKey(), valueOf);
-                                } catch (Exception e) {
-                                    MessageDialog.openError(table.getShell(), "Input value has wrong format!",
-                                            "The value: " + value + " didn't have the right format.");
-                                    return;
-                                }
-                            }
-                            bus.post(new ProjectCoordinateChangeEvent());
-                        }
-                    }
-                    /*
-                     * It is needed to make a total refresh (resolve all dependencies again) because the modification of
-                     * the data model isn't possible here (Entry is Immutable)
-                     */
-                    refreshData();
-                }
-            }
-
-            @Override
-            public Object getValue(Object element, String property) {
-                if (!isCoordinateColumn(property)) {
-                    return null;
-                }
-                if (element instanceof Entry) {
-                    Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(element);
-                    Optional<ProjectCoordinate> optionalFirstMatchingCoordinate = findFirstMatchingCoordinate(entry);
-                    if (optionalFirstMatchingCoordinate.isPresent()) {
-                        oldValue = optionalFirstMatchingCoordinate.get().toString();
-                        return oldValue;
-                    }
-                }
-                return "";
-            }
-
-            @Override
-            public boolean canModify(Object element, String property) {
-                return isCoordinateColumn(property);
-            }
-
-            private boolean isCoordinateColumn(String property) {
-                return COORDINATE_COLUMN.equals(property);
-            }
-        });
-
-        final CellEditor[] cellEditors = new CellEditor[2];
-        cellEditors[1] = new TextCellEditor(table);
-        tableViewer.setCellEditors(cellEditors);
-    }
-
     private void refreshData() {
         if (parent != null) {
             parent.getDisplay().syncExec(new Runnable() {
@@ -574,7 +564,7 @@ public class ProjectCoordinatesView extends ViewPart {
         @Override
         public String getColumnText(final Object obj, final int index) {
             if (obj instanceof Entry) {
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(obj);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(obj);
                 DependencyInfo dependencyInfo = entry.getKey();
                 switch (index) {
                 case COLUMN_LOCATION:
@@ -603,7 +593,7 @@ public class ProjectCoordinatesView extends ViewPart {
         @Override
         public Image getColumnImage(final Object obj, final int index) {
             if (obj instanceof Entry) {
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(obj);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(obj);
                 DependencyInfo dependencyInfo = entry.getKey();
                 switch (index) {
                 case COLUMN_LOCATION:
@@ -639,7 +629,7 @@ public class ProjectCoordinatesView extends ViewPart {
         @Override
         public String getToolTipText(final Object element) {
             if (element instanceof Entry) {
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(element);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
                 return generateTooltip(entry);
             }
             return "";
@@ -746,21 +736,8 @@ public class ProjectCoordinatesView extends ViewPart {
         tableViewer.getControl().setFocus();
     }
 
-    @SuppressWarnings("unchecked")
-    private Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> castToEntry(Object obj) {
-        Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = (Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>>) obj;
-        return entry;
-    }
-
     private Optional<ProjectCoordinate> findFirstMatchingCoordinate(
             Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry) {
-        Collection<Optional<ProjectCoordinate>> value = entry.getValue();
-        for (Optional<ProjectCoordinate> projectCoordinate : value) {
-            if (projectCoordinate.isPresent()) {
-                return projectCoordinate;
-            }
-        }
-        return Optional.absent();
+        return fromNullable(getFirst(presentInstances(entry.getValue()), null));
     }
-
 }
