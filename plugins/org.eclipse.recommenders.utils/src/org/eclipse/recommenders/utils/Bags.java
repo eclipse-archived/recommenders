@@ -12,9 +12,11 @@ package org.eclipse.recommenders.utils;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.Ordering;
@@ -55,5 +57,13 @@ public class Bags {
     public static <T> List<Entry<T>> orderedByCount(Multiset<T> set) {
         Set<Entry<T>> entries = set.entrySet();
         return Ordering.from(BY_COUNT).reverse().sortedCopy(entries);
+    }
+
+    public static <T> Multiset<T> newHashMultiset(Map<T, Integer> map) {
+        Multiset<T> res = HashMultiset.create(map.size());
+        for (java.util.Map.Entry<T, Integer> e : map.entrySet()) {
+            res.add(e.getKey(), e.getValue());
+        }
+        return res;
     }
 }

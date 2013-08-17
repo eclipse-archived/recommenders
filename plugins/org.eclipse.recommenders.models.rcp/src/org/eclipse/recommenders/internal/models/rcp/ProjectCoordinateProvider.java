@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -242,6 +243,19 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
             return absent();
         }
         return of(new UniqueTypeName(base, toName(type)));
+    }
+
+    @Override
+    public Optional<UniqueMethodName> toUniqueName(IMethod method) {
+        ProjectCoordinate base = resolve(method).orNull();
+        if (null == base) {
+            return absent();
+        }
+        IMethodName name = toName(method).orNull();
+        if (null == name) {
+            return absent();
+        }
+        return of(new UniqueMethodName(base, name));
     }
 
     @Override

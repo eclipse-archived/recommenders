@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -49,4 +50,6 @@ public interface IProjectCoordinateProvider {
     Optional<UniqueTypeName> toUniqueName(IType type);
 
     Optional<IMethodName> toName(IMethod method);
+
+    Optional<UniqueMethodName> toUniqueName(IMethod method);
 }

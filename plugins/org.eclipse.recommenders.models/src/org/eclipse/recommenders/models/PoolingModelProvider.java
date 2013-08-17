@@ -61,7 +61,10 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
     }
 
     @Override
-    public Optional<M> acquireModel(K key) {
+    public Optional<M> acquireModel(@Nullable K key) {
+        if (key == null) {
+            return absent();
+        }
         try {
             M model = pool.borrowObject(key);
             if (model != null) {

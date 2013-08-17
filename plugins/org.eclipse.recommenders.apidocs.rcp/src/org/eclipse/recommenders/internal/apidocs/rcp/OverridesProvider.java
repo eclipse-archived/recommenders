@@ -17,6 +17,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
+import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
 import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.io.IOException;
@@ -65,7 +66,6 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.eventbus.EventBus;
@@ -175,10 +175,7 @@ public final class OverridesProvider extends ApidocProvider {
 
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
-            final Multiset<IMethodName> b = HashMultiset.create();
-            for (Entry<IMethodName, Integer> e : directive.getOverrides().entrySet()) {
-                b.add(e.getKey(), e.getValue());
-            }
+            final Multiset<IMethodName> b = newHashMultiset(directive.getOverrides());
             renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
                     Messages.EXTDOC_OVERRIDES_OVERRIDES);
         }
