@@ -24,10 +24,10 @@ import javax.inject.Named;
 
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.recommenders.models.ModelRepository;
-import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
+import org.eclipse.recommenders.models.ModelRepository;
+import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 
@@ -74,6 +74,10 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     public Optional<File> resolve(ModelCoordinate mc) throws Exception {
         updateProxySettings();
         return delegate.resolve(mc);
+    }
+
+    public boolean isDownloaded(final ModelCoordinate mc) {
+        return delegate.getLocation(mc).isPresent();
     }
 
     @Override

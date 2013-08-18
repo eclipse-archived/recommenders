@@ -28,6 +28,7 @@ import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -169,7 +170,8 @@ public class Stubs {
 
         ICallModelProvider mp = mock(ICallModelProvider.class);
         when(mp.acquireModel((UniqueTypeName) anyObject())).thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
-        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, mp, new CallsRcpPreferences());
+        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, mp,
+                new CallsRcpPreferences(), new SharedImages());
         return new MockedIntelligentCompletionProposalComputer(sut);
     }
 }

@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.ImageProvider.*;
+import static org.eclipse.recommenders.rcp.SharedImages.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,7 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
@@ -50,22 +51,20 @@ public class CoordinatesToModelsView extends ViewPart {
 
     private TreeViewer treeViewer;
     private EclipseDependencyListener dependencyListener;
-
-    private ImageProvider imageProvider;
-
     private IProjectCoordinateProvider pcProvider;
     private IModelIndex modelIndex;
     private EclipseModelRepository eclipseModelRepository;
+    private SharedImages images;
 
     @Inject
     public CoordinatesToModelsView(final EventBus workspaceBus,
             final EclipseDependencyListener eclipseDependencyListener, final IProjectCoordinateProvider pcProvider,
-            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository) {
+            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository, SharedImages images) {
         dependencyListener = eclipseDependencyListener;
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
         this.eclipseModelRepository = eclipseModelRepository;
-        imageProvider = new ImageProvider();
+        this.images = images;
         workspaceBus.register(this);
     }
 
@@ -197,7 +196,7 @@ public class CoordinatesToModelsView extends ViewPart {
             switch (columnIndex) {
             case 0:
                 if (element instanceof Project) {
-                    return imageProvider.provideImage(IMG_PROJECT);
+                    return images.getImage(OBJ_JAVA_PROJECT);
                 }
                 if (element instanceof Dependency) {
                     Dependency dependency = (Dependency) element;
@@ -263,11 +262,11 @@ public class CoordinatesToModelsView extends ViewPart {
         private Image getImageForDependencyTyp(final DependencyInfo dependencyInfo) {
             switch (dependencyInfo.getType()) {
             case JRE:
-                return imageProvider.provideImage(IMG_JRE);
+                return images.getImage(OBJ_JRE);
             case JAR:
-                return imageProvider.provideImage(IMG_JAR);
+                return images.getImage(OBJ_JAR);
             case PROJECT:
-                return imageProvider.provideImage(IMG_PROJECT);
+                return images.getImage(OBJ_JAVA_PROJECT);
             default:
                 return null;
             }

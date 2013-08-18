@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import static com.google.inject.Scopes.SINGLETON;
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES;
@@ -42,6 +43,7 @@ import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.AstBindings;
@@ -63,7 +65,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
-import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.spi.InjectionListener;
@@ -75,17 +76,14 @@ public class RcpModule extends AbstractModule implements Module {
 
     @Override
     protected void configure() {
-        configureJavaElementResolver();
-        configureAstProvider();
-        bindRcpServiceListener();
-        bind(Helper.class).asEagerSingleton();
-    }
-
-    private void configureJavaElementResolver() {
-        bind(JavaElementResolver.class).in(Scopes.SINGLETON);
+        bind(JavaElementResolver.class).in(SINGLETON);
         requestStaticInjection(ASTStringUtils.class);
         requestStaticInjection(ASTNodeUtils.class);
         requestStaticInjection(AstBindings.class);
+        bind(Helper.class).asEagerSingleton();
+        bind(SharedImages.class).in(SINGLETON);
+        configureAstProvider();
+        bindRcpServiceListener();
     }
 
     private void configureAstProvider() {

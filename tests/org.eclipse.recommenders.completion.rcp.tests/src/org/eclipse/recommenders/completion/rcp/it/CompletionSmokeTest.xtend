@@ -44,6 +44,7 @@ import static extension com.google.common.collect.Iterables.*
 import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.models.UniqueTypeName
+import org.eclipse.recommenders.rcp.SharedImages
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -427,7 +428,7 @@ class CompletionSmokeTest {
             case "calls": {
                 val mp = mock(ICallModelProvider)
                 when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.NULL_MODEL))
-                val sut = new CallCompletionSessionProcessor(pcProvider, mp, new CallsRcpPreferences)
+                val sut = new CallCompletionSessionProcessor(pcProvider, mp, new CallsRcpPreferences, new SharedImages)
                 return sut
             }
             case "overrides": {

@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
+import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.*;
 
 import java.util.HashSet;
@@ -41,13 +42,11 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -74,21 +73,16 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private Iterable<Recommendation<IMethodName>> recommendations;
 
-    private ImageDescriptor overlay;
     private CallsRcpPreferences prefs;
+    private ImageDescriptor overlay;
 
     @Inject
     public CallCompletionSessionProcessor(final IProjectCoordinateProvider pcProvider,
-            final ICallModelProvider modelProvider, CallsRcpPreferences prefs) {
+            final ICallModelProvider modelProvider, CallsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
         this.prefs = prefs;
-        initializeOverlayIcon();
-    }
-
-    private void initializeOverlayIcon() {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        overlay = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "icons/view16/overlay-plus.png");
+        overlay = images.getDescriptor(OVR_STAR);
     }
 
     @Override

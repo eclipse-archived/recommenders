@@ -96,8 +96,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
         Builder<ModelCoordinate> res = ImmutableSet.builder();
         for (String model : queryLuceneIndexForModelCandidates(pc, modelType)) {
             Artifact tmp = Artifacts.asArtifact(model);
-            ModelCoordinate mc = new ModelCoordinate(tmp.getGroupId(), tmp.getArtifactId(),
-                    tmp.getClassifier(), tmp.getExtension(), tmp.getVersion());
+            ModelCoordinate mc = toModelCoordinate(tmp);
             res.add(mc);
         }
         return res.build();
@@ -202,9 +201,13 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
     private static final class Artifact2ModelArchiveTransformer implements Function<Artifact, ModelCoordinate> {
         @Override
         public ModelCoordinate apply(Artifact a) {
-
-            return new ModelCoordinate(a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getExtension(),
-                    a.getVersion());
+            return toModelCoordinate(a);
         }
+
+    }
+
+    private static ModelCoordinate toModelCoordinate(Artifact a) {
+        return new ModelCoordinate(a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getExtension(),
+                a.getVersion());
     }
 }

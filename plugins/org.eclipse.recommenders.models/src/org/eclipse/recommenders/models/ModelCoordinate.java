@@ -24,8 +24,8 @@ import com.google.common.base.Strings;
  */
 public final class ModelCoordinate {
 
-    public static final ModelCoordinate UNKNOWN = new ModelCoordinate("unknown", "unknown", "unknown",
-            "unknown", "0.0.0");
+    public static final ModelCoordinate UNKNOWN = new ModelCoordinate("unknown", "unknown", "unknown", "unknown",
+            "0.0.0");
 
     private final String groupId;
     private final String artifactId;

@@ -14,6 +14,7 @@ import static com.google.common.base.Optional.*;
 import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.eclipse.recommenders.models.DependencyInfo.*;
+import static org.eclipse.recommenders.rcp.SharedImages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
@@ -55,6 +56,7 @@ import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -86,11 +88,6 @@ public class ProjectCoordinatesView extends ViewPart {
     private static final int COLUMN_LOCATION = 0;
     private static final int COLUMN_COORDINATE = 1;
 
-    private Image IMG_JRE = loadImage("icons/cview16/classpath.gif");
-    private Image IMG_JAR = loadImage("icons/cview16/jar_obj.gif");
-    private Image IMG_PROJECT = loadImage("icons/cview16/projects.gif");
-    private Image IMG_REFRESH = loadImage("icons/cview16/refresh_tab.gif");
-
     private Composite parent;
     private TableViewer tableViewer;
     private ContentProvider contentProvider;
@@ -105,15 +102,17 @@ public class ProjectCoordinatesView extends ViewPart {
     private TableComparator comparator;
 
     private EventBus bus;
+    private SharedImages images;
 
     @Inject
     public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
             final ProjectCoordinateAdvisorService pcAdvisors,
-            final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus) {
+            final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus, SharedImages images) {
         this.dependencyListener = dependencyListener;
         this.pcAdvisors = pcAdvisors;
         manualPcAdvisor = manualProjectCoordinateAdvisor;
         this.bus = bus;
+        this.images = images;
     }
 
     private Image loadImage(final String pathToFile) {
@@ -534,7 +533,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
         };
         refreshAction.setToolTipText("Refresh");
-        refreshAction.setImageDescriptor(ImageDescriptor.createFromImage(IMG_REFRESH));
+        refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
 
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
@@ -608,11 +607,11 @@ public class ProjectCoordinatesView extends ViewPart {
         private Image getImageForDependencyTyp(final DependencyInfo dependencyInfo) {
             switch (dependencyInfo.getType()) {
             case JRE:
-                return IMG_JRE;
+                return images.getImage(OBJ_JRE);
             case JAR:
-                return IMG_JAR;
+                return images.getImage(OBJ_JAR);
             case PROJECT:
-                return IMG_PROJECT;
+                return images.getImage(OBJ_JAVA_PROJECT);
             default:
                 return null;
             }
@@ -720,15 +719,6 @@ public class ProjectCoordinatesView extends ViewPart {
             return sb.toString();
         }
 
-    }
-
-    @Override
-    public void dispose() {
-        IMG_JAR.dispose();
-        IMG_PROJECT.dispose();
-        IMG_JRE.dispose();
-        IMG_REFRESH.dispose();
-        super.dispose();
     }
 
     @Override
