@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-import static java.lang.Math.rint;
 import static java.lang.String.valueOf;
 import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
+import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 
 import java.util.List;
 
@@ -171,17 +171,15 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                     continue;
                 }
 
-                int percentage = (int) rint(r.getRelevance() * 100);
-
                 int increment = 0;
                 if (prefUpdateProposalRelevance) {
                     // XXX rather high value but otherwise the default constructor shows up between the overrides
                     // proposals
-                    increment = 1000 + percentage;
+                    increment = 1000 + asPercentage(r);
                 }
                 String label = "";
                 if (prefDecorateProposalText) {
-                    label = percentage + " %";
+                    label = asPercentage(r) + " %";
                 }
                 if (prefUpdateProposalRelevance || prefDecorateProposalText) {
                     proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));

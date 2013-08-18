@@ -12,9 +12,8 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.Math.rint;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
-import static org.eclipse.recommenders.utils.Recommendations.top;
+import static org.eclipse.recommenders.utils.Recommendations.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -177,9 +176,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 if (!matcher.match(crMethod)) {
                     continue;
                 }
-                int percentage = (int) rint(call.getRelevance() * 100);
-                String label = prefs.decorateProposalText ? percentage + " %" : "";
-                int relevance = prefs.changeProposalRelevance ? 200 + percentage : 0;
+                String label = prefs.decorateProposalText ? asPercentage(call) + " %" : "";
+                int relevance = prefs.changeProposalRelevance ? 200 + asPercentage(call) : 0;
                 ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
                 mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
                 if (prefs.decorateProposalIcon) {

@@ -206,13 +206,13 @@ public final class CallsApidocProvider extends ApidocProvider {
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
                     .hint(SWT.DEFAULT, 1).create());
             for (final Recommendation<IMethodName> rec : methodCalls) {
-                final int percentage = (int) Math.rint(rec.getRelevance() * 100);
-                createLabel(container, percentageToRecommendationPhrase(percentage), true, false,
+                createLabel(container, percentageToRecommendationPhrase(asPercentage(rec)), true, false,
                         COLOR_INFO_FOREGROUND, false);
 
                 createLabel(container, Messages.EXTDOC_CALL + " ", false);
                 createMethodLink(container, rec.getProposal());
-                createLabel(container, " - " + format(Messages.EXTDOC_PECOMMENDATION_PERCENTAGE, percentage), false); //$NON-NLS-1$
+                createLabel(container,
+                        " - " + format(Messages.EXTDOC_PECOMMENDATION_PERCENTAGE, asPercentage(rec)), false); //$NON-NLS-1$
             }
             new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
             createLabel(container, "", false); //$NON-NLS-1$
