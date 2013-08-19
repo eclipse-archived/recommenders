@@ -152,11 +152,11 @@ public class ModelCoordinatesView extends ViewPart {
                 ProjectCoordinate pc = (ProjectCoordinate) element;
                 ModelCoordinate mc = Coordinates.toModelCoordinate(pc, classifier, "zip");
                 if (!containsModel(classifier, element)) {
-                    return images.getImage(SharedImages.OBJ_BULLET_RED);
+                    return images.getImage(SharedImages.OBJ_CROSS_RED);
                 } else if (!repo.isDownloaded(mc)) {
                     return images.getImage(SharedImages.OBJ_BULLET_BLUE);
                 } else {
-                    return images.getImage(SharedImages.OBJ_BULLET_STAR);
+                    return images.getImage(SharedImages.OBJ_CHECK_GREEN);
                 }
             }
         });

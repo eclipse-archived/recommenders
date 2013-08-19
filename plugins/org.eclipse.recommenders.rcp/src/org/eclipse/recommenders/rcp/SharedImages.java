@@ -28,6 +28,8 @@ public final class SharedImages {
     public static final String ELCL_EXPAND_ALL = "/icons/elcl16/expandall.gif";
     public static final String ELCL_REFRESH = "/icons/elcl16/refresh_tab.gif";
     public static final String ELCL_SYNCED = "/icons/elcl16/synced.gif";
+    public static final String OBJ_CHECK_GREEN = "/icons/obj16/tick_small.png";
+    public static final String OBJ_CROSS_RED = "/icons/obj16/cross_small.png";
     public static final String OBJ_BULLET_BLUE = "/icons/obj16/bullet_blue.png";
     public static final String OBJ_BULLET_GREEN = "/icons/obj16/bullet_green.png";
     public static final String OBJ_BULLET_ORANGE = "/icons/obj16/bullet_orange.png";
