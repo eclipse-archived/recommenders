@@ -10,17 +10,19 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import static org.eclipse.core.runtime.preferences.InstanceScope.INSTANCE;
 import static org.eclipse.recommenders.internal.rcp.Constants.BUNDLE_NAME;
+import static org.eclipse.recommenders.internal.rcp.Constants.P_SURVEY_FIRST_ACTIVATION_DATE;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 public final class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
-        IEclipsePreferences node = DefaultScope.INSTANCE.getNode(BUNDLE_NAME);
-        node.putLong(Constants.P_SURVEY_FIRST_ACTIVATION_DATE, System.currentTimeMillis());
+        IEclipsePreferences node = INSTANCE.getNode(BUNDLE_NAME);
+        if (node.getLong(P_SURVEY_FIRST_ACTIVATION_DATE, -1) == -1)
+            node.putLong(P_SURVEY_FIRST_ACTIVATION_DATE, System.currentTimeMillis());
     }
 }
