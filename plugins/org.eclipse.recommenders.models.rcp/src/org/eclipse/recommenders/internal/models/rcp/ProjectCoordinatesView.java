@@ -17,7 +17,6 @@ import static org.eclipse.recommenders.models.DependencyInfo.*;
 import static org.eclipse.recommenders.rcp.SharedImages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -32,7 +31,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -113,15 +111,6 @@ public class ProjectCoordinatesView extends ViewPart {
         manualPcAdvisor = manualProjectCoordinateAdvisor;
         this.bus = bus;
         this.images = images;
-    }
-
-    private Image loadImage(final String pathToFile) {
-        ImageDescriptor imageDescriptor = imageDescriptorFromPlugin(Constants.BUNDLE_ID, pathToFile);
-        if (imageDescriptor != null) {
-            Image image = imageDescriptor.createImage();
-            return image;
-        }
-        return null;
     }
 
     @Override
@@ -424,7 +413,7 @@ public class ProjectCoordinatesView extends ViewPart {
     }
 
     private void addFilterFunctionality() {
-        final ViewerFilter manualMappingsFilter = new ViewerFilter() {
+        final ViewerFilter manualAssignedFilter = new ViewerFilter() {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -442,7 +431,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
         };
 
-        final ViewerFilter unclearMappingFilter = new ViewerFilter() {
+        final ViewerFilter conflictingCoordinatesFilter = new ViewerFilter() {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -454,7 +443,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
         };
 
-        final ViewerFilter noMappingsFilter = new ViewerFilter() {
+        final ViewerFilter missingCoordinatesFilter = new ViewerFilter() {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -466,7 +455,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
         };
 
-        IAction noFilterAction = new Action("No filter", Action.AS_RADIO_BUTTON) {
+        IAction showAll = new Action("Show all", Action.AS_RADIO_BUTTON) {
 
             @Override
             public void run() {
@@ -474,20 +463,19 @@ public class ProjectCoordinatesView extends ViewPart {
             }
 
         };
-        noFilterAction.setToolTipText("No filter");
 
-        IAction noMappingFilterAction = new TableFilterAction("Filter missing mappings", Action.AS_RADIO_BUTTON,
-                noMappingsFilter);
-        IAction unclearMappingsAction = new TableFilterAction("Filter unclear mappings", Action.AS_RADIO_BUTTON,
-                unclearMappingFilter);
-        IAction manualMappingsAction = new TableFilterAction("Filter manual mappings", Action.AS_RADIO_BUTTON,
-                manualMappingsFilter);
+        IAction showMissingCoord = new TableFilterAction("Show only missing coordinates", Action.AS_RADIO_BUTTON,
+                missingCoordinatesFilter);
+        IAction showConflictingCoord = new TableFilterAction("Show only conflicting coordinates",
+                Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
+        IAction showManualAssignedCoord = new TableFilterAction("Show only manually assigned coordinates",
+                Action.AS_RADIO_BUTTON, manualAssignedFilter);
 
-        getViewSite().getActionBars().getMenuManager().add(noFilterAction);
-        getViewSite().getActionBars().getMenuManager().add(noMappingFilterAction);
-        getViewSite().getActionBars().getMenuManager().add(unclearMappingsAction);
-        getViewSite().getActionBars().getMenuManager().add(manualMappingsAction);
-        noFilterAction.setChecked(true);
+        getViewSite().getActionBars().getMenuManager().add(showAll);
+        getViewSite().getActionBars().getMenuManager().add(showMissingCoord);
+        getViewSite().getActionBars().getMenuManager().add(showConflictingCoord);
+        getViewSite().getActionBars().getMenuManager().add(showManualAssignedCoord);
+        showAll.setChecked(true);
 
     }
 
