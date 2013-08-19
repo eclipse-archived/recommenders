@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp;
 import static com.google.inject.Scopes.SINGLETON;
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
-import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_SHOW_DIALOG_JOB_DELAY_MILLIS;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.lang.reflect.Method;
@@ -246,7 +246,7 @@ public class RcpModule extends AbstractModule implements Module {
 
         @Inject
         public Helper(ShowSurveyDialogJob job) {
-            job.schedule(TimeUnit.MINUTES.toMillis(SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES));
+            job.schedule(SURVEY_SHOW_DIALOG_JOB_DELAY_MILLIS);
         }
     }
 

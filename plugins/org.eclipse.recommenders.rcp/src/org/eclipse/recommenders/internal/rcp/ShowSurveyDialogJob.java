@@ -61,6 +61,7 @@ class ShowSurveyDialogJob extends UIJob {
     private boolean enoughTimeForActiviation() {
         long currentTime = System.currentTimeMillis();
         long firstActivationDate = prefs.firstActivationDate;
+        prefs.setFirstActivationDate(firstActivationDate);
         long timeSinceFirstActivation = currentTime - firstActivationDate;
         return timeSinceFirstActivation > SURVEY_MILLIS_BEFORE_SHOW_DIALOG;
     }
@@ -70,21 +71,20 @@ class ShowSurveyDialogJob extends UIJob {
         new PreferenceLinkDialog(getDisplay().getActiveShell(), RcpPlugin.DIALOG_TITLE, null, SURVEY_DESCRIPTION,
                 MessageDialog.QUESTION, new String[] { "Yes, Take the survey", "No, Thank you" }, 0,
                 SURVEY_PREFERENCES_HINT, SURVEY_PREFERENCE_PAGE_ID) {
-            @Override
-            protected void okPressed() {
-                prefs.setSurveyTaken(true);
-                try {
-                    browser.get().openURL(SURVEY_URL);
-                } catch (PartInitException e) {
-                    log.error("Exception occured while opening survey dialog", e);
-                }
-                super.okPressed();
-            }
 
             @Override
-            protected void cancelPressed() {
-                prefs.setSurveyOptOut(true);
-                super.cancelPressed();
+            protected void buttonPressed(int buttonId) {
+                if (buttonId == 0) {
+                    prefs.setSurveyTaken(true);
+                    try {
+                        browser.get().openURL(SURVEY_URL);
+                    } catch (PartInitException e) {
+                        log.error("Exception occured while opening survey dialog", e);
+                    }
+                } else {
+                    prefs.setSurveyOptOut(true);
+                }
+                super.buttonPressed(buttonId);
             }
         }.open();
         return Status.OK_STATUS;

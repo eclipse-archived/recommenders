@@ -74,7 +74,7 @@ public class Constants {
      * Delay after which the show user survey popup job is run (after plugin activation). It should not run immediately
      * to block right on startup.
      */
-    public static final long SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES = MINUTES.toMillis(5);
+    public static final long SURVEY_SHOW_DIALOG_JOB_DELAY_MILLIS = MINUTES.toMillis(5);
 
     /**
      * The URL of the survey.
