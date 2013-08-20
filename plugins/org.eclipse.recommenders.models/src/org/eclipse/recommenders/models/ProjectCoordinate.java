@@ -28,7 +28,7 @@ public class ProjectCoordinate {
      * Constant that represents an unknown project coordinate. Use this constant whenever <code>null</code> or
      * {@link Optional#absent()} is not appropriate.
      */
-    public static final ProjectCoordinate UNKNOWN = new ProjectCoordinate("UNKNOWN", "UNKNOWN", "-1");
+    public static final ProjectCoordinate UNKNOWN = new ProjectCoordinate("UNKNOWN", "UNKNOWN", "0.0.0");
 
     private final String groupId;
     private final String artifactId;

@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Collections2.transform;
+import static com.google.common.collect.Iterables.find;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Constants.*;
 import static org.eclipse.recommenders.utils.IOUtils.closeQuietly;
@@ -35,6 +37,8 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.FSDirectory;
 import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Version;
+import org.eclipse.recommenders.utils.Versions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
@@ -42,10 +46,10 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -82,10 +86,27 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
     @Override
     public Optional<ModelCoordinate> suggest(ProjectCoordinate pc, String modelType) {
-        // TODO find best model archive needs to be implemented properly
-        log.warn("only returning the first match as best model!");
         ImmutableSet<ModelCoordinate> results = suggestCandidates(pc, modelType);
-        return Optional.fromNullable(Iterables.getFirst(results, null));
+
+        if (results.isEmpty()) {
+            return absent();
+        }
+
+        final Version closestVersion = Versions.findClosest(Version.valueOf(pc.getVersion()),
+                transform(results, new Function<ModelCoordinate, Version>() {
+
+                    @Override
+                    public Version apply(ModelCoordinate mc) {
+                        return Version.valueOf(mc.getVersion());
+                    }
+                }));
+        return Optional.of(find(results, new Predicate<ModelCoordinate>() {
+
+            @Override
+            public boolean apply(ModelCoordinate mc) {
+                return Version.valueOf(mc.getVersion()).equals(closestVersion);
+            }
+        }));
     }
 
     @Override
