@@ -13,6 +13,7 @@ package org.eclipse.recommenders.models;
 import static com.google.common.base.Optional.*;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Constants.*;
+import static org.eclipse.recommenders.utils.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +76,8 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
     @Override
     public void close() throws IOException {
-        reader.close();
-        index.close();
+        closeQuietly(reader);
+        closeQuietly(index);
     }
 
     @Override
