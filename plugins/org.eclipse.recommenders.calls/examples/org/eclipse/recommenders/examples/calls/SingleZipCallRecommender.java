@@ -10,7 +10,7 @@ import java.util.Set;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.SingleZipCallModelProvider;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -36,7 +36,7 @@ public class SingleZipCallRecommender {
     }
 
     public List<Recommendation<IMethodName>> computeRecommendations(final ObjectUsage query) throws Exception {
-        BasedTypeName name = new BasedTypeName(null, query.type);
+        UniqueTypeName name = new UniqueTypeName(null, query.type);
         ICallModel net = store.acquireModel(name).orNull();
         try {
             //

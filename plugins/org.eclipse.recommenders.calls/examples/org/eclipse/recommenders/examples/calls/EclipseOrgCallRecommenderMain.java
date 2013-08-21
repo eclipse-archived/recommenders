@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.eclipse.recommenders.calls.PoolingCallModelProvider;
 import org.eclipse.recommenders.examples.calls.EclipseOrgCallRecommender.ObjectUsage;
-import org.eclipse.recommenders.models.AetherModelRepository;
-import org.eclipse.recommenders.models.ModelArchiveCoordinate;
+import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ModelIndex;
+import org.eclipse.recommenders.models.ModelRepository;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -23,7 +23,7 @@ public class EclipseOrgCallRecommenderMain {
 
         // setup:
         System.out.println("Setting up recommender and model repository.");
-        AetherModelRepository repository = new AetherModelRepository(new File(local, "repository"), remote);
+        ModelRepository repository = new ModelRepository(new File(local, "repository"), remote);
         System.out.println("downloading model index from eclipse...");
         repository.resolve(ModelIndex.INDEX);
 
@@ -56,12 +56,12 @@ public class EclipseOrgCallRecommenderMain {
         }
     }
 
-    private static void waitUntilModelWasDownloaded(AetherModelRepository repository) throws Exception {
+    private static void waitUntilModelWasDownloaded(ModelRepository repository) throws Exception {
         System.out.println("Waiting for model download to finish...");
         // there is a blocking API and a non-blocking API. schedule methods are non-blocking method that return a
         // future.
         // However, for demo purpose, we wait until the download finished using resolve().
-        ModelArchiveCoordinate model = new ModelArchiveCoordinate("jre", "jre", "call", "zip", "1.0.0");
+        ModelCoordinate model = new ModelCoordinate("jre", "jre", "call", "zip", "1.0.0");
         repository.resolve(model);
         File location = repository.getLocation(model).orNull();
         System.out.println("Model got downloaded to " + location + ".");

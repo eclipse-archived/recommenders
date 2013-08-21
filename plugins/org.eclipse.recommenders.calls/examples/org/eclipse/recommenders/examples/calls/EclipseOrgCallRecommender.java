@@ -11,8 +11,8 @@ import java.util.Set;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.PoolingCallModelProvider;
-import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -37,7 +37,7 @@ public class EclipseOrgCallRecommender {
     }
 
     public List<Recommendation<IMethodName>> computeRecommendations(final ObjectUsage query) throws Exception {
-        BasedTypeName name = new BasedTypeName(new ProjectCoordinate("jre", "jre", "1.7"), query.type);
+        UniqueTypeName name = new UniqueTypeName(new ProjectCoordinate("jre", "jre", "1.7.0"), query.type);
         ICallModel net = store.acquireModel(name).orNull();
         if (net == null) {
             return Collections.EMPTY_LIST;
