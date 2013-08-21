@@ -37,6 +37,11 @@
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.StaticHooksFinder"
             image="icons/provider.hooks.png"
             name="Static Hooks"/>
+       <provider
+             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.AdaptiveTemplatesProvider"
+             image="icons/extdoc.png"
+             name="Templates">
+       </provider>
    </extension>
 
 </plugin>
