@@ -9,37 +9,44 @@
  *    Marcel Bruch - initial API and implementation.
  *    Patrick Gottschaemmer, Olav Lenz - Introduced ProxySelector
  *    Olav Lenz - externalize Strings.
+ *    Andreas Sewe - modernized use of Aether
  */
 package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Optional.*;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.sonatype.aether.repository.RepositoryPolicy.UPDATE_POLICY_INTERVAL;
 
 import java.io.File;
 import java.util.concurrent.Callable;
 
-import org.apache.maven.repository.internal.DefaultServiceLocator;
+import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
+import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
+import org.apache.maven.repository.internal.DefaultVersionResolver;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
+import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.file.FileWagon;
 import org.eclipse.recommenders.utils.Executors;
 import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.DependencyCollectionContext;
-import org.sonatype.aether.collection.DependencySelector;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.impl.ArtifactDescriptorReader;
+import org.sonatype.aether.impl.MetadataGeneratorFactory;
+import org.sonatype.aether.impl.VersionRangeResolver;
+import org.sonatype.aether.impl.VersionResolver;
+import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.Proxy;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.repository.RepositoryPolicy;
-import org.sonatype.aether.resolution.DependencyRequest;
-import org.sonatype.aether.resolution.DependencyResult;
+import org.sonatype.aether.resolution.ArtifactRequest;
+import org.sonatype.aether.resolution.ArtifactResolutionException;
+import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.transfer.TransferCancelledException;
 import org.sonatype.aether.transfer.TransferEvent;
@@ -59,34 +66,82 @@ public class ModelRepository implements IModelRepository {
     private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.coreThreadsTimoutExecutor(1,
             Thread.MIN_PRIORITY, "model-downloader"));
 
-    private RemoteRepository remote;
-    private File basedir;
+    private final File basedir;
+    private final RemoteRepository remoteRepo;
+    private final RepositorySystem system;
+    private final RepositorySystemSession onlineSession;
+    private final RepositorySystemSession offlineSession;
 
-    private RepositorySystem system;
-
-    public ModelRepository(File basedir, String remote) throws Exception {
+    public ModelRepository(File basedir, String remoteUrl) throws Exception {
         this.basedir = basedir;
-        this.remote = new RemoteRepository("remote-models", "default", remote);
-        this.remote.setPolicy(true, new RepositoryPolicy());
+        remoteRepo = newRemoteRepository(remoteUrl);
         system = createRepositorySystem();
+        onlineSession = createRepositorySystemSession(false);
+        offlineSession = createRepositorySystemSession(true);
     }
 
     private RepositorySystem createRepositorySystem() throws Exception {
-        @SuppressWarnings("deprecation")
         DefaultServiceLocator locator = new DefaultServiceLocator();
+        locator.addService(VersionResolver.class, DefaultVersionResolver.class);
+        locator.addService(VersionRangeResolver.class, DefaultVersionRangeResolver.class);
+        locator.addService(MetadataGeneratorFactory.class, SnapshotMetadataGeneratorFactory.class);
+        locator.addService(MetadataGeneratorFactory.class, VersionsMetadataGeneratorFactory.class);
+        locator.addService(ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class);
         locator.setServices(WagonProvider.class, new ManualWagonProvider());
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
-        RepositorySystem system = locator.getService(RepositorySystem.class);
-        return system;
+        return locator.getService(RepositorySystem.class);
+    }
+
+    private RepositorySystemSession createRepositorySystemSession(boolean offline) {
+        MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+
+        LocalRepository localRepo = new LocalRepository(basedir);
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
+        session.setOffline(offline);
+
+        // Do not expect POMs in a model repository
+        session.setIgnoreMissingArtifactDescriptor(true);
+        // TODO Do expect checksums. Should be switched to CHECKSUM_POLICY_FAIL as the new model repos provide
+        // checksums. :-)
+        session.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_IGNORE);
+
+        // Try to update any models older than 60 minutes.
+        session.setUpdatePolicy(UPDATE_POLICY_INTERVAL + ":" + 60);
+        // Do not retry downloading missing models for 60 minutes.
+        session.setNotFoundCachingEnabled(true);
+        // Do retry downloading models after a failed download.
+        session.setTransferErrorCachingEnabled(false);
+
+        // Use timestamps in snapshot artifacts' names; do not keep (duplicate) artifacts named "SNAPSHOT".
+        session.setConfigProperty("aether.artifactResolver.snapshotNormalization", false);
+
+        return session;
+    }
+
+    private RemoteRepository newRemoteRepository(String url) {
+        return new RemoteRepository("remote-models", "default", url);
     }
 
     @Override
     public Optional<File> getLocation(ModelCoordinate mc) {
-        File result = new File(basedir, computePath(mc));
-        if (!result.exists()) {
+        return resolveLocally(mc);
+    }
+
+    // Warning: Only thread-safe as long as offlineSession is not mutated.
+    private Optional<File> resolveLocally(ModelCoordinate mc) {
+        final Artifact coord = new DefaultArtifact(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
+                mc.getExtension(), mc.getVersion());
+
+        ArtifactRequest request = new ArtifactRequest();
+        request.setArtifact(coord);
+        request.addRepository(remoteRepo);
+
+        try {
+            ArtifactResult result = system.resolveArtifact(offlineSession, request);
+            return Optional.of(result.getArtifact().getFile());
+        } catch (ArtifactResolutionException e) {
             return absent();
         }
-        return of(result);
     }
 
     @Override
@@ -137,38 +192,22 @@ public class ModelRepository implements IModelRepository {
         }));
     }
 
-    private String computePath(ModelCoordinate mc) {
-        String gid = mc.getGroupId().replace('.', '/');
-        String aid = mc.getArtifactId();
-        String ver = mc.getVersion();
-        String cls = mc.getClassifier();
-        String ext = mc.getExtension();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(gid).append('/').append(aid).append('/').append(ver).append('/').append(aid).append('-').append(ver);
-        if (!isEmpty(cls)) {
-            sb.append('-').append(cls);
-        }
-        sb.append('.').append(ext);
-        return sb.toString();
-    }
-
     @Beta
     public void setProxy(String type, String host, int port, String user, String pass) {
         Authentication auth = user == null ? null : new Authentication(user, pass);
         Proxy proxy = type == null ? null : new Proxy(type, host, port, auth);
-        remote.setProxy(proxy);
+        remoteRepo.setProxy(proxy);
     }
 
     @Beta
     public void unsetProxy() {
         // TODO: need an API to reset proxy settings.
-        remote.setProxy(null);
+        remoteRepo.setProxy(null);
     }
 
     @Beta
     public void setAuthentication(String user, String pass) {
-        remote.setAuthentication(new Authentication(user, pass));
+        remoteRepo.setAuthentication(new Authentication(user, pass));
     }
 
     @Override
@@ -176,29 +215,8 @@ public class ModelRepository implements IModelRepository {
         return basedir.getAbsolutePath();
     }
 
-    public static class DownloadCallback {
-        public static final DownloadCallback NULL = new DownloadCallback();
-
-        public void downloadSucceeded() {
-        }
-
-        public void downloadCorrupted() {
-        }
-
-        public void downloadFailed() {
-        }
-
-        public void downloadInitiated() {
-        }
-
-        public void downloadProgressed(long transferredBytes, long totalBytes) {
-        }
-
-        public void downloadStarted() {
-        }
-    }
-
     private final class DownloadArtifactTask implements Callable<File> {
+
         private final Artifact coord;
         private final TransferListener callback;
 
@@ -209,46 +227,15 @@ public class ModelRepository implements IModelRepository {
 
         @Override
         public File call() throws Exception {
-            DefaultRepositorySystemSession session = newSession();
+            DefaultRepositorySystemSession session = new DefaultRepositorySystemSession(onlineSession);
             session.setTransferListener(callback);
-            session.setDependencySelector(new TheArtifactOnlyDependencySelector());
 
-            Dependency dependency = new Dependency(coord, "model");
-            CollectRequest collectRequest = new CollectRequest();
-            collectRequest.setRoot(dependency);
-            collectRequest.addRepository(remote);
+            ArtifactRequest request = new ArtifactRequest();
+            request.setArtifact(coord);
+            request.addRepository(remoteRepo);
 
-            DependencyRequest dependencyRequest = new DependencyRequest();
-            dependencyRequest.setCollectRequest(collectRequest);
-            DependencyResult dependencies = system.resolveDependencies(session, dependencyRequest);
-            DependencyNode root = dependencies.getRoot();
-            File file = root.getDependency().getArtifact().getFile();
-            return file;
-        }
-
-        private synchronized DefaultRepositorySystemSession newSession() {
-            MavenRepositorySystemSession session = new MavenRepositorySystemSession();
-            LocalRepository localRepo = new LocalRepository(basedir);
-            session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
-            session.setIgnoreMissingArtifactDescriptor(true);
-            session.setNotFoundCachingEnabled(true);
-            return session;
-        }
-
-    }
-
-    private static class TheArtifactOnlyDependencySelector implements DependencySelector {
-
-        @Override
-        public boolean selectDependency(Dependency d) {
-            // we don't want any dependencies to be returned. Just the artifact
-            // itself.
-            return false;
-        }
-
-        @Override
-        public DependencySelector deriveChildSelector(DependencyCollectionContext c) {
-            return this;
+            ArtifactResult result = system.resolveArtifact(onlineSession, request);
+            return result.getArtifact().getFile();
         }
     }
 

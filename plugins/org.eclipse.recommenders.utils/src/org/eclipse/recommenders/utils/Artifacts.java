@@ -10,9 +10,14 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static com.google.common.base.Optional.*;
-import static org.apache.commons.lang3.ArrayUtils.*;
-import static org.apache.commons.lang3.StringUtils.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.apache.commons.lang3.ArrayUtils.reverse;
+import static org.apache.commons.lang3.ArrayUtils.subarray;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.replace;
+import static org.apache.commons.lang3.StringUtils.split;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.io.File;
@@ -31,6 +36,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.artifact.SubArtifact;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -162,26 +168,21 @@ public class Artifacts {
     }
 
     public static Artifact pom(Artifact a) {
-        DefaultArtifact pom = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), null, "pom", a.getVersion());
-        return pom;
+        return new SubArtifact(a, null, "pom");
     }
 
     /**
      * @return an exact copy of the given artifact coordinate with the new extension and classifier attribute
      */
     public static Artifact newClassifierAndExtension(Artifact a, String classifier, String extension) {
-        DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), classifier, extension,
-                a.getVersion());
-        return res;
+        return new SubArtifact(a, classifier, extension);
     }
 
     /**
      * @return an exact copy of the given artifact coordinate with the new extension attribute
      */
     public static Artifact newExtension(Artifact a, String extension) {
-        DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), a.getClassifier(), extension,
-                a.getVersion());
-        return res;
+        return new SubArtifact(a, a.getClassifier(), extension);
     }
 
     /**

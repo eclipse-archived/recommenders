@@ -24,10 +24,10 @@ import javax.inject.Named;
 
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ModelRepository;
-import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 
