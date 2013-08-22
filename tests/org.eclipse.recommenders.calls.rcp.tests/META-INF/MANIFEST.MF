@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Calls RCP Test Suite
 Bundle-SymbolicName: org.eclipse.recommenders.calls.rcp.tests;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Fragment-Host: org.eclipse.recommenders.calls.rcp
 Require-Bundle: org.mockito,
  org.eclipse.recommenders.completion.rcp.tests,
@@ -16,4 +17,3 @@ Require-Bundle: org.mockito,
  org.eclipse.recommenders.tests,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.calls;bundle-version="1.100.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6

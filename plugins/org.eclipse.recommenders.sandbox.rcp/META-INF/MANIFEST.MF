@@ -1,9 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.sandbox.rcp;singleton:=true
 Bundle-Version: 1.100.0.qualifier
+Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
@@ -17,8 +19,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.completion.rcp,
  org.eclipse.ui.workbench
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",

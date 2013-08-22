@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Tests RCP
 Bundle-SymbolicName: org.eclipse.recommenders.rcp.tests
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Fragment-Host: org.eclipse.recommenders.rcp
 Require-Bundle: org.eclipse.ui,
  com.google.guava,
@@ -24,5 +25,4 @@ Require-Bundle: org.eclipse.ui,
  org.objenesis,
  org.jboss.netty;bundle-version="3.0.0",
  org.eclipse.recommenders.jayes
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.recommenders.internal.rcp

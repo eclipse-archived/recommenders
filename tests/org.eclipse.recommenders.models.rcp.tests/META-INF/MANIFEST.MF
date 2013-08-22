@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Tests Model
 Bundle-SymbolicName: org.eclipse.recommenders.models.rcp.tests;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.models.rcp;bundle-version="0.0.0.qualifier"
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.mockito;bundle-version="1.8.4",

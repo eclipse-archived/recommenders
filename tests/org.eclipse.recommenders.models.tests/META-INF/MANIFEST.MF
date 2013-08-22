@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Tests Model
 Bundle-SymbolicName: org.eclipse.recommenders.models.tests;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.models
 Require-Bundle: org.junit,
  org.mockito;bundle-version="1.8.4",

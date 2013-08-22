@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Codecompletion Test Suite
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.tests;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.chains.rcp.it,
  org.eclipse.recommenders.completion.rcp.it,
  org.eclipse.recommenders.subwords.rcp.it
@@ -31,5 +32,4 @@ Require-Bundle: org.mockito,
  org.eclipse.recommenders.models;bundle-version="1.100.0",
  org.eclipse.recommenders.calls;bundle-version="1.100.0",
  org.eclipse.recommenders.overrides;bundle-version="1.100.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.common.base;version="[14.0.0,15.0.0)"

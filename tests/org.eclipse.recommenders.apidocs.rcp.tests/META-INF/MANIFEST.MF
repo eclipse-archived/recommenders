@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Tests for ExtDoc
 Bundle-SymbolicName: org.eclipse.recommenders.apidocs.rcp.tests;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.apidocs.rcp
 Require-Bundle: com.google.guava;bundle-version="[14.0.1,15.0.0)",
  org.junit;bundle-version="4.10.0",

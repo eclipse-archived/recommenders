@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.jayes.transformation.tests
 Bundle-Version: 1.100.0.qualifier
-Bundle-Name: Jayes Model Transformation Library Tests
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Version
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.recommenders.jayes,
  org.eclipse.recommenders.jayes.transformation,

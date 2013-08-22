@@ -1,10 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.chain.rcp;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Activator: org.eclipse.recommenders.internal.chain.rcp.ChainRcpPlugin
+Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
+Bundle-Activator: org.eclipse.recommenders.internal.chain.rcp.ChainRcpPlugin
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.chain.rcp;x-friends:="org.eclipse.recommenders.completion.rcp.tests"
 Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
@@ -17,8 +19,6 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.recommenders.injection;bundle-version="1.100.0",
  org.eclipse.recommenders.completion.rcp;bundle-version="1.100.0",
  org.eclipse.recommenders.rcp;bundle-version="1.100.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.cache;version="[14.0.0,15.0.0)",
