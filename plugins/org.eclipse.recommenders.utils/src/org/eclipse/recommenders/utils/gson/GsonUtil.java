@@ -35,9 +35,11 @@ import java.util.zip.ZipInputStream;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.collect.Lists;
@@ -58,6 +60,7 @@ public class GsonUtil {
     public static synchronized Gson getInstance() {
         if (gson == null) {
             final GsonBuilder builder = new GsonBuilder();
+
             builder.registerTypeAdapter(VmMethodName.class, new MethodNameTypeAdapter());
             builder.registerTypeAdapter(IMethodName.class, new MethodNameTypeAdapter());
 
@@ -66,11 +69,16 @@ public class GsonUtil {
 
             builder.registerTypeAdapter(VmFieldName.class, new FieldNameTypeAdapter());
             builder.registerTypeAdapter(IFieldName.class, new FieldNameTypeAdapter());
-            //
+
+            builder.registerTypeAdapter(VmPackageName.class, new PackageNameTypeAdapter());
+            builder.registerTypeAdapter(IPackageName.class, new PackageNameTypeAdapter());
+
             builder.registerTypeAdapter(File.class, new FileTypeAdapter());
+
             builder.registerTypeAdapter(UUID.class, new UuidTypeAdapter());
 
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
+
             builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
 
             builder.enableComplexMapKeySerialization();
