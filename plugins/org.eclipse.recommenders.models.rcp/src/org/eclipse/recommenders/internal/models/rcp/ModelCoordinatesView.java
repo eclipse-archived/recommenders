@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -117,6 +119,7 @@ public class ModelCoordinatesView extends ViewPart {
         tableViewer.setSorter(new ViewerSorter());
         initializeContent();
         addRefreshButton();
+        addDeleteButten();
     }
 
     private void addRefreshButton() {
@@ -130,6 +133,21 @@ public class ModelCoordinatesView extends ViewPart {
         };
         refreshAction.setToolTipText("Refresh");
         refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
+
+        getViewSite().getActionBars().getToolBarManager().add(refreshAction);
+    }
+
+    private void addDeleteButten() {
+
+        IAction refreshAction = new Action() {
+
+            @Override
+            public void run() {
+                deleteCacheAndRefresh();
+            }
+        };
+        refreshAction.setToolTipText("Delete models");
+        refreshAction.setImageDescriptor(images.getDescriptor(SharedImages.ELCL_DELETE));
 
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
@@ -226,6 +244,28 @@ public class ModelCoordinatesView extends ViewPart {
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 initializeContent();
                 return Status.OK_STATUS;
+            }
+        };
+    }
+
+    private void deleteCacheAndRefresh() {
+        new Job("Deleting model cache...") {
+            {
+                schedule();
+            }
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    repo.deleteModels();
+                    // TODO Would be nice to have something like schule(job1).then(job2), rather than having the first
+                    // job schedule the second.
+                    refreshData();
+                    return Status.OK_STATUS;
+                } catch (IOException e) {
+                    return new Status(Status.ERROR, org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID,
+                            "Failed to delete model cache");
+                }
             }
         };
     }
