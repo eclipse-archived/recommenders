@@ -15,7 +15,9 @@ import static com.google.common.collect.Collections2.filter;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Constants.CLASS_CALL_MODELS;
-import static org.eclipse.recommenders.utils.names.Names.vm2srcQualifiedType;
+import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
+import static org.eclipse.recommenders.utils.Recommendations.top;
+import static org.eclipse.recommenders.utils.names.Names.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,30 +26,36 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
+import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.SingleZipCallModelProvider;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
+import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ComparisonChain;
@@ -91,12 +99,56 @@ public class AdaptiveTemplatesProvider extends ApidocProvider {
     }
 
     @JavaSelectionSubscriber
-    public void onProjectSelection(IJavaProject selected, JavaElementSelectionEvent event, Composite parent)
-            throws ExecutionException {
+    public void onProjectSelection(IJavaProject selected, JavaElementSelectionEvent event, Composite parent) {
         Optional<Set<ITypeName>> data = fetchData(selected);
         if (data.isPresent()) {
             runSyncInUiThread(new AcquireableTypesRenderer(parent, data.get(), true));
         }
+    }
+
+    @JavaSelectionSubscriber
+    public void onTypeSelection(IType selected, JavaElementSelectionEvent event, Composite parent) throws IOException {
+        UniqueTypeName name = pcProvider.toUniqueName(selected).orNull();
+        if (name == null) {
+            return;
+        }
+        ModelCoordinate mc = modelIndex.suggest(name.getProjectCoordinate(), CLASS_CALL_MODELS).orNull();
+        if (mc == null) {
+            return;
+        }
+        File zip = modelRepo.getLocation(mc).orNull();
+        if (zip == null) {
+            return;
+        }
+        SingleZipCallModelProvider p = new SingleZipCallModelProvider(zip);
+        p.open();
+        ICallModel model = p.acquireModel(name).orNull();
+        p.close();
+        if (model == null) {
+            return;
+        }
+        ArrayList<String> patterns = Lists.newArrayList();
+        model.setObservedCalls(Collections.<IMethodName>emptySet());
+        for (Recommendation<IMethodName> def : top(model.recommendDefinitions(), 5, 0.01d)) {
+            model.reset();
+            model.setObservedCalls(Collections.<IMethodName>emptySet());
+            model.setObservedDefiningMethod(def.getProposal());
+            for (Recommendation<String> pattern : top(model.recommendPatterns(), 3, 0.01d)) {
+                model.setObservedPattern(pattern.getProposal());
+                java.util.List<Recommendation<IMethodName>> calls = top(model.recommendCalls(), 8, 0.1d);
+                if (calls.size() < 2) {
+                    continue;
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append(model.getReceiverType().getClassName()).append(" var = ")
+                        .append(vm2srcQualifiedMethod(def.getProposal())).append(LINE_SEPARATOR);
+                for (Recommendation<IMethodName> call : calls) {
+                    sb.append("var.").append(vm2srcSimpleMethod(call.getProposal())).append(LINE_SEPARATOR);
+                }
+                patterns.add(sb.toString());
+            }
+        }
+        runSyncInUiThread(new CodeRenderer(parent, patterns));
     }
 
     private Optional<Set<ITypeName>> fetchData(IPackageFragmentRoot selectedPackageFragmentRoot) {
@@ -184,6 +236,30 @@ public class AdaptiveTemplatesProvider extends ApidocProvider {
                     typeList.add(typeName.getClassName());
                 }
             }
+        }
+    }
+
+    class CodeRenderer implements Runnable {
+
+        private Composite parent;
+        private Collection<String> snippets;
+
+        public CodeRenderer(Composite parent, Collection<String> snippets) {
+            this.parent = parent;
+            this.snippets = snippets;
+        }
+
+        @Override
+        public void run() {
+            ApidocsViewUtils.createLabel(parent,
+                    "This provider is highly experimental. Select a type name (like \"String\") in your editor \n"
+                            + "and it will show a few likely *example* code snippets (" + snippets.size()
+                            + ") it has found but not all it \nknowns. This provider is for demo purpose only.", true);
+            StyledText text = ApidocsViewUtils.createStyledText(parent, Joiner.on("\n").join(snippets),
+                    SWT.COLOR_BLACK, false);
+            GridData data = (GridData) text.getLayoutData();
+            data.horizontalIndent = 20;
+            ApidocsViewUtils.setInfoBackgroundColor(text);
         }
     }
 }
