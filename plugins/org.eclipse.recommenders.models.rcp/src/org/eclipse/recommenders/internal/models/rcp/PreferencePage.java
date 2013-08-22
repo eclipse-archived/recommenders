@@ -26,10 +26,7 @@ import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -49,18 +46,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     @Override
     protected void createFieldEditors() {
         createRemoteRepositorySection();
-
-        Button clearCaches = new Button(getFieldEditorParent(), SWT.PUSH);
-        clearCaches.setText(PREFPAGE_CLEAR_CACHES);
-        GridData data = new GridData(SWT.END, SWT.CENTER, false, false);
-        data.horizontalSpan = 3;
-        clearCaches.setLayoutData(data);
-        clearCaches.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                // new ClearModelRepositoryJob(ModelRepositoryService.getRepository()).schedule();
-            }
-        });
     }
 
     private void createRemoteRepositorySection() {
