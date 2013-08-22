@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Image;
 public final class SharedImages {
 
     public static final String ELCL_COLLAPSE_ALL = "/icons/elcl16/collapseall.gif";
+    public static final String ELCL_DELETE = "/icons/elcl16/delete.gif";
     public static final String ELCL_EXPAND_ALL = "/icons/elcl16/expandall.gif";
     public static final String ELCL_REFRESH = "/icons/elcl16/refresh_tab.gif";
     public static final String ELCL_SYNCED = "/icons/elcl16/synced.gif";
