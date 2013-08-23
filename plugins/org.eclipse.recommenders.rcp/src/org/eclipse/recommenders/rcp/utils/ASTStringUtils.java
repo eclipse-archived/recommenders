@@ -15,6 +15,8 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
@@ -34,7 +36,6 @@ import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 
 public class ASTStringUtils {
     @Inject

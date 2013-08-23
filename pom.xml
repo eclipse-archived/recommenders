@@ -428,5 +428,25 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>luna</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<target>
+								<artifact>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>luna</artifactId>
+									<version>${recommenders-version}</version>
+								</artifact>
+							</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

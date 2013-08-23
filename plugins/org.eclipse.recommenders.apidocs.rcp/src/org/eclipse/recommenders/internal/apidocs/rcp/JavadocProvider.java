@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IField;
@@ -55,7 +57,6 @@ import org.osgi.framework.Bundle;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 
 public final class JavadocProvider extends ApidocProvider {
 

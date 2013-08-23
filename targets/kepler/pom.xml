@@ -10,5 +10,5 @@
 	</parent>
 	<artifactId>kepler</artifactId>
 	<packaging>eclipse-target-definition</packaging>
-	<name>Eclipse 4.3 Target Definition</name>
+	<name>Target Definition for Eclipse Kepler</name>
 </project>

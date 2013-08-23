@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.IJavaElement;
@@ -33,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.inject.Inject;
 
 public class SubscriptionManager {
 

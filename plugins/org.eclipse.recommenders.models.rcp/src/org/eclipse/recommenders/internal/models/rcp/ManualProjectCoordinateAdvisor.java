@@ -19,6 +19,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
@@ -32,8 +34,6 @@ import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor, IRcpService {
 

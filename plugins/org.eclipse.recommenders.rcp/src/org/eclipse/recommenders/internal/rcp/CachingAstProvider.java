@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import javax.inject.Singleton;
+
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IElementChangedListener;
@@ -22,7 +24,6 @@ import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.inject.Singleton;
 
 @Singleton
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {
