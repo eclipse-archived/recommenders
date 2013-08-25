@@ -144,7 +144,7 @@
 					<version>2.10</version>
 					<dependencies>
 						<dependency>
-							<groupId>${project.groupId}</groupId>
+							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>coding-conventions</artifactId>
 							<version>${recommenders-version}</version>
 						</dependency>
@@ -292,7 +292,7 @@
 					<version>1.9.0</version>
 					<dependencies>
 						<dependency>
-							<groupId>${project.groupId}</groupId>
+							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>licenses</artifactId>
 							<version>${recommenders-version}</version>
 						</dependency>
@@ -418,7 +418,7 @@
 						<configuration>
 							<target>
 								<artifact>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.eclipse.recommenders</groupId>
 									<artifactId>kepler</artifactId>
 									<version>${recommenders-version}</version>
 								</artifact>
@@ -438,7 +438,7 @@
 						<configuration>
 							<target>
 								<artifact>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.eclipse.recommenders</groupId>
 									<artifactId>luna</artifactId>
 									<version>${recommenders-version}</version>
 								</artifact>
