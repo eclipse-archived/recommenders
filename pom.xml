@@ -32,6 +32,19 @@
 		<system>Hudson</system>
 		<url>https://hudson.eclipse.org/hudson</url>
 	</ciManagement>
+	<distributionManagement>
+		<repository>
+			<id>repo.eclipse.org</id>
+			<name>Maven repository for Eclipse Code Recommenders releases</name>
+			<url>https://repo.eclipse.org/content/repositories/recommenders-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>repo.eclipse.org</id>
+			<name>Maven repository for Eclipse Code Recommenders snapshots</name>
+			<url>https://repo.eclipse.org/content/repositories/recommenders-snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 	<properties>
 		<recommenders-version>1.100.0-SNAPSHOT</recommenders-version>
 		<java-version>1.6</java-version>
