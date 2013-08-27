@@ -15,12 +15,15 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 @Beta
@@ -119,4 +122,29 @@ public class Recommendations {
         ensureIsInRange(rel, 0, 1, "relevance '%f' not in interval [0, 1]", rel);
         return (int) Math.round(rel * 100);
     }
+
+    /**
+     * Returns all proposals of the given iterable of recommendations.
+     * 
+     * @see Recommendation#getProposal()
+     */
+    public static <T> List<T> getProposals(final Iterable<Recommendation<T>> recommendations) {
+        List<T> res = Lists.newLinkedList();
+        for (Recommendation<T> rec : recommendations) {
+            res.add(rec.getProposal());
+        }
+        return res;
+    }
+
+    /**
+     * Returns the given recommendations as map.
+     */
+    public static <T> Map<T, Double> asMap(final Iterable<Recommendation<T>> recommendations) {
+        Map<T, Double> res = Maps.newHashMap();
+        for (Recommendation<T> rec : recommendations) {
+            res.put(rec.getProposal(), rec.getRelevance());
+        }
+        return res;
+    }
+
 }
