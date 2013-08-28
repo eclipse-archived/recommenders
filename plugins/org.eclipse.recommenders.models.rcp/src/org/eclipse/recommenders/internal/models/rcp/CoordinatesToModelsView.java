@@ -54,17 +54,19 @@ public class CoordinatesToModelsView extends ViewPart {
     IModelIndex modelIndex;
     EclipseModelRepository eclipseModelRepository;
     private SharedImages images;
+    private EventBus bus;
 
     @Inject
     public CoordinatesToModelsView(final EventBus workspaceBus,
             final EclipseDependencyListener eclipseDependencyListener, final IProjectCoordinateProvider pcProvider,
             final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository, SharedImages images) {
+        bus = workspaceBus;
         dependencyListener = eclipseDependencyListener;
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
         this.eclipseModelRepository = eclipseModelRepository;
         this.images = images;
-        workspaceBus.register(this);
+        bus.register(this);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class CoordinatesToModelsView extends ViewPart {
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
                     menuManager.add(new TriggerModelDownloadActionForDependencyInfos("Download models", deps,
-                            pcProvider, modelIndex, eclipseModelRepository));
+                            pcProvider, modelIndex, eclipseModelRepository, bus));
                 }
             }
         });

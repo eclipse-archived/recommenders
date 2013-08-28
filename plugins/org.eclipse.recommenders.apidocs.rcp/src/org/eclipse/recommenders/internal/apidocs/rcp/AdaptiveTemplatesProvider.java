@@ -116,7 +116,7 @@ public class AdaptiveTemplatesProvider extends ApidocProvider {
         if (mc == null) {
             return;
         }
-        File zip = modelRepo.getLocation(mc).orNull();
+        File zip = modelRepo.getLocation(mc, true).orNull();
         if (zip == null) {
             return;
         }
@@ -176,7 +176,7 @@ public class AdaptiveTemplatesProvider extends ApidocProvider {
     }
 
     private Optional<Set<ITypeName>> fetchData(ModelCoordinate mc) {
-        Optional<File> file = modelRepo.getLocation(mc);
+        Optional<File> file = modelRepo.getLocation(mc, true);
         if (!file.isPresent()) {
             return absent();
         }

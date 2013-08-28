@@ -20,15 +20,22 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 
+import com.google.common.eventbus.EventBus;
+
 public class DownloadMultipleModelArchivesJob extends Job {
 
-    private IModelRepository repository;
-    private Collection<ModelCoordinate> coordinates;
+    private final IModelRepository repository;
+    private final Collection<ModelCoordinate> coordinates;
+    private final boolean forceDownloads;
+    private EventBus bus;
 
-    public DownloadMultipleModelArchivesJob(IModelRepository repository, Collection<ModelCoordinate> coordinates) {
+    public DownloadMultipleModelArchivesJob(IModelRepository repository, Collection<ModelCoordinate> coordinates,
+            boolean forceDownloads, EventBus bus) {
         super("Downloading model coordinates");
         this.repository = repository;
         this.coordinates = coordinates;
+        this.forceDownloads = forceDownloads;
+        this.bus = bus;
     }
 
     @Override
@@ -37,7 +44,8 @@ public class DownloadMultipleModelArchivesJob extends Job {
         monitor.beginTask("", coordinates.size());
         for (ModelCoordinate mc : coordinates) {
             monitor.subTask("Downloading " + mc);
-            IStatus subtask = new DownloadModelArchiveJob(repository, mc).run(new SubProgressMonitor(monitor, 1));
+            IStatus subtask = new DownloadModelArchiveJob(repository, mc, forceDownloads, bus)
+                    .run(new SubProgressMonitor(monitor, 1));
             report.add(subtask);
         }
         monitor.done();

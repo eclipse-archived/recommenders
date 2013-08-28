@@ -20,6 +20,7 @@ import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Constants;
 
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 final class TriggerModelDownloadActionForProjectCoordinates extends Action {
 
@@ -32,12 +33,15 @@ final class TriggerModelDownloadActionForProjectCoordinates extends Action {
             Constants.CLASS_OVRP_MODEL, Constants.CLASS_OVRD_MODEL, Constants.CLASS_SELFC_MODEL,
             Constants.CLASS_SELFM_MODEL };
 
+    private EventBus bus;
+
     TriggerModelDownloadActionForProjectCoordinates(String text, Set<ProjectCoordinate> pcs, IModelIndex modelIndex,
-            EclipseModelRepository repo) {
+            EclipseModelRepository repo, EventBus bus) {
         super(text);
         this.pcs = pcs;
         this.modelIndex = modelIndex;
         this.repo = repo;
+        this.bus = bus;
     }
 
     @Override
@@ -51,7 +55,7 @@ final class TriggerModelDownloadActionForProjectCoordinates extends Action {
                 }
             }
         }
-        new DownloadMultipleModelArchivesJob(repo, mcs).schedule();
+        new DownloadMultipleModelArchivesJob(repo, mcs, false, bus).schedule();
     }
 
 }

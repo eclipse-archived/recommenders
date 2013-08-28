@@ -11,10 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.UniqueTypeName;
-import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.ModelCoordinate;
-import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.utils.Zips;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,7 +65,7 @@ public class PoolingModelProviderTest {
 
     private PoolingModelProvider<UniqueTypeName, String> create() {
         IModelRepository repository = mock(IModelRepository.class);
-        when(repository.getLocation(any(ModelCoordinate.class))).thenReturn(of(zip));
+        when(repository.getLocation(any(ModelCoordinate.class), anyBoolean())).thenReturn(of(zip));
 
         IModelArchiveCoordinateAdvisor models = mock(IModelArchiveCoordinateAdvisor.class);
         when(models.suggest(any(ProjectCoordinate.class), anyString())).thenReturn(of(UNKNOWN));

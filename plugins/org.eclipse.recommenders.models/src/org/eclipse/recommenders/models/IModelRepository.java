@@ -13,32 +13,39 @@ package org.eclipse.recommenders.models;
 import java.io.File;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
 
 public interface IModelRepository {
 
     /**
-     * Returns the file for the given coordinate - if it exists locally. Note that calling this method <b>may</b>
-     * trigger a background download of the requested resource depending on the actual implementation.
+     * Returns the file for the given model coordinate if it exists locally.
+     * 
+     * If the caller expects the file to be accessed again in the future, the <code>prefetch</code> should be set.
+     * Depending on the implementation, setting the <code>prefetch</code> parameter may result in a background download
+     * of the requested file.
+     * 
+     * Independent of the value of <code>prefetch</code>, this method can be assumed to return quickly.
      */
-    Optional<File> getLocation(ModelCoordinate mc);
+    Optional<File> getLocation(ModelCoordinate mc, boolean prefetch);
 
     /**
-     * Resolves the given model coordinate to a local file. If the model does not yet exist locally this method attempts
-     * to download the model from the remote repository. This call blocks the caller until the download finished.
+     * Resolves the given model coordinate to a local file. If the model does not yet exist locally this method may
+     * attempt to download the model from the remote repository. If it is absolutely desired that this method attempts a
+     * download, the <code>force</code> parameter should be set.
+     * 
+     * This method blocks the caller until the download (if necessary) is finished; callers must not assume that this
+     * method returns quickly.
+     * 
+     * @param force
+     *            ignore previously cached values and retries downloading the coordinate. Does not trigger a download if
+     *            the local artifact already exists locally.
      * 
      * @return the path to the locally cached model archive.
      * 
      * @throws Exception
-     *             if no model could be downloaded, e.g., because the coordinate does not exist on the remote repository
-     *             or a network/io error occurred.
+     *             if no file could be downloaded, e.g., because the model coordinate does not exist in the remote
+     *             repository or an I/O error has occurred.
      */
-    Optional<File> resolve(ModelCoordinate mc) throws Exception;
+    Optional<File> resolve(ModelCoordinate mc, boolean force);
 
-    /**
-     * Resolves the given model coordinate to a local file. If the model does not yet exist locally this method accesses
-     * the remote repository to download it. This call run's in a background process.
-     */
-    ListenableFuture<File> resolve(ModelCoordinate mc, DownloadCallback callback);
-
+    Optional<File> resolve(ModelCoordinate mc, boolean force, DownloadCallback callback);
 }

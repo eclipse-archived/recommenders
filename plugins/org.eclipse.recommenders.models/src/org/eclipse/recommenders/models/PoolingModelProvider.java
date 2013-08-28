@@ -83,7 +83,7 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
             K key = borrowedModels.remove(model);
             pool.returnObject(key, model);
         } catch (Exception e) {
-            log.error("Exception while releasing Couldn't release model " + model, e);
+            log.error("Exception while releasing. Couldn't release model " + model, e);
         }
     }
 

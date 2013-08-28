@@ -14,21 +14,21 @@ public class DownloadCallback {
 
     public static final DownloadCallback NULL = new DownloadCallback();
 
-    public void downloadSucceeded() {
+    public void downloadInitiated(String path) {
     }
 
-    public void downloadCorrupted() {
+    public void downloadStarted(String path) {
     }
 
-    public void downloadFailed() {
+    public void downloadProgressed(String path, long transferredBytes, long totalBytes) {
     }
 
-    public void downloadInitiated() {
+    public void downloadSucceeded(String path) {
     }
 
-    public void downloadProgressed(long transferredBytes, long totalBytes) {
+    public void downloadFailed(String path) {
     }
 
-    public void downloadStarted() {
+    public void downloadCorrupted(String path) {
     }
 }

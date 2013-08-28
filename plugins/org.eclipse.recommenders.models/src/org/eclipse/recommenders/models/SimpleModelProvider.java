@@ -29,6 +29,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * A non-thread-safe implementation of {@link IModelProvider} that loads models from model zip files using a
@@ -59,11 +60,17 @@ public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implement
             if (mc == null) {
                 return absent();
             }
-            // since the guava cache does not support null values, we have to check this before.
-            if (!repository.getLocation(mc).isPresent()) {
-                return absent();
+            final ZipFile zip;
+            try {
+                zip = openZips.get(mc);
+            } catch (UncheckedExecutionException e) {
+                if (IllegalStateException.class.equals(e.getCause().getClass())) {
+                    // repository.getLocation(..) returned absent. Try to load ZIP file again next time.
+                    return absent();
+                } else {
+                    throw e;
+                }
             }
-            ZipFile zip = openZips.get(mc);
             return loadModel(zip, key);
         } catch (Exception e) {
             log.error("Exception while loading model " + key, e);
@@ -93,7 +100,7 @@ public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implement
     private final class ZipCacheLoader extends CacheLoader<ModelCoordinate, ZipFile> {
         @Override
         public ZipFile load(ModelCoordinate key) throws Exception {
-            File location = repository.getLocation(key).get();
+            File location = repository.getLocation(key, true).get();
             // read file in memory to speed up access
             toByteArray(newInputStreamSupplier(location));
             return new ZipFile(location);

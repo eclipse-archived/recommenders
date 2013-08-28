@@ -21,6 +21,7 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 final class TriggerModelDownloadActionForDependencyInfos extends Action {
 
@@ -32,13 +33,16 @@ final class TriggerModelDownloadActionForDependencyInfos extends Action {
 
     private final Set<DependencyInfo> deps;
 
+    private EventBus bus;
+
     public TriggerModelDownloadActionForDependencyInfos(String text, Set<DependencyInfo> deps,
-            IProjectCoordinateProvider pcProvider, IModelIndex modelIndex, EclipseModelRepository repo) {
+            IProjectCoordinateProvider pcProvider, IModelIndex modelIndex, EclipseModelRepository repo, EventBus bus) {
         super(text);
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
         this.repo = repo;
         this.deps = deps;
+        this.bus = bus;
     }
 
     @Override
@@ -50,6 +54,6 @@ final class TriggerModelDownloadActionForDependencyInfos extends Action {
                 pcs.add(opc.get());
             }
         }
-        new TriggerModelDownloadActionForProjectCoordinates(getText(), pcs, modelIndex, repo).run();
+        new TriggerModelDownloadActionForProjectCoordinates(getText(), pcs, modelIndex, repo, bus).run();
     }
 }

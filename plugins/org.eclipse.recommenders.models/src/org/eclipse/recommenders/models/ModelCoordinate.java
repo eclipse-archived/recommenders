@@ -89,7 +89,8 @@ public final class ModelCoordinate {
 
     @Override
     public String toString() {
-        return Joiner.on(':').join(getGroupId(), getArtifactId(), getClassifier(), getExtension(), getVersion());
+        return Joiner.on(':').useForNull("")
+                .join(getGroupId(), getArtifactId(), getClassifier(), getExtension(), getVersion());
     }
 
     public static ModelCoordinate valueOf(String coord) {

@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.REPOSITORY_BASEDIR;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
 import java.io.File;
@@ -35,13 +34,13 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEven
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
+import org.eclipse.recommenders.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * The Eclipse RCP wrapper around an {@link IModelRepository} that responds to (@link ModelRepositoryChangedEvent)s by
@@ -89,33 +88,26 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     }
 
     @Override
-    public Optional<File> resolve(ModelCoordinate mc) throws Exception {
+    public Optional<File> getLocation(final ModelCoordinate mc, boolean prefetch) {
         ensureIsOpen();
-        updateProxySettings();
-        return delegate.resolve(mc);
-    }
-
-    public boolean isDownloaded(final ModelCoordinate mc) {
-        ensureIsOpen();
-        return delegate.getLocation(mc).isPresent();
-    }
-
-    @Override
-    public Optional<File> getLocation(final ModelCoordinate mc) {
-        ensureIsOpen();
-        Optional<File> location = delegate.getLocation(mc);
-        if (!location.isPresent() && prefs.autoDownloadEnabled) {
-            updateProxySettings();
-            new DownloadModelArchiveJob(delegate, mc).schedule();
+        Optional<File> location = delegate.getLocation(mc, false);
+        if (prefetch && prefs.autoDownloadEnabled) {
+            new DownloadModelArchiveJob(delegate, mc, false, bus).schedule();
         }
         return location;
     }
 
     @Override
-    public ListenableFuture<File> resolve(ModelCoordinate mc, DownloadCallback callback) {
+    public Optional<File> resolve(ModelCoordinate mc, boolean force) {
+        updateProxySettings();
+        return delegate.resolve(mc, force);
+    }
+
+    @Override
+    public Optional<File> resolve(ModelCoordinate mc, boolean force, DownloadCallback callback) {
         ensureIsOpen();
         updateProxySettings();
-        return delegate.resolve(mc, callback);
+        return delegate.resolve(mc, force, callback);
     }
 
     void updateProxySettings() {
@@ -157,6 +149,11 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     }
 
     private void ensureIsOpen() {
-        ensureIsTrue(isOpen, "model repository service is not accesible at the moment.");
+        Checks.ensureIsTrue(isOpen, "model repository service is not accesible at the moment.");
+    }
+
+    @Override
+    public String toString() {
+        return prefs.remote;
     }
 }

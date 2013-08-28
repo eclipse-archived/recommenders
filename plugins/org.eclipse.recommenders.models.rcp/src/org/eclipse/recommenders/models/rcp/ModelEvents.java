@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.models.rcp;
 
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.ModelCoordinate;
 
 import com.google.common.annotations.Beta;
 
@@ -54,6 +55,20 @@ public class ModelEvents {
      */
     @Beta
     public static class ModelIndexOpenedEvent {
+    }
+
+    @Beta
+    public static class ModelArchiveDownloadedEvent {
+        public ModelCoordinate model;
+
+        public ModelArchiveDownloadedEvent(ModelCoordinate model) {
+            this.model = model;
+        }
+
+        @Override
+        public String toString() {
+            return model.toString();
+        }
     }
 
     @Beta

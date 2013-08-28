@@ -13,12 +13,12 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Optional.*;
-import static org.sonatype.aether.repository.RepositoryPolicy.UPDATE_POLICY_INTERVAL;
+import static org.sonatype.aether.repository.RepositoryPolicy.*;
 
 import java.io.File;
-import java.util.concurrent.Callable;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
 import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
@@ -28,7 +28,6 @@ import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
 import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.file.FileWagon;
-import org.eclipse.recommenders.utils.Executors;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
@@ -57,139 +56,190 @@ import org.sonatype.maven.wagon.AhcWagon;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.collect.Maps;
 
+/**
+ * This class is thread-safe.
+ */
 public class ModelRepository implements IModelRepository {
-
-    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.coreThreadsTimoutExecutor(1,
-            Thread.MIN_PRIORITY, "model-downloader"));
 
     private final File basedir;
     private final RemoteRepository remoteRepo;
     private final RepositorySystem system;
-    private final RepositorySystemSession onlineSession;
-    private final RepositorySystemSession offlineSession;
+    private final RepositorySystemSession defaultSession;
 
     public ModelRepository(File basedir, String remoteUrl) throws Exception {
         this.basedir = basedir;
-        remoteRepo = newRemoteRepository(remoteUrl);
+        remoteRepo = createRemoteRepository(remoteUrl);
         system = createRepositorySystem();
-        onlineSession = createRepositorySystemSession(false);
-        offlineSession = createRepositorySystemSession(true);
+        defaultSession = createDefaultSession();
+    }
+
+    private RemoteRepository createRemoteRepository(String url) {
+        return new RemoteRepository("models", "default", url);
     }
 
     private RepositorySystem createRepositorySystem() throws Exception {
         DefaultServiceLocator locator = new DefaultServiceLocator();
+
         locator.addService(VersionResolver.class, DefaultVersionResolver.class);
         locator.addService(VersionRangeResolver.class, DefaultVersionRangeResolver.class);
+
+        locator.addService(ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class);
+
         locator.addService(MetadataGeneratorFactory.class, SnapshotMetadataGeneratorFactory.class);
         locator.addService(MetadataGeneratorFactory.class, VersionsMetadataGeneratorFactory.class);
-        locator.addService(ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class);
-        locator.setServices(WagonProvider.class, new ManualWagonProvider());
+
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
+        locator.setServices(WagonProvider.class, new ManualWagonProvider());
+
         return locator.getService(RepositorySystem.class);
     }
 
-    private RepositorySystemSession createRepositorySystemSession(boolean offline) {
+    /**
+     * Provides a default session that can be further customized.
+     */
+    private RepositorySystemSession createDefaultSession() {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
 
         LocalRepository localRepo = new LocalRepository(basedir);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
-        session.setOffline(offline);
 
-        // Do not expect POMs in a model repository
+        // Do not expect POMs in a model repository.
         session.setIgnoreMissingArtifactDescriptor(true);
-        // TODO Do expect checksums. Should be switched to CHECKSUM_POLICY_FAIL as the new model repos provide
-        // checksums. :-)
-        session.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_IGNORE);
-
-        // Try to update any models older than 60 minutes.
-        session.setUpdatePolicy(UPDATE_POLICY_INTERVAL + ":" + 60);
-        // Do not retry downloading missing models for 60 minutes.
-        session.setNotFoundCachingEnabled(true);
-        // Do retry downloading models after a failed download.
-        session.setTransferErrorCachingEnabled(false);
+        // Do expect checksums.
+        session.setChecksumPolicy(CHECKSUM_POLICY_FAIL);
 
         // Use timestamps in snapshot artifacts' names; do not keep (duplicate) artifacts named "SNAPSHOT".
         session.setConfigProperty("aether.artifactResolver.snapshotNormalization", false);
 
+        // Ensure that the update policy set above is honoured.
+        session.setConfigProperty("aether.versionResolver.noCache", true);
+
         return session;
     }
 
-    private RemoteRepository newRemoteRepository(String url) {
-        return new RemoteRepository("remote-models", "default", url);
+    /**
+     * Maps model coordinates where resolution is currently in-progress to the file they previously resolved to, if any.
+     * This makes it possible to immediately answer offline resolution requests while an online request is overwriting,
+     * e.g., the <code>maven-metadata.xml</code>.
+     */
+    private final Map<ModelCoordinate, Optional<File>> inProgressResolutions = Maps.newHashMap();
+
+    /**
+     * {@inheritDoc}
+     * 
+     * Note: This implementation ignores the <code>prefetch</code> parameter.
+     */
+    @Override
+    public Optional<File> getLocation(ModelCoordinate mc, boolean prefetch) {
+        synchronized (inProgressResolutions) {
+            if (inProgressResolutions.containsKey(mc)) {
+                return inProgressResolutions.get(mc);
+            }
+            RepositorySystemSession offlineSession = newOfflineSession();
+            return resolveInternal(mc, offlineSession);
+        }
     }
 
     @Override
-    public Optional<File> getLocation(ModelCoordinate mc) {
-        return resolveLocally(mc);
+    public Optional<File> resolve(ModelCoordinate mc, boolean force) {
+        return resolve(mc, force, DownloadCallback.NULL);
     }
 
-    // Warning: Only thread-safe as long as offlineSession is not mutated.
-    private Optional<File> resolveLocally(ModelCoordinate mc) {
-        final Artifact coord = new DefaultArtifact(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
-                mc.getExtension(), mc.getVersion());
+    @Override
+    public Optional<File> resolve(ModelCoordinate mc, boolean force, final DownloadCallback callback) {
 
-        ArtifactRequest request = new ArtifactRequest();
-        request.setArtifact(coord);
-        request.addRepository(remoteRepo);
+        synchronized (inProgressResolutions) {
+            RepositorySystemSession offlineSession = newOfflineSession();
+            Optional<File> previousFile = resolveInternal(mc, offlineSession);
+            inProgressResolutions.put(mc, previousFile);
+        }
 
         try {
-            ArtifactResult result = system.resolveArtifact(offlineSession, request);
-            return Optional.of(result.getArtifact().getFile());
+            // TODO Synchronization is still rather coarse-grained. We should consider SyncContext backed by
+            // ReadWriteLock.
+            synchronized (this) {
+                RepositorySystemSession onlineSession = newOnlineSession(callback, force);
+                return resolveInternal(mc, onlineSession);
+            }
+        } finally {
+            synchronized (inProgressResolutions) {
+                inProgressResolutions.remove(mc);
+            }
+        }
+    }
+
+    /**
+     * <em>Not</em> thread-safe. Synchronization needs to be done by the caller.
+     */
+    private Optional<File> resolveInternal(ModelCoordinate mc, RepositorySystemSession session) {
+        try {
+            final Artifact coord = toSnapshotArtifact(mc);
+            ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
+            ArtifactResult result = system.resolveArtifact(session, request);
+            return of(result.getArtifact().getFile());
         } catch (ArtifactResolutionException e) {
             return absent();
         }
     }
 
-    @Override
-    public Optional<File> resolve(ModelCoordinate mc) throws Exception {
-        return fromNullable(schedule(mc, null).get());
+    private RepositorySystemSession newOfflineSession() {
+        DefaultRepositorySystemSession offlineSession = new DefaultRepositorySystemSession(defaultSession);
+        offlineSession.setOffline(true);
+        return offlineSession;
     }
 
-    @Override
-    public ListenableFuture<File> resolve(ModelCoordinate mc, DownloadCallback callback) {
-        return schedule(mc, callback);
-    }
+    private DefaultRepositorySystemSession newOnlineSession(final DownloadCallback callback, boolean forceDownloads) {
+        final DefaultRepositorySystemSession onlineSession = new DefaultRepositorySystemSession(defaultSession);
 
-    private ListenableFuture<File> schedule(final ModelCoordinate mc, DownloadCallback callback) {
-        final DownloadCallback cb = firstNonNull(callback, DownloadCallback.NULL);
-        final Artifact coord = new DefaultArtifact(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
-                mc.getExtension(), mc.getVersion());
-        return executor.submit(new DownloadArtifactTask(coord, new TransferListener() {
+        if (forceDownloads) {
+            onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
+            onlineSession.setNotFoundCachingEnabled(false);
+            onlineSession.setTransferErrorCachingEnabled(false);
+        } else {
+            // Try to update any models older than 60 minutes.
+            onlineSession.setUpdatePolicy(UPDATE_POLICY_INTERVAL + ":" + 60);
+            // Do not retry downloading missing models until the update interval has elapsed.
+            onlineSession.setNotFoundCachingEnabled(true);
+            // Do not retry downloading models after a failed download.
+            onlineSession.setTransferErrorCachingEnabled(true);
+        }
+
+        onlineSession.setTransferListener(new TransferListener() {
 
             @Override
-            public void transferSucceeded(TransferEvent e) {
-                cb.downloadSucceeded();
+            public void transferInitiated(TransferEvent e) throws TransferCancelledException {
+                callback.downloadInitiated(e.getResource().getResourceName());
             }
 
             @Override
             public void transferStarted(TransferEvent e) throws TransferCancelledException {
-                cb.downloadStarted();
+                callback.downloadStarted(e.getResource().getResourceName());
             }
 
             @Override
             public void transferProgressed(TransferEvent e) throws TransferCancelledException {
-                cb.downloadProgressed(e.getTransferredBytes(), e.getResource().getContentLength());
+                callback.downloadProgressed(e.getResource().getResourceName(), e.getTransferredBytes(), e.getResource()
+                        .getContentLength());
             }
 
             @Override
-            public void transferInitiated(TransferEvent e) throws TransferCancelledException {
-                cb.downloadInitiated();
+            public void transferSucceeded(TransferEvent e) {
+                callback.downloadSucceeded(e.getResource().getResourceName());
             }
 
             @Override
             public void transferFailed(TransferEvent e) {
-                cb.downloadFailed();
+                callback.downloadFailed(e.getResource().getResourceName());
             }
 
             @Override
             public void transferCorrupted(TransferEvent e) throws TransferCancelledException {
-                cb.downloadCorrupted();
+                callback.downloadCorrupted(e.getResource().getResourceName());
             }
-        }));
+        });
+        return onlineSession;
     }
 
     @Beta
@@ -213,30 +263,6 @@ public class ModelRepository implements IModelRepository {
     @Override
     public String toString() {
         return basedir.getAbsolutePath();
-    }
-
-    private final class DownloadArtifactTask implements Callable<File> {
-
-        private final Artifact coord;
-        private final TransferListener callback;
-
-        private DownloadArtifactTask(Artifact coord, TransferListener callback) {
-            this.coord = coord;
-            this.callback = callback;
-        }
-
-        @Override
-        public File call() throws Exception {
-            DefaultRepositorySystemSession session = new DefaultRepositorySystemSession(onlineSession);
-            session.setTransferListener(callback);
-
-            ArtifactRequest request = new ArtifactRequest();
-            request.setArtifact(coord);
-            request.addRepository(remoteRepo);
-
-            ArtifactResult result = system.resolveArtifact(onlineSession, request);
-            return result.getArtifact().getFile();
-        }
     }
 
     /**
@@ -263,5 +289,10 @@ public class ModelRepository implements IModelRepository {
         @Override
         public void release(Wagon wagon) {
         }
+    }
+
+    private Artifact toSnapshotArtifact(ModelCoordinate mc) {
+        return new DefaultArtifact(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(), mc.getExtension(),
+                mc.getVersion() + "-SNAPSHOT");
     }
 }
