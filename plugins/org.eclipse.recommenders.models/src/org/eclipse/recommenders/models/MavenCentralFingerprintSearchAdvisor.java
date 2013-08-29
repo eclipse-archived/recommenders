@@ -10,8 +10,10 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
+import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -85,7 +87,7 @@ public class MavenCentralFingerprintSearchAdvisor extends AbstractProjectCoordin
                 String artifactId = (String) document.get(FIELD_ARTIFACT_ID);
                 String version = (String) document.get(FIELD_VERSION);
 
-                return of(new ProjectCoordinate(groupId, artifactId, version));
+                return tryNewProjectCoordinate(groupId, artifactId, canonicalizeVersion(version));
             }
 
             return absent();

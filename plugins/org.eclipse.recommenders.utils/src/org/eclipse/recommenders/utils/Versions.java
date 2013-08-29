@@ -7,17 +7,26 @@
  *
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
+ *    Olav Lenz - Add methods for version strings.
  */
 package org.eclipse.recommenders.utils;
 
 import static com.google.common.collect.Lists.newLinkedList;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
 public final class Versions {
+
+    private static final Pattern findVersionPattern = Pattern
+            .compile("([0-9]|([1-9][0-9]*))(\\.([0-9]|([1-9][0-9]*))){0,2}");
+
+    private static final Pattern versionPattern = Pattern
+            .compile("([0-9]|([1-9][0-9]*))\\.([0-9]|([1-9][0-9]*))\\.([0-9]|([1-9][0-9]*))");
 
     private Versions() {
     }
@@ -101,5 +110,46 @@ public final class Versions {
                 return 2 * (referencePoint.getPatch() - version.getPatch());
             }
         }
+    }
+
+    /**
+     * Checks if the version has the correct format.
+     * 
+     * The version must have the following structure: <code>major.minor.micro</code> where major, minor and micro are
+     * any number (but w\o leading 0).
+     */
+    public static boolean isValidVersion(String version) {
+        return versionPattern.matcher(version).matches();
+    }
+
+    /**
+     * Canonicalize a given version string. If it is possible a version with the following structure will be extracted:
+     * <code>major.minor.micro</code> where major, minor and micro are any number (but w\o leading 0). If a minor and/or
+     * micro version number is missing '.0' will be added for them.
+     * <p>
+     * 
+     * If it is not possible to extract the version the input value is returned.
+     */
+    public static String canonicalizeVersion(String version) {
+        Matcher matcher = findVersionPattern.matcher(version);
+        if (matcher.find()) {
+            String temp = version.substring(matcher.start(), matcher.end());
+            return addMissingVersionPartsIfNecessary(temp);
+        }
+        return version;
+    }
+
+    /**
+     * Add '.0' as minor and micro version if they are missing in the string. The method counts the '.' contained in the
+     * string and add a '.0' if the number of '.' is smaller than 2 or ".0.0" if the number of '.' is 0.
+     */
+    private static String addMissingVersionPartsIfNecessary(String version) {
+        String temp = version;
+        String[] parts = version.split("\\.");
+        int missingVersionParts = 3 - parts.length;
+        for (int i = 0; i < missingVersionParts; i++) {
+            temp += ".0";
+        }
+        return temp;
     }
 }

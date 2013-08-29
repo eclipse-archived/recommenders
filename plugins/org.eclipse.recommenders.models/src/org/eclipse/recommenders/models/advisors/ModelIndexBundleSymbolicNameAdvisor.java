@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
+import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
@@ -46,7 +48,8 @@ public class ModelIndexBundleSymbolicNameAdvisor extends AbstractProjectCoordina
         if (indexPc == null) {
             return absent();
         }
-        return of(new ProjectCoordinate(indexPc.getGroupId(), indexPc.getArtifactId(), osgiPc.getVersion()));
+        return tryNewProjectCoordinate(indexPc.getGroupId(), indexPc.getArtifactId(),
+                canonicalizeVersion(indexPc.getVersion()));
     }
 
     @Override

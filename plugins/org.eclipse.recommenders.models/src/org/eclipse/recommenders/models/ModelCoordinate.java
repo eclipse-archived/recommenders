@@ -10,12 +10,16 @@
  */
 package org.eclipse.recommenders.models;
 
+import static org.eclipse.recommenders.models.Coordinates.isValidId;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
+import static org.eclipse.recommenders.utils.Versions.isValidVersion;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.recommenders.utils.Versions;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 
 /**
  * Represents a Maven-like artifact coordinate which consists of "group-id:artifact-id:classifier:extension:version".
@@ -33,12 +37,24 @@ public final class ModelCoordinate {
     private final String classifier;
     private final String extension;
 
+    /**
+     * Creates a new coordinate.
+     * 
+     * @throws IllegalArgumentException
+     *             If the entered strings have an invalid format.
+     * 
+     * @see Versions#isValidVersion(String)
+     * @see Coordinates#isValidId(String)
+     */
     public ModelCoordinate(String groupId, String artifactId, String classifier, String extension, String version) {
-        this.groupId = Strings.nullToEmpty(groupId);
-        this.artifactId = Strings.nullToEmpty(artifactId);
-        this.classifier = Strings.nullToEmpty(classifier);
-        this.extension = Strings.nullToEmpty(extension);
-        this.version = Strings.nullToEmpty(version);
+        ensureIsTrue(isValidId(artifactId));
+        ensureIsTrue(isValidId(extension));
+        ensureIsTrue(isValidVersion(version));
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.classifier = classifier;
+        this.extension = extension;
+        this.version = version;
     }
 
     public String getGroupId() {

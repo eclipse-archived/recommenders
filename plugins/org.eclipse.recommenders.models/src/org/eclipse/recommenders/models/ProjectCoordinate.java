@@ -10,14 +10,17 @@
  */
 package org.eclipse.recommenders.models;
 
+import static org.eclipse.recommenders.models.Coordinates.isValidId;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
+import static org.eclipse.recommenders.utils.Versions.isValidVersion;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.utils.Nullable;
+import org.eclipse.recommenders.utils.Versions;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 
 /**
  * Represents a triple "group-id:artifact-id:version".
@@ -36,11 +39,20 @@ public class ProjectCoordinate {
 
     /**
      * Creates a new coordinate. Note that <code>null</code> values are replaced with an empty string.
+     * 
+     * @throws IllegalArgumentException
+     *             If the coordinate parts have an invalid format.
+     * 
+     * @see Versions#isValidVersion(String)
+     * @see Coordinates#isValidId(String)
      */
-    public ProjectCoordinate(@Nullable String groupId, @Nullable String artifactId, @Nullable String version) {
-        this.groupId = Strings.nullToEmpty(groupId);
-        this.artifactId = Strings.nullToEmpty(artifactId);
-        this.version = Strings.nullToEmpty(version);
+    public ProjectCoordinate(String groupId, String artifactId, String version) {
+        ensureIsTrue(isValidId(groupId));
+        ensureIsTrue(isValidId(artifactId));
+        ensureIsTrue(isValidVersion(version));
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
     }
 
     public String getGroupId() {

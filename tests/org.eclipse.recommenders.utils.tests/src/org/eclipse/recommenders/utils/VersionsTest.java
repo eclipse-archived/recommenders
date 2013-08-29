@@ -109,4 +109,5 @@ public class VersionsTest {
 
         assertThat(closest, is(equalTo(V_2_0_0)));
     }
+
 }

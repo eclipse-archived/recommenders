@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
+import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,8 +56,7 @@ public class JREReleaseFileAdvisor extends AbstractProjectCoordinateAdvisor {
         }
         // Replace of " is needed because of the release file structure
         version = version.replace("\"", "");
-        ProjectCoordinate pc = new ProjectCoordinate("jre", "jre", version);
-        return fromNullable(pc);
+        return tryNewProjectCoordinate("jre", "jre", canonicalizeVersion(version));
     }
 
     private Optional<FileInputStream> readReleaseFileIn(File folderPath) {

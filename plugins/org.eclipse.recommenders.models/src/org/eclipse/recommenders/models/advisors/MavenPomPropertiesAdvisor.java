@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
+import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 
 import java.io.File;
@@ -91,14 +93,14 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
             properties.load(inputStream);
             String groupID = parseGroupID(properties);
             String artifactID = parseArtifactID(properties);
+            String version = parseVersion(properties);
             if (!groupID.equals(extractGroupID(propertiesFileName))) {
                 return absent();
             }
             if (!artifactID.equals(extractArtifactID(propertiesFileName))) {
                 return absent();
             }
-            ProjectCoordinate pc = new ProjectCoordinate(groupID, artifactID, parseVersion(properties));
-            return fromNullable(pc);
+            return tryNewProjectCoordinate(groupID, artifactID, canonicalizeVersion(version));
         } catch (IOException e) {
             return absent();
         }
