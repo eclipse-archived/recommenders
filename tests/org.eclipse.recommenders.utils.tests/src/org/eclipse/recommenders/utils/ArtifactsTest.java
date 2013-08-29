@@ -2,11 +2,13 @@ package org.eclipse.recommenders.utils;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Artifacts.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -141,4 +143,18 @@ public class ArtifactsTest {
         assertEquals("", glob.getExtension());
     }
 
+    @Test
+    public void testAsSnapshot() {
+        Artifact releaseArtifact = new DefaultArtifact("org.example", "artifact", "jar", "1.0");
+        Artifact snapshotArtifact = new DefaultArtifact("org.example", "artifact", "jar", "1.0-SNAPSHOT");
+
+        Assert.assertThat(Artifacts.asSnapshot(releaseArtifact), is(equalTo(snapshotArtifact)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAsSnapshotRequiresReleaseCoordinate() {
+        Artifact snapshotArtifact = new DefaultArtifact("org.example", "artifact", "jar", "1.0-SNAPSHOT");
+
+        Artifacts.asSnapshot(snapshotArtifact);
+    }
 }

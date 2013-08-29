@@ -10,14 +10,9 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
-import static org.apache.commons.lang3.ArrayUtils.reverse;
-import static org.apache.commons.lang3.ArrayUtils.subarray;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.join;
-import static org.apache.commons.lang3.StringUtils.replace;
-import static org.apache.commons.lang3.StringUtils.split;
+import static com.google.common.base.Optional.*;
+import static org.apache.commons.lang3.ArrayUtils.*;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.io.File;
@@ -43,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.net.InternetDomainName;
 
 @Beta
@@ -183,6 +179,14 @@ public class Artifacts {
      */
     public static Artifact newExtension(Artifact a, String extension) {
         return new SubArtifact(a, a.getClassifier(), extension);
+    }
+
+    public static Artifact asSnapshot(Artifact releaseArtifact) {
+        Preconditions.checkArgument(!releaseArtifact.isSnapshot());
+
+        return new DefaultArtifact(releaseArtifact.getGroupId(), releaseArtifact.getArtifactId(),
+                releaseArtifact.getClassifier(), releaseArtifact.getExtension(), releaseArtifact.getVersion()
+                        + "-SNAPSHOT", releaseArtifact.getProperties(), releaseArtifact.getFile());
     }
 
     /**
