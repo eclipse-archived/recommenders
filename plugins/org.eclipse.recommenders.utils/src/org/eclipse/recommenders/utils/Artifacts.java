@@ -13,7 +13,7 @@ package org.eclipse.recommenders.utils;
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.ArrayUtils.*;
 import static org.apache.commons.lang3.StringUtils.*;
-import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,6 @@ import org.xml.sax.SAXException;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.net.InternetDomainName;
 
 @Beta
@@ -181,9 +180,12 @@ public class Artifacts {
         return new SubArtifact(a, a.getClassifier(), extension);
     }
 
+    /**
+     * Creates a snapshot artifact from a release artifact by appending "-SNAPSHOT" to the version segment. Note that
+     * the passed artifact must not be a snapshot artifact already.
+     */
     public static Artifact asSnapshot(Artifact releaseArtifact) {
-        Preconditions.checkArgument(!releaseArtifact.isSnapshot());
-
+        ensureIsFalse(releaseArtifact.isSnapshot(), "'%s' is already a snapshot artifact!", releaseArtifact);
         return new DefaultArtifact(releaseArtifact.getGroupId(), releaseArtifact.getArtifactId(),
                 releaseArtifact.getClassifier(), releaseArtifact.getExtension(), releaseArtifact.getVersion()
                         + "-SNAPSHOT", releaseArtifact.getProperties(), releaseArtifact.getFile());
