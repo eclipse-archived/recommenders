@@ -10,23 +10,21 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp.templates;
 
-import java.util.Collection;
-
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
- * Encapsulates one recommendation received from the models store.
+ * Encapsulates one recommendation received from the model.
  */
-public final class PatternRecommendation implements Comparable<PatternRecommendation> {
+public class PatternRecommendation extends Recommendation<ImmutableSet<IMethodName>> {
 
-    private final String name;
-    private final ITypeName type;
-    private final ImmutableList<IMethodName> methods;
-    private final double probability;
+    private String name;
+    private ITypeName type;
 
     /**
      * @param name
@@ -38,12 +36,10 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
      * @param probability
      *            Probability that this pattern is used in the observed occasion.
      */
-    public PatternRecommendation(final String name, final ITypeName type, final Collection<IMethodName> methods,
-            final double probability) {
+    public PatternRecommendation(String name, ITypeName type, ImmutableSet<IMethodName> methods, double probability) {
+        super(methods, probability);
         this.name = Checks.ensureIsNotNull(name);
         this.type = Checks.ensureIsNotNull(type);
-        this.methods = ImmutableList.copyOf(methods);
-        this.probability = probability;
     }
 
     /**
@@ -60,32 +56,20 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
         return type;
     }
 
-    /**
-     * @return The pattern's methods as obtained from the model store.
-     */
-    public ImmutableList<IMethodName> getMethods() {
-        return methods;
-    }
-
-    /**
-     * @return Probability that this pattern is used in the observed occasion.
-     */
-    public double getProbability() {
-        return probability;
-    }
-
     @Override
     public int hashCode() {
-        return methods.hashCode();
+        return Objects.hashCode(type, getProposal());
     }
 
     @Override
-    public int compareTo(final PatternRecommendation other) {
-        return Double.valueOf(probability).compareTo(other.probability);
+    public boolean equals(Object object) {
+        return object instanceof PatternRecommendation
+                && getProposal().equals(((PatternRecommendation) object).getProposal());
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return object instanceof PatternRecommendation && methods.equals(((PatternRecommendation) object).methods);
+    public String toString() {
+        return Objects.toStringHelper(this).add("calls", getProposal()).add("prob", getRelevance()).add("type", type)
+                .add("name", name).toString();
     }
 }

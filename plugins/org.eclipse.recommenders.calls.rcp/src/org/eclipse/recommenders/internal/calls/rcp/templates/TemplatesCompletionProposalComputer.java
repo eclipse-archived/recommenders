@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.calls.rcp.templates;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.eclipse.recommenders.internal.calls.rcp.Constants.TEMPLATES_CATEGORY_ID;
+import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -93,16 +95,16 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private boolean requiresConstructor;
     private String methodPrefix;
     private CompletionMode mode;
-    private final ICallModelProvider store;
-    private final JavaElementResolver elementResolver;
+    private ICallModelProvider store;
+    private JavaElementResolver elementResolver;
     private Image icon;
     private ICallModel model;
     private AstCallCompletionAnalyzer completionAnalyzer;
     private IAstProvider astProvider;
 
     @Inject
-    public TemplatesCompletionProposalComputer(final IProjectCoordinateProvider pcProvider,
-            final ICallModelProvider store, IAstProvider astProvider, final JavaElementResolver elementResolver) {
+    public TemplatesCompletionProposalComputer(IProjectCoordinateProvider pcProvider, ICallModelProvider store,
+            IAstProvider astProvider, JavaElementResolver elementResolver) {
         this.pcProvider = pcProvider;
         this.store = store;
         this.astProvider = astProvider;
@@ -111,10 +113,10 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void loadImage() {
-        final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
+        Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
         icon = null;
         if (bundle != null) {
-            final ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
+            ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
                     "icons/view16/templates-dots.gif");
             icon = desc.createImage();
         }
@@ -137,7 +139,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+    public List computeCompletionProposals(ContentAssistInvocationContext context, IProgressMonitor monitor) {
         if (!shouldMakeProposals()) {
             return Collections.EMPTY_LIST;
         }
@@ -153,8 +155,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             return Collections.emptyList();
         }
 
-        final ProposalBuilder proposalBuilder = new ProposalBuilder(icon, rCtx, elementResolver, variableName);
-        for (final IType t : candidates) {
+        ProposalBuilder proposalBuilder = new ProposalBuilder(icon, rCtx, elementResolver, variableName);
+        for (IType t : candidates) {
             addPatternsForType(t, proposalBuilder);
         }
         return proposalBuilder.createProposals();
@@ -173,23 +175,26 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         return true;
     }
 
-    private void addPatternsForType(final IType t, final ProposalBuilder proposalBuilder) {
+    private void addPatternsForType(IType t, ProposalBuilder proposalBuilder) {
         ProjectCoordinate pc = pcProvider.resolve(t).or(ProjectCoordinate.UNKNOWN);
         UniqueTypeName name = new UniqueTypeName(pc, elementResolver.toRecType(t));
         model = store.acquireModel(name).orNull();
-        if (model == null) {
-            return;
+        try {
+            if (model == null) {
+                return;
+            }
+            model.setObservedCalls(Sets.<IMethodName>newHashSet());
+            completionAnalyzer = new AstCallCompletionAnalyzer(rCtx);
+            if (mode == CompletionMode.TYPE_NAME) {
+                handleTypeNameCompletionRequest(proposalBuilder);
+            }
+            handleVariableCompletionRequest(proposalBuilder);
+        } finally {
+            store.releaseModel(model);
         }
-
-        completionAnalyzer = new AstCallCompletionAnalyzer(rCtx);
-        if (mode == CompletionMode.TYPE_NAME) {
-            handleTypeNameCompletionRequest(proposalBuilder);
-        }
-        handleVariableCompletionRequest(proposalBuilder);
-        store.releaseModel(model);
     }
 
-    private void handleVariableCompletionRequest(final ProposalBuilder proposalBuilder) {
+    private void handleVariableCompletionRequest(ProposalBuilder proposalBuilder) {
         completionAnalyzer.getReceiverType();
         // set override-context:
         IMethod overrides = completionAnalyzer.getOverridesContext().orNull();
@@ -206,26 +211,26 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         // set calls:
         model.setObservedCalls(newHashSet(completionAnalyzer.getCalls()));
 
-        final List<Recommendation<String>> callgroups = getMostLikelyPatternsSortedByProbability(model);
-        for (final Recommendation<String> p : callgroups) {
-            final String patternId = p.getProposal();
+        List<Recommendation<String>> callgroups = getMostLikelyPatternsSortedByProbability(model);
+        for (Recommendation<String> p : callgroups) {
+            String patternId = p.getProposal();
             model.setObservedPattern(patternId);
-            for (final Recommendation<IMethodName> def : model.recommendDefinitions()) {
-                final Collection<IMethodName> calls = getCallsForDefinition(model, def.getProposal());
-                calls.removeAll(completionAnalyzer.getCalls());
-                // patterns with less than two calls are no patterns :)
-                if (calls.size() < 2) {
-                    continue;
-                }
-
-                final PatternRecommendation pattern = new PatternRecommendation(patternId, model.getReceiverType(),
-                        calls, p.getRelevance());
-                proposalBuilder.addPattern(pattern);
+            Collection<IMethodName> calls = Sets.newTreeSet();
+            for (Recommendation<IMethodName> r : top(model.recommendCalls(), 100, 0.1d)) {
+                calls.add(r.getProposal());
             }
+            // patterns with less than two calls are no patterns :)
+            if (calls.size() < 2) {
+                continue;
+            }
+            PatternRecommendation pattern = new PatternRecommendation(patternId, model.getReceiverType(),
+                    ImmutableSet.copyOf(calls), p.getRelevance());
+            proposalBuilder.addPattern(pattern);
+            // }
         }
     }
 
-    private void handleTypeNameCompletionRequest(final ProposalBuilder proposalBuilder) {
+    private void handleTypeNameCompletionRequest(ProposalBuilder proposalBuilder) {
         IMethod overrides = completionAnalyzer.getOverridesContext().orNull();
         model.setObservedDefinitionKind(DefinitionKind.NEW);
         if (overrides != null) {
@@ -234,34 +239,36 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             model.setObservedOverrideContext(crOverrides);
         }
 
-        final List<Recommendation<String>> callgroups = getMostLikelyPatternsSortedByProbability(model);
-        for (final Recommendation<String> p : callgroups) {
-            final String patternId = p.getProposal();
+        List<Recommendation<String>> callgroups = getMostLikelyPatternsSortedByProbability(model);
+        for (Recommendation<String> p : callgroups) {
+            String patternId = p.getProposal();
             model.setObservedPattern(patternId);
-            for (final Recommendation<IMethodName> def : model.recommendDefinitions()) {
+            for (Recommendation<IMethodName> def : Recommendations.top(model.recommendDefinitions(), 100, 0.01d)) {
                 IMethodName constructor = def.getProposal();
-                if (!constructor.isInit()) {
+                // TODO XXX this looks like a bug in some mining code: we have wring receiver methods here: new
+                // Label(Composite) for instance occurred in Composite model. Why?
+                if (!constructor.isInit() || constructor.getDeclaringType() != model.getReceiverType()) {
                     continue;
                 }
-                final Collection<IMethodName> calls = getCallsForDefinition(model, constructor);
+                Collection<IMethodName> calls = getCallsForDefinition(model, constructor);
                 calls.add(constructor);
                 // patterns with less than two calls are no patterns :)
                 if (calls.size() < 2) {
                     continue;
                 }
 
-                final PatternRecommendation pattern = new PatternRecommendation(patternId, model.getReceiverType(),
-                        calls, p.getRelevance());
+                PatternRecommendation pattern = new PatternRecommendation(patternId, model.getReceiverType(),
+                        ImmutableSet.copyOf(calls), p.getRelevance());
                 proposalBuilder.addPattern(pattern);
             }
         }
     }
 
-    private Collection<IMethodName> getCallsForDefinition(final ICallModel model, final IMethodName definition) {
+    private Collection<IMethodName> getCallsForDefinition(ICallModel model, IMethodName definition) {
         boolean constructorAdded = false;
 
-        final TreeSet<IMethodName> calls = Sets.newTreeSet();
-        final List<Recommendation<IMethodName>> rec = Recommendations.top(model.recommendCalls(), 100, 0.1d);
+        TreeSet<IMethodName> calls = Sets.newTreeSet();
+        List<Recommendation<IMethodName>> rec = Recommendations.top(model.recommendCalls(), 100, 0.1d);
         if (rec.isEmpty()) {
             return Lists.newLinkedList();
         }
@@ -272,7 +279,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         if (requiresConstructor && !constructorAdded) {
             return Lists.newLinkedList();
         }
-        for (final Recommendation<IMethodName> pair : rec) {
+        for (Recommendation<IMethodName> pair : rec) {
             calls.add(pair.getProposal());
         }
         if (!containsCallWithMethodPrefix(calls)) {
@@ -281,8 +288,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         return calls;
     }
 
-    private boolean containsCallWithMethodPrefix(final TreeSet<IMethodName> calls) {
-        for (final IMethodName call : calls) {
+    private boolean containsCallWithMethodPrefix(TreeSet<IMethodName> calls) {
+        for (IMethodName call : calls) {
             if (call.getName().startsWith(methodPrefix)) {
                 return true;
             }
@@ -290,7 +297,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         return false;
     }
 
-    private List<Recommendation<String>> getMostLikelyPatternsSortedByProbability(final ICallModel net) {
+    private List<Recommendation<String>> getMostLikelyPatternsSortedByProbability(ICallModel net) {
         return Recommendations.top(net.recommendPatterns(), 10, 0.03d);
     }
 
@@ -299,7 +306,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         methodPrefix = "";
         mode = null;
 
-        final ASTNode n = rCtx.getCompletionNode().orNull();
+        ASTNode n = rCtx.getCompletionNode().orNull();
         if (n instanceof CompletionOnSingleNameReference) {
             if (isPotentialClassName((CompletionOnSingleNameReference) n)) {
                 mode = CompletionMode.TYPE_NAME;
@@ -317,7 +324,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
                 methodPrefix = rCtx.getPrefix();
             }
         } else if (n instanceof CompletionOnMemberAccess) {
-            final Expression ma = ((CompletionOnMemberAccess) n).receiver;
+            Expression ma = ((CompletionOnMemberAccess) n).receiver;
             if (ma.isImplicitThis() || ma.isSuper() || ma.isThis()) {
                 mode = CompletionMode.THIS;
             } else {
@@ -329,7 +336,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     private boolean findPotentialTypes() {
         if (mode == CompletionMode.TYPE_NAME) {
-            final ASTNode n = rCtx.getCompletionNode().orNull();
+            ASTNode n = rCtx.getCompletionNode().orNull();
             CompletionOnSingleNameReference c = null;
             if (n instanceof CompletionOnSingleNameReference) {
                 c = (CompletionOnSingleNameReference) n;
@@ -345,31 +352,31 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     private Optional<IType> getSupertypeOfThis() {
         try {
-            final IMethod m = rCtx.getEnclosingMethod().orNull();
+            IMethod m = rCtx.getEnclosingMethod().orNull();
             if (m == null || JdtFlags.isStatic(m)) {
                 return Optional.absent();
             }
-            final IType type = m.getDeclaringType();
-            final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
+            IType type = m.getDeclaringType();
+            ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
             return Optional.of(hierarchy.getSuperclass(type));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("Failed to resolve super type of " + rCtx.getEnclosingElement(), e);
             return Optional.absent();
         }
     }
 
-    private void createCandidatesFromOptional(final Optional<IType> optType) {
+    private void createCandidatesFromOptional(Optional<IType> optType) {
         if (optType.isPresent()) {
             candidates = Sets.newHashSet(optType.get());
         }
     }
 
-    private boolean isPotentialClassName(final CompletionOnQualifiedNameReference c) {
-        final char[] name = c.completionIdentifier;
+    private boolean isPotentialClassName(CompletionOnQualifiedNameReference c) {
+        char[] name = c.completionIdentifier;
         return name != null && name.length > 0 && CharUtils.isAsciiAlphaUpper(name[0]);
     }
 
-    private boolean isPotentialClassName(final CompletionOnSingleNameReference c) {
+    private boolean isPotentialClassName(CompletionOnSingleNameReference c) {
         return c.token != null && c.token.length > 0 && CharUtils.isAsciiAlphaUpper(c.token[0]);
     }
 
@@ -385,8 +392,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     @Override
-    public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context,
-            final IProgressMonitor monitor) {
+    public List<IContextInformation> computeContextInformation(ContentAssistInvocationContext context,
+            IProgressMonitor monitor) {
         return Collections.emptyList();
     }
 
@@ -400,40 +407,37 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         // This particular event is not of interest for us.
     }
 
-    public Set<IType> findTypesBySimpleName(final char[] simpleTypeName) {
+    public Set<IType> findTypesBySimpleName(char[] simpleTypeName) {
         final Set<IType> result = Sets.newHashSet();
         try {
             final JavaProject project = (JavaProject) rCtx.getProject();
-            final SearchableEnvironment environment = project
-                    .newSearchableNameEnvironment(DefaultWorkingCopyOwner.PRIMARY);
+            SearchableEnvironment environment = project.newSearchableNameEnvironment(DefaultWorkingCopyOwner.PRIMARY);
             environment.findExactTypes(simpleTypeName, false, IJavaSearchConstants.TYPE, new ISearchRequestor() {
                 @Override
-                public void acceptConstructor(final int modifiers, final char[] simpleTypeName,
-                        final int parameterCount, final char[] signature, final char[][] parameterTypes,
-                        final char[][] parameterNames, final int typeModifiers, final char[] packageName,
-                        final int extraFlags, final String path, final AccessRestriction access) {
+                public void acceptConstructor(int modifiers, char[] simpleTypeName, int parameterCount,
+                        char[] signature, char[][] parameterTypes, char[][] parameterNames, int typeModifiers,
+                        char[] packageName, int extraFlags, String path, AccessRestriction access) {
                 }
 
                 @Override
-                public void acceptType(final char[] packageName, final char[] typeName,
-                        final char[][] enclosingTypeNames, final int modifiers,
-                        final AccessRestriction accessRestriction) {
+                public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, int modifiers,
+                        AccessRestriction accessRestriction) {
                     IType res;
                     try {
                         res = project.findType(String.valueOf(packageName), String.valueOf(typeName));
                         if (res != null) {
                             result.add(res);
                         }
-                    } catch (final JavaModelException e) {
+                    } catch (JavaModelException e) {
                         e.printStackTrace();
                     }
                 }
 
                 @Override
-                public void acceptPackage(final char[] packageName) {
+                public void acceptPackage(char[] packageName) {
                 }
             });
-        } catch (final JavaModelException e) {
+        } catch (JavaModelException e) {
             Throws.throwUnhandledException(e);
         }
         return result;

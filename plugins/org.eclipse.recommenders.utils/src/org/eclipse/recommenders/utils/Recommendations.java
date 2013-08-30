@@ -67,7 +67,7 @@ public class Recommendations {
      * Returns the top k elements of the given list of recommendations, sorted by proposal relevance in descending
      * order.
      */
-    public static <T> List<Recommendation<T>> top(final Iterable<Recommendation<T>> recommendations,
+    public static <R extends Recommendation<T>, T> List<R> top(final Iterable<R> recommendations,
             final int numberOfTopElements) {
         return Ordering.from(C_BY_RELEVANCE).greatestOf(recommendations, numberOfTopElements);
     }
@@ -76,7 +76,7 @@ public class Recommendations {
      * Returns the top k elements of the given list of recommendations that satisfy the minimum relevance criterion,
      * sorted by proposal relevance in descending order.
      */
-    public static <T> List<Recommendation<T>> top(final Iterable<Recommendation<T>> recommendations,
+    public static <R extends Recommendation<T>, T> List<R> top(final Iterable<R> recommendations,
             final int numberOfTopElements, final double minRelevance) {
         return Ordering.from(C_BY_RELEVANCE).greatestOf(filterRelevance(recommendations, minRelevance),
                 numberOfTopElements);
@@ -93,7 +93,7 @@ public class Recommendations {
     /**
      * Filters all proposals whose relevance is below the given threshold.
      */
-    public static <T> Iterable<Recommendation<T>> filterRelevance(final Iterable<Recommendation<T>> recommendations,
+    public static <R extends Recommendation<T>, T> Iterable<R> filterRelevance(final Iterable<R> recommendations,
             final double min) {
         return Iterables.filter(recommendations, newMinimumRelevancePredicate(min));
     };
@@ -102,14 +102,14 @@ public class Recommendations {
      * Sorts the given list of proposals lexicographically in ascending order by the outcome of the proposal's toString
      * output.
      */
-    public static <T> List<Recommendation<T>> sortByName(final Iterable<Recommendation<T>> recommendations) {
+    public static <R extends Recommendation<T>, T> List<R> sortByName(final Iterable<R> recommendations) {
         return Ordering.from(C_BY_NAME).sortedCopy(recommendations);
     }
 
     /**
      * Sorts the given list of proposals in ascending order by the recommendation's relevance.
      */
-    public static <T> List<Recommendation<T>> sortByRelevance(final Iterable<Recommendation<T>> recommendations) {
+    public static <R extends Recommendation<T>, T> List<R> sortByRelevance(final Iterable<R> recommendations) {
         return Ordering.from(C_BY_RELEVANCE).reverse().sortedCopy(recommendations);
     }
 
@@ -128,7 +128,7 @@ public class Recommendations {
      * 
      * @see Recommendation#getProposal()
      */
-    public static <T> List<T> getProposals(final Iterable<Recommendation<T>> recommendations) {
+    public static <R extends Recommendation<T>, T> List<T> getProposals(final Iterable<R> recommendations) {
         List<T> res = Lists.newLinkedList();
         for (Recommendation<T> rec : recommendations) {
             res.add(rec.getProposal());
@@ -139,7 +139,7 @@ public class Recommendations {
     /**
      * Returns the given recommendations as map.
      */
-    public static <T> Map<T, Double> asMap(final Iterable<Recommendation<T>> recommendations) {
+    public static <R extends Recommendation<T>, T> Map<T, Double> asMap(final Iterable<R> recommendations) {
         Map<T, Double> res = Maps.newHashMap();
         for (Recommendation<T> rec : recommendations) {
             res.put(rec.getProposal(), rec.getRelevance());
