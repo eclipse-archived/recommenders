@@ -130,4 +130,5 @@ public class JayesOverrideModel implements IOverrideModel {
     public String toString() {
         return format("Model for '%s'", typeName);
     }
+
 }

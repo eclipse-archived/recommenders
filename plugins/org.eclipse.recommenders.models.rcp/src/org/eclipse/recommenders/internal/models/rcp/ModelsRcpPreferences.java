@@ -33,11 +33,9 @@ public class ModelsRcpPreferences {
 
     @Inject
     void setRemote(@Preference(Constants.P_REPOSITORY_URL) String newRemote) throws Exception {
-        if (remote == null) {
-            // first initialization. Don't fire an event.
-            remote = newRemote;
-        } else if (!newRemote.equals(remote)) {
-            remote = newRemote;
+        String old = remote;
+        remote = newRemote;
+        if (old != null && !remote.equals(old)) {
             bus.post(new ModelRepositoryUrlChangedEvent());
         }
     }

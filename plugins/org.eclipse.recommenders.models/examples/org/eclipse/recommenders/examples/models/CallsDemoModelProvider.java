@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -39,7 +39,6 @@ public class CallsDemoModelProvider extends PoolingModelProvider<IUniqueName<ITy
         InputStream s = zip.getInputStream(entry);
         Object model = null; // ... do things with s to create a model
         s.close();
-        return Optional.fromNullable(model);
+        return Optional.of(model);
     }
-
 }

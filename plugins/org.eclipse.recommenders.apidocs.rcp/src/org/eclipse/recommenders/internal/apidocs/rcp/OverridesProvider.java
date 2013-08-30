@@ -345,5 +345,4 @@ public final class OverridesProvider extends ApidocProvider {
             return of(res);
         }
     }
-
 }

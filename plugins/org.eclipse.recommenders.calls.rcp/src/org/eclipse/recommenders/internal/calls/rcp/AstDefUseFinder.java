@@ -205,8 +205,9 @@ public class AstDefUseFinder extends ASTVisitor {
                     defKind = ARRAY_ACCESS;
                     break;
                 default:
-                    throwUnreachable(
-                            "Did not expect this LHS expression to be possible here. Pls report this snippet: %s", lhs);
+                    // when we have completely broken code, this may happen... ignore it.
+                    // throwUnreachable(
+                    // "Did not expect this LHS expression to be possible here. Pls report this snippet: %s", lhs);
                 }
                 break;
             default:

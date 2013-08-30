@@ -15,14 +15,18 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.eclipse.recommenders.utils.Nullable;
+import org.eclipse.recommenders.utils.Throws;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 
 /**
@@ -31,21 +35,21 @@ import com.google.common.collect.Maps;
  */
 public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends SimpleModelProvider<K, M> {
 
+    private static final Object NOT_FOUND = new Object();
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     // which models are currently borrowed to someone?
     // we need this mapping for implementing releaseModel properly so that clients don't have to submit their keys too.
     private final IdentityHashMap<M, K> borrowedModels = Maps.newIdentityHashMap();
+    private final Cache<K, Object> blacklistedKeys = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES)
+            .build();
 
     // model pool
     // REVIEW: we may want to make pool creation configurable later?
     private GenericKeyedObjectPool<K, M> pool = createModelPool();
 
-    private IModelArchiveCoordinateAdvisor index;
-
     public PoolingModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index, String modelType) {
         super(repository, index, modelType);
-        this.index = index;
     }
 
     private GenericKeyedObjectPool<K, M> createModelPool() {
@@ -62,23 +66,25 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
 
     @Override
     public Optional<M> acquireModel(@Nullable K key) {
-        if (key == null) {
+        if (key == null || blacklistedKeys.getIfPresent(key) != null) {
             return absent();
         }
         try {
             M model = pool.borrowObject(key);
-            if (model != null) {
-                borrowedModels.put(model, key);
-            }
-            return fromNullable(model);
+            borrowedModels.put(model, key);
+            return of(model);
         } catch (Exception e) {
-            log.error("Couldn't obtain model for " + key, e);
+            // don't log. Model provider could not find a model for the given key.
+            blacklistedKeys.put(key, NOT_FOUND);
             return absent();
         }
     }
 
     @Override
     public void releaseModel(M model) {
+        if (model == null) {
+            return;
+        }
         try {
             K key = borrowedModels.remove(model);
             pool.returnObject(key, model);
@@ -94,7 +100,11 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
         @Override
         @Nullable
         public M makeObject(K key) throws Exception {
-            return PoolingModelProvider.super.acquireModel(key).orNull();
+            M result = PoolingModelProvider.super.acquireModel(key).orNull();
+            if (result == null) {
+                Throws.throwCancelationException("Model not found for key '%s'", key);
+            }
+            return result;
         }
 
         @Override
