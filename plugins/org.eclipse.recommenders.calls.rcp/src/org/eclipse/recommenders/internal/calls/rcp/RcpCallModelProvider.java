@@ -22,7 +22,8 @@ import org.eclipse.recommenders.calls.PoolingCallModelProvider;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.UniqueTypeName;
-import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 
 import com.google.common.base.Optional;
@@ -61,8 +62,12 @@ public class RcpCallModelProvider implements ICallModelProvider, IRcpService {
     }
 
     @Subscribe
-    public void onEvent(ModelRepositoryUrlChangedEvent e) throws IOException {
-        close();
+    public void onEvent(ModelRepositoryOpenedEvent e) throws IOException {
         open();
+    }
+
+    @Subscribe
+    public void onEvent(ModelRepositoryClosedEvent e) throws IOException {
+        close();
     }
 }

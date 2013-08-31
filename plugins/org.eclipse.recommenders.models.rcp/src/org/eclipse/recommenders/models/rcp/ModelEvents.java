@@ -10,18 +10,39 @@
  */
 package org.eclipse.recommenders.models.rcp;
 
+import org.eclipse.recommenders.models.IModelRepository;
+
 import com.google.common.annotations.Beta;
 
 public class ModelEvents {
 
     /**
-     * Triggered when a model repository url was changed (most lyike in the a preference page).
+     * Triggered when a model repository url was changed (most like in the a preference page).
+     * <p>
+     * Client of this event should be an instance of {@link IModelRepository}. Other clients should have a look at
+     * {@link ModelRepositoryClosedEvent} and {@link ModelRepositoryOpenedEvent}. Clients of this event may consider
+     * refreshing themselves whenever they receive this event. Clients get notified in a background process.
+     */
+    @Beta
+    public static class ModelRepositoryUrlChangedEvent {
+    }
+
+    /**
+     * Triggered when the model repository was closed to inform clients that the model repository is currently not
+     * available.
+     */
+    @Beta
+    public static class ModelRepositoryClosedEvent {
+    }
+
+    /**
+     * Triggered when the model repository was opened to inform clients that the model repository is available.
      * <p>
      * Clients of this event may consider refreshing themselves whenever they receive this event. Clients get notified
      * in a background process.
      */
     @Beta
-    public static class ModelRepositoryUrlChangedEvent {
+    public static class ModelRepositoryOpenedEvent {
     }
 
     /**

@@ -19,7 +19,8 @@ import javax.inject.Inject;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.IUniqueName;
-import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEvent;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.IOverrideModelProvider;
 import org.eclipse.recommenders.overrides.PoolingOverrideModelProvider;
@@ -62,8 +63,12 @@ public class RcpOverrideModelProvider implements IOverrideModelProvider, IRcpSer
     }
 
     @Subscribe
-    public void onEvent(ModelRepositoryUrlChangedEvent e) throws IOException {
-        close();
+    public void onEvent(ModelRepositoryOpenedEvent e) throws IOException {
         open();
+    }
+
+    @Subscribe
+    public void onEvent(ModelRepositoryClosedEvent e) throws IOException {
+        close();
     }
 }

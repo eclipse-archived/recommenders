@@ -34,7 +34,8 @@ import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ModelIndex;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
-import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.Urls;
@@ -144,9 +145,13 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     }
 
     @Subscribe
-    public void onEvent(ModelRepositoryUrlChangedEvent e) throws IOException {
-        close();
+    public void onEvent(ModelRepositoryOpenedEvent e) throws IOException {
         open();
+    }
+
+    @Subscribe
+    public void onEvent(ModelRepositoryClosedEvent e) throws IOException {
+        close();
     }
 
     @Subscribe

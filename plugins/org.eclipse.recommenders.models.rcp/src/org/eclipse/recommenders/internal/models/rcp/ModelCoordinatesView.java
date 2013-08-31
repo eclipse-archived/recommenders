@@ -146,10 +146,10 @@ public class ModelCoordinatesView extends ViewPart {
                 deleteCacheAndRefresh();
             }
         };
-        refreshAction.setToolTipText("Delete models");
+        refreshAction.setText("Delete models");
         refreshAction.setImageDescriptor(images.getDescriptor(SharedImages.ELCL_DELETE));
 
-        getViewSite().getActionBars().getToolBarManager().add(refreshAction);
+        getViewSite().getActionBars().getMenuManager().add(refreshAction);
     }
 
     private void newColumn(TableColumnLayout tableLayout, final String classifier) {
