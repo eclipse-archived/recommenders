@@ -25,6 +25,8 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -51,7 +53,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
     @Override
     protected void createFieldEditors() {
-
         repoEditor = new ModelRepositoryListEditor(P_REPOSITORY_URL_LIST, PREFPAGE_URI, getFieldEditorParent());
         addField(repoEditor);
         addField(new BooleanFieldEditor(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, PREFPAGE_ENABLE_AUTO_DOWNLOAD,
@@ -63,21 +64,21 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         super.performApply();
         IPreferenceStore store = getPreferenceStore();
         String[] split = split(store.getString(P_REPOSITORY_URL_LIST));
-        if (split.length == 0) {
-            // if the user removed all entries, add the default entry back
-            repoEditor.loadDefault();
-            store.setValue(P_REPOSITORY_URL_LIST, store.getDefaultString(P_REPOSITORY_URL_LIST));
-            store.setValue(P_REPOSITORY_URL, store.getDefaultString(P_REPOSITORY_URL));
-        } else {
-            // set the active repository to the top most element
-            store.setValue(P_REPOSITORY_URL, split[0]);
-        }
+        store.setValue(P_REPOSITORY_URL, split[0]);
     }
 
     private final class ModelRepositoryListEditor extends ListEditor {
 
         private ModelRepositoryListEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
+            getList().addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    boolean hasMoreThanOneUrl = getList().getItems().length > 1;
+                    getRemoveButton().setEnabled(hasMoreThanOneUrl);
+                }
+            });
         }
 
         @Override
@@ -93,11 +94,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
                         @Override
                         public String isValid(String newText) {
-                            if (isValidRepoURI(newText)) {
-                                return null;
-                            } else {
-                                return PREFPAGE_URI_INVALID;
-                            }
+                            return isValidRepoURI(newText) ? null : PREFPAGE_URI_INVALID;
                         }
 
                         private boolean isValidRepoURI(String uri) {
