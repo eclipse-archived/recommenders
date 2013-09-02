@@ -269,7 +269,7 @@ public class ProjectCoordinatesView extends ViewPart {
                         monitor.beginTask("Resolving dependencies", steps);
                         strategies = pcAdvisors.getAdvisors();
                         for (DependencyInfo dependency : dependencyInfos) {
-                            monitor.subTask("Resolving: " + dependency.toString());
+                            monitor.subTask("Resolving: " + dependency.getFile().getName());
                             for (IProjectCoordinateAdvisor strategy : strategies) {
                                 data.put(dependency, strategy.suggest(dependency));
                             }
