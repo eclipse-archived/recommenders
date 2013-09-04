@@ -18,7 +18,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -51,9 +50,9 @@ public class CoordinatesToModelsView extends ViewPart {
 
     private TreeViewer treeViewer;
     private EclipseDependencyListener dependencyListener;
-    private IProjectCoordinateProvider pcProvider;
-    private IModelIndex modelIndex;
-    private EclipseModelRepository eclipseModelRepository;
+    IProjectCoordinateProvider pcProvider;
+    IModelIndex modelIndex;
+    EclipseModelRepository eclipseModelRepository;
     private SharedImages images;
 
     @Inject
@@ -103,7 +102,8 @@ public class CoordinatesToModelsView extends ViewPart {
                 IStructuredSelection selection = Checks.cast(treeViewer.getSelection());
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadAction("Download models", deps));
+                    menuManager.add(new TriggerModelDownloadActionForDependencyInfos("Download models", deps,
+                            pcProvider, modelIndex, eclipseModelRepository));
                 }
             }
         });
@@ -297,36 +297,6 @@ public class CoordinatesToModelsView extends ViewPart {
                 return !((Project) element).dependencies.isEmpty();
             }
             return false;
-        }
-    }
-
-    private final class TriggerModelDownloadAction extends Action {
-        private final Set<DependencyInfo> deps;
-        private final String[] modelTypes = { Constants.CLASS_CALL_MODELS, Constants.CLASS_OVRM_MODEL,
-                Constants.CLASS_OVRP_MODEL, Constants.CLASS_OVRD_MODEL, Constants.CLASS_SELFC_MODEL,
-                Constants.CLASS_SELFM_MODEL };
-
-        private TriggerModelDownloadAction(String text, Set<DependencyInfo> deps) {
-            super(text);
-            this.deps = deps;
-        }
-
-        @Override
-        public void run() {
-            Set<ModelCoordinate> mcs = Sets.newHashSet();
-            for (DependencyInfo dep : deps) {
-                ProjectCoordinate pc = pcProvider.resolve(dep).orNull();
-                if (pc == null) {
-                    continue;
-                }
-                for (String modelType : modelTypes) {
-                    ModelCoordinate mc = modelIndex.suggest(pc, modelType).orNull();
-                    if (mc != null) {
-                        mcs.add(mc);
-                    }
-                }
-            }
-            new DownloadMultipleModelArchivesJob(eclipseModelRepository, mcs).schedule();
         }
     }
 }

@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -23,12 +24,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -39,11 +44,13 @@ import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
@@ -51,6 +58,7 @@ import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -121,6 +129,7 @@ public class ModelCoordinatesView extends ViewPart {
         initializeContent();
         addRefreshButton();
         addDeleteButten();
+        addContextMenu();
     }
 
     private void addRefreshButton() {
@@ -151,6 +160,38 @@ public class ModelCoordinatesView extends ViewPart {
         refreshAction.setImageDescriptor(images.getDescriptor(SharedImages.ELCL_DELETE));
 
         getViewSite().getActionBars().getMenuManager().add(refreshAction);
+    }
+
+    private void addContextMenu() {
+
+        final MenuManager menuManager = new MenuManager();
+        Menu contextMenu = menuManager.createContextMenu(tableViewer.getTable());
+        menuManager.setRemoveAllWhenShown(true);
+        tableViewer.getControl().setMenu(contextMenu);
+
+        menuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                IStructuredSelection selection = Checks.cast(tableViewer.getSelection());
+                Set<ProjectCoordinate> pcs = extractSelectedDependencies(selection);
+                if (!pcs.isEmpty()) {
+                    menuManager.add(new TriggerModelDownloadActionForProjectCoordinates("Download models", pcs, index,
+                            repo));
+                }
+            }
+        });
+    }
+
+    private Set<ProjectCoordinate> extractSelectedDependencies(IStructuredSelection selection) {
+        final Set<ProjectCoordinate> selectedDependencies = Sets.newHashSet();
+
+        for (Object element : selection.toList()) {
+            if (element instanceof ProjectCoordinate) {
+                ProjectCoordinate pc = (ProjectCoordinate) element;
+                selectedDependencies.add(pc);
+            }
+        }
+        return selectedDependencies;
     }
 
     private void newColumn(TableColumnLayout tableLayout, final String classifier) {
