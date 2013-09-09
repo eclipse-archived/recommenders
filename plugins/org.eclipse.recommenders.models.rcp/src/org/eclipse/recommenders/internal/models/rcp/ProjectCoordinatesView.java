@@ -13,10 +13,10 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static com.google.common.base.Optional.*;
 import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.recommenders.models.DependencyInfo.*;
 import static org.eclipse.recommenders.rcp.SharedImages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -690,7 +690,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 IProjectCoordinateAdvisor strategy = strategies.get(i);
                 Optional<ProjectCoordinate> coordinate = coordinates.get(i);
                 if (i != 0) {
-                    sb.append(System.getProperty("line.separator"));
+                    sb.append(LINE_SEPARATOR);
                 }
                 sb.append(strategy.getClass().getSimpleName());
                 sb.append(": ");

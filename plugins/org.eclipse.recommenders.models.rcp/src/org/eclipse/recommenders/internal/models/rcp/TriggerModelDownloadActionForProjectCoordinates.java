@@ -11,12 +11,16 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static java.lang.String.format;
+
 import java.util.Set;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.rcp.utils.Jobs;
 import org.eclipse.recommenders.utils.Constants;
 
 import com.google.common.collect.Sets;
@@ -46,16 +50,15 @@ final class TriggerModelDownloadActionForProjectCoordinates extends Action {
 
     @Override
     public void run() {
-        Set<ModelCoordinate> mcs = Sets.newHashSet();
+        Set<Job> jobs = Sets.newHashSet();
         for (ProjectCoordinate pc : pcs) {
             for (String modelType : modelTypes) {
                 ModelCoordinate mc = modelIndex.suggest(pc, modelType).orNull();
                 if (mc != null) {
-                    mcs.add(mc);
+                    jobs.add(new DownloadModelArchiveJob(repo, mc, false, bus));
                 }
             }
         }
-        new DownloadMultipleModelArchivesJob(repo, mcs, false, bus).schedule();
+        Jobs.sequential(format("Downloading %d model archives", jobs.size()), jobs);
     }
-
 }
