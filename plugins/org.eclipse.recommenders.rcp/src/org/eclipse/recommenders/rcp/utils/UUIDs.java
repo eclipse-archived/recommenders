@@ -26,7 +26,7 @@ import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
-public class UUIDUtils {
+public class UUIDs {
 
     public static String getUUID() {
         final Optional<String> uuid = lookupUUIDFromStore();
@@ -83,7 +83,7 @@ public class UUIDUtils {
         return absent();
     }
 
-    public static String generateUID() {
+    public static String newUuid() {
         return UUID.randomUUID().toString();
     }
 }

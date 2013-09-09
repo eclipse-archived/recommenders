@@ -45,7 +45,7 @@ import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.PartListener2Adapter;
-import org.eclipse.recommenders.rcp.utils.RCPUtils;
+import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -199,7 +199,7 @@ public class ApidocsView extends ViewPart {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                ApidocProvider newProvider = RCPUtils.<ApidocProvider>first(event.getSelection()).orNull();
+                ApidocProvider newProvider = Selections.<ApidocProvider>getFirstSelected(event.getSelection()).orNull();
                 if (newProvider == activeProvider) {
                     return;
                 }

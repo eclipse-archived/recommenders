@@ -27,7 +27,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
-import org.eclipse.recommenders.rcp.utils.RCPUtils;
+import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -84,7 +84,7 @@ public class JavaElementSelectionService implements ISelectionListener {
     }
 
     private void handleSelectionFromViewer(final ISelection selection) {
-        final Optional<IJavaElement> element = RCPUtils.safeFirstElement(selection, IJavaElement.class);
+        final Optional<IJavaElement> element = Selections.safeFirstElement(selection, IJavaElement.class);
         if (element.isPresent()) {
             final JavaElementSelectionLocation location = resolveSelectionLocationFromJavaElement(element.get());
             fireEventIfNew(element.get(), location, null);

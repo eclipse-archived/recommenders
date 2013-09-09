@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
-public class LoggingUtils {
+public class Logs {
     public static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
             final String messageFormat, final Object... messageArgs) {
         final String message = messageFormat == null ? "" : format(messageFormat, messageArgs);
