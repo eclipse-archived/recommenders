@@ -18,7 +18,11 @@ Require-Bundle: org.eclipse.recommenders.utils,
  org.eclipse.recommenders.injection,
  org.eclipse.ui,
  org.eclipse.core.net,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.core.databinding,
+ org.eclipse.jface.databinding;bundle-version="1.6.200",
+ org.eclipse.core.databinding.property;bundle-version="1.4.200",
+ org.eclipse.core.databinding.beans;bundle-version="1.2.200"
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.cache;version="[14.0.0,15.0.0)",

@@ -18,6 +18,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -27,42 +31,49 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.models.Coordinates;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
-import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ModelCoordinatesView extends ViewPart {
+
+    private DataBindingContext m_bindingContext;
 
     private Table table;
 
@@ -81,15 +92,32 @@ public class ModelCoordinatesView extends ViewPart {
     private TableViewer tableViewer;
     private Multimap<ProjectCoordinate, String> models;
 
+    private Text txtSearch;
+
     @Override
     public void createPartControl(Composite parent) {
         bus.register(this);
         Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(new FillLayout(SWT.HORIZONTAL));
+        container.setLayout(new GridLayout());
+
+        txtSearch = new Text(container, SWT.BORDER | SWT.ICON_SEARCH | SWT.SEARCH | SWT.CANCEL);
+        txtSearch.setMessage("type filter text");
+        txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtSearch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.ARROW_DOWN && table.getItemCount() != 0) {
+                    table.setFocus();
+                    table.setSelection(0);
+                }
+            }
+        });
 
         Composite composite = new Composite(container, SWT.NONE);
+
         TableColumnLayout tableLayout = new TableColumnLayout();
         composite.setLayout(tableLayout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
         tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer);
@@ -128,14 +156,13 @@ public class ModelCoordinatesView extends ViewPart {
         tableViewer.setSorter(new ViewerSorter());
         initializeContent();
         addRefreshButton();
-        addDeleteButten();
+        addDeleteButton();
         addContextMenu();
+        m_bindingContext = initDataBindings();
     }
 
     private void addRefreshButton() {
-
         IAction refreshAction = new Action() {
-
             @Override
             public void run() {
                 refreshData();
@@ -143,55 +170,38 @@ public class ModelCoordinatesView extends ViewPart {
         };
         refreshAction.setToolTipText("Refresh");
         refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
-
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
 
-    private void addDeleteButten() {
-
-        IAction refreshAction = new Action() {
+    private void addDeleteButton() {
+        IAction deleteAction = new Action() {
 
             @Override
             public void run() {
                 deleteCacheAndRefresh();
             }
         };
-        refreshAction.setText("Delete models");
-        refreshAction.setImageDescriptor(images.getDescriptor(SharedImages.ELCL_DELETE));
-
-        getViewSite().getActionBars().getMenuManager().add(refreshAction);
+        deleteAction.setText("Delete models");
+        deleteAction.setImageDescriptor(images.getDescriptor(SharedImages.ELCL_DELETE));
+        getViewSite().getActionBars().getMenuManager().add(deleteAction);
     }
 
     private void addContextMenu() {
-
         final MenuManager menuManager = new MenuManager();
-        Menu contextMenu = menuManager.createContextMenu(tableViewer.getTable());
+        Menu contextMenu = menuManager.createContextMenu(table);
         menuManager.setRemoveAllWhenShown(true);
-        tableViewer.getControl().setMenu(contextMenu);
+        table.setMenu(contextMenu);
 
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                IStructuredSelection selection = Checks.cast(tableViewer.getSelection());
-                Set<ProjectCoordinate> pcs = extractSelectedDependencies(selection);
+                Set<ProjectCoordinate> pcs = Selections.toSet(tableViewer.getSelection());
                 if (!pcs.isEmpty()) {
                     menuManager.add(new TriggerModelDownloadActionForProjectCoordinates("Download models", pcs, index,
                             repo, bus));
                 }
             }
         });
-    }
-
-    private Set<ProjectCoordinate> extractSelectedDependencies(IStructuredSelection selection) {
-        final Set<ProjectCoordinate> selectedDependencies = Sets.newHashSet();
-
-        for (Object element : selection.toList()) {
-            if (element instanceof ProjectCoordinate) {
-                ProjectCoordinate pc = (ProjectCoordinate) element;
-                selectedDependencies.add(pc);
-            }
-        }
-        return selectedDependencies;
     }
 
     private void newColumn(TableColumnLayout tableLayout, final String classifier) {
@@ -269,15 +279,48 @@ public class ModelCoordinatesView extends ViewPart {
         table.setFocus();
     }
 
+    // needs to be public to work with PojoProperties
+    public void setFilter(final String filter) {
+        tableViewer.setFilters(new ViewerFilter[] { new ViewerFilter() {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element) {
+                ProjectCoordinate coord = (ProjectCoordinate) element;
+                for (String s : coord.toString().split(":")) {
+                    if (s.startsWith(filter)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        });
+    }
+
     @Override
     public void dispose() {
         super.dispose();
+        m_bindingContext.dispose();
         bus.unregister(this);
     }
 
     @Subscribe
     public void onModelIndexOpened(ModelIndexOpenedEvent e) {
         refreshData();
+    }
+
+    @Subscribe
+    public void onModelArchiveDownloaded(final ModelArchiveDownloadedEvent e) {
+        new UIJob("") {
+
+            @Override
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                ProjectCoordinate pc = Coordinates.toProjectCoordinate(e.model);
+                tableViewer.refresh(pc);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
     }
 
     private void refreshData() {
@@ -314,5 +357,13 @@ public class ModelCoordinatesView extends ViewPart {
                 }
             }
         };
+    }
+
+    protected DataBindingContext initDataBindings() {
+        DataBindingContext bindingContext = new DataBindingContext();
+        IObservableValue search = WidgetProperties.text(SWT.Modify).observeDelayed(400, txtSearch);
+        IObservableValue filter = PojoProperties.value("filter").observe(this);
+        bindingContext.bindValue(filter, search, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+        return bindingContext;
     }
 }

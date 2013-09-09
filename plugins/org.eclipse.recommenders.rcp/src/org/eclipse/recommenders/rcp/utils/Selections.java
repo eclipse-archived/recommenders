@@ -13,6 +13,7 @@ package org.eclipse.recommenders.rcp.utils;
 import static com.google.common.base.Optional.*;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -21,6 +22,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 
 public class Selections {
 
@@ -58,6 +60,11 @@ public class Selections {
 
     public static <T> T unsafeFirstElement(final ISelection s) {
         return (T) asStructuredSelection(s).getFirstElement();
+    }
+
+    public static <T> Set<T> toSet(ISelection selection) {
+        List<T> list = toList(selection);
+        return Sets.newHashSet(list);
     }
 
 }
