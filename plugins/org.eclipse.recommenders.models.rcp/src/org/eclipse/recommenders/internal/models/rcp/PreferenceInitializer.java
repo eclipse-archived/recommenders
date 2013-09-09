@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/kepler/"; //$NON-NLS-1$
+    public static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/luna-m2/"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
