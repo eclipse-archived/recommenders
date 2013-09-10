@@ -15,7 +15,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
@@ -25,8 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 
 /**
@@ -35,15 +32,11 @@ import com.google.common.collect.Maps;
  */
 public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends SimpleModelProvider<K, M> {
 
-    private static final Object NOT_FOUND = new Object();
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     // which models are currently borrowed to someone?
     // we need this mapping for implementing releaseModel properly so that clients don't have to submit their keys too.
     private final IdentityHashMap<M, K> borrowedModels = Maps.newIdentityHashMap();
-    private final Cache<K, Object> blacklistedKeys = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES)
-            .build();
-
     // model pool
     // REVIEW: we may want to make pool creation configurable later?
     private GenericKeyedObjectPool<K, M> pool = createModelPool();
@@ -66,7 +59,7 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
 
     @Override
     public Optional<M> acquireModel(@Nullable K key) {
-        if (key == null || blacklistedKeys.getIfPresent(key) != null) {
+        if (key == null) {
             return absent();
         }
         try {
@@ -74,8 +67,7 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
             borrowedModels.put(model, key);
             return of(model);
         } catch (Exception e) {
-            // don't log. Model provider could not find a model for the given key.
-            blacklistedKeys.put(key, NOT_FOUND);
+            // Model provider could not find a model for the given key.
             return absent();
         }
     }
