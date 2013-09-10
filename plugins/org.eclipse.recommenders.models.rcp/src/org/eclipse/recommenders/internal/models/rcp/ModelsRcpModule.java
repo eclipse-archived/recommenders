@@ -26,8 +26,8 @@ import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.MavenCentralFingerprintSearchAdvisor;
-import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
 import org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor;
+import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
 import org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor;
 import org.eclipse.recommenders.models.advisors.MavenPomPropertiesAdvisor;
 import org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor;
@@ -69,7 +69,8 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         createAndBindNamedFile("index", INDEX_BASEDIR);
 
         //
-        bind(IModelRepository.class).to(EclipseModelRepository.class).in(SINGLETON);
+        bind(EclipseModelRepository.class).in(SINGLETON);
+        bind(IModelRepository.class).to(EclipseModelRepository.class);
         createAndBindNamedFile("repository", REPOSITORY_BASEDIR);
 
         // configure caching
