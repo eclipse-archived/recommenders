@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -52,7 +53,7 @@ public class DownloadModelArchiveJob extends Job {
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
         try {
-            monitor.beginTask(TASK_RESOLVING, IProgressMonitor.UNKNOWN);
+            monitor.beginTask(NLS.bind(TASK_RESOLVING, mc), IProgressMonitor.UNKNOWN);
             ModelArchiveDownloadCallback cb = new ModelArchiveDownloadCallback(monitor);
             File result = repository.resolve(mc, forceDownload, cb).orNull();
             if (cb.downloadedArchive) {
@@ -79,6 +80,7 @@ public class DownloadModelArchiveJob extends Job {
 
         @Override
         public void downloadInitiated(String path) {
+            System.out.println("path:" + path);
             downloads.put(path, new SubProgressMonitor(monitor, 1));
         }
 

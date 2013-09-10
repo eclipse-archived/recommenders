@@ -78,14 +78,21 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @PostConstruct
     @Override
     public void open() throws IOException {
+        doOpen(true);
+    }
+
+    private void doOpen(boolean scheduleIndexUpdate) throws IOException {
         activedir = new File(basedir, Urls.mangle(prefs.remote));
         delegate = new ModelIndex(activedir);
-        if (indexAlreadyDownloaded(activedir)) {
-            delegate.open();
-            bus.post(new ModelIndexOpenedEvent());
+        if (!indexAlreadyDownloaded(activedir)) {
+            new DownloadModelArchiveJob(repository, INDEX, true, bus).schedule(300);
+            return;
         }
-        // anyways, we always schedule the lookup to make sure we download the latest model archive:
-        new DownloadModelArchiveJob(repository, INDEX, false, bus).schedule(300);
+        delegate.open();
+        bus.post(new ModelIndexOpenedEvent());
+        if (scheduleIndexUpdate) {
+            new DownloadModelArchiveJob(repository, INDEX, true, bus).schedule(300);
+        }
     }
 
     private boolean indexAlreadyDownloaded(File location) {
@@ -116,10 +123,9 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
                 }
             });
         } catch (ExecutionException e) {
-            // TODO log this exception
+            log.error("Exception occured while accessing model coordinates cache", e);
             return absent();
         }
-
     }
 
     @Override
@@ -144,7 +150,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Subscribe
     public void onEvent(ModelRepositoryOpenedEvent e) throws IOException {
-        open();
+        doOpen(true);
     }
 
     @Subscribe
@@ -160,9 +166,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
             activedir.mkdirs();
             FileUtils.cleanDirectory(activedir);
             Zips.unzip(location, activedir);
-            delegate.open();
-            bus.post(new ModelIndexOpenedEvent());
-            open();
+            doOpen(false);
         }
     }
 }
