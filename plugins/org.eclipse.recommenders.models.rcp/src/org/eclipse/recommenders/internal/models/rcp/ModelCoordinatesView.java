@@ -117,7 +117,7 @@ public class ModelCoordinatesView extends ViewPart {
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         composite.setLayout(tableLayout);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer);
