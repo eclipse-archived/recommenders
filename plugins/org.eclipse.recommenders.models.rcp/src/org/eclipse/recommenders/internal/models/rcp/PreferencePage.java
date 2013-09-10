@@ -60,11 +60,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     }
 
     @Override
-    protected void performApply() {
-        super.performApply();
+    public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
-        String[] split = split(store.getString(P_REPOSITORY_URL_LIST));
-        store.setValue(P_REPOSITORY_URL, split[0]);
+        store.setValue(P_REPOSITORY_URL, repoEditor.getItem(0));
+        return super.performOk();
     }
 
     private final class ModelRepositoryListEditor extends ListEditor {
@@ -79,6 +78,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
                     getRemoveButton().setEnabled(hasMoreThanOneUrl);
                 }
             });
+        }
+
+        public String getItem(int index) {
+            return super.getList().getItems()[index];
+
         }
 
         @Override
