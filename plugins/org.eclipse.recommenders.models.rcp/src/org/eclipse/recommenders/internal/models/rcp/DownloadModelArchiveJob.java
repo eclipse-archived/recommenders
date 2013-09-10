@@ -79,13 +79,12 @@ public class DownloadModelArchiveJob extends Job {
         }
 
         @Override
-        public void downloadInitiated(String path) {
-            System.out.println("path:" + path);
+        public synchronized void downloadInitiated(String path) {
             downloads.put(path, new SubProgressMonitor(monitor, 1));
         }
 
         @Override
-        public void downloadProgressed(String path, long transferred, long total) {
+        public synchronized void downloadProgressed(String path, long transferred, long total) {
             IProgressMonitor submonitor = downloads.get(path);
             String message = bytesToString(transferred) + "/" + bytesToString(total);
             submonitor.subTask(message);
@@ -93,13 +92,13 @@ public class DownloadModelArchiveJob extends Job {
         }
 
         @Override
-        public void downloadSucceeded(String path) {
+        public synchronized void downloadSucceeded(String path) {
             downloads.get(path).done();
             downloadedArchive = true;
         }
 
         @Override
-        public void downloadFailed(String path) {
+        public synchronized void downloadFailed(String path) {
             downloads.get(path).done();
         }
 
