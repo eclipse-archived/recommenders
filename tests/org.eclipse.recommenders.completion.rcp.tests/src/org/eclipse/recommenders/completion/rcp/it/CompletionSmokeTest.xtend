@@ -435,7 +435,7 @@ class CompletionSmokeTest {
                 val mp = mock(IOverrideModelProvider)
                 when(mp.acquireModel(anyObject())).thenReturn(
                     Optional.<IOverrideModel>of(NullOverrideModel.INSTANCE))
-                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer)
+                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages)
             }
             case "subwords": {
                 return new MockSubwordsSessionProcessor(new CachingAstProvider)
