@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
 import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.*;
 
@@ -30,8 +31,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameRef
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.DecorationOverlayIcon;
-import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.NullCallModel;
@@ -46,7 +45,6 @@ import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -175,18 +173,12 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
                 mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
                 if (prefs.decorateProposalIcon) {
-                    addOverlayIcon(proposal);
+                    overlay(proposal, overlay);
                 }
                 // we found the proposal we are looking for. So quit.
                 break;
             }
         }
-    }
-
-    private void addOverlayIcon(final IProcessableProposal proposal) {
-        Image originalImage = proposal.getImage();
-        DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, overlay, IDecoration.TOP_LEFT);
-        proposal.setImage(decorator.createImage());
     }
 
     @VisibleForTesting

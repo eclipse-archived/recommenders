@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.overrides.rcp;
 
 import static java.lang.String.valueOf;
 import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
+import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 
 import java.util.List;
@@ -25,8 +26,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
+import org.eclipse.recommenders.completion.rcp.processable.Proposals;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -35,6 +38,7 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.IOverrideModelProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
@@ -63,13 +67,15 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private ProjectCoordinate pc;
     private IOverrideModel model;
     private List<Recommendation<IMethodName>> recommendations;
+    private ImageDescriptor overlay;
 
     @Inject
     public OverrideCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IOverrideModelProvider modelProvider, final JavaElementResolver cache) {
+            IOverrideModelProvider modelProvider, final JavaElementResolver cache, SharedImages images) {
         this.pcProvider = pcProvider;
         mProvider = modelProvider;
         jdtCache = cache;
+        overlay = images.getDescriptor(OVR_STAR);
     };
 
     @Override
@@ -180,6 +186,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 String label = "";
                 if (prefDecorateProposalText) {
                     label = asPercentage(r) + " %";
+                    Proposals.overlay(proposal, overlay);
                 }
                 if (prefUpdateProposalRelevance || prefDecorateProposalText) {
                     proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
