@@ -187,8 +187,9 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             completionAnalyzer = new AstCallCompletionAnalyzer(rCtx);
             if (mode == CompletionMode.TYPE_NAME) {
                 handleTypeNameCompletionRequest(proposalBuilder);
+            } else {
+                handleVariableCompletionRequest(proposalBuilder);
             }
-            handleVariableCompletionRequest(proposalBuilder);
         } finally {
             store.releaseModel(model);
         }
