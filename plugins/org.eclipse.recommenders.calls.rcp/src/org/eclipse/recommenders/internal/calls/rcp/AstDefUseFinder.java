@@ -14,7 +14,6 @@ import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.rcp.utils.AstBindings.toMethodName;
 import static org.eclipse.recommenders.utils.Checks.*;
-import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.util.List;
 
@@ -211,8 +210,9 @@ public class AstDefUseFinder extends ASTVisitor {
                 }
                 break;
             default:
-                throwUnreachable("Did not expect this LHS expression to be possible here. Pls report this snippet: %s",
-                        lhs);
+                // when we have completely broken code, this may happen... ignore it.
+                // throwUnreachable("Did not expect this LHS expression to be possible here. Pls report this snippet: %s",
+                // lhs);
             }
         }
 
