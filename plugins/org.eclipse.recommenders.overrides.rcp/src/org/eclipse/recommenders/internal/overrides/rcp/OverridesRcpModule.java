@@ -10,10 +10,16 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.overrides.IOverrideModelProvider;
+import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 
 public class OverridesRcpModule extends AbstractModule implements Module {
@@ -25,4 +31,13 @@ public class OverridesRcpModule extends AbstractModule implements Module {
     protected void configure() {
         bind(IOverrideModelProvider.class).to(RcpOverrideModelProvider.class).in(Scopes.SINGLETON);
     }
+
+    @Provides
+    @Singleton
+    public OverridesRcpPreferences provide(IWorkbench wb) {
+        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        OverridesRcpPreferences prefs = ContextInjectionFactory.make(OverridesRcpPreferences.class, context);
+        return prefs;
+    }
+
 }

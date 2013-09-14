@@ -45,6 +45,7 @@ import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.models.UniqueTypeName
 import org.eclipse.recommenders.rcp.SharedImages
+import org.eclipse.recommenders.internal.overrides.rcp.OverridesRcpPreferences
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -435,7 +436,7 @@ class CompletionSmokeTest {
                 val mp = mock(IOverrideModelProvider)
                 when(mp.acquireModel(anyObject())).thenReturn(
                     Optional.<IOverrideModel>of(NullOverrideModel.INSTANCE))
-                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages)
+                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages, new OverridesRcpPreferences)
             }
             case "subwords": {
                 return new MockSubwordsSessionProcessor(new CachingAstProvider)

@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.overrides.rcp;
 
 import static java.lang.String.valueOf;
-import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
 import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -44,7 +42,6 @@ import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +53,6 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private IOverrideModelProvider mProvider;
     private JavaElementResolver jdtCache;
 
-    private int prefMaxNumberOfProposals;
-    private double prefMinProposalProbability;
-    private boolean prefUpdateProposalRelevance;
-    private boolean prefDecorateProposalText;
-
     private IRecommendersCompletionContext ctx;
     private IType enclosingType;
     private IType supertype;
@@ -68,13 +60,16 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private IOverrideModel model;
     private List<Recommendation<IMethodName>> recommendations;
     private ImageDescriptor overlay;
+    private OverridesRcpPreferences prefs;
 
     @Inject
     public OverrideCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IOverrideModelProvider modelProvider, final JavaElementResolver cache, SharedImages images) {
+            IOverrideModelProvider modelProvider, final JavaElementResolver cache, SharedImages images,
+            OverridesRcpPreferences prefs) {
         this.pcProvider = pcProvider;
         mProvider = modelProvider;
         jdtCache = cache;
+        this.prefs = prefs;
         overlay = images.getDescriptor(OVR_STAR);
     };
 
@@ -86,7 +81,6 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
         if (isSupportedCompletionType() && findEnclosingType() && findSuperclass() && findProjectCoordinate()
                 && hasModel()) {
             try {
-                updatePreferences();
                 computeRecommendations();
                 return true;
             } catch (Exception e) {
@@ -130,15 +124,6 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
         }
     }
 
-    private void updatePreferences() {
-        ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, BUNDLE_NAME);
-        prefMaxNumberOfProposals = s.getInt(P_MAX_NUMBER_OF_PROPOSALS);
-        prefMinProposalProbability = s.getInt(P_MIN_PROPOSAL_PROBABILITY) / (double) 100;
-        prefUpdateProposalRelevance = s.getBoolean(P_UPDATE_PROPOSAL_RELEVANCE);
-        prefDecorateProposalText = s.getBoolean(P_DECORATE_PROPOSAL_TEXT);
-
-    }
-
     private void computeRecommendations() throws JavaModelException {
         for (final IMethod m : enclosingType.getMethods()) {
             final IMethod superMethod = JdtUtils.findOverriddenMethod(m).orNull();
@@ -147,8 +132,8 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 model.setObservedMethod(recSuperMethod);
             }
         }
-        recommendations = Recommendations.top(model.recommendOverrides(), prefMaxNumberOfProposals,
-                prefMinProposalProbability);
+        recommendations = Recommendations.top(model.recommendOverrides(), prefs.maxNumberOfProposals,
+                prefs.minProposalProbability / 100d);
     }
 
     @Override
@@ -177,21 +162,14 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                     continue;
                 }
 
-                int increment = 0;
-                if (prefUpdateProposalRelevance) {
-                    // XXX rather high value but otherwise the default constructor shows up between the overrides
-                    // proposals
-                    increment = 1000 + asPercentage(r);
-                }
-                String label = "";
-                if (prefDecorateProposalText) {
-                    label = asPercentage(r) + " %";
+                // XXX rather high value but otherwise the default constructor shows up between the overrides
+                // proposals
+                int increment = prefs.changeProposalRelevance ? increment = 1000 + asPercentage(r) : 0;
+                String label = prefs.decorateProposalText ? label = asPercentage(r) + " %" : null;
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
+                if (prefs.decorateProposalIcon) {
                     Proposals.overlay(proposal, overlay);
                 }
-                if (prefUpdateProposalRelevance || prefDecorateProposalText) {
-                    proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
-                }
-                // we found the proposal we are looking for. So quit.
                 return;
             }
         }
