@@ -16,6 +16,9 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentExceptio
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 /**
  * This class contains various frequently used checks we used in our code base. Some methods return their arguments
@@ -218,6 +221,13 @@ public class Checks {
         }
     }
 
+    public static void ensureNoDuplicates(final String[] values){
+        Set<String> set = Sets.newHashSet(values);
+        if (values.length != set.size()){
+            throwIllegalArgumentException("Value contain duplicates");
+        }
+    }
+    
     public static void ensureIsTrue(final boolean exp) {
         ensureIsTrue(exp, "assertion failed.");
     }

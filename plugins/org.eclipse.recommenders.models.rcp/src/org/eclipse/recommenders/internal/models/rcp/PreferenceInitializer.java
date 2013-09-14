@@ -23,7 +23,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(BUNDLE_ID);
-        s.put(P_REPOSITORY_URL, SERVER_URL);
+        s.put(P_REPOSITORY_URL_LIST_ACTIV, SERVER_URL);
         s.put(P_REPOSITORY_URL_LIST, SERVER_URL);
         s.putBoolean(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, true);
     }
