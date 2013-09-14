@@ -39,4 +39,12 @@
 			class="org.eclipse.recommenders.internal.chain.rcp.ChainPreferenceInitializer">
 		</initializer>
 	</extension>
+ <extension
+       point="org.eclipse.jdt.ui.quickAssistProcessors">
+    <quickAssistProcessor
+          class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.chain.rcp.QuickAssistProcessor"
+          id="org.eclipse.recommenders.chain.rcp.quickAssistProcessor"
+          name="Chain Assignments Quick Assists">
+    </quickAssistProcessor>
+ </extension>
 </plugin>
