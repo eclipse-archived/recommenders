@@ -21,7 +21,10 @@
 						<artifactId>tycho-eclipserun-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>add-repo-properties</id>
+								<id>add-p2-mirrors-url-property</id>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>

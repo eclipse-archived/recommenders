@@ -33,37 +33,56 @@
 					<version>${tycho-version}</version>
 					<executions>
 						<execution>
-							<id>add-repo-properties</id>
+							<!-- See http://wiki.eclipse.org/Equinox/p2/p2.mirrorsURL -->
+							<id>add-p2-mirrors-url-property</id>
 							<goals>
 								<goal>eclipse-run</goal>
 							</goals>
 							<phase>package</phase>
 							<configuration>
-								<!-- See http://wiki.eclipse.org/Equinox/p2/p2.mirrorsURL -->
-								<!-- See http://wiki.eclipse.org/Equinox_p2_download_stats -->
 								<appArgLine>-application org.eclipse.wtp.releng.tools.addRepoProperties</appArgLine>
-								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2MirrorsURL=${p2MirrorsURL} -Dp2StatsURI=${p2StatsURL} -DstatsTrackedArtifacts=${statsTrackedArtifacts} -DstatsArtifactsSuffix=-${project.version}</argLine>
+								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2MirrorsURL=${p2MirrorsURL}</argLine>
 								<dependencies>
 									<dependency>
 										<artifactId>org.eclipse.wtp.releng.tools.feature</artifactId>
 										<type>eclipse-feature</type>
 									</dependency>
 								</dependencies>
-								<repositories>
-									<repository>
-										<id>wtp-releng</id>
-										<url>http://download.eclipse.org/webtools/releng/repository</url>
-										<layout>p2</layout>
-									</repository>
-									<repository>
-										<id>kepler</id>
-										<url>http://download.eclipse.org/releases/kepler</url>
-										<layout>p2</layout>
-									</repository>
-								</repositories>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- See http://wiki.eclipse.org/Equinox_p2_download_stats -->
+							<id>add-p2-stats-uri-property</id>
+							<goals>
+								<goal>eclipse-run</goal>
+							</goals>
+							<phase>package</phase>
+							<configuration>
+								<appArgLine>-application org.eclipse.wtp.releng.tools.addRepoProperties</appArgLine>
+								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2StatsURI=${p2StatsURL} -DstatsTrackedArtifacts=${statsTrackedArtifacts} -DstatsArtifactsSuffix=-${project.version}</argLine>
+								<dependencies>
+									<dependency>
+										<artifactId>org.eclipse.wtp.releng.tools.feature</artifactId>
+										<type>eclipse-feature</type>
+									</dependency>
+								</dependencies>
 							</configuration>
 						</execution>
 					</executions>
+					<configuration>
+						<repositories>
+							<repository>
+								<id>wtp-releng</id>
+								<url>http://download.eclipse.org/webtools/releng/repository</url>
+								<layout>p2</layout>
+							</repository>
+							<repository>
+								<id>kepler</id>
+								<url>http://download.eclipse.org/releases/kepler</url>
+								<layout>p2</layout>
+							</repository>
+						</repositories>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
