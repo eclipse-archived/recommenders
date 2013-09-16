@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
+import static com.google.common.base.Optional.*;
 import static com.google.common.base.Throwables.propagate;
 import static org.eclipse.recommenders.utils.Checks.*;
 
@@ -23,16 +24,37 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.text.java.IInvocationContext;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 
 @Beta
+@SuppressWarnings("restriction")
 public class CompletionContexts {
 
+    /**
+     * Creates a content assist invocation context from a quick fix invocation context.
+     */
     public static JavaContentAssistInvocationContext toContentAssistInvocationContext(IInvocationContext context) {
         ensureIsNotNull(context);
         return new QuickFixToContentAssistContextFunction().apply(context);
+    }
+
+    /**
+     * Creates a simple (i.e., not extended) completion context.
+     * <p>
+     * This context may be used for snippet completions.
+     */
+    public static Optional<JavaContentAssistInvocationContext> newContentAssistInvocationContext(IEditorPart editor) {
+        if (editor instanceof JavaEditor) {
+            JavaEditor ed = (JavaEditor) editor;
+            ISourceViewer viewer = ed.getViewer();
+            int offset = viewer.getTextWidget().getCaretOffset();
+            return of(new JavaContentAssistInvocationContext(viewer, offset, ed));
+        }
+        return absent();
     }
 
     static final class QuickFixToContentAssistContextFunction implements
