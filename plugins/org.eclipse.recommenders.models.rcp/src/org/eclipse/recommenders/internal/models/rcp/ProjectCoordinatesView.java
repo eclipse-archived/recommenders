@@ -10,15 +10,21 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.*;
-import static com.google.common.collect.Iterables.*;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.presentInstances;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.*;
-import static org.eclipse.recommenders.rcp.SharedImages.*;
+import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
+import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAR;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAVA_PROJECT;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JRE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +34,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -64,12 +72,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -81,8 +87,6 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 public class ProjectCoordinatesView extends ViewPart {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProjectCoordinatesView.class);
 
     private static final int COLUMN_LOCATION = 0;
     private static final int COLUMN_COORDINATE = 1;
@@ -260,29 +264,41 @@ public class ProjectCoordinatesView extends ViewPart {
 
         public void setData(final Set<DependencyInfo> dependencyInfos) {
             data.clear();
+            new ResolvingDependenciesJob("Resolving dependencies", dependencyInfos).schedule();
+        }
 
-            try {
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(true, false, new IRunnableWithProgress() {
-                    @Override
-                    public void run(IProgressMonitor monitor) {
-                        int steps = dependencyInfos.size();
-                        monitor.beginTask("Resolving dependencies", steps);
-                        strategies = pcAdvisors.getAdvisors();
-                        for (DependencyInfo dependency : dependencyInfos) {
-                            monitor.subTask("Resolving: " + dependency.getFile().getName());
-                            for (IProjectCoordinateAdvisor strategy : strategies) {
-                                data.put(dependency, strategy.suggest(dependency));
-                            }
-                            monitor.worked(1);
-                        }
-                    }
+        private final class ResolvingDependenciesJob extends Job {
 
-                });
-            } catch (InvocationTargetException e1) {
-                LOG.error("Error during resolving dependencies", e1);
-            } catch (InterruptedException e1) {
-                LOG.error("Error during resolving dependencies", e1);
+            private Set<DependencyInfo> dependencyInfos;
+
+            public ResolvingDependenciesJob(String name, final Set<DependencyInfo> dependencyInfos) {
+                super(name);
+                this.dependencyInfos = dependencyInfos;
             }
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                monitor.beginTask("Resolving dependencies", dependencyInfos.size());
+                strategies = pcAdvisors.getAdvisors();
+                for (DependencyInfo dependency : dependencyInfos) {
+                    monitor.subTask("Resolving: " + dependency.getFile().getName());
+                    for (IProjectCoordinateAdvisor strategy : strategies) {
+                        data.put(dependency, strategy.suggest(dependency));
+                    }
+                    monitor.worked(1);
+                }
+                refreshUI();
+                return Status.OK_STATUS;
+            }
+
+            private void refreshUI() {
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        refreshTableUI();
+                    }
+                });
+            }
+
         }
 
         public List<IProjectCoordinateAdvisor> getStrategies() {
