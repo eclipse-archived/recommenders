@@ -82,22 +82,30 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     private final Gson cacheGson;
 
     @SuppressWarnings("serial")
-    private final Type cacheType = new TypeToken<Map<IPackageFragmentRoot, Optional<ProjectCoordinate>>>() {
+    private final Type cacheType = new TypeToken<Map<DependencyInfo, Optional<ProjectCoordinate>>>() {
     }.getType();
 
-    private LoadingCache<IPackageFragmentRoot, Optional<ProjectCoordinate>> cache;
+    private LoadingCache<IPackageFragmentRoot, Optional<DependencyInfo>> dependencyInfoCache;
 
-    private void initializeCache() {
-        /*
-         * At the moment the cache is only used for IPackageFragmentRoots --> ProjectCoordinates (PC). This could be
-         * extended to JavaElements --> PC to support cache also information about IJavaProject.
-         */
-        cache = CacheBuilder.newBuilder().maximumSize(200).recordStats()
-                .build(new CacheLoader<IPackageFragmentRoot, Optional<ProjectCoordinate>>() {
+    private LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> projectCoordianteCache;
+
+    private void initializeCaches() {
+
+        dependencyInfoCache = CacheBuilder.newBuilder().maximumSize(200)
+                .build(new CacheLoader<IPackageFragmentRoot, Optional<DependencyInfo>>() {
 
                     @Override
-                    public Optional<ProjectCoordinate> load(IPackageFragmentRoot pfr) {
-                        return extractProjectCoordinate(pfr);
+                    public Optional<DependencyInfo> load(IPackageFragmentRoot pfr) {
+                        return extractDependencyInfo(pfr);
+                    }
+                });
+
+        projectCoordianteCache = CacheBuilder.newBuilder().maximumSize(200)
+                .build(new CacheLoader<DependencyInfo, Optional<ProjectCoordinate>>() {
+
+                    @Override
+                    public Optional<ProjectCoordinate> load(DependencyInfo info) {
+                        return pcService.suggest(info);
                     }
                 });
     }
@@ -110,10 +118,10 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         this.javaElementResolver = javaElementResolver;
         cacheGson = new GsonBuilder()
                 .registerTypeAdapter(ProjectCoordinate.class, new ProjectCoordinateJsonTypeAdapter())
+                .registerTypeAdapter(DependencyInfo.class, new DependencyInfoJsonTypeAdapter())
                 .registerTypeAdapter(Optional.class, new OptionalJsonTypeAdapter<ProjectCoordinate>())
-                .registerTypeAdapter(IPackageFragmentRoot.class, new PackageFragmentRootJsonTypeAdapter())
                 .enableComplexMapKeySerialization().serializeNulls().create();
-        initializeCache();
+        initializeCaches();
     }
 
     @Override
@@ -155,18 +163,22 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     @Override
     public Optional<ProjectCoordinate> resolve(IPackageFragmentRoot root) {
         try {
-            return cache.get(root);
+            Optional<DependencyInfo> dependencyInfo = dependencyInfoCache.get(root);
+            if (dependencyInfo.isPresent()) {
+                return projectCoordianteCache.get(dependencyInfo.get());
+            }
+            return absent();
         } catch (ExecutionException e) {
             return absent();
         }
     }
 
-    private Optional<ProjectCoordinate> extractProjectCoordinate(IPackageFragmentRoot root) {
+    private Optional<DependencyInfo> extractDependencyInfo(IPackageFragmentRoot root) {
         if (root == null) {
             return absent();
         }
         if (!root.isArchive()) {
-            return resolve(root.getJavaProject());
+            return extractDependencyInfo(root.getJavaProject());
         }
         File location = JdtUtils.getLocation(root).orNull();
         if (location == null) {
@@ -176,15 +188,10 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         IJavaProject javaProject = root.getJavaProject();
 
         if (isPartOfJRE(root, javaProject)) {
-            Optional<DependencyInfo> request = createJREDependencyInfo(javaProject);
-            if (request.isPresent()) {
-                return resolve(request.get());
-            } else {
-                return absent();
-            }
+            return createJREDependencyInfo(javaProject);
         } else {
             DependencyInfo request = new DependencyInfo(location, JAR);
-            return resolve(request);
+            return of(request);
         }
     }
 
@@ -212,19 +219,27 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
 
     @Override
     public Optional<ProjectCoordinate> resolve(IJavaProject javaProject) {
+        return resolve(extractDependencyInfo(javaProject).get());
+    }
+
+    private Optional<DependencyInfo> extractDependencyInfo(IJavaProject javaProject) {
         File location = getLocation(javaProject).orNull();
         DependencyInfo request = new DependencyInfo(location, DependencyType.PROJECT);
-        return resolve(request);
+        return of(request);
     }
 
     @Override
     public Optional<ProjectCoordinate> resolve(DependencyInfo info) {
-        return pcService.suggest(info);
+        try {
+            return projectCoordianteCache.get(info);
+        } catch (ExecutionException e) {
+            return absent();
+        }
     }
 
     @PreDestroy
     public void close() throws IOException {
-        String json = cacheGson.toJson(cache.asMap(), cacheType);
+        String json = cacheGson.toJson(projectCoordianteCache.asMap(), cacheType);
         Files.write(json, persistenceFile, Charsets.UTF_8);
     }
 
@@ -234,10 +249,10 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
             return;
         }
         String json = Files.toString(persistenceFile, Charsets.UTF_8);
-        Map<IPackageFragmentRoot, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
+        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
 
-        for (Entry<IPackageFragmentRoot, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
-            cache.put(entry.getKey(), entry.getValue());
+        for (Entry<DependencyInfo, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
+            projectCoordianteCache.put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -275,9 +290,7 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
 
     @Subscribe
     public void onEvent(ProjectCoordinateChangeEvent e) {
-        // TODO there is yet no way to get the affected IPackageFragmentRoot from the editor. So, we are a bit
-        // over-cautious and refresh all cached entries.
-        new RefreshProjectCoordinatesJob("Refreshing cached project coordinates").schedule();
+        projectCoordianteCache.invalidate(e.dependencyInfo);
     }
 
     @Subscribe
@@ -295,11 +308,11 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
 
         @Override
         protected IStatus run(IProgressMonitor monitor) {
-            Set<IPackageFragmentRoot> pfrs = cache.asMap().keySet();
-            monitor.beginTask("Refreshing", pfrs.size());
-            for (IPackageFragmentRoot pfr : pfrs) {
-                monitor.subTask(pfr.getElementName());
-                cache.refresh(pfr);
+            Set<DependencyInfo> dependencyInfos = projectCoordianteCache.asMap().keySet();
+            monitor.beginTask("Refreshing", dependencyInfos.size());
+            for (DependencyInfo di : dependencyInfos) {
+                monitor.subTask(di.toString());
+                projectCoordianteCache.refresh(di);
                 monitor.worked(1);
             }
             monitor.done();

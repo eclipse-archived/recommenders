@@ -80,7 +80,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         // configure caching
         bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
         createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS);
-        createAndBindNamedFile("caches/identified-package-fragment-roots.json", IDENTIFIED_PACKAGE_FRAGMENT_ROOTS);
+        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PACKAGE_FRAGMENT_ROOTS);
     }
 
     private void createAndBindNamedFile(String fileName, String name) {

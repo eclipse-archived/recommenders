@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.models.rcp;
 
+import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 
@@ -73,8 +74,12 @@ public class ModelEvents {
 
     @Beta
     public static class ProjectCoordinateChangeEvent {
-        // TODO this event needs to publish the affected IPackageFragmentRoot so that project coordinate providers can
-        // clear their cache entry accordingly
+
+        public DependencyInfo dependencyInfo;
+
+        public ProjectCoordinateChangeEvent(DependencyInfo dependencyInfo) {
+            this.dependencyInfo = dependencyInfo;
+        }
     }
 
     private ModelEvents() {
