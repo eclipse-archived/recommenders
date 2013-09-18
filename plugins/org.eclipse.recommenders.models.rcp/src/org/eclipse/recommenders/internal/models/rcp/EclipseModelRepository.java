@@ -10,13 +10,18 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static com.google.common.base.Optional.absent;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.REPOSITORY_BASEDIR;
+import static org.eclipse.recommenders.models.ModelCoordinate.HINT_REPOSITORY_URL;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -38,7 +43,10 @@ import org.eclipse.recommenders.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -62,15 +70,20 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     @Inject
     EventBus bus;
 
-    ModelRepository delegate;
+    Map<String, ModelRepository> delegates = Maps.newHashMap();
 
     private boolean isOpen = false;
 
     @PostConstruct
     void open() throws Exception {
-        File cache = new File(basedir, mangle(prefs.remote));
-        cache.mkdirs();
-        delegate = new ModelRepository(cache, prefs.remote);
+        delegates.clear();
+        String[] remoteUrls = prefs.remotes;
+        for (String remoteUrl : remoteUrls) {
+            File cache = new File(basedir, mangle(remoteUrl));
+            cache.mkdirs();
+            delegates.put(remoteUrl, new ModelRepository(cache, remoteUrl));
+        }
+
         isOpen = true;
         bus.post(new ModelRepositoryOpenedEvent());
     }
@@ -87,39 +100,82 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         open();
     }
 
+    private List<ModelRepository> searchDelegates(ModelCoordinate mc) {
+        String repoUrl = mc.getHint(HINT_REPOSITORY_URL).orNull();
+        if (repoUrl != null) {
+            ModelRepository modelRepository = delegates.get(repoUrl);
+            if (modelRepository != null) {
+                return Lists.newArrayList(modelRepository);
+            }
+        }
+        return Lists.newArrayList(delegates.values());
+    }
+
     @Override
     public Optional<File> getLocation(final ModelCoordinate mc, boolean prefetch) {
         ensureIsOpen();
-        Optional<File> location = delegate.getLocation(mc, false);
-        if (prefetch && prefs.autoDownloadEnabled) {
-            new DownloadModelArchiveJob(delegate, mc, false, bus).schedule();
+
+        List<ModelRepository> foundDelegates = searchDelegates(mc);
+        for (ModelRepository delegate : foundDelegates) {
+            Optional<File> location = delegate.getLocation(mc, false);
+            if (prefetch && prefs.autoDownloadEnabled) {
+                new DownloadModelArchiveJob(delegate, mc, false, bus).schedule();
+            }
+            if (location.isPresent()) {
+                return location;
+            }
         }
-        return location;
+        return absent();
     }
 
     @Override
     public Optional<File> resolve(ModelCoordinate mc, boolean force) {
+        ensureIsOpen();
         updateProxySettings();
-        return delegate.resolve(mc, force);
+
+        List<ModelRepository> foundSuitableDelegates = searchDelegates(mc);
+        for (ModelRepository modelRepository : foundSuitableDelegates) {
+            Optional<File> location = modelRepository.resolve(mc, force);
+            if (location.isPresent()) {
+                return location;
+            }
+        }
+        return absent();
     }
 
     @Override
     public Optional<File> resolve(ModelCoordinate mc, boolean force, DownloadCallback callback) {
         ensureIsOpen();
         updateProxySettings();
-        return delegate.resolve(mc, force, callback);
+
+        List<ModelRepository> foundSuitableDelegates = searchDelegates(mc);
+        for (ModelRepository modelRepository : foundSuitableDelegates) {
+            Optional<File> location = modelRepository.resolve(mc, force, callback);
+            if (location.isPresent()) {
+                return location;
+            }
+        }
+
+        return absent();
     }
 
     void updateProxySettings() {
+        Collection<ModelRepository> modelRepositories = delegates.values();
+        for (ModelRepository modelRepository : modelRepositories) {
+            updateProxySettings(modelRepository);
+        }
+    }
+
+    private void updateProxySettings(ModelRepository modelRepository) {
         if (!proxy.isProxiesEnabled()) {
-            delegate.unsetProxy();
+            modelRepository.unsetProxy();
             return;
         }
         try {
-            URI uri = new URI(prefs.remote);
+            URI uri = new URI(prefs.remotes[0]);
             IProxyData[] entries = proxy.select(uri);
             if (entries.length == 0) {
-                delegate.unsetProxy();
+                modelRepository.unsetProxy();
                 return;
             }
 
@@ -129,9 +185,9 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
             int port = proxyData.getPort();
             String userId = proxyData.getUserId();
             String password = proxyData.getPassword();
-            delegate.setProxy(type, host, port, userId, password);
+            modelRepository.setProxy(type, host, port, userId, password);
         } catch (URISyntaxException e) {
-            delegate.unsetProxy();
+            modelRepository.unsetProxy();
         }
     }
 
@@ -154,6 +210,6 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
 
     @Override
     public String toString() {
-        return prefs.remote;
+        return Objects.toStringHelper(this).addValue(delegates).toString();
     }
 }
