@@ -123,7 +123,9 @@ public class AstDefUseFinder extends ASTVisitor {
 
     private void refineDefKindByBinding(final Name node) {
         IVariableBinding b = Checks.castOrNull(node.resolveBinding());
-        if (b.isField()) {
+        if (b == null) {
+            return;
+        } else if (b.isField()) {
             defKind = FIELD;
         } else if (b.isParameter()) {
             defKind = PARAM;

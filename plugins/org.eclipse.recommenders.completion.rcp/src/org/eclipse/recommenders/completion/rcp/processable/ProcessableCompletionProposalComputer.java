@@ -124,9 +124,13 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     protected void fireStartSession(IRecommendersCompletionContext crContext) {
         for (Iterator<SessionProcessor> it = active.iterator(); it.hasNext();) {
             SessionProcessor p = it.next();
-            boolean interested = p.startSession(crContext);
-            if (!interested) {
-                it.remove();
+            try {
+                boolean interested = p.startSession(crContext);
+                if (!interested) {
+                    it.remove();
+                }
+            } catch (Exception e) {
+                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
             }
         }
     }
