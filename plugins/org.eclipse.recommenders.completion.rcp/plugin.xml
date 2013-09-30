@@ -31,10 +31,21 @@
          point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
       <processor
             class="org.eclipse.recommenders.completion.rcp.processable.BaseRelevanceSessionProcessor"
-            icon="icons/view16/slice.gif"
+            description="Contributes the JDT relevance as base relevance for each proposal. Ensures that the proposals are somewhat in-line with what is presented by JDT."
+            icon="icons/view16/bullet_blue.png"
             id="org.eclipse.recommenders.completion.rcp.sandbox.baserelevanceprocessor"
-            name="JDT Base Relevance Adder"
+            name="Base Relevance Processor"
             priority="0">
       </processor>
    </extension>
+      <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.PreferencePage"
+            id="org.eclipse.recommenders.completion.rcp.preferences"
+            name="Completions">
+      </page>
+   </extension>
+   
  </plugin>

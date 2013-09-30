@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.utils;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 
-public final class ObjectToBooleanConverter implements IConverter {
+public class ObjectToBooleanConverter implements IConverter {
     @Override
     public Object getFromType() {
         return Object.class;
@@ -24,7 +24,7 @@ public final class ObjectToBooleanConverter implements IConverter {
     }
 
     @Override
-    public Object convert(Object fromObject) {
+    public Boolean convert(Object fromObject) {
         return fromObject != null;
     }
 }

@@ -39,7 +39,16 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection;bundle-version="1.100.0",
  org.eclipse.recommenders.rcp;bundle-version="1.100.0",
  org.eclipse.recommenders.utils,
- org.eclipse.ui.editors
+ org.eclipse.ui.editors,
+ org.eclipse.e4.core.di.extensions,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.beans,
+ org.eclipse.core.databinding.observable,
+ org.eclipse.core.databinding.property,
+ org.eclipse.jface.databinding,
+ com.ibm.icu
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true
 Bundle-ActivationPolicy: lazy

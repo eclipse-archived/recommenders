@@ -436,7 +436,8 @@ class CompletionSmokeTest {
                 val mp = mock(IOverrideModelProvider)
                 when(mp.acquireModel(anyObject())).thenReturn(
                     Optional.<IOverrideModel>of(NullOverrideModel.INSTANCE))
-                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages, new OverridesRcpPreferences)
+                return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages,
+                    new OverridesRcpPreferences)
             }
             case "subwords": {
                 return new MockSubwordsSessionProcessor(new CachingAstProvider)
@@ -452,8 +453,8 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
 
     new(T processor) {
         super(
-            #{new SessionProcessorDescriptor("", "", null, 0, true, processor)}.toArray(SessionProcessorDescriptor),
-            new ProcessableProposalFactory(), new CachingAstProvider());
+            #{new SessionProcessorDescriptor("", "", "", null, 0, true, "", processor)}.toArray(
+                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider());
         this.processor = processor
     }
 

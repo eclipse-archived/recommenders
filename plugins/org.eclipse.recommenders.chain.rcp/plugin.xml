@@ -27,7 +27,7 @@
 	<extension
 		point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.eclipse.recommenders.rcp.category.preferences"
+			category="org.eclipse.recommenders.completion.rcp.preferences"
 			class="org.eclipse.recommenders.internal.chain.rcp.ChainPreferencePage"
 			id="org.eclipse.recommenders.chain.rcp.ChainPreferencePage"
 			name="%page.name">

@@ -28,4 +28,5 @@ public class GuiceModule extends AbstractModule {
     SessionProcessorDescriptor[] provideSessionProcessorDescriptors() {
         return SessionProcessorDescriptor.parseExtensions();
     }
+
 }

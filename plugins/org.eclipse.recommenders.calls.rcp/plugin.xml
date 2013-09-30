@@ -5,9 +5,11 @@
          point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
       <processor
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor"
-            icon="icons/view16/braces.gif"
-            id="org.eclipse.recommenders.calls.rcp.processor1"
-            name="Call Recommender">
+            description="Provides intelligent call proposals, e.g., &quot;99% of all developers called method m() in a similar context.&quot;"
+            icon="icons/view16/bullet_green.png"
+            id="org.eclipse.recommenders.calls.rcp.completion.processor"
+            name="Call Completion Processor"
+            preferencePage="org.eclipse.recommenders.calls.rcp.preferences">
       </processor>
    </extension>
    <extension
@@ -25,9 +27,9 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.recommenders.rcp.category.preferences"
+            category="org.eclipse.recommenders.completion.rcp.preferences"
             class="org.eclipse.recommenders.internal.calls.rcp.PreferencePage"
-            id="org.eclipse.recommenders.calls.rcp.preferencepage"
+            id="org.eclipse.recommenders.calls.rcp.preferences"
             name="Calls">
       </page>
    </extension>

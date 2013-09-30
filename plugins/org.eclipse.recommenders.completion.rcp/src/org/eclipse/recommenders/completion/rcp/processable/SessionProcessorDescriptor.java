@@ -10,10 +10,12 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static com.google.common.base.Optional.fromNullable;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -22,13 +24,18 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
 public class SessionProcessorDescriptor implements Comparable<SessionProcessorDescriptor> {
-    private static Logger log = LoggerFactory.getLogger(SessionProcessorDescriptor.class);
+    private static Logger LOG = LoggerFactory.getLogger(SessionProcessorDescriptor.class);
 
     private static final String PREF_NODE_ID_SESSIONPROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors";
     private static final String DISABLED = "disabled";
@@ -45,21 +52,23 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
                     final String pluginId = elem.getContributor().getName();
                     String id = elem.getAttribute("id");
                     String name = elem.getAttribute("name");
+                    String description = elem.getAttribute("description");
                     final String iconPath = elem.getAttribute("icon");
                     String priorityString = elem.getAttribute("priority");
+                    String preferencePageId = elem.getAttribute("preferencePage");
                     int priority = priorityString == null ? 10 : Integer.parseInt(priorityString);
                     final Image icon = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, iconPath).createImage();
                     SessionProcessor processor = (SessionProcessor) elem.createExecutableExtension("class");
                     boolean enable = !disabledProcessors.contains(id);
-                    SessionProcessorDescriptor d = new SessionProcessorDescriptor(id, name, icon, priority, enable,
-                            processor);
+                    SessionProcessorDescriptor d = new SessionProcessorDescriptor(id, name, description, icon,
+                            priority, enable, preferencePageId, processor);
                     queue.add(d);
                 } catch (Exception e) {
-                    log.error("Exception during extension point parsing.", e);
+                    LOG.error("Exception during extension point parsing.", e);
                 }
             }
         } catch (Exception e) {
-            log.error("Exception during extension point parsing", e);
+            LOG.error("Exception during extension point parsing", e);
         }
         SessionProcessorDescriptor[] res = queue.toArray(new SessionProcessorDescriptor[0]);
         return res;
@@ -67,14 +76,20 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
 
     private static Set<String> getDisabledProcessors() {
         String prefs = getSessionProcessorPreferences().get(DISABLED, "");
-        return Sets.newHashSet(StringUtils.split(prefs));
+        Iterable<String> split = Splitter.on(';').omitEmptyStrings().split(prefs);
+        return Sets.newHashSet(split);
 
     }
 
     private static void saveDisabledProcessors(Set<String> disabledProcessors) {
-        @SuppressWarnings("unchecked")
-        String join = StringUtils.join(disabledProcessors);
-        getSessionProcessorPreferences().put(DISABLED, join);
+        String join = Joiner.on(';').skipNulls().join(disabledProcessors);
+        IEclipsePreferences store = getSessionProcessorPreferences();
+        store.put(DISABLED, join);
+        try {
+            store.flush();
+        } catch (BackingStoreException e) {
+            LOG.error("Failed to flush preferences", e);
+        }
     }
 
     private static IEclipsePreferences getSessionProcessorPreferences() {
@@ -83,19 +98,23 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
 
     private String id;
     private String name;
+    private String description;
     private Image icon;
     private int priority;
     private boolean enabled;
     private SessionProcessor processor;
+    private String preferencePageId;
 
-    public SessionProcessorDescriptor(String id, String name, Image icon, int priority, boolean enabled,
-            SessionProcessor processor) {
+    public SessionProcessorDescriptor(String id, String name, String description, Image icon, int priority,
+            boolean enabled, String preferencePageId, SessionProcessor processor) {
         super();
         this.id = id;
         this.name = name;
+        this.description = description;
         this.icon = icon;
         this.priority = priority;
         this.enabled = enabled;
+        this.preferencePageId = preferencePageId;
         this.processor = processor;
     }
 
@@ -105,6 +124,10 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return defaultString(description, "");
     }
 
     public Image getIcon() {
@@ -134,10 +157,26 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
         saveDisabledProcessors(disabledProcessors);
     }
 
+    public Optional<String> getPreferencePage() {
+        return fromNullable(preferencePageId);
+    }
+
+    @Override
+    public String toString() {
+        return getId();
+    }
+
     @Override
     public int compareTo(SessionProcessorDescriptor o) {
         String other = o.priority + o.id;
         String self = priority + id;
         return self.compareTo(other);
+    }
+
+    public static final class EnabledSessionProcessorPredicate implements Predicate<SessionProcessorDescriptor> {
+        @Override
+        public boolean apply(SessionProcessorDescriptor p) {
+            return p.isEnabled();
+        }
     }
 }
