@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static java.lang.String.format;
+import static org.eclipse.core.runtime.IStatus.WARNING;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
 import static org.eclipse.recommenders.internal.models.rcp.Messages.*;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
@@ -28,6 +31,7 @@ import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.ui.internal.misc.StatusUtil;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -59,8 +63,14 @@ public class DownloadModelArchiveJob extends Job {
             if (cb.downloadedArchive) {
                 bus.post(new ModelArchiveDownloadedEvent(mc));
             }
+            // Returns null if the model coordiante could not be resolved. This may be cause by requesting an mc that
+            // does not exist in the repository or may be cause by a network connecting being down.
             if (result == null) {
-                return StatusUtil.newStatus(IStatus.ERROR, mc + " could not be resolved from " + repository, null);
+                // whatever is the case, we only should log that as warning but do not open an error popup.
+                IStatus err = StatusUtil.newStatus(WARNING,
+                        format("%s could not be resolved from %s.", mc, repository), null);
+                StatusManager.getManager().handle(err, StatusManager.LOG);
+                return Status.CANCEL_STATUS;
             }
         } catch (Exception e) {
             return newStatus(BUNDLE_ID, "Failed to download " + mc, e);
