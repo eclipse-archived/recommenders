@@ -7,20 +7,25 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - change to tree viewer.
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.eclipse.recommenders.rcp.SharedImages.ELCL_COLLAPSE_ALL;
+import static org.eclipse.recommenders.rcp.SharedImages.ELCL_EXPAND_ALL;
 import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.PojoProperties;
@@ -35,17 +40,20 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.models.Coordinates;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -64,17 +72,21 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -83,7 +95,7 @@ public class ModelCoordinatesView extends ViewPart {
 
     private DataBindingContext m_bindingContext;
 
-    private Table table;
+    private Tree tree;
 
     @Inject
     IModelIndex index;
@@ -95,14 +107,15 @@ public class ModelCoordinatesView extends ViewPart {
     EclipseModelRepository repo;
 
     @Inject
+    ModelsRcpPreferences prefs;
+
+    @Inject
     EventBus bus;
 
-    private TableViewer tableViewer;
-    private List<KnownCoordiante> values = Lists.newArrayList();
+    private TreeViewer treeViewer;
+    private List<KnownCoordinate> values = Lists.newArrayList();
 
     private Text txtSearch;
-
-    private Map<ModelCoordinate, KnownCoordiante> triggeredDownloads = Maps.newHashMap();
 
     @Override
     public void createPartControl(Composite parent) {
@@ -116,42 +129,57 @@ public class ModelCoordinatesView extends ViewPart {
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.ARROW_DOWN && table.getItemCount() != 0) {
-                    table.setFocus();
-                    table.setSelection(0);
+                if (e.keyCode == SWT.ARROW_DOWN && tree.getItemCount() != 0) {
+                    tree.setFocus();
+                    tree.setSelection(tree.getTopItem());
                 }
             }
         });
 
         Composite composite = new Composite(container, SWT.NONE);
 
-        TableColumnLayout tableLayout = new TableColumnLayout();
-        composite.setLayout(tableLayout);
+        TreeColumnLayout treeLayout = new TreeColumnLayout();
+        composite.setLayout(treeLayout);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
-        ColumnViewerToolTipSupport.enableFor(tableViewer);
-        table = tableViewer.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(treeViewer);
+        tree = treeViewer.getTree();
+        tree.setHeaderVisible(true);
+        tree.setLinesVisible(true);
 
-        TableViewerColumn tvcPrimary = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tcPrimary = tvcPrimary.getColumn();
-        tableLayout.setColumnData(tcPrimary, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+        TreeViewerColumn tvcPrimary = new TreeViewerColumn(treeViewer, SWT.NONE);
+        TreeColumn tcPrimary = tvcPrimary.getColumn();
+        treeLayout.setColumnData(tcPrimary, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
         tcPrimary.setText("Primary");
-        tvcPrimary.setLabelProvider(new ColumnLabelProvider() {
-            public String getText(Object element) {
-                KnownCoordiante v = (KnownCoordiante) element;
-                return v.getProjectCoordiante().toString();
+        tvcPrimary.setLabelProvider(new StyledCellLabelProvider() {
+
+            @Override
+            public void update(ViewerCell cell) {
+                Object element = cell.getElement();
+                StyledString text = new StyledString();
+                if (element instanceof String) {
+                    String url = (String) element;
+                    text.append(url);
+                    text.append(" (" + fetchNumberOfModels(url) + " known coordiantes) ", StyledString.COUNTER_STYLER);
+                    cell.setImage(images.getImage(SharedImages.OBJ_REPOSITORY));
+                }
+                if (element instanceof KnownCoordinate) {
+                    KnownCoordinate v = (KnownCoordinate) element;
+                    text.append(v.pc.toString());
+                }
+                cell.setText(text.toString());
+                cell.setStyleRanges(text.getStyleRanges());
+                super.update(cell);
             }
 
         });
 
         for (String classifier : Constants.MODEL_CLASSIFIER) {
-            newColumn(tableLayout, classifier);
+            newColumn(treeLayout, classifier);
         }
 
-        tableViewer.setContentProvider(new IStructuredContentProvider() {
+        treeViewer.setContentProvider(new ITreeContentProvider() {
 
             @Override
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -162,55 +190,98 @@ public class ModelCoordinatesView extends ViewPart {
             }
 
             @Override
+            public boolean hasChildren(Object element) {
+                if (element instanceof String) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Object getParent(Object element) {
+                KnownCoordinate v = (KnownCoordinate) element;
+                return v.url;
+            }
+
+            @Override
             public Object[] getElements(Object inputElement) {
-                return ((List<?>) inputElement).toArray();
+                return prefs.remotes;
+            }
+
+            @Override
+            public Object[] getChildren(Object parentElement) {
+                if (parentElement instanceof String) {
+                    String url = (String) parentElement;
+                    ImmutableListMultimap<String, KnownCoordinate> multimap = groupByUrl(values);
+                    return multimap.get(url).toArray();
+                }
+                return new Object[0];
             }
         });
-        tableViewer.setSorter(new ViewerSorter());
+
+        treeViewer.setComparator(new ViewerComparator() {
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+                if (e1 instanceof String && e2 instanceof String) {
+                    String s1 = (String) e1;
+                    String s2 = (String) e2;
+                    return position(s1).compareTo(position(s2));
+                }
+                if (e1 instanceof KnownCoordinate && e2 instanceof KnownCoordinate) {
+                    KnownCoordinate v1 = (KnownCoordinate) e1;
+                    KnownCoordinate v2 = (KnownCoordinate) e2;
+                    return v1.pc.toString().compareTo(v2.pc.toString());
+                }
+                return super.compare(viewer, e1, e2);
+            }
+
+            public Integer position(String string) {
+                String[] remotes = prefs.remotes;
+                for (int i = 0; i < remotes.length; i++) {
+                    if (remotes[i].equals(string)) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        });
+
         initializeContent();
         addRefreshButton();
+        addExpandAllButton();
+        addCollapseAllButton();
         addDeleteButton();
         addContextMenu();
         m_bindingContext = initDataBindings();
     }
 
-    class KnownCoordiante {
-        private String url;
-        private ProjectCoordinate pc;
-        private Collection<ModelCoordinate> mcs;
+    private ImmutableListMultimap<String, KnownCoordinate> groupByUrl(List<KnownCoordinate> values) {
+        return Multimaps.index(values, new Function<KnownCoordinate, String>() {
 
-        public KnownCoordiante(String url, ProjectCoordinate pc, Collection<ModelCoordinate> mcs) {
-            this.setUrl(url);
-            this.setProjectCoordiante(pc);
-            this.setModelCoordinates(mcs);
-        }
+            @Override
+            public String apply(KnownCoordinate arg0) {
+                return arg0.url;
+            }
+        });
+    }
 
-        public String getUrl() {
-            return url;
-        }
+    protected int fetchNumberOfModels(String url) {
+        return groupByUrl(values).get(url).size();
+    }
 
-        public void setUrl(String url) {
+    public class KnownCoordinate {
+        public String url;
+        public ProjectCoordinate pc;
+        public Collection<ModelCoordinate> mcs;
+
+        public KnownCoordinate(String url, ProjectCoordinate pc, Collection<ModelCoordinate> mcs) {
             this.url = url;
-        }
-
-        public ProjectCoordinate getProjectCoordiante() {
-            return pc;
-        }
-
-        public void setProjectCoordiante(ProjectCoordinate pc) {
             this.pc = pc;
-        }
-
-        public Collection<ModelCoordinate> getModelCooriantes() {
-            return mcs;
-        }
-
-        public void setModelCoordinates(Collection<ModelCoordinate> mcs) {
             this.mcs = mcs;
         }
 
         private Optional<ModelCoordinate> searchModelCoordinate(String classifier) {
-            for (ModelCoordinate mc : getModelCooriantes()) {
+            for (ModelCoordinate mc : mcs) {
                 if (mc.getClassifier().equals(classifier)) {
                     return Optional.of(mc);
                 }
@@ -230,6 +301,16 @@ public class ModelCoordinatesView extends ViewPart {
             return searchModelCoordinate(classifier).isPresent();
         }
 
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this, "mcs");
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj, "mcs");
+        }
+
     }
 
     private void addRefreshButton() {
@@ -242,6 +323,30 @@ public class ModelCoordinatesView extends ViewPart {
         refreshAction.setToolTipText("Refresh");
         refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
+    }
+
+    private void addCollapseAllButton() {
+        IAction expandAction = new Action() {
+            @Override
+            public void run() {
+                treeViewer.collapseAll();
+            }
+        };
+        expandAction.setToolTipText("Collaps all");
+        expandAction.setImageDescriptor(images.getDescriptor(ELCL_COLLAPSE_ALL));
+        getViewSite().getActionBars().getToolBarManager().add(expandAction);
+    }
+
+    private void addExpandAllButton() {
+        IAction expandAction = new Action() {
+            @Override
+            public void run() {
+                treeViewer.expandAll();
+            }
+        };
+        expandAction.setToolTipText("Expand all");
+        expandAction.setImageDescriptor(images.getDescriptor(ELCL_EXPAND_ALL));
+        getViewSite().getActionBars().getToolBarManager().add(expandAction);
     }
 
     private void addDeleteButton() {
@@ -259,36 +364,34 @@ public class ModelCoordinatesView extends ViewPart {
 
     private void addContextMenu() {
         final MenuManager menuManager = new MenuManager();
-        Menu contextMenu = menuManager.createContextMenu(table);
+        Menu contextMenu = menuManager.createContextMenu(tree);
         menuManager.setRemoveAllWhenShown(true);
-        table.setMenu(contextMenu);
+        tree.setMenu(contextMenu);
 
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                Set<KnownCoordiante> selectedValues = Selections.toSet(tableViewer.getSelection());
+                Set<KnownCoordinate> selectedValues = Selections.toSet(treeViewer.getSelection());
                 Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
-                for (KnownCoordiante value : selectedValues) {
-                    Collection<ModelCoordinate> mcs = value.getModelCooriantes();
+                for (KnownCoordinate value : selectedValues) {
+                    Collection<ModelCoordinate> mcs = value.mcs;
                     selectedModelCoordinates.addAll(mcs);
-                    for (ModelCoordinate modelCoordinate : mcs) {
-                        triggeredDownloads.put(modelCoordinate, value);
-                    }
                 }
                 if (!selectedValues.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadForModelCoordinatesAction("Download models",
-                            selectedModelCoordinates, repo, bus));
+                    TriggerModelDownloadForModelCoordinatesAction action = new TriggerModelDownloadForModelCoordinatesAction(
+                            "Download models", selectedModelCoordinates, repo, bus);
+                    menuManager.add(action);
                 }
             }
         });
     }
 
-    private void newColumn(TableColumnLayout tableLayout, final String classifier) {
-        TableViewerColumn tvColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
-        TableColumn column = tvColumn.getColumn();
+    private void newColumn(TreeColumnLayout treeLayout, final String classifier) {
+        TreeViewerColumn tvColumn = new TreeViewerColumn(treeViewer, SWT.CENTER);
+        TreeColumn column = tvColumn.getColumn();
         column.setMoveable(true);
         column.setResizable(false);
-        tableLayout.setColumnData(column, new ColumnPixelData(20, false, true));
+        treeLayout.setColumnData(column, new ColumnPixelData(20, false, true));
         column.setText(classifier.toUpperCase());
         tvColumn.setLabelProvider(new ColumnLabelProvider() {
 
@@ -299,28 +402,33 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public String getToolTipText(Object element) {
-                KnownCoordiante v = (KnownCoordiante) element;
+                if (element instanceof KnownCoordinate) {
+                    KnownCoordinate v = (KnownCoordinate) element;
 
-                if (!v.hasModelCoordinate(classifier)) {
-                    return "No model registered";
-                } else if (v.isDownloaded(classifier)) {
-                    return "Locally available";
-                } else {
-                    return "Remotely available";
+                    if (!v.hasModelCoordinate(classifier)) {
+                        return "No model registered";
+                    } else if (v.isDownloaded(classifier)) {
+                        return "Locally available";
+                    } else {
+                        return "Remotely available";
+                    }
                 }
+                return null;
             }
 
             @Override
             public Image getImage(Object element) {
-                KnownCoordiante v = (KnownCoordiante) element;
-
-                if (!v.hasModelCoordinate(classifier)) {
-                    return images.getImage(SharedImages.OBJ_CROSS_RED);
-                } else if (v.isDownloaded(classifier)) {
-                    return images.getImage(SharedImages.OBJ_CHECK_GREEN);
-                } else {
-                    return images.getImage(SharedImages.OBJ_BULLET_BLUE);
+                if (element instanceof KnownCoordinate) {
+                    KnownCoordinate v = (KnownCoordinate) element;
+                    if (!v.hasModelCoordinate(classifier)) {
+                        return images.getImage(SharedImages.OBJ_CROSS_RED);
+                    } else if (v.isDownloaded(classifier)) {
+                        return images.getImage(SharedImages.OBJ_CHECK_GREEN);
+                    } else {
+                        return images.getImage(SharedImages.OBJ_BULLET_BLUE);
+                    }
                 }
+                return null;
             }
         });
     }
@@ -333,15 +441,15 @@ public class ModelCoordinatesView extends ViewPart {
             values.addAll(createValues(entry.getKey(), entry.getValue()));
         }
 
-        tableViewer.setInput(values);
+        treeViewer.setInput(values);
     }
 
-    private List<KnownCoordiante> createValues(String url, Collection<ModelCoordinate> collection) {
+    private List<KnownCoordinate> createValues(String url, Collection<ModelCoordinate> collection) {
         Multimap<ProjectCoordinate, ModelCoordinate> map = groupDataByProjectCoordinate(collection);
 
-        List<KnownCoordiante> values = Lists.newArrayList();
+        List<KnownCoordinate> values = Lists.newArrayList();
         for (ProjectCoordinate rep : map.keySet()) {
-            values.add(new KnownCoordiante(url, rep, map.get(rep)));
+            values.add(new KnownCoordinate(url, rep, map.get(rep)));
         }
 
         return values;
@@ -377,22 +485,25 @@ public class ModelCoordinatesView extends ViewPart {
 
     @Override
     public void setFocus() {
-        table.setFocus();
+        tree.setFocus();
     }
 
     // needs to be public to work with PojoProperties
     public void setFilter(final String filter) {
-        tableViewer.setFilters(new ViewerFilter[] { new ViewerFilter() {
+        treeViewer.setFilters(new ViewerFilter[] { new ViewerFilter() {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-                KnownCoordiante coord = (KnownCoordiante) element;
-                for (String s : coord.getProjectCoordiante().toString().split(":")) {
-                    if (s.startsWith(filter)) {
-                        return true;
+                if (element instanceof KnownCoordinate) {
+                    KnownCoordinate coord = (KnownCoordinate) element;
+                    for (String s : coord.pc.toString().split(":")) {
+                        if (s.startsWith(filter)) {
+                            return true;
+                        }
                     }
+                    return false;
                 }
-                return false;
+                return true;
             }
         }
 
@@ -417,11 +528,21 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
-                KnownCoordiante value = triggeredDownloads.get(e.model);
-                if (value != null) {
-                    tableViewer.refresh(value);
+                KnownCoordinate key = createKey(e.model);
+                KnownCoordinate element = Iterables.tryFind(values, Predicates.equalTo(key)).orNull();
+                if (element != null) {
+                    treeViewer.update(element, null);
                 }
                 return Status.OK_STATUS;
+            }
+
+            private KnownCoordinate createKey(ModelCoordinate mc) {
+                Optional<String> remoteUrl = mc.getHint(ModelCoordinate.HINT_REPOSITORY_URL);
+                if (remoteUrl.isPresent()) {
+                    return new KnownCoordinate(remoteUrl.get(), Coordinates.toProjectCoordinate(mc),
+                            Collections.<ModelCoordinate>emptyList());
+                }
+                return null;
             }
         }.schedule();
     }
