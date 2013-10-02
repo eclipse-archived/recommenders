@@ -10,6 +10,7 @@
 	</parent>
 	<artifactId>releng</artifactId>
 	<packaging>pom</packaging>
+	<name>Release Engineering</name>
 	<modules>
 		<module>licenses</module>
 		<module>coding-conventions</module>

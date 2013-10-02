@@ -10,6 +10,7 @@
 	</parent>
 	<artifactId>targets</artifactId>
 	<packaging>pom</packaging>
+	<name>Targets Definitions</name>
 	<modules>
 		<module>kepler</module>
 		<module>luna</module>

@@ -10,19 +10,22 @@
 	</parent>
 	<artifactId>repositories</artifactId>
 	<packaging>pom</packaging>
+	<name>Update Sites</name>
 	<modules>
-		<!-- Contains all features produced by Eclipse Code Recommenders (including test features). -->
+		<!-- Contains all features produced by Eclipse Code Recommenders. -->
 		<module>head</module>
 		<!-- May contain features that have not undergone a release review. -->
 		<module>milestones</module>
-		<!-- Contains features that had a release review. -->
+		<!-- Contains features that have undergone a release review. -->
 		<module>stable</module>
+		<!-- Contains features that are contributed to the current simultaneous release. -->
+		<module>simrel</module>
 	</modules>
 	<properties>
 		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>
-		<p2StatsURL>http://download.codetrails.com/stats/recommenders/${project.artifactId}</p2StatsURL>
+		<p2StatsURL>http://download.eclipse.org/stats/recommenders/${project.artifactId}</p2StatsURL>
 		<!-- At the moment, this list of features needs to be maintained manually. -->
-		<statsTrackedArtifacts>org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.simrel.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature</statsTrackedArtifacts>
+		<statsTrackedArtifacts>org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature,org.eclipse.recommenders.simrel.feature</statsTrackedArtifacts>
 	</properties>
 	<build>
 		<pluginManagement>

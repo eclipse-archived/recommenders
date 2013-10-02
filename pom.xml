@@ -413,6 +413,7 @@
 	</build>
 	<profiles>
 		<profile>
+			<!-- If you enable the "build-server" profile locally (for testing purposes), set "-Dcbi.jarsigner.skip=true" to skip JAR signing; signing only works on the build server. -->
 			<id>build-server</id>
 			<properties>
 				<build-alias>b${env.BUILD_NUMBER}</build-alias>

@@ -8,10 +8,9 @@
 		<version>1.100.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-
 	<artifactId>features</artifactId>
 	<packaging>pom</packaging>
-
+	<name>Features</name>
 	<modules>
 		<module>org.eclipse.recommenders.jayes.feature</module>
 		<module>org.eclipse.recommenders.license.feature</module>
@@ -19,7 +18,6 @@
 		<module>org.eclipse.recommenders.rcp.tests.feature</module>
 		<module>org.eclipse.recommenders.simrel.feature</module>
 	</modules>
-
 	<build>
 		<pluginManagement>
 			<plugins>
