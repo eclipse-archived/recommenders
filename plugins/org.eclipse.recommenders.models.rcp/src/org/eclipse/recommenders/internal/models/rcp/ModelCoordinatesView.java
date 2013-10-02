@@ -14,6 +14,9 @@ import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -49,6 +52,7 @@ import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
+import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelCoordinatesAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Constants;
@@ -66,8 +70,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -90,9 +98,11 @@ public class ModelCoordinatesView extends ViewPart {
     EventBus bus;
 
     private TableViewer tableViewer;
-    private Multimap<ProjectCoordinate, String> models;
+    private List<KnownCoordiante> values = Lists.newArrayList();
 
     private Text txtSearch;
+
+    private Map<ModelCoordinate, KnownCoordiante> triggeredDownloads = Maps.newHashMap();
 
     @Override
     public void createPartControl(Composite parent) {
@@ -129,14 +139,17 @@ public class ModelCoordinatesView extends ViewPart {
         TableColumn tcPrimary = tvcPrimary.getColumn();
         tableLayout.setColumnData(tcPrimary, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
         tcPrimary.setText("Primary");
-        tvcPrimary.setLabelProvider(new ColumnLabelProvider());
+        tvcPrimary.setLabelProvider(new ColumnLabelProvider() {
+            public String getText(Object element) {
+                KnownCoordiante v = (KnownCoordiante) element;
+                return v.getProjectCoordiante().toString();
+            }
 
-        newColumn(tableLayout, Constants.CLASS_CALL_MODELS);
-        newColumn(tableLayout, Constants.CLASS_OVRD_MODEL);
-        newColumn(tableLayout, Constants.CLASS_OVRP_MODEL);
-        newColumn(tableLayout, Constants.CLASS_OVRM_MODEL);
-        newColumn(tableLayout, Constants.CLASS_SELFC_MODEL);
-        newColumn(tableLayout, Constants.CLASS_SELFM_MODEL);
+        });
+
+        for (String classifier : Constants.MODEL_CLASSIFIER) {
+            newColumn(tableLayout, classifier);
+        }
 
         tableViewer.setContentProvider(new IStructuredContentProvider() {
 
@@ -150,7 +163,7 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public Object[] getElements(Object inputElement) {
-                return ((Multimap<?, ?>) inputElement).keySet().toArray();
+                return ((List<?>) inputElement).toArray();
             }
         });
         tableViewer.setSorter(new ViewerSorter());
@@ -159,6 +172,64 @@ public class ModelCoordinatesView extends ViewPart {
         addDeleteButton();
         addContextMenu();
         m_bindingContext = initDataBindings();
+    }
+
+    class KnownCoordiante {
+        private String url;
+        private ProjectCoordinate pc;
+        private Collection<ModelCoordinate> mcs;
+
+        public KnownCoordiante(String url, ProjectCoordinate pc, Collection<ModelCoordinate> mcs) {
+            this.setUrl(url);
+            this.setProjectCoordiante(pc);
+            this.setModelCoordinates(mcs);
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public ProjectCoordinate getProjectCoordiante() {
+            return pc;
+        }
+
+        public void setProjectCoordiante(ProjectCoordinate pc) {
+            this.pc = pc;
+        }
+
+        public Collection<ModelCoordinate> getModelCooriantes() {
+            return mcs;
+        }
+
+        public void setModelCoordinates(Collection<ModelCoordinate> mcs) {
+            this.mcs = mcs;
+        }
+
+        private Optional<ModelCoordinate> searchModelCoordinate(String classifier) {
+            for (ModelCoordinate mc : getModelCooriantes()) {
+                if (mc.getClassifier().equals(classifier)) {
+                    return Optional.of(mc);
+                }
+            }
+            return Optional.absent();
+        }
+
+        public boolean isDownloaded(String classifier) {
+            Optional<ModelCoordinate> omc = searchModelCoordinate(classifier);
+            if (omc.isPresent()) {
+                return repo.getLocation(omc.get(), false).isPresent();
+            }
+            return false;
+        }
+
+        public boolean hasModelCoordinate(String classifier) {
+            return searchModelCoordinate(classifier).isPresent();
+        }
+
     }
 
     private void addRefreshButton() {
@@ -195,10 +266,18 @@ public class ModelCoordinatesView extends ViewPart {
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                Set<ProjectCoordinate> pcs = Selections.toSet(tableViewer.getSelection());
-                if (!pcs.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadActionForProjectCoordinates("Download models", pcs, index,
-                            repo, bus));
+                Set<KnownCoordiante> selectedValues = Selections.toSet(tableViewer.getSelection());
+                Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
+                for (KnownCoordiante value : selectedValues) {
+                    Collection<ModelCoordinate> mcs = value.getModelCooriantes();
+                    selectedModelCoordinates.addAll(mcs);
+                    for (ModelCoordinate modelCoordinate : mcs) {
+                        triggeredDownloads.put(modelCoordinate, value);
+                    }
+                }
+                if (!selectedValues.isEmpty()) {
+                    menuManager.add(new TriggerModelDownloadForModelCoordinatesAction("Download models",
+                            selectedModelCoordinates, repo, bus));
                 }
             }
         });
@@ -220,58 +299,80 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public String getToolTipText(Object element) {
-                ProjectCoordinate pc = (ProjectCoordinate) element;
-                ModelCoordinate mc = Coordinates.toModelCoordinate(pc, classifier, "zip");
-                if (!containsModel(classifier, element)) {
+                KnownCoordiante v = (KnownCoordiante) element;
+
+                if (!v.hasModelCoordinate(classifier)) {
                     return "No model registered";
-                } else if (isDownloaded(mc)) {
+                } else if (v.isDownloaded(classifier)) {
                     return "Locally available";
                 } else {
                     return "Remotely available";
                 }
             }
 
-            private boolean containsModel(final String classifier, Object element) {
-                Collection<String> values = models.get((ProjectCoordinate) element);
-                boolean contains = values.contains(classifier);
-                return contains;
-            }
-
             @Override
             public Image getImage(Object element) {
-                ProjectCoordinate pc = (ProjectCoordinate) element;
-                ModelCoordinate mc = Coordinates.toModelCoordinate(pc, classifier, "zip");
-                if (!containsModel(classifier, element)) {
-                    return images.getImage(SharedImages.OBJ_CROSS_RED);
-                } else if (!isDownloaded(mc)) {
-                    return images.getImage(SharedImages.OBJ_BULLET_BLUE);
-                } else {
-                    return images.getImage(SharedImages.OBJ_CHECK_GREEN);
-                }
-            }
+                KnownCoordiante v = (KnownCoordiante) element;
 
-            private boolean isDownloaded(final ModelCoordinate mc) {
-                return repo.getLocation(mc, false).isPresent();
+                if (!v.hasModelCoordinate(classifier)) {
+                    return images.getImage(SharedImages.OBJ_CROSS_RED);
+                } else if (v.isDownloaded(classifier)) {
+                    return images.getImage(SharedImages.OBJ_CHECK_GREEN);
+                } else {
+                    return images.getImage(SharedImages.OBJ_BULLET_BLUE);
+                }
             }
         });
     }
 
     private void initializeContent() {
-        models = LinkedListMultimap.create();
-        addClassifierToIndex(models, Constants.CLASS_CALL_MODELS);
-        addClassifierToIndex(models, Constants.CLASS_OVRD_MODEL);
-        addClassifierToIndex(models, Constants.CLASS_OVRM_MODEL);
-        addClassifierToIndex(models, Constants.CLASS_OVRP_MODEL);
-        addClassifierToIndex(models, Constants.CLASS_SELFC_MODEL);
-        addClassifierToIndex(models, Constants.CLASS_SELFM_MODEL);
-        tableViewer.setInput(models);
+        Multimap<String, ModelCoordinate> groupedByRepository = fetchDataGroupedByRepository();
+
+        values = Lists.newArrayList();
+        for (Entry<String, Collection<ModelCoordinate>> entry : groupedByRepository.asMap().entrySet()) {
+            values.addAll(createValues(entry.getKey(), entry.getValue()));
+        }
+
+        tableViewer.setInput(values);
     }
 
-    private void addClassifierToIndex(Multimap<ProjectCoordinate, String> models, String classifier) {
-        for (ModelCoordinate mc : index.getKnownModels(classifier)) {
-            ProjectCoordinate pc = Coordinates.toProjectCoordinate(mc);
-            models.put(pc, classifier);
+    private List<KnownCoordiante> createValues(String url, Collection<ModelCoordinate> collection) {
+        Multimap<ProjectCoordinate, ModelCoordinate> map = groupDataByProjectCoordinate(collection);
+
+        List<KnownCoordiante> values = Lists.newArrayList();
+        for (ProjectCoordinate rep : map.keySet()) {
+            values.add(new KnownCoordiante(url, rep, map.get(rep)));
         }
+
+        return values;
+    }
+
+    private Multimap<String, ModelCoordinate> fetchDataGroupedByRepository() {
+        Multimap<String, ModelCoordinate> temp = LinkedListMultimap.create();
+
+        for (String classifier : Constants.MODEL_CLASSIFIER) {
+            addModelCoordinateToIndex(temp, classifier);
+        }
+        return temp;
+    }
+
+    private void addModelCoordinateToIndex(Multimap<String, ModelCoordinate> temp, String classifier) {
+        for (ModelCoordinate mc : index.getKnownModels(classifier)) {
+            Optional<String> hint = mc.getHint(ModelCoordinate.HINT_REPOSITORY_URL);
+            if (hint.isPresent()) {
+                temp.put(hint.get(), mc);
+            }
+        }
+    }
+
+    private Multimap<ProjectCoordinate, ModelCoordinate> groupDataByProjectCoordinate(
+            Collection<ModelCoordinate> collection) {
+        Multimap<ProjectCoordinate, ModelCoordinate> map = LinkedListMultimap.create();
+
+        for (ModelCoordinate modelCoordinate : collection) {
+            map.put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+        }
+        return map;
     }
 
     @Override
@@ -285,8 +386,8 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-                ProjectCoordinate coord = (ProjectCoordinate) element;
-                for (String s : coord.toString().split(":")) {
+                KnownCoordiante coord = (KnownCoordiante) element;
+                for (String s : coord.getProjectCoordiante().toString().split(":")) {
                     if (s.startsWith(filter)) {
                         return true;
                     }
@@ -316,8 +417,10 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
-                ProjectCoordinate pc = Coordinates.toProjectCoordinate(e.model);
-                tableViewer.refresh(pc);
+                KnownCoordiante value = triggeredDownloads.get(e.model);
+                if (value != null) {
+                    tableViewer.refresh(value);
+                }
                 return Status.OK_STATUS;
             }
         }.schedule();

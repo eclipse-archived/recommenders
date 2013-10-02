@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.rcp.SharedImages.*;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAR;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAVA_PROJECT;
+import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JRE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForDependencyInfosAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Constants;
@@ -104,8 +107,8 @@ public class CoordinatesToModelsView extends ViewPart {
                 IStructuredSelection selection = Checks.cast(treeViewer.getSelection());
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadActionForDependencyInfos("Download models", deps,
-                            pcProvider, modelIndex, eclipseModelRepository, bus));
+                    menuManager.add(new TriggerModelDownloadForDependencyInfosAction("Download models", deps,
+                            Constants.MODEL_CLASSIFIER, pcProvider, modelIndex, eclipseModelRepository, bus));
                 }
             }
         });
