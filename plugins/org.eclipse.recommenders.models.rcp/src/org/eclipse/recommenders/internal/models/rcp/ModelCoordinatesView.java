@@ -75,6 +75,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -116,6 +117,20 @@ public class ModelCoordinatesView extends ViewPart {
     private List<KnownCoordinate> values = Lists.newArrayList();
 
     private Text txtSearch;
+
+    final PatternFilter patternFilter = new PatternFilter() {
+        @Override
+        protected boolean isLeafMatch(final Viewer viewer, final Object element) {
+            if (element instanceof KnownCoordinate) {
+                final KnownCoordinate coor = (KnownCoordinate) element;
+                return wordMatches(coor.pc.toString());
+            }
+            if (element instanceof String) {
+                return true;
+            }
+            return super.isLeafMatch(viewer, element);
+        }
+    };
 
     @Override
     public void createPartControl(Composite parent) {
@@ -490,24 +505,11 @@ public class ModelCoordinatesView extends ViewPart {
 
     // needs to be public to work with PojoProperties
     public void setFilter(final String filter) {
-        treeViewer.setFilters(new ViewerFilter[] { new ViewerFilter() {
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element) {
-                if (element instanceof KnownCoordinate) {
-                    KnownCoordinate coord = (KnownCoordinate) element;
-                    for (String s : coord.pc.toString().split(":")) {
-                        if (s.startsWith(filter)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                return true;
-            }
-        }
-
-        });
+        treeViewer.getTree().setRedraw(false);
+        patternFilter.setPattern("*" + filter);
+        treeViewer.setFilters(new ViewerFilter[] { patternFilter });
+        treeViewer.getTree().setRedraw(true);
+        treeViewer.expandAll();
     }
 
     @Override
