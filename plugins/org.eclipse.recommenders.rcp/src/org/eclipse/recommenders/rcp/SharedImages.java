@@ -40,6 +40,7 @@ public final class SharedImages {
     public static final String OBJ_JAR = "/icons/obj16/jar.gif";
     public static final String OBJ_JAVA_PROJECT = "/icons/obj16/project.gif";
     public static final String OBJ_JRE = "/icons/obj16/jre.gif";
+    public static final String OBJ_REPOSITORY = "/icons/obj16/repository.gif";
     public static final String OVR_STAR = "/icons/ovr16/star.png";
     public static final String VIEW_SLICE = "/icons/view16/slice.gif";
 
