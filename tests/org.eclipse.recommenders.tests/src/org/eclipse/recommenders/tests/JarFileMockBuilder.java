@@ -8,70 +8,52 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  *    Andreas Sewe - enhancements to mock's fidelity
+ *    Johannes Dorn - mock getEntry(String)
  */
 package org.eclipse.recommenders.tests;
 
+import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.utils.Pair;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.Lists;
+
 public class JarFileMockBuilder {
 
-    private final List<Pair<String, InputStream>> entries = new LinkedList<Pair<String, InputStream>>();
+    private final JarFile jarFile = mock(JarFile.class);
+
+    private final List<JarEntry> mockedEntries = Lists.newLinkedList();
 
     public JarFile build() {
-        final JarFile jarFile = Mockito.mock(JarFile.class);
-        Mockito.when(jarFile.entries()).thenAnswer(new Answer<Enumeration<JarEntry>>() {
+        when(jarFile.entries()).thenAnswer(new Answer<Enumeration<JarEntry>>() {
 
             @Override
             public Enumeration<JarEntry> answer(InvocationOnMock invocation) throws Throwable {
-                return new EntryEnumeration(jarFile);
+                return Collections.enumeration(mockedEntries);
             }
         });
         return jarFile;
     }
 
-    public void addEntry(final String filename, final InputStream inputStream) {
-        entries.add(Pair.newPair(filename, inputStream));
-    }
-
-    private class EntryEnumeration implements Enumeration<JarEntry> {
-
-        private final Iterator<Pair<String, InputStream>> iterator;
-        private final JarFile jarFile;
-
-        private EntryEnumeration(final JarFile jarFile) {
-            this.jarFile = jarFile;
-            iterator = entries.iterator();
+    public void addEntry(final String name, final InputStream stream) {
+        JarEntry entry = mock(JarEntry.class);
+        when(entry.getName()).thenReturn(name);
+        when(jarFile.getEntry(name)).thenReturn(entry);
+        try {
+            when(jarFile.getInputStream(entry)).thenReturn(stream);
+        } catch (IOException e) {
+            throwUnreachable();
         }
-
-        @Override
-        public boolean hasMoreElements() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public JarEntry nextElement() {
-            final Pair<String, InputStream> pair = iterator.next();
-            final JarEntry jarEntry = Mockito.mock(JarEntry.class);
-            Mockito.when(jarEntry.getName()).thenReturn(pair.getFirst());
-            try {
-                Mockito.when(jarFile.getInputStream(jarEntry)).thenReturn(pair.getSecond());
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
-            }
-            return jarEntry;
-        }
-
+        mockedEntries.add(entry);
     }
 }
