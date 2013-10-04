@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS {
+public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.models.rcp.messages"; //$NON-NLS-1$
     public static String JOB_INITIALIZE_PROJECTS;
     public static String JOB_UPDATE_MODEL_INDEX;

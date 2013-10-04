@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Optional;
 
-public class Coordinates {
+public final class Coordinates {
 
     public static ModelCoordinate toModelCoordinate(ProjectCoordinate pc, String classifier, String extension) {
         return new ModelCoordinate(pc.getGroupId(), pc.getArtifactId(), classifier, extension, pc.getVersion());

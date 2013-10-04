@@ -49,4 +49,6 @@ public final class OsgiVersionParser {
         st.nextToken();
     }
 
+    private OsgiVersionParser() {
+    }
 }

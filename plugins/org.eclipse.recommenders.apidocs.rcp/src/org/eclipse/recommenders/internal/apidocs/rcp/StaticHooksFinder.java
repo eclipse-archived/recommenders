@@ -169,13 +169,11 @@ public class StaticHooksFinder extends ApidocProvider {
                 @Override
                 public void mouseExit(final MouseEvent e) {
                     // TODO Auto-generated method stub
-                    System.out.println(e);
                 }
 
                 @Override
                 public void mouseEnter(final MouseEvent e) {
                     // TODO Auto-generated method stub
-                    System.out.println(e);
                 }
             });
             styledText.setRedraw(true);

@@ -29,6 +29,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.SubArtifact;
@@ -42,6 +44,8 @@ import com.google.common.net.InternetDomainName;
 
 @Beta
 public class Artifacts {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Artifacts.class);
 
     /**
      * groupId:artifactId:extension:classifier:version.
@@ -205,7 +209,7 @@ public class Artifacts {
             final Document doc = parsePom(pom);
             return of(extractCoordinateFromPom(doc));
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOG.error("Failed to find coordinate in file " + f, e);
             return Optional.absent();
         }
     }

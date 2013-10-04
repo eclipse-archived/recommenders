@@ -23,6 +23,8 @@ import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
+import com.google.common.base.Joiner;
+
 public class ApidocsPreferences {
 
     public static final String PROVIDER_RANKING = "providerRanking"; //$NON-NLS-1$
@@ -81,18 +83,6 @@ public class ApidocsPreferences {
         }
     }
 
-    private String createString(final String[] names) {
-        if (names.length > 0) {
-            String out = ""; //$NON-NLS-1$
-            for (final String name : names) {
-                out += "," + name; //$NON-NLS-1$
-            }
-            return out.substring(1);
-        } else {
-            return ""; //$NON-NLS-1$
-        }
-    }
-
     public boolean isProviderEnabled(final ApidocProvider p) {
         final String arrayString = pluginPreferences.get(DISABLED_PROVIDERS, ""); //$NON-NLS-1$
         final String[] deactivatedProviders = arrayString.split(","); //$NON-NLS-1$
@@ -107,7 +97,7 @@ public class ApidocsPreferences {
 
     public void storeProviderEnablement(final List<ApidocProvider> providers) {
         final String[] disabledProviderNames = getDisabledProviderNames(providers);
-        final String toSave = createString(disabledProviderNames);
+        final String toSave = Joiner.on(',').join(disabledProviderNames);
         pluginPreferences.put(DISABLED_PROVIDERS, toSave);
         flush();
     }

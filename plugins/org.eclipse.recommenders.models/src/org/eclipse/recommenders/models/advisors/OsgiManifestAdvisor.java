@@ -101,7 +101,7 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
         if (bundleName == null || bundleVersion == null) {
             return absent();
         }
-        int indexOf = bundleName.indexOf(";");
+        int indexOf = bundleName.indexOf(';');
         String artifactId = bundleName.substring(0, indexOf == -1 ? bundleName.length() : indexOf);
         String groupId = Artifacts.guessGroupId(artifactId);
         Optional<String> version = OsgiVersionParser.parse(bundleVersion);

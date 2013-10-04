@@ -22,11 +22,15 @@ import java.util.UUID;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public class UUIDs {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UUIDs.class);
 
     public static String getUUID() {
         final Optional<String> uuid = lookupUUIDFromStore();
@@ -77,8 +81,7 @@ public class UUIDs {
                 return fromNullable(uuid);
             }
         } catch (final Exception e) {
-            // this is odd:
-            e.printStackTrace();
+            LOG.warn("Failed to generate UUID from mac address.", e);
         }
         return absent();
     }

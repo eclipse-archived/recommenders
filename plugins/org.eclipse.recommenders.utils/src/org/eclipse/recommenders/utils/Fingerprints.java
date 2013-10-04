@@ -23,7 +23,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 
-public class Fingerprints {
+public final class Fingerprints {
     private static final class StreamInputSupplier implements InputSupplier<InputStream> {
         private final InputStream stream;
 

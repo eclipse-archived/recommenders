@@ -17,7 +17,7 @@ import java.net.URL;
 
 import com.google.common.base.Throwables;
 
-public class Urls {
+public final class Urls {
 
     public static String mangle(URL url) {
         return mangle(url.toExternalForm());

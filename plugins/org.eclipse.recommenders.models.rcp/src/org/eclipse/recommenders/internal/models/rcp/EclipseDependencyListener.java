@@ -36,6 +36,8 @@ import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectClosed;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectOpened;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
@@ -47,6 +49,8 @@ import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("restriction")
 public class EclipseDependencyListener implements IDependencyListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EclipseDependencyListener.class);
 
     private final HashMultimap<DependencyInfo, DependencyInfo> workspaceDependenciesByProject = HashMultimap.create();
     private final HashMultimap<DependencyInfo, IPackageFragmentRoot> jrePackageFragmentRoots = HashMultimap.create();
@@ -65,7 +69,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                     registerDependenciesForJavaProject(javaProject);
                 }
             } catch (CoreException e) {
-                e.printStackTrace();
+                LOG.error("failed to register dependencies for project " + project, e);
             }
         }
     }
@@ -100,11 +104,10 @@ public class EclipseDependencyListener implements IDependencyListener {
         }
 
         workspaceDependenciesByProject.put(dependencyInfoForProject, dependencyInfoForProject);
-        workspaceDependenciesByProject
-                .putAll(dependencyInfoForProject, searchForAllDependencyiesOfProject(javaProject));
+        workspaceDependenciesByProject.putAll(dependencyInfoForProject, searchForAllDependenciesOfProject(javaProject));
     }
 
-    private Set<DependencyInfo> searchForAllDependencyiesOfProject(final IJavaProject javaProject) {
+    private Set<DependencyInfo> searchForAllDependenciesOfProject(final IJavaProject javaProject) {
         Set<DependencyInfo> dependencies = Sets.newHashSet();
         Set<IPackageFragmentRoot> jreRoots = jrePackageFragmentRoots.get(createDependencyInfoForProject(javaProject));
         try {
@@ -115,7 +118,8 @@ public class EclipseDependencyListener implements IDependencyListener {
                 }
             }
         } catch (JavaModelException e1) {
-            e1.printStackTrace();
+            LOG.error("failed to search dependencies of project " + javaProject, e1);
+
         }
         return dependencies;
     }
@@ -139,7 +143,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                 }
             }
         } catch (JavaModelException e) {
-            e.printStackTrace();
+            LOG.error("Failed to detect jre for project " + javaProject, e);
         }
         return jreRoots;
     }

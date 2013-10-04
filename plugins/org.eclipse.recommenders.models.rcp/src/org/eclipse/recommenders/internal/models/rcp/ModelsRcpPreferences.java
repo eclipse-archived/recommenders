@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.apache.commons.lang3.ArrayUtils.isEquals;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 
 import javax.inject.Inject;
@@ -39,7 +40,7 @@ public class ModelsRcpPreferences {
     void setRemote(@Preference(Constants.P_REPOSITORY_URL_LIST_ACTIV) String newRemote) throws Exception {
         String[] old = remotes;
         remotes = split(newRemote);
-        if (old != null && !remotes.equals(old)) {
+        if (!isEquals(remotes, old)) {
             bus.post(new ModelRepositoryUrlChangedEvent());
         }
     }

@@ -118,7 +118,7 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
             return absent();
         }
 
-        int indexOf = version.indexOf("-");
+        int indexOf = version.indexOf('-');
         version = version.substring(0, indexOf == -1 ? version.length() : indexOf);
         return tryNewProjectCoordinate(groupId, artifactId, canonicalizeVersion(version));
     }

@@ -24,6 +24,8 @@ import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.Openable;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
@@ -40,6 +42,8 @@ import com.google.common.cache.LoadingCache;
  */
 @Beta
 public class SingleZipCallModelProvider implements ICallModelProvider, Openable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SingleZipCallModelProvider.class);
 
     private final File models;
     private ZipFile zip;
@@ -68,7 +72,7 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
             net.reset();
             return of(net);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOG.error("Failed to acquire model for " + key, e);
             return Optional.absent();
         }
     }

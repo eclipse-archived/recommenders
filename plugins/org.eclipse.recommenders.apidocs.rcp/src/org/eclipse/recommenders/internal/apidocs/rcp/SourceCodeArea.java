@@ -25,7 +25,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
@@ -62,11 +61,6 @@ public final class SourceCodeArea extends JavaSourceViewer {
         final IDocument document = new Document(code);
         format(document);
         setInput(document);
-    }
-
-    @Override
-    public StyledText getTextWidget() {
-        return super.getTextWidget();
     }
 
     private static void format(final IDocument document) {

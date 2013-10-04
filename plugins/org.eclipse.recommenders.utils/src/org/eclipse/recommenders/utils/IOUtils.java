@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.SystemUtils;
 
-public class IOUtils {
+public final class IOUtils {
 
     public static final String LINE_SEPARATOR = SystemUtils.LINE_SEPARATOR;
 
@@ -27,7 +27,7 @@ public class IOUtils {
             s.close();
             return true;
         } catch (IOException e) {
-            System.err.printf("Failed to close resource '%s'. Caught exception printed below.\n", s);
+            System.err.printf("Failed to close resource '%s'. Caught exception printed below.%n", s);
             e.printStackTrace();
             return false;
         }

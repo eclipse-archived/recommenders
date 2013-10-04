@@ -58,6 +58,8 @@ import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
@@ -71,6 +73,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IRcpService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectCoordinateProvider.class);
 
     private final JavaElementResolver javaElementResolver;
     private final ProjectCoordinateAdvisorService pcService;
@@ -200,7 +204,8 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
                 }
             }
         } catch (JavaModelException e) {
-            e.printStackTrace();
+            LOG.error("Failed to traverse project dependencies of " + javaProject, e);
+
         }
         return false;
     }

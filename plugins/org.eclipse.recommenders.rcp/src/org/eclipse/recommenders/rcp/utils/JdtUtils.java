@@ -415,8 +415,8 @@ public class JdtUtils {
                 if (resolvedNames == null || resolvedNames.length == 0) {
                     return of((ITypeName) VmTypeName.OBJECT);
                 }
-                final String pkg = new String(resolvedNames[0][0]);
-                final String name = new String(resolvedNames[0][1]).replace('.', '$');
+                final String pkg = resolvedNames[0][0];
+                final String name = resolvedNames[0][1].replace('.', '$');
                 qName = StringUtils.repeat('[', dimensions) + "L" + pkg + "." + name;
             }
             qName = qName.replace('.', '/');

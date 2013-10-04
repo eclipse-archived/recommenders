@@ -53,7 +53,7 @@ public class Logs {
             // this fails sometimes with an NPE in
             // org.eclipse.core.internal.runtime.Log.isLoggable(Log.java:101)
             log.log(status);
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             System.out.println(status);
         }
     }

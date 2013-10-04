@@ -18,7 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.completion.rcp,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di,
+ org.eclipse.e4.core.di.extensions,
+ org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
@@ -27,4 +31,3 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  org.apache.commons.collections.primitives,
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.math.stat;version="[2.1.0,3.0.0)"
-Export-Package: org.eclipse.recommenders.sandbox.rcp;x-internal:=true

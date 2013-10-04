@@ -39,6 +39,8 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.ui.IWorkbench;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
@@ -49,6 +51,8 @@ import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule implements Module {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModelsRcpModule.class);
 
     public static final String IDENTIFIED_PACKAGE_FRAGMENT_ROOTS = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
@@ -86,7 +90,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("failed to bind file name", e);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }

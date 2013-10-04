@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS {
+public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.subwords.rcp.messages"; //$NON-NLS-1$
     public static String DIALOG_FAIL_TO_GUESS_METHOD_PARAMETERS;
     public static String JOB_DISABLING;

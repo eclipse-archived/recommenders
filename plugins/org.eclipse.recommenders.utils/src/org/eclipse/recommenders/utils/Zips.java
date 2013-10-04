@@ -57,12 +57,7 @@ public class Zips {
             zos.putNextEntry(new ZipEntry("/"));
             zos.closeEntry();
             zos.close();
-            return new ZipFile(tmp) {
-                @Override
-                public void close() throws IOException {
-                    super.close();
-                }
-            };
+            return new ZipFile(tmp);
         } catch (Exception e) {
             return null;
         }
@@ -232,7 +227,7 @@ public class Zips {
             z.close();
             return true;
         } catch (IOException e) {
-            System.err.printf("Failed to close zip '%s'. Caught exception printed below.\n", z.getName());
+            System.err.printf("Failed to close zip '%s'. Caught exception printed below.%n", z.getName());
             e.printStackTrace();
             return false;
         }

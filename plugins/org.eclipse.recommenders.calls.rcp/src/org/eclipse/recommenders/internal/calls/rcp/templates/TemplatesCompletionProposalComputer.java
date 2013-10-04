@@ -430,7 +430,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
                             result.add(res);
                         }
                     } catch (JavaModelException e) {
-                        e.printStackTrace();
+                        log.error("Received an error while searching.", e);
                     }
                 }
 

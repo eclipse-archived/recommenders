@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS {
+public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.apidocs.rcp.messages"; //$NON-NLS-1$
     public static String EXTDOC_DND_FAILED;
     public static String EXTDOC_OVERRIDES_INTRO;

@@ -60,11 +60,6 @@ public class VmMethodName implements IMethodName {
         return res;
     }
 
-    private static String removeGenerics(final String vmFullQualifiedMethodName) {
-        final String replacement = vmFullQualifiedMethodName.replaceAll("<.*?>", "");
-        return replacement;
-    }
-
     public static final IMethodName NULL = VmMethodName.get("L_null.null()V");
 
     // public static String removeGenerics(final String typeName) {

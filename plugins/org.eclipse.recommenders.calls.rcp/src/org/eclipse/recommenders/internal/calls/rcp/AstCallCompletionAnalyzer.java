@@ -123,7 +123,7 @@ public class AstCallCompletionAnalyzer {
                     } else {
                         defKind = FIELD;
                     }
-                } else if (def != null) {
+                } else {
                     defKind = RETURN;
                     definedBy = def;
                 }

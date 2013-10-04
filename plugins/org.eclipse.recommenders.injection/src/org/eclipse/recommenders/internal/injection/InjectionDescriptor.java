@@ -18,11 +18,15 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Module;
 
 public class InjectionDescriptor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InjectionDescriptor.class);
     private static final String ATTR_CLASS = "class";
     private static final String EXT_POINT_ID = "org.eclipse.recommenders.injection.modules";
 
@@ -45,7 +49,7 @@ public class InjectionDescriptor {
             try {
                 engines.add(desc.createInstance());
             } catch (final CoreException e) {
-                e.printStackTrace();
+                LOG.error("Failed to create module from " + desc.getPluginId(), e);
             }
         }
         return engines;

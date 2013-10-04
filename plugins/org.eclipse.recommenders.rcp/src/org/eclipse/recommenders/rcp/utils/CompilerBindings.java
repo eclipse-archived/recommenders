@@ -60,9 +60,8 @@ public class CompilerBindings {
             return absent();
         }
         //
-        final boolean boundParameterizedType = binding.isBoundParameterizedType();
-        final boolean parameterizedType = binding.isParameterizedType();
-
+        // final boolean boundParameterizedType = binding.isBoundParameterizedType();
+        // final boolean parameterizedType = binding.isParameterizedType();
         // if (binding.isBoundParameterizedType()) {
         // return null;
         // }

@@ -124,10 +124,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             return false;
         }
         ctx = new RecommendersCompletionContext(jdtCtx, astProvider);
-
-        if (ctx == null) {
-            return false;
-        }
         final Optional<Scope> optionalScope = ScopeAccessWorkaround.resolveScope(ctx);
         if (!optionalScope.isPresent()) {
             return false;

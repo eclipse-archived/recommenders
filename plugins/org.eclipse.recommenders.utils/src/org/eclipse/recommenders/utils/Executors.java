@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-public class Executors {
+public final class Executors {
 
     private Executors() {
         // just don't...

@@ -10,19 +10,13 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.presentInstances;
-import static com.google.common.collect.Iterables.get;
-import static com.google.common.collect.Iterables.getFirst;
-import static com.google.common.collect.Iterables.isEmpty;
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
-import static org.eclipse.recommenders.rcp.SharedImages.ELCL_REFRESH;
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAR;
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAVA_PROJECT;
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JRE;
+import static org.eclipse.recommenders.models.DependencyInfo.*;
+import static org.eclipse.recommenders.rcp.SharedImages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Collection;
@@ -209,7 +203,7 @@ public class ProjectCoordinatesView extends ViewPart {
                     value = ((CCombo) editor.getControl()).getText();
                 }
             }
-            if (value.equals(formerValue)) {
+            if (equal(value, formerValue)) {
                 return;
             }
             if (element instanceof Entry) {
@@ -293,6 +287,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
             private void refreshUI() {
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         refreshTableUI();
                     }

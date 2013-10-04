@@ -16,7 +16,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DnDProviderTransfer extends ByteArrayTransfer {
+public final class DnDProviderTransfer extends ByteArrayTransfer {
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private static final String TYPE_NAME = "extdoc-provider-transfer-format"; //$NON-NLS-1$

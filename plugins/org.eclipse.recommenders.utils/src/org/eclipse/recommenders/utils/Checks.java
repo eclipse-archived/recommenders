@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
  * where appropriate, others return {@link Void} if a return value has no or at least ambiguous meaning.
  * 
  */
-public class Checks {
+public final class Checks {
     public static void ensureEquals(final Object value, final Object expected, final String message) {
         final boolean equals = value == null ? expected == null : value.equals(expected);
         if (!equals) {
@@ -221,13 +221,13 @@ public class Checks {
         }
     }
 
-    public static void ensureNoDuplicates(final String[] values){
+    public static void ensureNoDuplicates(final String[] values) {
         Set<String> set = Sets.newHashSet(values);
-        if (values.length != set.size()){
+        if (values.length != set.size()) {
             throwIllegalArgumentException("Value contain duplicates");
         }
     }
-    
+
     public static void ensureIsTrue(final boolean exp) {
         ensureIsTrue(exp, "assertion failed.");
     }
