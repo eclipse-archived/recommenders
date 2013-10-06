@@ -35,7 +35,12 @@ public interface IProcessableProposal extends IJavaCompletionProposal {
 
     Optional<CompletionProposal> getCoreProposal();
 
-    // boolean isPrefix(String prefix, String completion);
     String getPrefix();
+
+    void setTag(String key, Object value);
+
+    <T> Optional<T> getTag(String key);
+
+    <T> T getTag(String key, T defaultValue);
 
 }

@@ -118,5 +118,23 @@ public class BaseRelevanceSessionProcessorTest {
             // TODO Auto-generated method stub
 
         }
+
+        @Override
+        public void setTag(String key, Object value) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public <T> Optional<T> getTag(String key) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public <T> T getTag(String key, T defaultValue) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 }

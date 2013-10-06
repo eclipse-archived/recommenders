@@ -11,17 +11,22 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+
+import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
-public final class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletionProposal implements
+public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletionProposal implements
         IProcessableProposal {
 
+    private Map<String, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
@@ -61,6 +66,27 @@ public final class ProcessableJavaMethodCompletionProposal extends JavaMethodCom
     @Override
     public void setProposalProcessorManager(ProposalProcessorManager mgr) {
         this.mgr = mgr;
+    }
+
+    @Override
+    public void setTag(String key, Object value) {
+        ensureIsNotNull(key);
+        if (value == null) {
+            tags.remove(key);
+        } else {
+            tags.put(key, value);
+        }
+    }
+
+    @Override
+    public <T> Optional<T> getTag(String key) {
+        return Optional.fromNullable((T) tags.get(key));
+    }
+
+    @Override
+    public <T> T getTag(String key, T defaultValue) {
+        T res = (T) tags.get(key);
+        return res != null ? res : defaultValue;
     }
 
 }

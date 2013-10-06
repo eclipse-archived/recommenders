@@ -11,6 +11,9 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -22,6 +25,7 @@ import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclarationCompletionProposal implements
@@ -39,15 +43,15 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
             String constructorName = type.getElementName();
             if (constructorName.length() > 0 && constructorName.startsWith(prefix)
                     && !hasMethod(methods, constructorName)) {
-                return new ProcessableMethodDeclarationCompletionProposal(type, constructorName, null, offset, length,
-                        relevance + 500);
+                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, constructorName, null,
+                        offset, length, relevance + 500);
             }
         }
 
         if (prefix.length() > 0 && !"main".equals(prefix) && !hasMethod(methods, prefix)) {
             if (!JavaConventionsUtil.validateMethodName(prefix, type).matches(IStatus.ERROR)) {
-                return new ProcessableMethodDeclarationCompletionProposal(type, prefix, Signature.SIG_VOID, offset,
-                        length, relevance);
+                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, prefix, Signature.SIG_VOID,
+                        offset, length, relevance);
             }
         }
         return null;
@@ -63,13 +67,15 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
         return false;
     }
 
+    private Map<String, Object> tags = Maps.newHashMap();
     private CompletionProposal coreProposal;
     private ProposalProcessorManager mgr;
     private String lastPrefix;
 
-    public ProcessableMethodDeclarationCompletionProposal(IType type, String methodName, String returnTypeSig,
-            int start, int length, int relevance) {
+    public ProcessableMethodDeclarationCompletionProposal(CompletionProposal proposal, IType type, String methodName,
+            String returnTypeSig, int start, int length, int relevance) {
         super(type, methodName, returnTypeSig, start, length, relevance);
+        coreProposal = proposal;
     }
 
     // ===========
@@ -101,6 +107,27 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
     @Override
     public void setProposalProcessorManager(ProposalProcessorManager mgr) {
         this.mgr = mgr;
+    }
+
+    @Override
+    public void setTag(String key, Object value) {
+        ensureIsNotNull(key);
+        if (value == null) {
+            tags.remove(key);
+        } else {
+            tags.put(key, value);
+        }
+    }
+
+    @Override
+    public <T> Optional<T> getTag(String key) {
+        return Optional.fromNullable((T) tags.get(key));
+    }
+
+    @Override
+    public <T> T getTag(String key, T defaultValue) {
+        T res = (T) tags.get(key);
+        return res != null ? res : defaultValue;
     }
 
 }
