@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-
 public class Constants {
 
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.completion.rcp";

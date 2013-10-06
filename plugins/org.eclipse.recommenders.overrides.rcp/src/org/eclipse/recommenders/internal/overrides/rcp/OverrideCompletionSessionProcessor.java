@@ -48,7 +48,8 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({ "restriction" })
 public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(OverrideCompletionSessionProcessor.class);
+
     private IProjectCoordinateProvider pcProvider;
     private IOverrideModelProvider mProvider;
     private JavaElementResolver jdtCache;
@@ -84,7 +85,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 computeRecommendations();
                 return true;
             } catch (Exception e) {
-                log.error("An exception occured whilec omputing overrides recommendations.", e);
+                LOG.error("An exception occured whilec omputing overrides recommendations.", e);
             } finally {
                 releaseModel();
             }
@@ -164,12 +165,20 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
                 // XXX rather high value but otherwise the default constructor shows up between the overrides
                 // proposals
-                int increment = prefs.changeProposalRelevance ? increment = 1000 + asPercentage(r) : 0;
-                String label = prefs.decorateProposalText ? label = asPercentage(r) + " %" : null;
-                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
+                int increment = 0;
+                if (prefs.changeProposalRelevance) {
+                    increment = 1000 + asPercentage(r);
+                    proposal.setTag("by-recommenders", asPercentage(r));
+                }
+                String label = null;
+                if (prefs.decorateProposalText) {
+                    label = asPercentage(r) + " %";
+                }
                 if (prefs.decorateProposalIcon) {
                     Proposals.overlay(proposal, overlay);
                 }
+
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
                 return;
             }
         }

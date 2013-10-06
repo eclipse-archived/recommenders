@@ -24,4 +24,4 @@ Import-Package: com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.util.concurrent;version="[14.0.0,15.0.0)",
  javax.inject;version="1.0.0",
  org.slf4j;version="[1.6.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.internal.overrides.rcp;x-friends:="org.eclipse.recommenders.completion.rcp.tests"
+Export-Package: org.eclipse.recommenders.internal.overrides.rcp;x-internal:=true

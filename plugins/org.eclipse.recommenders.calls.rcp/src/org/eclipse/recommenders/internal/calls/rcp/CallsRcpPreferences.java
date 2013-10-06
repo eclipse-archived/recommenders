@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 
+@SuppressWarnings("restriction")
 public class CallsRcpPreferences {
 
     @Inject

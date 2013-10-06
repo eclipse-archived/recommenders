@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
 import static org.eclipse.recommenders.internal.subwords.rcp.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
+import static org.eclipse.recommenders.utils.Constants.*;
 
 import java.util.Map;
 import java.util.Set;
@@ -147,14 +148,19 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             @Override
             public int modifyRelevance() {
                 if (ArrayUtils.isEmpty(bestSequence)) {
+                    proposal.setTag(TAGS_SUBWORD_SCORE, null);
+                    proposal.setTag(TAGS_IS_PREFIX_MATCH, true);
                     return 0;
                 }
                 if (startsWithIgnoreCase(matchingArea, prefix)) {
+                    proposal.setTag(TAGS_IS_PREFIX_MATCH, true);
                     return 1 << 30;
                 } else {
-                    return LCSS.scoreSubsequence(bestSequence);
+                    int score = LCSS.scoreSubsequence(bestSequence);
+                    proposal.setTag(TAGS_IS_PREFIX_MATCH, false);
+                    proposal.setTag(TAGS_SUBWORD_SCORE, score);
+                    return score;
                 }
-
             }
         });
     }

@@ -24,10 +24,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
- org.eclipse.recommenders.utils;bundle-version="1.100.0",
  org.eclipse.recommenders.rcp;bundle-version="1.100.0",
  org.eclipse.recommenders.completion.rcp;bundle-version="1.100.0",
- org.eclipse.recommenders.injection;bundle-version="1.100.0"
+ org.eclipse.recommenders.injection;bundle-version="1.100.0",
+ org.eclipse.recommenders.utils;bundle-version="1.100.0"
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
