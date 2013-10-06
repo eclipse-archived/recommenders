@@ -168,13 +168,20 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 if (!matcher.match(crMethod)) {
                     continue;
                 }
-                String label = prefs.decorateProposalText ? asPercentage(call) + " %" : "";
-                int relevance = prefs.changeProposalRelevance ? 200 + asPercentage(call) : 0;
-                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-                mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
+                int relevance = 0;
+                if (prefs.changeProposalRelevance) {
+                    relevance = 200 + asPercentage(call);
+                    proposal.setTag("by-recommenders", asPercentage(call));
+                }
+                String label = "";
+                if (prefs.decorateProposalText) {
+                    label = asPercentage(call) + " %";
+                }
                 if (prefs.decorateProposalIcon) {
                     overlay(proposal, overlay);
                 }
+                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+                mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
                 // we found the proposal we are looking for. So quit.
                 break;
             }

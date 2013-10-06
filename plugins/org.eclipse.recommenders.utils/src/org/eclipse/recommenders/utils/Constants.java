@@ -132,4 +132,10 @@ public abstract class Constants {
     public static final String N_STATE_DUMMY_DEF = Constants.DUMMY_METHOD.getIdentifier();
     /** {@value} */
     public static final String N_STATE_DUMMY_GRP = "pattern dummy";
+
+    /** {@value} */
+    public static final String TAGS_IS_PREFIX_MATCH = "is-prefix-match";
+    /** {@value} */
+    public static final String TAGS_SUBWORD_SCORE = "subwords-score";
+
 }
