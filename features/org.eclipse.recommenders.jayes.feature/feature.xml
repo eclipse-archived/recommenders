@@ -16,12 +16,20 @@
       label="Code Recommenders: Jayes Bayesian Network Library"
       version="1.100.0.qualifier"
       provider-name="Eclipse Code Recommenders"
-      license-feature="org.eclipse.recommenders.license.feature"
+      license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description
    </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
 
    <plugin
          id="org.eclipse.recommenders.jayes"
