@@ -31,6 +31,8 @@ import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeBuilder;
+import org.eclipse.recommenders.jayes.util.triangulation.MinDegree;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Nullable;
@@ -136,6 +138,7 @@ public class JayesCallModel implements ICallModel {
         initializeProbabilities(network);
 
         junctionTree = new JunctionTreeAlgorithm();
+        junctionTree.setJunctionTreeBuilder(JunctionTreeBuilder.forHeuristic(new MinDegree()));
         junctionTree.setNetwork(net);
     }
 
