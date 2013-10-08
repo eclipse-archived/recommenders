@@ -10,12 +10,15 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
 import static com.google.common.collect.Collections2.transform;
 import static com.google.common.collect.Iterables.find;
+import static java.lang.Math.min;
 import static java.lang.String.format;
+import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.utils.Constants.*;
 import static org.eclipse.recommenders.utils.IOUtils.closeQuietly;
+import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +37,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
@@ -44,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -60,12 +65,17 @@ import com.google.common.collect.Sets;
  */
 public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
     private File indexdir;
-    private FSDirectory index;
+    private Directory index;
     private IndexReader reader;
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public ModelIndex(File indexdir) {
         this.indexdir = indexdir;
+    }
+
+    @VisibleForTesting
+    ModelIndex(Directory index) {
+        this.index = index;
     }
 
     public boolean isAccessible() {
@@ -74,7 +84,10 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
     @Override
     public void open() throws IOException {
-        index = FSDirectory.open(indexdir);
+        // Normally, indexdir is set; if not, the VisibleForTesting constructor has been used.
+        if (indexdir != null) {
+            index = FSDirectory.open(indexdir);
+        }
         reader = IndexReader.open(index);
     }
 
@@ -200,24 +213,38 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
             query.add(q, Occur.MUST);
         }
 
+        final TopDocs matches;
+        final int MAX_DOCUMENTS_SEARCHED = 100;
         try {
             IndexSearcher searcher = new IndexSearcher(reader);
-            TopDocs matches = searcher.search(query, 5);
+            matches = searcher.search(query, MAX_DOCUMENTS_SEARCHED);
             searcher.close();
-            if (matches.totalHits <= 0) {
-                return absent();
-            }
-            Document doc = reader.document(matches.scoreDocs[0].doc);
-            String string = doc.get(F_COORDINATE);
-            if (string == null) {
-                return absent();
-            }
-            DefaultArtifact tmp = new DefaultArtifact(string);
-            ProjectCoordinate pc = new ProjectCoordinate(tmp.getGroupId(), tmp.getArtifactId(), tmp.getVersion());
-            return fromNullable(pc);
-        } catch (Exception e) {
+        } catch (IOException e) {
             return absent();
         }
+
+        for (int i = 0; i < min(matches.scoreDocs.length, MAX_DOCUMENTS_SEARCHED); i++) {
+            final Document doc;
+            try {
+                doc = reader.document(matches.scoreDocs[i].doc);
+            } catch (IOException e) {
+                continue;
+            }
+
+            String string = doc.get(F_COORDINATE);
+            if (string == null) {
+                continue;
+            }
+
+            DefaultArtifact tmp = new DefaultArtifact(string);
+            Optional<ProjectCoordinate> pc = tryNewProjectCoordinate(tmp.getGroupId(), tmp.getArtifactId(),
+                    canonicalizeVersion(tmp.getVersion()));
+            if (pc.isPresent()) {
+                return pc;
+            }
+        }
+        // Nothing found in first MAX_DOCUMENTS_SEARCHED documents; giving up.
+        return absent();
     }
 
     private static final class Artifact2ModelArchiveTransformer implements Function<Artifact, ModelCoordinate> {
