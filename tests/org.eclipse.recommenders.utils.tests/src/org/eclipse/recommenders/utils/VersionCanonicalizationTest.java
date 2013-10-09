@@ -44,6 +44,13 @@ public class VersionCanonicalizationTest {
         scenarios.add(new Object[] { "Beta", "Beta" });
         scenarios.add(new Object[] { "2.3.0", "2.3.0" });
         scenarios.add(new Object[] { "1.2.3", "1.2.3.4" });
+        scenarios.add(new Object[] { "15.0.0", "15.0" });
+        scenarios.add(new Object[] { "1.1.3333", "1.1.3333" });
+        scenarios.add(new Object[] { "1.2222.0", "1.2222" });
+        scenarios.add(new Object[] { "1111.2222.0", "1111.2222" });
+        scenarios.add(new Object[] { "1111.2222.3333", "1111.2222.3333" });
+        scenarios.add(new Object[] { "1234567.1234567.0", "1234567.1234567" });
+        scenarios.add(new Object[] { "1234567.898765.432101", "1234567.898765.432101" });
         return scenarios;
     }
 

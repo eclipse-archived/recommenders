@@ -23,10 +23,9 @@ import com.google.common.collect.Iterables;
 public final class Versions {
 
     private static final Pattern findVersionPattern = Pattern
-            .compile("([0-9]|([1-9][0-9]*))(\\.([0-9]|([1-9][0-9]*))){0,2}");
+            .compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){0,2}");
 
-    private static final Pattern versionPattern = Pattern
-            .compile("([0-9]|([1-9][0-9]*))\\.([0-9]|([1-9][0-9]*))\\.([0-9]|([1-9][0-9]*))");
+    private static final Pattern versionPattern = Pattern.compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){2}");
 
     private Versions() {
     }
