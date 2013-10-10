@@ -64,7 +64,6 @@ public class IOTest {
             assertEquals(node.getName(), net2.getNode(node.getId()).getName());
             assertArrayEquals(jta1.getBeliefs(node), jta2.getBeliefs(node), 0.000001);
         }
-
     }
 
     /**
