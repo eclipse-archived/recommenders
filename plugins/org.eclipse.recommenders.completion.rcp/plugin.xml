@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
-            class="org.eclipse.recommenders.internal.completion.rcp.GuiceModule">
+            class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpModule">
       </module>
    </extension>
 

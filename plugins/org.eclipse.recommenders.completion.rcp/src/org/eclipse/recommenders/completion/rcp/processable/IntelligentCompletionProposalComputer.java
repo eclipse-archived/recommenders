@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
+import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -37,8 +39,9 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
 
     @Inject
     public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors,
-            ProcessableProposalFactory proposalFactory, IAstProvider astProvider) {
-        super(new ProcessableProposalFactory(), astProvider);
+            ProcessableProposalFactory proposalFactory, IAstProvider astProvider,
+            Map<String, ICompletionContextFunction> functions) {
+        super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, functions);
         this.descriptors = descriptors;
     }
 
@@ -60,7 +63,6 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
         if (!shouldReturnResults()) {
             return Collections.emptyList();
         }
-
         return super.computeCompletionProposals(context, monitor);
     }
 

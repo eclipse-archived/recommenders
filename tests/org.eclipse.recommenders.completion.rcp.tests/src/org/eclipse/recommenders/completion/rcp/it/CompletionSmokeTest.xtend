@@ -11,21 +11,26 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer
 import org.eclipse.recommenders.calls.ICallModel
 import org.eclipse.recommenders.calls.ICallModelProvider
 import org.eclipse.recommenders.calls.NullCallModel
-import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
+import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions
 import org.eclipse.recommenders.completion.rcp.processable.IntelligentCompletionProposalComputer
 import org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor
+import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
 import org.eclipse.recommenders.internal.overrides.rcp.OverrideCompletionSessionProcessor
+import org.eclipse.recommenders.internal.overrides.rcp.OverridesRcpPreferences
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor
 import org.eclipse.recommenders.models.ProjectCoordinate
+import org.eclipse.recommenders.models.UniqueTypeName
+import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.overrides.IOverrideModel
 import org.eclipse.recommenders.overrides.IOverrideModelProvider
 import org.eclipse.recommenders.overrides.NullOverrideModel
 import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.rcp.JavaElementResolver
+import org.eclipse.recommenders.rcp.SharedImages
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.ui.IEditorInput
@@ -41,11 +46,6 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 
 import static extension com.google.common.collect.Iterables.*
-import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
-import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
-import org.eclipse.recommenders.models.UniqueTypeName
-import org.eclipse.recommenders.rcp.SharedImages
-import org.eclipse.recommenders.internal.overrides.rcp.OverridesRcpPreferences
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -454,7 +454,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
     new(T processor) {
         super(
             #{new SessionProcessorDescriptor("", "", "", null, 0, true, "", processor)}.toArray(
-                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider());
+                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), CompletionContextFunctions.defaultFunctions);
         this.processor = processor
     }
 

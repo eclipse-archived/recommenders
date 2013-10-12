@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2012 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2013 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,51 +24,75 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 
 @SuppressWarnings("restriction")
 public interface IRecommendersCompletionContext {
 
-    JavaContentAssistInvocationContext getJavaContext();
+    CompilationUnit getAST();
+
+    Optional<IType> getClosestEnclosingType();
+
+    ICompilationUnit getCompilationUnit();
 
     Optional<ASTNode> getCompletionNode();
 
     Optional<ASTNode> getCompletionNodeParent();
 
+    Optional<IJavaElement> getEnclosingElement();
+
     Optional<IMethod> getEnclosingMethod();
 
     Optional<IType> getEnclosingType();
 
-    Optional<IJavaElement> getEnclosingElement();
+    boolean hasEnclosingElement();
 
-    ICompilationUnit getCompilationUnit();
+    boolean isCompletionInMethodBody();
 
-    CompilationUnit getAST();
+    boolean isCompletionInTypeBody();
 
     Optional<IType> getExpectedType();
 
+    /**
+     * Returns a set of expected types names at the given location.
+     * <p>
+     * for {@code if($)} the expected type is boolean, for {@code MessageSend} or
+     * {@code CompletionOnQualifiedAllocationExpression} it may be any argument that matches all potential methods to
+     * invoke at the current position, e.g., new File($) will return{@code String}, {@code File}, or {@code URI} as
+     * there are three different constructors taking values of these types.
+     */
+    Set<ITypeName> getExpectedTypeNames();
+
     Optional<String> getExpectedTypeSignature();
+
+    int getInvocationOffset();
+
+    JavaContentAssistInvocationContext getJavaContext();
+
+    /**
+     * Returns the method that defines an anonymous value, if any. Checks whether the completion was triggered on an
+     * method return value and returns this method if possible.
+     */
+    Optional<IMethodName> getMethodDef();
 
     String getPrefix();
 
-    List<IField> getVisibleFields();
+    IJavaProject getProject();
 
-    List<ILocalVariable> getVisibleLocals();
-
-    List<IMethod> getVisibleMethods();
+    /**
+     * Returns all completion proposals JDT would have made at the current completion location.
+     */
+    Map<IJavaCompletionProposal, CompletionProposal> getProposals();
 
     String getReceiverName();
-
-    Optional<String> getReceiverTypeSignature();
 
     /**
      * returns the (base) type of the variable, i.e.,
@@ -83,44 +107,55 @@ public interface IRecommendersCompletionContext {
      */
     Optional<IType> getReceiverType();
 
-    boolean isCompletionInMethodBody();
-
-    boolean isCompletionInTypeBody();
-
-    int getInvocationOffset();
+    Optional<String> getReceiverTypeSignature();
 
     Region getReplacementRange();
 
-    IJavaProject getProject();
+    List<IField> getVisibleFields();
 
-    Optional<IType> getClosestEnclosingType();
+    List<ILocalVariable> getVisibleLocals();
 
-    boolean hasEnclosingElement();
-
-    /**
-     * Returns the method that defines an anonymous value, if any. Checks whether the completion was triggered on an
-     * method return value and returns this method if possible.
-     */
-    Optional<IMethodName> getMethodDef();
+    List<IMethod> getVisibleMethods();
 
     /**
-     * Returns all completion proposals JDT would have made at the current completion location.
+     * Returns the value stored in this context under the given key - if any.
+     * 
+     * @param key
+     *            the class that get's mapped to a string to build the actual key
      */
-    Map<IJavaCompletionProposal, CompletionProposal> getProposals();
+    <T> Optional<T> get(Class<T> key);
 
     /**
-     * Returns a set of expected types names at the given location.
-     * <p>
-     * for {@code if($)} the expected type is boolean, for {@code MessageSend} or
-     * {@code CompletionOnQualifiedAllocationExpression} it may be any argument that matches all potential methods to
-     * invoke at the current position, e.g., new File($) will return{@code String}, {@code File}, or {@code URI} as
-     * there are three different constructors taking values of these types.
+     * Returns the value stored in this context under the given key - or the given default value if undefined.
      */
-    Set<ITypeName> getExpectedTypeNames();
+    <T> T get(Class<T> key, @Nullable T defaultValue);
 
-    @Beta
-    Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration();
+    /**
+     * Returns the value stored in this context under the given key - if any.
+     */
+    <T> Optional<T> get(String key);
 
-    @Beta
-    Optional<Scope> getAssistScope();
+    /**
+     * Returns the value stored in this context under the given key - or the given default value if undefined.
+     */
+    <T> T get(String key, T defaultValue);
+
+    /**
+     * Stores a new value or a {@link ICompletionContextFunction} under the given key.
+     * 
+     * @param key
+     *            the class that get's mapped to a string to build the actual key
+     */
+    <T, S extends T> void set(Class<T> key, S value);
+
+    /**
+     * Stores a new value or a {@link ICompletionContextFunction} under the given key.
+     */
+    void set(String key, Object value);
+
+    /**
+     * Returns a snapshot view on all values currently defined in this context.
+     */
+    ImmutableMap<String, Object> values();
+
 }

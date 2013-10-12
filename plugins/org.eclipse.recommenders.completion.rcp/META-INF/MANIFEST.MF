@@ -29,7 +29,8 @@ Export-Package: org.eclipse.recommenders.completion.rcp;
    org.eclipse.jface.viewers,
    org.eclipse.swt.graphics,
    org.eclipse.jdt.core.compiler,
-   org.eclipse.recommenders.completion.rcp.utils"
+   org.eclipse.recommenders.completion.rcp.utils",
+ org.eclipse.recommenders.internal.completion.rcp;x-internal:=true
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
@@ -55,6 +56,7 @@ Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
+ com.google.common.reflect;version="14.0.1",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.mutable;version="[3.0.0,4.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"

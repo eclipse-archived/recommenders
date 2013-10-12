@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -30,12 +31,14 @@ import org.eclipse.jface.text.contentassist.ICompletionListenerExtension2;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -54,6 +57,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     public JavaContentAssistInvocationContext jdtContext;
     public IRecommendersCompletionContext crContext;
     public ContentAssistantFacade contentAssist;
+    public Map<String, ICompletionContextFunction> functions;
 
     public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory, IAstProvider astProvider) {
         this(proposalFactory, Sets.<SessionProcessor>newLinkedHashSet(), astProvider);
@@ -61,9 +65,16 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
 
     public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory,
             Set<SessionProcessor> processors, IAstProvider astProvider) {
+        this(proposalFactory, processors, astProvider, Maps.<String, ICompletionContextFunction>newHashMap());
+    }
+
+    public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory,
+            Set<SessionProcessor> processors, IAstProvider astProvider,
+            Map<String, ICompletionContextFunction> functions) {
         this.proposalFactory = proposalFactory;
         this.processors = processors;
         this.astProvider = astProvider;
+        this.functions = functions;
     }
 
     @Override
@@ -108,7 +119,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
 
     private void storeContext(ContentAssistInvocationContext context) {
         jdtContext = cast(context);
-        crContext = new RecommendersCompletionContext(jdtContext, astProvider);
+        crContext = new RecommendersCompletionContext(jdtContext, astProvider, functions);
     }
 
     private void registerCompletionListener() {

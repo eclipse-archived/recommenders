@@ -26,6 +26,10 @@ public class TimeDelimitedProgressMonitor implements IProgressMonitor {
         limit = limitInMillis;
     }
 
+    public TimeDelimitedProgressMonitor(int limitInMillis) {
+        this(new NullProgressMonitor(), limitInMillis);
+    }
+
     @Override
     public void beginTask(String name, int totalWork) {
         delegate.beginTask(name, totalWork);

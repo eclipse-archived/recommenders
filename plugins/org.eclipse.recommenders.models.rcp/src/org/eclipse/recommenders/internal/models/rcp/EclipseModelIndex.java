@@ -84,7 +84,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @PostConstruct
     @Override
     public void open() throws IOException {
-        doOpen(true);
+        doOpen(false);
     }
 
     private void doOpen(boolean scheduleIndexUpdate) throws IOException {
