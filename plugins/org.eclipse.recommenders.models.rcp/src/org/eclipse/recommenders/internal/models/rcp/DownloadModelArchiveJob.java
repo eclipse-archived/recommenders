@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.lang.String.format;
-import static org.eclipse.core.runtime.IStatus.WARNING;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
 import static org.eclipse.recommenders.internal.models.rcp.Messages.*;
@@ -63,11 +62,12 @@ public class DownloadModelArchiveJob extends Job {
             if (cb.downloadedArchive) {
                 bus.post(new ModelArchiveDownloadedEvent(mc));
             }
-            // Returns null if the model coordiante could not be resolved. This may be cause by requesting an mc that
-            // does not exist in the repository or may be cause by a network connecting being down.
+            // Returns null if the model coordiante could not be resolved. This may because we are requesting an mc that
+            // does not exist in the repository or because of the network being down.
+            // Moreover, we can get *cached* null answers, i.e., the same negative result over and over again.
             if (result == null) {
-                // whatever is the case, we only should log that as warning but do not open an error popup.
-                IStatus err = StatusUtil.newStatus(WARNING,
+                // Whatever is the case, we only should log that as informational but do not open a popup.
+                IStatus err = StatusUtil.newStatus(IStatus.INFO,
                         format("%s could not be resolved from %s.", mc, repository), null);
                 StatusManager.getManager().handle(err, StatusManager.LOG);
                 return Status.CANCEL_STATUS;
