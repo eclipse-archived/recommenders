@@ -30,7 +30,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Hudson</system>
-		<url>https://hudson.eclipse.org/hudson</url>
+		<url>https://hudson.eclipse.org/recommenders</url>
 	</ciManagement>
 	<distributionManagement>
 		<repository>
