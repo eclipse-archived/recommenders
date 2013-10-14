@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Constants.TAGS_CONTEXT;
 
 import java.util.Iterator;
 import java.util.List;
@@ -105,11 +107,12 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
 
         fireStartSession(crContext);
         for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
-            IJavaCompletionProposal proposal = ProcessableProposalFactory.create(pair.getValue(), pair.getKey(),
-                    jdtContext, proposalFactory);
-            res.add(proposal);
-            if (proposal instanceof IProcessableProposal) {
-                fireProcessProposal((IProcessableProposal) proposal);
+            IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext, proposalFactory);
+            res.add(jdtProposal);
+            if (jdtProposal instanceof IProcessableProposal) {
+                IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
+                crProposal.setTag(TAGS_CONTEXT, crContext);
+                fireProcessProposal(crProposal);
             }
         }
         fireEndComputation(res);

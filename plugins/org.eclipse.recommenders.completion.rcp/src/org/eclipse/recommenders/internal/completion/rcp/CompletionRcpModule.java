@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions
 
 import javax.inject.Singleton;
 
+import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CompletionOnTypeContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CompletionPrefixContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.EnclosingElementContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.EnclosingMethodContextFunction;
@@ -40,6 +41,8 @@ public class CompletionRcpModule extends AbstractModule {
     protected void configure() {
         MapBinder<String, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(), String.class,
                 ICompletionContextFunction.class);
+
+        functions.addBinding(CCTX_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
         functions.addBinding(CCTX_COMPLETION_PREFIX).to(CompletionPrefixContextFunction.class);
         functions.addBinding(CCTX_ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
         functions.addBinding(CCTX_ENCLOSING_TYPE).to(EnclosingTypeContextFunction.class);

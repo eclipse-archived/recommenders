@@ -73,6 +73,7 @@ public class CompletionContextFunctions {
     public static Map<String, ICompletionContextFunction> defaultFunctions() {
         Map<String, ICompletionContextFunction> res = new HashMap<String, ICompletionContextFunction>();
         res.put(CCTX_COMPLETION_PREFIX, new CompletionPrefixContextFunction());
+        res.put(CCTX_COMPLETION_ON_TYPE, new CompletionOnTypeContextFunction());
         res.put(CCTX_ENCLOSING_ELEMENT, new EnclosingElementContextFunction());
         res.put(CCTX_ENCLOSING_TYPE, new EnclosingTypeContextFunction());
         res.put(CCTX_ENCLOSING_METHOD, new EnclosingMethodContextFunction());
@@ -99,6 +100,7 @@ public class CompletionContextFunctions {
     public static final String CCTX_ASSIST_SCOPE = "assist-scope";
     @Deprecated
     public static final String CCTX_COMPILATION_UNIT_DECLARATION = "compilation-unit-declaration";
+    public static final String CCTX_COMPLETION_ON_TYPE = "completion-on-type";
     public static final String CCTX_COMPLETION_PREFIX = "completion-prefix";
     public static final String CCTX_EXPECTED_TYPE = "expected-type";
     public static final String CCTX_EXPECTED_TYPENAMES = "expected-type-names";
@@ -129,6 +131,21 @@ public class CompletionContextFunctions {
             } catch (Exception e) {
                 // IAE thrown by JDT if it fails to parse the signature.
                 // we silently ignore that and return nothing instead.
+            }
+            context.set(key, res);
+            return res;
+        }
+    }
+
+    public static class CompletionOnTypeContextFunction implements ICompletionContextFunction<Boolean> {
+
+        @Override
+        public Boolean compute(IRecommendersCompletionContext context, String key) {
+            ASTNode node = context.getCompletionNode().orNull();
+            boolean res = false;
+            if (node instanceof CompletionOnQualifiedNameReference) {
+                Binding binding = ((CompletionOnQualifiedNameReference) node).binding;
+                res = binding != null && Binding.TYPE == binding.kind();
             }
             context.set(key, res);
             return res;

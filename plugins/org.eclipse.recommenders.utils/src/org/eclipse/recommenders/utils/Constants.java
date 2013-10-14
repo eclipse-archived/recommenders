@@ -137,5 +137,7 @@ public abstract class Constants {
     public static final String TAGS_IS_PREFIX_MATCH = "is-prefix-match";
     /** {@value} */
     public static final String TAGS_SUBWORD_SCORE = "subwords-score";
+    /** {@value} */
+    public static final String TAGS_CONTEXT = "context";
 
 }
