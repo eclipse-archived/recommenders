@@ -35,7 +35,7 @@ public class ProcessableJavaFieldWithCastedReceiverCompletionProposal extends
 
     protected ProcessableJavaFieldWithCastedReceiverCompletionProposal(CompletionProposal coreProposal,
             JavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) throws JavaModelException {
-        super(uiProposal.getDisplayString(), uiProposal.getReplacementOffset(), uiProposal.getReplacementLength(),
+        super(uiProposal.getReplacementString(), uiProposal.getReplacementOffset(), uiProposal.getReplacementLength(),
                 uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context,
                 coreProposal);
         this.coreProposal = coreProposal;
