@@ -79,6 +79,13 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.setIgnored(POTENTIAL_METHOD_DECLARATION, false);
         collector.setIgnored(VARIABLE_DECLARATION, false);
         collector.setIgnored(TYPE_REF, false);
+        collector.setIgnored(JAVADOC_BLOCK_TAG, false);
+        collector.setIgnored(JAVADOC_FIELD_REF, false);
+        collector.setIgnored(JAVADOC_INLINE_TAG, false);
+        collector.setIgnored(JAVADOC_METHOD_REF, false);
+        collector.setIgnored(JAVADOC_PARAM_REF, false);
+        collector.setIgnored(JAVADOC_TYPE_REF, false);
+        collector.setIgnored(JAVADOC_VALUE_REF, false);
 
         collector.setAllowsRequiredProposals(FIELD_REF, TYPE_REF, true);
         collector.setAllowsRequiredProposals(FIELD_REF, TYPE_IMPORT, true);
@@ -121,7 +128,8 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     @Override
     public boolean isIgnored(final int completionProposalKind) {
-        return collector.isIgnored(completionProposalKind);
+        boolean ignored = collector.isIgnored(completionProposalKind);
+        return ignored;
     };
 
     @Override
