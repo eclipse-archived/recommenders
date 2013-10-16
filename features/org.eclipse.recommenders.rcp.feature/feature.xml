@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.rcp.feature"
       label="Code Recommenders Developer Tools (Milestone)"
-      version="1.100.0.qualifier"
+      version="1.100.0"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
