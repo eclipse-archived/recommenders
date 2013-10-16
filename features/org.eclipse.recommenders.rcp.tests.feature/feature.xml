@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.rcp.tests.feature"
       label="Tests for Eclipse Code Recommenders"
-      version="1.100.0"
+      version="2.0.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
