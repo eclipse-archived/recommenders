@@ -31,7 +31,7 @@ import com.google.common.eventbus.EventBus;
 
 public class JavaSelectionListenerTest {
 
-    List<IJavaElement> elements = Collections.synchronizedList(new ArrayList<IJavaElement>());
+    volatile List<IJavaElement> elements = Collections.synchronizedList(new ArrayList<IJavaElement>());
 
     JavaElementSelectionService sut = new JavaElementSelectionService(new EventBus() {
         @Override
