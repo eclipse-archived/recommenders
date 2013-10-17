@@ -123,39 +123,21 @@ public interface IRecommendersCompletionContext {
      * @param key
      *            the class that get's mapped to a string to build the actual key
      */
-    <T> Optional<T> get(Class<T> key);
+    <T> Optional<T> get(CompletionContextKey<T> key);
 
     /**
      * Returns the value stored in this context under the given key - or the given default value if undefined.
      */
-    <T> T get(Class<T> key, @Nullable T defaultValue);
-
-    /**
-     * Returns the value stored in this context under the given key - if any.
-     */
-    <T> Optional<T> get(String key);
-
-    /**
-     * Returns the value stored in this context under the given key - or the given default value if undefined.
-     */
-    <T> T get(String key, T defaultValue);
-
-    /**
-     * Stores a new value or a {@link ICompletionContextFunction} under the given key.
-     * 
-     * @param key
-     *            the class that get's mapped to a string to build the actual key
-     */
-    <T, S extends T> void set(Class<T> key, S value);
+    <T> T get(CompletionContextKey<T> key, @Nullable T defaultValue);
 
     /**
      * Stores a new value or a {@link ICompletionContextFunction} under the given key.
      */
-    void set(String key, Object value);
+    <T> void set(CompletionContextKey<T> key, T value);
 
     /**
      * Returns a snapshot view on all values currently defined in this context.
      */
-    ImmutableMap<String, Object> values();
+    ImmutableMap<CompletionContextKey, Object> values();
 
 }

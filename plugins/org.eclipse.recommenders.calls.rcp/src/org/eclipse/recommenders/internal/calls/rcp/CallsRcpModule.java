@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.calls.ICallModelProvider;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.ReceiverCallsCompletionContextFunction;
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.ReceiverTypeContextFunction;
@@ -38,12 +39,12 @@ public class CallsRcpModule extends AbstractModule implements Module {
     protected void configure() {
         bind(ICallModelProvider.class).to(RcpCallModelProvider.class).in(Scopes.SINGLETON);
 
-        MapBinder<String, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(), String.class,
-                ICompletionContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_CALLS).to(ReceiverCallsCompletionContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_DEF_BY).to(ReceiverCallsCompletionContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_DEF_TYPE).to(ReceiverCallsCompletionContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_TYPE2).to(ReceiverTypeContextFunction.class);
+        MapBinder<CompletionContextKey, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(),
+                CompletionContextKey.class, ICompletionContextFunction.class);
+        functions.addBinding(RECEIVER_CALLS).to(ReceiverCallsCompletionContextFunction.class);
+        functions.addBinding(RECEIVER_DEF_BY).to(ReceiverCallsCompletionContextFunction.class);
+        functions.addBinding(RECEIVER_DEF_TYPE).to(ReceiverCallsCompletionContextFunction.class);
+        functions.addBinding(RECEIVER_TYPE2).to(ReceiverTypeContextFunction.class);
     }
 
     @Provides

@@ -11,9 +11,8 @@
 package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
-import static org.eclipse.recommenders.internal.subwords.rcp.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
-import static org.eclipse.recommenders.utils.Constants.*;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +33,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.completion.rcp.CompletionContexts;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
@@ -108,7 +108,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
             for (IJavaCompletionProposal p : newProposals.keySet()) {
                 String displayString = p.getDisplayString();
-                String completion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(displayString);
+                String completion = CompletionContexts.getPrefixMatchingArea(displayString);
                 if (!sortkeys.contains(displayString) && containsSubsequence(completion, crContext.getPrefix())) {
                     baseProposals.put(p, newProposals.get(p));
                     sortkeys.add(p.getDisplayString());
@@ -128,7 +128,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
 
             int[] bestSequence = new int[0];
-            String matchingArea = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal.getDisplayString());
+            String matchingArea = CompletionContexts.getPrefixMatchingArea(proposal.getDisplayString());
             String prefix;
 
             @Override
@@ -148,17 +148,17 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             @Override
             public int modifyRelevance() {
                 if (ArrayUtils.isEmpty(bestSequence)) {
-                    proposal.setTag(TAGS_SUBWORD_SCORE, null);
-                    proposal.setTag(TAGS_IS_PREFIX_MATCH, true);
+                    proposal.setTag(SUBWORDS_SCORE, null);
+                    proposal.setTag(IS_PREFIX_MATCH, true);
                     return 0;
                 }
                 if (startsWithIgnoreCase(matchingArea, prefix)) {
-                    proposal.setTag(TAGS_IS_PREFIX_MATCH, true);
+                    proposal.setTag(IS_PREFIX_MATCH, true);
                     return 1 << 30;
                 } else {
                     int score = LCSS.scoreSubsequence(bestSequence);
-                    proposal.setTag(TAGS_IS_PREFIX_MATCH, false);
-                    proposal.setTag(TAGS_SUBWORD_SCORE, score);
+                    proposal.setTag(IS_PREFIX_MATCH, false);
+                    proposal.setTag(SUBWORDS_SCORE, score);
                     return score;
                 }
             }

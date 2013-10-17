@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.CONTEXT;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Constants.TAGS_CONTEXT;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +33,7 @@ import org.eclipse.jface.text.contentassist.ICompletionListenerExtension2;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
@@ -59,7 +60,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     public JavaContentAssistInvocationContext jdtContext;
     public IRecommendersCompletionContext crContext;
     public ContentAssistantFacade contentAssist;
-    public Map<String, ICompletionContextFunction> functions;
+    public Map<CompletionContextKey, ICompletionContextFunction> functions;
 
     public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory, IAstProvider astProvider) {
         this(proposalFactory, Sets.<SessionProcessor>newLinkedHashSet(), astProvider);
@@ -67,12 +68,13 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
 
     public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory,
             Set<SessionProcessor> processors, IAstProvider astProvider) {
-        this(proposalFactory, processors, astProvider, Maps.<String, ICompletionContextFunction>newHashMap());
+        this(proposalFactory, processors, astProvider, Maps
+                .<CompletionContextKey, ICompletionContextFunction>newHashMap());
     }
 
     public ProcessableCompletionProposalComputer(IProcessableProposalFactory proposalFactory,
             Set<SessionProcessor> processors, IAstProvider astProvider,
-            Map<String, ICompletionContextFunction> functions) {
+            Map<CompletionContextKey, ICompletionContextFunction> functions) {
         this.proposalFactory = proposalFactory;
         this.processors = processors;
         this.astProvider = astProvider;
@@ -82,7 +84,8 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     @Override
     public void sessionStarted() {
         active = Sets.newHashSet(processors);
-        // code looks odd? This method unregisters this instance from the last (!) source viewer
+        // code looks odd? This method unregisters this instance from the last
+        // (!) source viewer
         // see unregisterCompletionListener for details
         unregisterCompletionListener();
     }
@@ -111,7 +114,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             res.add(jdtProposal);
             if (jdtProposal instanceof IProcessableProposal) {
                 IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
-                crProposal.setTag(TAGS_CONTEXT, crContext);
+                crProposal.setTag(CONTEXT, crContext);
                 fireProcessProposal(crProposal);
             }
         }
@@ -199,7 +202,6 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     @Override
     public void assistSessionEnded(ContentAssistEvent event) {
         // ignore
-
         // calling unregister here seems like a good choice here but unfortunately isn't. "proposal applied" events are
         // fired after the sessionEnded event, and thus, we cannot use this method to unsubscribe from the current
         // editor. See unregisterCompletionListern for details.

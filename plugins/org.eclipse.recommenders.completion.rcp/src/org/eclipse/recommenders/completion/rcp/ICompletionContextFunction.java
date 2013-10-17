@@ -26,9 +26,9 @@ public interface ICompletionContextFunction<T> {
      * the value every time from scratch when a callee requests the key.
      * 
      * @param key
-     *            the key used to lookup the value in the context later.
+     *            the key {@link CompletionContextKey} used to lookup the value in the context later.
      * @return the computed value or {@code null}
      */
     @Nullable
-    T compute(IRecommendersCompletionContext context, String key);
+    T compute(IRecommendersCompletionContext context, CompletionContextKey<T> key);
 }

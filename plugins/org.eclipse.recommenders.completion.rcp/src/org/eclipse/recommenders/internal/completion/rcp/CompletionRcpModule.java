@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.*;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 
 import javax.inject.Singleton;
 
@@ -30,6 +30,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.Receiv
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleFieldsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleLocalsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleMethodsContextFunction;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 
@@ -41,27 +42,28 @@ public class CompletionRcpModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        MapBinder<String, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(), String.class,
-                ICompletionContextFunction.class);
+        MapBinder<CompletionContextKey, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(),
+                CompletionContextKey.class, ICompletionContextFunction.class);
 
-        functions.addBinding(CCTX_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
-        functions.addBinding(CCTX_COMPLETION_PREFIX).to(CompletionPrefixContextFunction.class);
-        functions.addBinding(CCTX_ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
-        functions.addBinding(CCTX_ENCLOSING_TYPE).to(EnclosingTypeContextFunction.class);
-        functions.addBinding(CCTX_ENCLOSING_METHOD).to(EnclosingMethodContextFunction.class);
-        functions.addBinding(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION).to(
+        functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
+        functions.addBinding(ENCLOSING_METHOD_FIRST_DECLARATION).to(
                 EnclosingMethodFirstDeclarationContextFunction.class);
-        functions.addBinding(CCTX_ENCLOSING_AST_METHOD).to(EnclosingAstMethodContextFunction.class);
-        functions.addBinding(CCTX_EXPECTED_TYPE).to(ExpectedTypeContextFunction.class);
-        functions.addBinding(CCTX_EXPECTED_TYPENAMES).to(ExpectedTypeNamesContextFunction.class);
-        functions.addBinding(CCTX_INTERNAL_COMPLETION_CONTEXT).to(InternalCompletionContextFunction.class);
-        functions.addBinding(CCTX_JAVA_PROPOSALS).to(InternalCompletionContextFunction.class);
-        functions.addBinding(CCTX_JAVA_CONTENTASSIST_CONTEXT).to(JavaContentAssistInvocationContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_TYPEBINDING).to(ReceiverTypeBindingContextFunction.class);
-        functions.addBinding(CCTX_RECEIVER_NAME).to(ReceiverNameContextFunction.class);
-        functions.addBinding(CCTX_VISIBLE_METHODS).to(VisibleMethodsContextFunction.class);
-        functions.addBinding(CCTX_VISIBLE_FIELDS).to(VisibleFieldsContextFunction.class);
-        functions.addBinding(CCTX_VISIBLE_LOCALS).to(VisibleLocalsContextFunction.class);
+        functions.addBinding(ENCLOSING_AST_METHOD).to(EnclosingAstMethodContextFunction.class);
+        functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
+        functions.addBinding(COMPLETION_PREFIX).to(CompletionPrefixContextFunction.class);
+        functions.addBinding(ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
+        functions.addBinding(ENCLOSING_TYPE).to(EnclosingTypeContextFunction.class);
+        functions.addBinding(ENCLOSING_METHOD).to(EnclosingMethodContextFunction.class);
+        functions.addBinding(EXPECTED_TYPE).to(ExpectedTypeContextFunction.class);
+        functions.addBinding(EXPECTED_TYPENAMES).to(ExpectedTypeNamesContextFunction.class);
+        functions.addBinding(INTERNAL_COMPLETIONCONTEXT).to(InternalCompletionContextFunction.class);
+        functions.addBinding(JAVA_PROPOSALS).to(InternalCompletionContextFunction.class);
+        functions.addBinding(JAVA_CONTENTASSIST_CONTEXT).to(JavaContentAssistInvocationContextFunction.class);
+        functions.addBinding(RECEIVER_TYPEBINDING).to(ReceiverTypeBindingContextFunction.class);
+        functions.addBinding(RECEIVER_NAME).to(ReceiverNameContextFunction.class);
+        functions.addBinding(VISIBLE_METHODS).to(VisibleMethodsContextFunction.class);
+        functions.addBinding(VISIBLE_FIELDS).to(VisibleFieldsContextFunction.class);
+        functions.addBinding(VISIBLE_LOCALS).to(VisibleLocalsContextFunction.class);
     }
 
     @Provides

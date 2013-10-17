@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.rcp.IAstProvider;
@@ -40,8 +41,8 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
     @Inject
     public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors,
             ProcessableProposalFactory proposalFactory, IAstProvider astProvider,
-            Map<String, ICompletionContextFunction> functions) {
-        super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, functions);
+            Map<CompletionContextKey, ICompletionContextFunction> map) {
+        super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, map);
         this.descriptors = descriptors;
     }
 

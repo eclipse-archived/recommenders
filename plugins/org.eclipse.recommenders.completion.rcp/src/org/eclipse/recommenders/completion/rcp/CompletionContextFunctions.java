@@ -14,6 +14,7 @@ import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -74,65 +75,39 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 public class CompletionContextFunctions {
 
-    public static Map<String, ICompletionContextFunction> defaultFunctions() {
-        Map<String, ICompletionContextFunction> res = new HashMap<String, ICompletionContextFunction>();
-        res.put(CCTX_COMPLETION_PREFIX, new CompletionPrefixContextFunction());
-        res.put(CCTX_COMPLETION_ON_TYPE, new CompletionOnTypeContextFunction());
-        res.put(CCTX_ENCLOSING_ELEMENT, new EnclosingElementContextFunction());
-        res.put(CCTX_ENCLOSING_TYPE, new EnclosingTypeContextFunction());
-        res.put(CCTX_ENCLOSING_METHOD, new EnclosingMethodContextFunction());
-        res.put(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, new EnclosingMethodFirstDeclarationContextFunction());
-        res.put(CCTX_ENCLOSING_AST_METHOD, new EnclosingAstMethodContextFunction());
-        res.put(CCTX_EXPECTED_TYPE, new ExpectedTypeContextFunction());
-        res.put(CCTX_EXPECTED_TYPENAMES, new ExpectedTypeNamesContextFunction());
-        res.put(CCTX_INTERNAL_COMPLETION_CONTEXT, new InternalCompletionContextFunction());
-        res.put(CCTX_JAVA_PROPOSALS, new InternalCompletionContextFunction());
-        res.put(CCTX_JAVA_CONTENTASSIST_CONTEXT, new JavaContentAssistInvocationContextFunction());
-        res.put(CCTX_RECEIVER_TYPEBINDING, new ReceiverTypeBindingContextFunction());
-        res.put(CCTX_RECEIVER_NAME, new ReceiverNameContextFunction());
-        res.put(CCTX_VISIBLE_METHODS, new VisibleMethodsContextFunction());
-        res.put(CCTX_VISIBLE_FIELDS, new VisibleFieldsContextFunction());
-        res.put(CCTX_VISIBLE_LOCALS, new VisibleLocalsContextFunction());
+    public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
+        Map<CompletionContextKey, ICompletionContextFunction> res = new HashMap<CompletionContextKey, ICompletionContextFunction>();
+        res.put(COMPLETION_PREFIX, new CompletionPrefixContextFunction());
+        res.put(IS_COMPLETION_ON_TYPE, new CompletionOnTypeContextFunction());
+        res.put(ENCLOSING_ELEMENT, new EnclosingElementContextFunction());
+        res.put(ENCLOSING_TYPE, new EnclosingTypeContextFunction());
+        res.put(ENCLOSING_METHOD, new EnclosingMethodContextFunction());
+        res.put(ENCLOSING_AST_METHOD, new EnclosingAstMethodContextFunction());
+        res.put(ENCLOSING_METHOD_FIRST_DECLARATION, new EnclosingMethodFirstDeclarationContextFunction());
+        res.put(EXPECTED_TYPE, new ExpectedTypeContextFunction());
+        res.put(EXPECTED_TYPENAMES, new ExpectedTypeNamesContextFunction());
+        res.put(INTERNAL_COMPLETIONCONTEXT, new InternalCompletionContextFunction());
+        res.put(JAVA_PROPOSALS, new InternalCompletionContextFunction());
+        res.put(JAVA_CONTENTASSIST_CONTEXT, new JavaContentAssistInvocationContextFunction());
+        res.put(RECEIVER_TYPEBINDING, new ReceiverTypeBindingContextFunction());
+        res.put(RECEIVER_NAME, new ReceiverNameContextFunction());
+        res.put(VISIBLE_METHODS, new VisibleMethodsContextFunction());
+        res.put(VISIBLE_FIELDS, new VisibleFieldsContextFunction());
+        res.put(VISIBLE_LOCALS, new VisibleLocalsContextFunction());
         return res;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(CompletionContextFunctions.class);
-
-    @Deprecated
-    public static final String CCTX_ASSIST_NODE = "assist-node";
-    @Deprecated
-    public static final String CCTX_ASSIST_NODE_PARENT = "assist-node-parent";
-    @Deprecated
-    public static final String CCTX_ASSIST_SCOPE = "assist-scope";
-    @Deprecated
-    public static final String CCTX_COMPILATION_UNIT_DECLARATION = "compilation-unit-declaration";
-    public static final String CCTX_COMPLETION_ON_TYPE = "completion-on-type";
-    public static final String CCTX_COMPLETION_PREFIX = "completion-prefix";
-    public static final String CCTX_EXPECTED_TYPE = "expected-type";
-    public static final String CCTX_EXPECTED_TYPENAMES = "expected-type-names";
-    public static final String CCTX_ENCLOSING_ELEMENT = "enclosing-element";
-    public static final String CCTX_ENCLOSING_METHOD = "enclosing-method";
-    public static final String CCTX_ENCLOSING_METHOD_FIRST_DECLARATION = "enclosing-method-first-declaration";
-    public static final String CCTX_ENCLOSING_AST_METHOD = "enclosing-ast-method";
-    public static final String CCTX_ENCLOSING_TYPE = "enclosing-type";
-    public static final String CCTX_INTERNAL_COMPLETION_CONTEXT = InternalCompletionContext.class.getName();
-    public static final String CCTX_JAVA_CONTENTASSIST_CONTEXT = JavaContentAssistInvocationContext.class.getName();
-    public static final String CCTX_JAVA_PROPOSALS = "java-proposals";
-    public static final String CCTX_RECEIVER_TYPEBINDING = "receiver-typebinding";
-    public static final String CCTX_RECEIVER_NAME = "receiver-name";
-    public static final String CCTX_VISIBLE_METHODS = "visible-methods";
-    public static final String CCTX_VISIBLE_FIELDS = "visible-fields";
-    public static final String CCTX_VISIBLE_LOCALS = "visible-locals";
 
     private static final char[] EMPTY = new char[0];
 
     public static class EnclosingElementContextFunction implements ICompletionContextFunction<IJavaElement> {
 
         @Override
-        public IJavaElement compute(IRecommendersCompletionContext context, String key) {
+        public IJavaElement compute(IRecommendersCompletionContext context, CompletionContextKey<IJavaElement> key) {
             IJavaElement res = null;
             try {
-                InternalCompletionContext core = context.get(InternalCompletionContext.class, null);
+                InternalCompletionContext core = context.get(INTERNAL_COMPLETIONCONTEXT, null);
                 if (core != null && core.isExtended()) {
                     res = core.getEnclosingElement();
                 }
@@ -148,7 +123,7 @@ public class CompletionContextFunctions {
     public static class CompletionOnTypeContextFunction implements ICompletionContextFunction<Boolean> {
 
         @Override
-        public Boolean compute(IRecommendersCompletionContext context, String key) {
+        public Boolean compute(IRecommendersCompletionContext context, CompletionContextKey<Boolean> key) {
             ASTNode node = context.getCompletionNode().orNull();
             boolean res = false;
             if (node instanceof CompletionOnQualifiedNameReference) {
@@ -163,8 +138,8 @@ public class CompletionContextFunctions {
     public static class EnclosingMethodContextFunction implements ICompletionContextFunction<IMethod> {
 
         @Override
-        public IMethod compute(IRecommendersCompletionContext context, String key) {
-            IJavaElement enclosing = context.get(CCTX_ENCLOSING_ELEMENT, null);
+        public IMethod compute(IRecommendersCompletionContext context, CompletionContextKey<IMethod> key) {
+            IJavaElement enclosing = context.get(ENCLOSING_ELEMENT, null);
             IMethod res = (IMethod) (enclosing instanceof IMethod ? enclosing : null);
             context.set(key, res);
             return res;
@@ -174,9 +149,9 @@ public class CompletionContextFunctions {
     public static class EnclosingMethodFirstDeclarationContextFunction implements ICompletionContextFunction<IMethod> {
 
         @Override
-        public IMethod compute(IRecommendersCompletionContext context, String key) {
+        public IMethod compute(IRecommendersCompletionContext context, CompletionContextKey<IMethod> key) {
             IMethod root = null;
-            IMethod enclosing = context.get(CCTX_ENCLOSING_METHOD, null);
+            IMethod enclosing = context.get(ENCLOSING_METHOD, null);
             if (enclosing != null) {
                 root = findFirstDeclaration(enclosing);
             }
@@ -188,8 +163,8 @@ public class CompletionContextFunctions {
     public static class EnclosingTypeContextFunction implements ICompletionContextFunction<IType> {
 
         @Override
-        public IType compute(IRecommendersCompletionContext context, String key) {
-            IJavaElement enclosing = context.get(CCTX_ENCLOSING_ELEMENT, null);
+        public IType compute(IRecommendersCompletionContext context, CompletionContextKey<IType> key) {
+            IJavaElement enclosing = context.get(ENCLOSING_ELEMENT, null);
             IType res = null;
             if (enclosing instanceof IType) {
                 res = (IType) enclosing;
@@ -206,8 +181,8 @@ public class CompletionContextFunctions {
     public static class ExpectedTypeContextFunction implements ICompletionContextFunction<IType> {
 
         @Override
-        public IType compute(IRecommendersCompletionContext context, String key) {
-            JavaContentAssistInvocationContext ctx = context.get(JavaContentAssistInvocationContext.class, null);
+        public IType compute(IRecommendersCompletionContext context, CompletionContextKey<IType> key) {
+            JavaContentAssistInvocationContext ctx = context.get(JAVA_CONTENTASSIST_CONTEXT, null);
             IType res = ctx == null ? null : ctx.getExpectedType();
             context.set(key, res);
             return res;
@@ -217,9 +192,9 @@ public class CompletionContextFunctions {
     public static class ExpectedTypeNamesContextFunction implements ICompletionContextFunction<Set<ITypeName>> {
 
         @Override
-        public Set<ITypeName> compute(IRecommendersCompletionContext context, String key) {
+        public Set<ITypeName> compute(IRecommendersCompletionContext context, CompletionContextKey<Set<ITypeName>> key) {
             ASTNode completion = context.getCompletionNode().orNull();
-            InternalCompletionContext core = context.get(InternalCompletionContext.class, null);
+            InternalCompletionContext core = context.get(INTERNAL_COMPLETIONCONTEXT, null);
 
             char[][] keys;
             if (isArgumentCompletion(completion) && context.getPrefix().isEmpty()) {
@@ -289,7 +264,7 @@ public class CompletionContextFunctions {
     public static class ReceiverTypeBindingContextFunction implements ICompletionContextFunction<TypeBinding> {
 
         @Override
-        public TypeBinding compute(IRecommendersCompletionContext context, String key) {
+        public TypeBinding compute(IRecommendersCompletionContext context, CompletionContextKey<TypeBinding> key) {
             final ASTNode n = context.getCompletionNode().orNull();
             if (n == null) {
                 return null;
@@ -329,7 +304,7 @@ public class CompletionContextFunctions {
     public static class ReceiverNameContextFunction implements ICompletionContextFunction<String> {
 
         @Override
-        public String compute(IRecommendersCompletionContext context, String key) {
+        public String compute(IRecommendersCompletionContext context, CompletionContextKey<String> key) {
             final ASTNode n = context.getCompletionNode().orNull();
             if (n == null) {
                 return "";
@@ -382,7 +357,7 @@ public class CompletionContextFunctions {
     public static class InternalCompletionContextFunction implements ICompletionContextFunction<Object> {
 
         @Override
-        public Object compute(IRecommendersCompletionContext context, String key) {
+        public Object compute(IRecommendersCompletionContext context, CompletionContextKey<Object> key) {
             JavaContentAssistInvocationContext coreContext = context.getJavaContext();
 
             int offset = context.getInvocationOffset();
@@ -397,12 +372,12 @@ public class CompletionContextFunctions {
                 RcpPlugin.logError(e, "Exception during code completion");
             }
             InternalCompletionContext internal = collector.getCoreContext();
-            context.set(InternalCompletionContext.class, internal);
+            context.set(INTERNAL_COMPLETIONCONTEXT, internal);
             Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
-            context.set(CCTX_JAVA_PROPOSALS, proposals);
+            context.set(JAVA_PROPOSALS, proposals);
 
             //
-            if (CCTX_JAVA_PROPOSALS.equals(key)) {
+            if (JAVA_PROPOSALS.equals(key)) {
                 return proposals;
             } else {
                 return internal;
@@ -414,7 +389,8 @@ public class CompletionContextFunctions {
             ICompletionContextFunction<JavaContentAssistInvocationContext> {
 
         @Override
-        public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context, String key) {
+        public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,
+                CompletionContextKey<JavaContentAssistInvocationContext> key) {
             JavaContentAssistInvocationContext res = context.getJavaContext();
             context.set(key, res);
             return res;
@@ -424,8 +400,8 @@ public class CompletionContextFunctions {
     public static class CompletionPrefixContextFunction implements ICompletionContextFunction<String> {
 
         @Override
-        public String compute(IRecommendersCompletionContext context, String key) {
-            InternalCompletionContext ctx = context.get(InternalCompletionContext.class, null);
+        public String compute(IRecommendersCompletionContext context, CompletionContextKey<String> key) {
+            InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
             char[] prefix = EMPTY;
             if (ctx != null) {
                 prefix = firstNonNull(ctx.getToken(), EMPTY);
@@ -439,8 +415,8 @@ public class CompletionContextFunctions {
     public static class VisibleMethodsContextFunction implements ICompletionContextFunction<List<IMethod>> {
 
         @Override
-        public List<IMethod> compute(IRecommendersCompletionContext context, String key) {
-            InternalCompletionContext ctx = context.get(InternalCompletionContext.class, null);
+        public List<IMethod> compute(IRecommendersCompletionContext context, CompletionContextKey<List<IMethod>> key) {
+            InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
             if (ctx == null || !ctx.isExtended()) {
                 return Collections.emptyList();
             }
@@ -461,8 +437,8 @@ public class CompletionContextFunctions {
     public static class VisibleFieldsContextFunction implements ICompletionContextFunction<List<IField>> {
 
         @Override
-        public List<IField> compute(IRecommendersCompletionContext context, String key) {
-            InternalCompletionContext ctx = context.get(InternalCompletionContext.class, null);
+        public List<IField> compute(IRecommendersCompletionContext context, CompletionContextKey<List<IField>> key) {
+            InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
             if (ctx == null || !ctx.isExtended()) {
                 return Collections.emptyList();
             }
@@ -483,8 +459,9 @@ public class CompletionContextFunctions {
     public static class VisibleLocalsContextFunction implements ICompletionContextFunction<List<ILocalVariable>> {
 
         @Override
-        public List<ILocalVariable> compute(IRecommendersCompletionContext context, String key) {
-            InternalCompletionContext ctx = context.get(InternalCompletionContext.class, null);
+        public List<ILocalVariable> compute(IRecommendersCompletionContext context,
+                CompletionContextKey<List<ILocalVariable>> key) {
+            InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
             if (ctx == null || !ctx.isExtended()) {
                 return Collections.emptyList();
             }
@@ -504,7 +481,8 @@ public class CompletionContextFunctions {
     public static class EnclosingAstMethodContextFunction implements ICompletionContextFunction<MethodDeclaration> {
 
         @Override
-        public MethodDeclaration compute(IRecommendersCompletionContext context, String key) {
+        public MethodDeclaration compute(IRecommendersCompletionContext context,
+                CompletionContextKey<MethodDeclaration> key) {
             MethodDeclaration astMethod = null;
             IMethod jdtMethod = context.getEnclosingMethod().orNull();
             if (jdtMethod != null) {
@@ -545,19 +523,19 @@ public class CompletionContextFunctions {
         }
 
         @Override
-        public Void compute(IRecommendersCompletionContext context, String key) {
+        public Void compute(IRecommendersCompletionContext context, CompletionContextKey<Void> key) {
             try {
-                InternalCompletionContext ctx = context.get(InternalCompletionContext.class, null);
+                InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
                 InternalExtendedCompletionContext extContext = cast(fExtendedContext.get(ctx));
                 if (extContext == null) {
                     return null;
                 }
                 ASTNode assistNode = cast(fAssistNode.get(extContext));
-                context.set(CCTX_ASSIST_NODE, assistNode);
+                context.set(ASSIST_NODE, assistNode);
                 ASTNode assistNodeParent = cast(fAssistNodeParent.get(extContext));
-                context.set(CCTX_ASSIST_NODE_PARENT, assistNodeParent);
+                context.set(ASSIST_NODE_PARENT, assistNodeParent);
                 Scope assistScope = cast(fAssistScope.get(extContext));
-                context.set(CCTX_ASSIST_SCOPE, assistScope);
+                context.set(ASSIST_SCOPE, assistScope);
                 CompilationUnitDeclaration cuDeclaration = cast(fCompilationUnitDeclaration.get(extContext));
                 context.set(CCTX_COMPILATION_UNIT_DECLARATION, cuDeclaration);
             } catch (Exception e) {

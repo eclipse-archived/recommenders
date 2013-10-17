@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.calls.rcp.templates;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CCTX_ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.internal.calls.rcp.Constants.TEMPLATES_CATEGORY_ID;
 import static org.eclipse.recommenders.utils.Recommendations.top;
@@ -196,7 +196,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     private void handleVariableCompletionRequest(ProposalBuilder proposalBuilder) {
         // set override-context:
-        IMethod overrides = rCtx.get(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, null);
+        IMethod overrides = rCtx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
         if (overrides != null) {
             IMethodName crOverrides = elementResolver.toRecMethod(overrides).or(
                     org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
@@ -204,11 +204,11 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         }
 
         // set definition-type and defined-by
-        model.setObservedDefinitionKind(rCtx.<DefinitionKind>get(CCTX_RECEIVER_DEF_TYPE, null));
-        model.setObservedDefiningMethod(rCtx.<IMethodName>get(CCTX_RECEIVER_DEF_BY, null));
+        model.setObservedDefinitionKind(rCtx.get(RECEIVER_DEF_TYPE, null));
+        model.setObservedDefiningMethod(rCtx.get(RECEIVER_DEF_BY, null));
 
         // set calls:
-        model.setObservedCalls(newHashSet(rCtx.get(CCTX_RECEIVER_CALLS, Collections.<IMethodName>emptySet())));
+        model.setObservedCalls(newHashSet(rCtx.get(RECEIVER_CALLS, Collections.<IMethodName>emptyList())));
 
         List<Recommendation<String>> callgroups = getMostLikelyPatternsSortedByProbability(model);
         for (Recommendation<String> p : callgroups) {
@@ -230,7 +230,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void handleTypeNameCompletionRequest(ProposalBuilder proposalBuilder) {
-        IMethod overrides = rCtx.get(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, null);
+        IMethod overrides = rCtx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
         model.setObservedDefinitionKind(DefinitionKind.NEW);
         if (overrides != null) {
             IMethodName crOverrides = elementResolver.toRecMethod(overrides).or(

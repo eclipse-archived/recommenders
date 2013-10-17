@@ -10,10 +10,14 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.*;
-import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.defaultFunctions;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +48,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -86,8 +89,8 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         return res;
     }
 
-    private Map<String, Object> data = Maps.newHashMap();
-    private Map<String, ICompletionContextFunction> functions;
+    private Map<CompletionContextKey, Object> data = Maps.newHashMap();
+    private Map<CompletionContextKey, ICompletionContextFunction> functions;
 
     public RecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
             final IAstProvider astProvider) {
@@ -96,15 +99,15 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Inject
     public RecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
-            final IAstProvider astProvider, Map<String, ICompletionContextFunction> functions) {
-        set(JavaContentAssistInvocationContext.class, jdtContext);
-        set(IAstProvider.class, astProvider);
+            final IAstProvider astProvider, Map<CompletionContextKey, ICompletionContextFunction> functions) {
+        set(JAVA_CONTENTASSIST_CONTEXT, jdtContext);
+        set(AST_PROVIDER, astProvider);
         this.functions = functions;
     }
 
     @Override
     public CompilationUnit getAST() {
-        return get(IAstProvider.class, null).get(getCompilationUnit());
+        return get(AST_PROVIDER, null).get(getCompilationUnit());
     }
 
     @Override
@@ -131,36 +134,36 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     }
 
     private InternalCompletionContext doGetCoreContext() {
-        return get(InternalCompletionContext.class, null);
+        return get(INTERNAL_COMPLETIONCONTEXT, null);
     }
 
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
-        IJavaElement enclosing = get(CCTX_ENCLOSING_ELEMENT, null);
+        IJavaElement enclosing = get(ENCLOSING_ELEMENT, null);
         return fromNullable(enclosing);
     }
 
     @Override
     public Optional<IMethod> getEnclosingMethod() {
-        IMethod enclosing = get(CCTX_ENCLOSING_METHOD, null);
+        IMethod enclosing = get(ENCLOSING_METHOD, null);
         return fromNullable(enclosing);
     }
 
     @Override
     public Optional<IType> getEnclosingType() {
-        IType enclosing = get(CCTX_ENCLOSING_TYPE, null);
+        IType enclosing = get(ENCLOSING_TYPE, null);
         return fromNullable(enclosing);
     }
 
     @Override
     public Optional<IType> getExpectedType() {
-        IType res = get(CCTX_EXPECTED_TYPE, null);
+        IType res = get(EXPECTED_TYPE, null);
         return fromNullable(res);
     }
 
     @Override
     public Set<ITypeName> getExpectedTypeNames() {
-        Set<ITypeName> res = get(CCTX_EXPECTED_TYPENAMES, null);
+        Set<ITypeName> res = get(EXPECTED_TYPENAMES, null);
         return res == null ? Sets.<ITypeName>newHashSet() : res;
     }
 
@@ -184,7 +187,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public Optional<IType> getClosestEnclosingType() {
-        IJavaElement enclosing = get(CCTX_ENCLOSING_ELEMENT, null);
+        IJavaElement enclosing = get(ENCLOSING_ELEMENT, null);
         if (enclosing == null) {
             return absent();
         }
@@ -203,7 +206,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public JavaContentAssistInvocationContext getJavaContext() {
-        return get(JavaContentAssistInvocationContext.class, null);
+        return get(JAVA_CONTENTASSIST_CONTEXT, null);
     }
 
     @Override
@@ -226,7 +229,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public String getPrefix() {
-        return get(CCTX_COMPLETION_PREFIX, "");
+        return get(COMPLETION_PREFIX, "");
     }
 
     @Override
@@ -236,17 +239,17 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals() {
-        return get(CCTX_JAVA_PROPOSALS, Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap());
+        return get(JAVA_PROPOSALS, Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap());
     }
 
     @Override
     public String getReceiverName() {
-        return get(CCTX_RECEIVER_NAME, "");
+        return get(RECEIVER_NAME, "");
     }
 
     @Override
     public Optional<IType> getReceiverType() {
-        TypeBinding b = get(CCTX_RECEIVER_TYPEBINDING, null);
+        TypeBinding b = get(RECEIVER_TYPEBINDING, null);
         if (b == null || b instanceof MissingTypeBinding) {
             return absent();
         }
@@ -255,7 +258,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public Optional<String> getReceiverTypeSignature() {
-        TypeBinding b = get(CCTX_RECEIVER_TYPEBINDING, null);
+        TypeBinding b = get(RECEIVER_TYPEBINDING, null);
         if (b == null) {
             return absent();
         }
@@ -272,17 +275,17 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public List<IField> getVisibleFields() {
-        return get(CCTX_VISIBLE_FIELDS, Collections.<IField>emptyList());
+        return get(VISIBLE_FIELDS, Collections.<IField>emptyList());
     }
 
     @Override
     public List<ILocalVariable> getVisibleLocals() {
-        return get(CCTX_VISIBLE_LOCALS, Collections.<ILocalVariable>emptyList());
+        return get(VISIBLE_LOCALS, Collections.<ILocalVariable>emptyList());
     }
 
     @Override
     public List<IMethod> getVisibleMethods() {
-        return get(CCTX_VISIBLE_METHODS, Collections.<IMethod>emptyList());
+        return get(VISIBLE_METHODS, Collections.<IMethod>emptyList());
     }
 
     @Override
@@ -301,23 +304,24 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     }
 
     @Override
-    public <T> Optional<T> get(Class<T> key) {
-        return get(key.getName());
+    public <T> void set(CompletionContextKey<T> key, T value) {
+        ensureIsNotNull(key);
+        data.put(key, value);
     }
 
     @Override
-    public <T> T get(Class<T> key, T defaultValue) {
-        return get(key.getName(), defaultValue);
+    public ImmutableMap<CompletionContextKey, Object> values() {
+        return ImmutableMap.copyOf(data);
     }
 
     @Override
-    public <T> Optional<T> get(String key) {
+    public <T> Optional<T> get(CompletionContextKey<T> key) {
         // if the key is in already, the value was already computed. May be null though:
         if (data.containsKey(key)) {// data.remove(key)
             return fromNullable((T) data.get(key));
         }
         // if it's not yet in, try computing it using a context-function
-        ICompletionContextFunction<?> function = functions.get(key);
+        ICompletionContextFunction<T> function = functions.get(key);
         if (function != null) {
             T res = (T) function.compute(this, key);
             return fromNullable(res);
@@ -326,28 +330,9 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     }
 
     @Override
-    public <T> T get(String key, @Nullable T defaultValue) {
-        T res = (T) get(key).orNull();
-        return res != null ? res : defaultValue;
+    public <T> T get(CompletionContextKey<T> key, T defaultValue) {
+      T res = (T) get(key).orNull();
+      return res != null ? res : defaultValue;
     }
 
-    @Override
-    public <T, S extends T> void set(Class<T> key, S value) {
-        set(key.getName(), value);
-    }
-
-    @Override
-    public void set(String key, Object value) {
-        ensureIsNotNull(key);
-        if (value instanceof ICompletionContextFunction) {
-            functions.put(key, (ICompletionContextFunction<?>) value);
-        } else {
-            data.put(key, value);
-        }
-    }
-
-    @Override
-    public ImmutableMap<String, Object> values() {
-        return ImmutableMap.copyOf(data);
-    }
 }

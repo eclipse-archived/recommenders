@@ -12,7 +12,8 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CCTX_ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
@@ -103,7 +104,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findReceiverTypeAndModel() {
-        IType receiverType = ctx.get(CCTX_RECEIVER_TYPE2, null);
+        IType receiverType = ctx.get(RECEIVER_TYPE2, null);
         if (receiverType == null) {
             return false;
         }
@@ -124,7 +125,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private boolean findRecommendations() {
         // set override-context:
-        IMethod overrides = ctx.get(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, null);
+        IMethod overrides = ctx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
         if (overrides != null) {
             IMethodName crOverrides = pcProvider.toName(overrides).or(
                     org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
@@ -132,10 +133,10 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         }
 
         // set definition-type and defined-by
-        model.setObservedDefinitionKind(ctx.<DefinitionKind>get(CCTX_RECEIVER_DEF_TYPE, null));
-        model.setObservedDefiningMethod(ctx.<IMethodName>get(CCTX_RECEIVER_DEF_BY, null));
+        model.setObservedDefinitionKind(ctx.get(RECEIVER_DEF_TYPE, null));
+        model.setObservedDefiningMethod(ctx.get(RECEIVER_DEF_BY, null));
         // set calls:
-        model.setObservedCalls(newHashSet(ctx.get(CCTX_RECEIVER_CALLS, Collections.<IMethodName>emptySet())));
+        model.setObservedCalls(newHashSet(ctx.get(RECEIVER_CALLS, Collections.<IMethodName>emptyList())));
 
         // read
         recommendations = model.recommendCalls();
@@ -173,7 +174,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 int relevance = 0;
                 if (prefs.changeProposalRelevance) {
                     relevance = 200 + asPercentage(call);
-                    proposal.setTag("by-recommenders", asPercentage(call));
+                    proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
                 }
                 String label = "";
                 if (prefs.decorateProposalText) {

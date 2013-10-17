@@ -56,7 +56,7 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("restriction")
 public class ProcessableParameterGuessingProposal extends JavaMethodCompletionProposal implements IProcessableProposal {
 
-    private Map<String, Object> tags = Maps.newHashMap();
+    private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
@@ -415,7 +415,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     }
 
     @Override
-    public void setTag(String key, Object value) {
+    public void setTag(IProposalTag key, Object value) {
         ensureIsNotNull(key);
         if (value == null) {
             tags.remove(key);
@@ -425,12 +425,12 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     }
 
     @Override
-    public <T> Optional<T> getTag(String key) {
+    public <T> Optional<T> getTag(IProposalTag key) {
         return Optional.fromNullable((T) tags.get(key));
     }
 
     @Override
-    public <T> T getTag(String key, T defaultValue) {
+    public <T> T getTag(IProposalTag key, T defaultValue) {
         T res = (T) tags.get(key);
         return res != null ? res : defaultValue;
     }
