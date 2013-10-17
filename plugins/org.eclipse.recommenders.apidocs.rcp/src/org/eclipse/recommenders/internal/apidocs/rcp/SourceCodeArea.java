@@ -18,7 +18,9 @@ import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
 import org.eclipse.jdt.ui.text.IColorManager;
+import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
+import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -37,7 +39,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
     private static final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
     private static final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
     private static final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager,
-            store, null, null);
+            store, null, IJavaPartitions.JAVA_PARTITIONING);;
 
     private static final Map<String, Object> options;
     private static final CodeFormatter formatter;
@@ -60,6 +62,8 @@ public final class SourceCodeArea extends JavaSourceViewer {
     public void setCode(final String code) {
         final IDocument document = new Document(code);
         format(document);
+        JavaTextTools textTools = JavaPlugin.getDefault().getJavaTextTools();
+        textTools.setupJavaDocumentPartitioner(document, IJavaPartitions.JAVA_PARTITIONING);
         setInput(document);
     }
 
