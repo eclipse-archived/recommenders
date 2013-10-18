@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.overrides.rcp;
 
 import static java.lang.String.valueOf;
-import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 
 import java.util.List;

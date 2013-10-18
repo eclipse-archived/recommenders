@@ -10,9 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAR;
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JAVA_PROJECT;
-import static org.eclipse.recommenders.rcp.SharedImages.OBJ_JRE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -16,7 +16,7 @@ import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.recommenders.models.DependencyInfo.*;
-import static org.eclipse.recommenders.rcp.SharedImages.*;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Collection;
