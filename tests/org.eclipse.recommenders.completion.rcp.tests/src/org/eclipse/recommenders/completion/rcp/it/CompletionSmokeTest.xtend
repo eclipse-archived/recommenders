@@ -46,6 +46,7 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 
 import static extension com.google.common.collect.Iterables.*
+import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -454,7 +455,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
     new(T processor) {
         super(
             #{new SessionProcessorDescriptor("", "", "", null, 0, true, "", processor)}.toArray(
-                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), CompletionContextFunctions.defaultFunctions);
+                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), CallCompletionContextFunctions.registerDefaults( CompletionContextFunctions.defaultFunctions));
         this.processor = processor
     }
 

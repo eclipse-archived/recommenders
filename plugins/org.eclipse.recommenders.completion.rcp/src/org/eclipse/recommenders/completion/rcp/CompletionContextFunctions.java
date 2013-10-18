@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.lang.reflect.Field;
@@ -34,6 +35,8 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
@@ -58,6 +61,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
+import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -77,6 +81,8 @@ public class CompletionContextFunctions {
         res.put(CCTX_ENCLOSING_ELEMENT, new EnclosingElementContextFunction());
         res.put(CCTX_ENCLOSING_TYPE, new EnclosingTypeContextFunction());
         res.put(CCTX_ENCLOSING_METHOD, new EnclosingMethodContextFunction());
+        res.put(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, new EnclosingMethodFirstDeclarationContextFunction());
+        res.put(CCTX_ENCLOSING_AST_METHOD, new EnclosingAstMethodContextFunction());
         res.put(CCTX_EXPECTED_TYPE, new ExpectedTypeContextFunction());
         res.put(CCTX_EXPECTED_TYPENAMES, new ExpectedTypeNamesContextFunction());
         res.put(CCTX_INTERNAL_COMPLETION_CONTEXT, new InternalCompletionContextFunction());
@@ -106,6 +112,8 @@ public class CompletionContextFunctions {
     public static final String CCTX_EXPECTED_TYPENAMES = "expected-type-names";
     public static final String CCTX_ENCLOSING_ELEMENT = "enclosing-element";
     public static final String CCTX_ENCLOSING_METHOD = "enclosing-method";
+    public static final String CCTX_ENCLOSING_METHOD_FIRST_DECLARATION = "enclosing-method-first-declaration";
+    public static final String CCTX_ENCLOSING_AST_METHOD = "enclosing-ast-method";
     public static final String CCTX_ENCLOSING_TYPE = "enclosing-type";
     public static final String CCTX_INTERNAL_COMPLETION_CONTEXT = InternalCompletionContext.class.getName();
     public static final String CCTX_JAVA_CONTENTASSIST_CONTEXT = JavaContentAssistInvocationContext.class.getName();
@@ -160,6 +168,20 @@ public class CompletionContextFunctions {
             IMethod res = (IMethod) (enclosing instanceof IMethod ? enclosing : null);
             context.set(key, res);
             return res;
+        }
+    }
+
+    public static class EnclosingMethodFirstDeclarationContextFunction implements ICompletionContextFunction<IMethod> {
+
+        @Override
+        public IMethod compute(IRecommendersCompletionContext context, String key) {
+            IMethod root = null;
+            IMethod enclosing = context.get(CCTX_ENCLOSING_METHOD, null);
+            if (enclosing != null) {
+                root = findFirstDeclaration(enclosing);
+            }
+            context.set(key, root);
+            return root;
         }
     }
 
@@ -329,7 +351,9 @@ public class CompletionContextFunctions {
                 name = c.realName;
             } else if (n instanceof CompletionOnSingleNameReference) {
                 final CompletionOnSingleNameReference c = cast(n);
-                name = c.token;
+                // TODO is that correct?
+                // name = c.token;
+                name = new char[0];
             } else if (n instanceof CompletionOnMemberAccess) {
                 final CompletionOnMemberAccess c = cast(n);
                 if (c.receiver instanceof ThisReference) {
@@ -474,6 +498,21 @@ public class CompletionContextFunctions {
             }
             context.set(key, res);
             return res;
+        }
+    }
+
+    public static class EnclosingAstMethodContextFunction implements ICompletionContextFunction<MethodDeclaration> {
+
+        @Override
+        public MethodDeclaration compute(IRecommendersCompletionContext context, String key) {
+            MethodDeclaration astMethod = null;
+            IMethod jdtMethod = context.getEnclosingMethod().orNull();
+            if (jdtMethod != null) {
+                CompilationUnit ast = context.getAST();
+                astMethod = ASTNodeUtils.find(ast, jdtMethod).orNull();
+            }
+            context.set(key, astMethod);
+            return astMethod;
         }
     }
 

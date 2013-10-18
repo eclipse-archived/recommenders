@@ -12,11 +12,14 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CCTX_ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.rcp.SharedImages.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.*;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +35,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameRefere
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.calls.ICallModel;
+import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.NullCallModel;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
@@ -65,7 +69,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private IRecommendersCompletionContext ctx;
 
-    private AstCallCompletionAnalyzer completionAnalyzer;
     private UniqueTypeName name;
     private ICallModel model;
 
@@ -87,7 +90,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     public boolean startSession(final IRecommendersCompletionContext context) {
         ctx = context;
         recommendations = Lists.newLinkedList();
-        completionAnalyzer = new AstCallCompletionAnalyzer(context);
         try {
             if (!isCompletionRequestSupported() || //
                     !findReceiverTypeAndModel() || //
@@ -101,7 +103,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findReceiverTypeAndModel() {
-        IType receiverType = completionAnalyzer.getReceiverType().orNull();
+        IType receiverType = ctx.get(CCTX_RECEIVER_TYPE2, null);
         if (receiverType == null) {
             return false;
         }
@@ -122,7 +124,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private boolean findRecommendations() {
         // set override-context:
-        IMethod overrides = completionAnalyzer.getOverridesContext().orNull();
+        IMethod overrides = ctx.get(CCTX_ENCLOSING_METHOD_FIRST_DECLARATION, null);
         if (overrides != null) {
             IMethodName crOverrides = pcProvider.toName(overrides).or(
                     org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
@@ -130,10 +132,10 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         }
 
         // set definition-type and defined-by
-        model.setObservedDefinitionKind(completionAnalyzer.getReceiverDefinitionType());
-        model.setObservedDefiningMethod(completionAnalyzer.getDefinedBy().orNull());
+        model.setObservedDefinitionKind(ctx.<DefinitionKind>get(CCTX_RECEIVER_DEF_TYPE, null));
+        model.setObservedDefiningMethod(ctx.<IMethodName>get(CCTX_RECEIVER_DEF_BY, null));
         // set calls:
-        model.setObservedCalls(newHashSet(completionAnalyzer.getCalls()));
+        model.setObservedCalls(newHashSet(ctx.get(CCTX_RECEIVER_CALLS, Collections.<IMethodName>emptySet())));
 
         // read
         recommendations = model.recommendCalls();
