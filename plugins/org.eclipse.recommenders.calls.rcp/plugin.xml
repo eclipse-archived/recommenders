@@ -4,10 +4,10 @@
    <extension
          point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
       <processor
+            id="org.eclipse.recommenders.calls.rcp.sessionprocessors.call"
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor"
             description="Provides intelligent call proposals, e.g., &quot;99% of all developers called method m() in a similar context.&quot;"
             icon="icons/view16/bullet_green.png"
-            id="org.eclipse.recommenders.calls.rcp.completion.processor"
             name="Call Completion Processor"
             preferencePage="org.eclipse.recommenders.calls.rcp.preferences">
       </processor>
@@ -52,7 +52,7 @@
       </proposalCategory>
    </extension>
    <extension
-         point="org.eclipse.recommenders.extdoc.rcp.provider">
+         point="org.eclipse.recommenders.apidocs.rcp.providers">
       <provider
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.CallsApidocProvider"
             image="icons/view16/templates-dots.gif"

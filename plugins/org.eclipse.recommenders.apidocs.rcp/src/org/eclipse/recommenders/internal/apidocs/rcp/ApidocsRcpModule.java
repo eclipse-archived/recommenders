@@ -38,6 +38,8 @@ import com.google.inject.Singleton;
 
 public class ApidocsRcpModule extends AbstractModule {
 
+    private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.apidocs.rcp.providers";
+
     @Override
     protected void configure() {
         bind(ApidocsPreferences.class).in(Scopes.SINGLETON);
@@ -59,7 +61,7 @@ public class ApidocsRcpModule extends AbstractModule {
 
     static List<ApidocProvider> instantiateProvidersFromRegistry() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                "org.eclipse.recommenders.extdoc.rcp.provider"); //$NON-NLS-1$
+                EXT_ID_PROVIDER);
         final List<ApidocProvider> providers = Lists.newLinkedList();
 
         for (final IConfigurationElement element : elements) {
