@@ -4,12 +4,11 @@
  <extension
        point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
     <processor
+          id="org.eclipse.recommenders.subwords.rcp.sessionprocessors.subwords"
           class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor"
-          description="Adds subwords matching and subwords relevance ranking to content assist."
-          icon="icons/elcl16/category.gif"
-          id="org.eclipse.recommenders.completion.rcp.subwords.processor"
-          name="Subwords Completion Processor"
-          preferencePage="org.eclipse.recommenders.internal.subwords.rcp.preferences">
+          description="Adds subwords matching and subwords relevance ranking to content assist. Note that on Constructor and Type completions it may produce timeouts."
+          icon="icons/obj16/Aa.png"
+          name="Subwords Completion Processor">
     </processor>
  </extension>
 </plugin>
