@@ -13,6 +13,8 @@ package org.eclipse.recommenders.rcp.utils;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
+import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,12 +26,14 @@ import com.google.common.collect.Sets;
 
 public class ContentAssistEnablementBlock {
 
-    private final String categoryId;
-    private final Button enablement;
+    public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$
+    public static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory"; //$NON-NLS-1$
+
+    protected final String categoryId;
+    protected final Button enablement;
 
     public ContentAssistEnablementBlock(final Composite parent, final String label, final String categoryId) {
         this.categoryId = categoryId;
-
         enablement = new Button(parent, SWT.CHECK);
         enablement.setText(label);
         enablement.addSelectionListener(new SelectionAdapter() {
@@ -56,6 +60,16 @@ public class ContentAssistEnablementBlock {
         final String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
         final boolean isFeatureEnabled = !ArrayUtils.contains(excluded, categoryId);
         enablement.setSelection(isFeatureEnabled);
+    }
+
+    public static boolean isMylynInstalled() {
+        CompletionProposalComputerRegistry reg = CompletionProposalComputerRegistry.getDefault();
+        for (CompletionProposalCategory cat : reg.getProposalCategories()) {
+            if (cat.getId().equals(MYLYN_ALL_CATEGORY)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
