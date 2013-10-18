@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.eclipse.recommenders.extdoc.rcp.provider" name="%extension-point.name" schema="schema/org.eclipse.recommenders.extdoc.rcp.provider.exsd"/>
+   <extension-point id="org.eclipse.recommenders.apidocs.rcp.providers" name="%extension-point.name" schema="schema/providers.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -20,7 +20,7 @@
       </module>
    </extension>
    <extension
-         point="org.eclipse.recommenders.extdoc.rcp.provider">
+         point="org.eclipse.recommenders.apidocs.rcp.providers">
       <provider
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.JavadocProvider"
             image="icons/provider.javadoc.gif"

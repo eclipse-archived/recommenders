@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.recommenders.extdoc.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.eclipse.recommenders.apidocs.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.recommenders.extdoc.rcp" id="org.eclipse.recommenders.extdoc.rcp.provider" name="Extended Documentation Provider"/>
+         <meta.schema plugin="org.eclipse.recommenders.apidocs.rcp" id="org.eclipse.recommenders.apidocs.rcp.providers" name="API Documentation Providers"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         
       </documentation>
    </annotation>
 
@@ -84,36 +84,12 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         2.0
       </documentation>
    </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="examples"/>
-      </appinfo>
-      <documentation>
-         [Enter extension point usage example here.]
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="apiinfo"/>
-      </appinfo>
-      <documentation>
-         [Enter API information here.]
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="implementation"/>
-      </appinfo>
-      <documentation>
-         [Enter information about supplied implementation of this extension point.]
-      </documentation>
-   </annotation>
 
 
 </schema>
