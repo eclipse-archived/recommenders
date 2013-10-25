@@ -43,6 +43,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
@@ -384,6 +385,9 @@ public class ModelCoordinatesView extends ViewPart {
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
+                if (!isValidType(treeViewer.getSelection(), KnownCoordinate.class)) {
+                    return;
+                }
                 Set<KnownCoordinate> selectedValues = Selections.toSet(treeViewer.getSelection());
                 Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
                 for (KnownCoordinate value : selectedValues) {
@@ -395,6 +399,10 @@ public class ModelCoordinatesView extends ViewPart {
                             "Download models", selectedModelCoordinates, repo, bus);
                     menuManager.add(action);
                 }
+            }
+
+            private boolean isValidType(ISelection selection, Class<KnownCoordinate> expectedType) {
+                return Selections.safeFirstElement(treeViewer.getSelection(), KnownCoordinate.class).isPresent();
             }
         });
     }
