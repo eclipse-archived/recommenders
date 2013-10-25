@@ -45,17 +45,16 @@ public class CompletionRcpModule extends AbstractModule {
         MapBinder<CompletionContextKey, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(),
                 CompletionContextKey.class, ICompletionContextFunction.class);
 
-        functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
-        functions.addBinding(ENCLOSING_METHOD_FIRST_DECLARATION).to(
-                EnclosingMethodFirstDeclarationContextFunction.class);
-        functions.addBinding(ENCLOSING_AST_METHOD).to(EnclosingAstMethodContextFunction.class);
-        functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
         functions.addBinding(COMPLETION_PREFIX).to(CompletionPrefixContextFunction.class);
+        functions.addBinding(ENCLOSING_AST_METHOD).to(EnclosingAstMethodContextFunction.class);
         functions.addBinding(ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
         functions.addBinding(ENCLOSING_TYPE).to(EnclosingTypeContextFunction.class);
         functions.addBinding(ENCLOSING_METHOD).to(EnclosingMethodContextFunction.class);
+        functions.addBinding(ENCLOSING_METHOD_FIRST_DECLARATION).to(
+                EnclosingMethodFirstDeclarationContextFunction.class);
         functions.addBinding(EXPECTED_TYPE).to(ExpectedTypeContextFunction.class);
         functions.addBinding(EXPECTED_TYPENAMES).to(ExpectedTypeNamesContextFunction.class);
+        functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
         functions.addBinding(INTERNAL_COMPLETIONCONTEXT).to(InternalCompletionContextFunction.class);
         functions.addBinding(JAVA_PROPOSALS).to(InternalCompletionContextFunction.class);
         functions.addBinding(JAVA_CONTENTASSIST_CONTEXT).to(JavaContentAssistInvocationContextFunction.class);
