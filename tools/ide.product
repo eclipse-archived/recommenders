@@ -35,7 +35,7 @@
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
-      <feature id="org.eclipse.recommenders.rcp.feature" version="1.100.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.rcp.feature"/>
    </features>
 
 
