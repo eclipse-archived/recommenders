@@ -5,18 +5,13 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.internal.subwords.rcp;x-internal:=true;
-  uses:="org.eclipse.recommenders.rcp,
-   org.eclipse.core.runtime,
-   org.eclipse.ui,
-   org.eclipse.recommenders.completion.rcp.processable,
-   org.eclipse.jdt.ui.text.java,
-   org.eclipse.jface.preference,
-   org.eclipse.jdt.core,
-   org.eclipse.jface.viewers,
-   org.eclipse.recommenders.completion.rcp.utils,
-   org.eclipse.swt.widgets,
-   org.eclipse.ui.progress"
+Export-Package: org.eclipse.recommenders.internal.subwords.rcp;x-inter
+ nal:=true; uses:="org.eclipse.recommenders.rcp,  org.eclipse.core.run
+ time,  org.eclipse.ui,  org.eclipse.recommenders.completion.rcp.proce
+ ssable,  org.eclipse.jdt.ui.text.java,  org.eclipse.jface.preference,
+   org.eclipse.jdt.core,  org.eclipse.jface.viewers,  org.eclipse.reco
+ mmenders.completion.rcp.utils,  org.eclipse.swt.widgets,  org.eclipse
+ .ui.progress"
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.jdt.core,

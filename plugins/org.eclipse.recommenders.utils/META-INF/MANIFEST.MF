@@ -5,14 +5,12 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.utils;
-  uses:="com.google.common.collect,
-   org.eclipse.recommenders.utils.names,
-   com.google.common.base,
-   org.sonatype.aether.artifact,
-   org.w3c.dom",
- org.eclipse.recommenders.utils.gson;uses:="com.google.common.collect,org.eclipse.recommenders.utils.names,com.google.gson",
- org.eclipse.recommenders.utils.names
+Export-Package: org.eclipse.recommenders.utils; uses:="com.google.comm
+ on.collect,  org.eclipse.recommenders.utils.names,  com.google.common
+ .base,  org.sonatype.aether.artifact,  org.w3c.dom",org.eclipse.recom
+ menders.utils.gson;uses:="com.google.common.collect,org.eclipse.recom
+ menders.utils.names,com.google.gson",org.eclipse.recommenders.utils.n
+ ames
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",

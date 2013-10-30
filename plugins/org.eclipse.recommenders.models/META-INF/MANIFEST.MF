@@ -49,15 +49,9 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  org.sonatype.aether.util,
  org.sonatype.aether.util.artifact,
  org.sonatype.maven.wagon
-Export-Package: org.eclipse.recommenders.models;
-  uses:="com.google.common.util.concurrent,
-   com.google.common.collect,
-   org.eclipse.recommenders.utils.names,
-   com.google.common.base,
-   com.google.common.cache,
-   org.eclipse.recommenders.utils",
- org.eclipse.recommenders.models.advisors;
-  uses:="com.google.common.collect,
-   org.eclipse.recommenders.models,
-   com.google.common.base,
-   org.eclipse.recommenders.utils"
+Export-Package: org.eclipse.recommenders.models; uses:="com.google.com
+ mon.util.concurrent,  com.google.common.collect,  org.eclipse.recomme
+ nders.utils.names,  com.google.common.base,  com.google.common.cache,
+   org.eclipse.recommenders.utils",org.eclipse.recommenders.models.adv
+ isors; uses:="com.google.common.collect,  org.eclipse.recommenders.mo
+ dels,  com.google.common.base,  org.eclipse.recommenders.utils"

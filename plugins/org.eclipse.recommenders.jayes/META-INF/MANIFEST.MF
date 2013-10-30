@@ -5,14 +5,11 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: 
- org.eclipse.recommenders.internal.jayes.util;x-friends:="org.eclipse.recommenders.jayes.tests",
- org.eclipse.recommenders.jayes,
- org.eclipse.recommenders.jayes.factor,
- org.eclipse.recommenders.jayes.factor.arraywrapper,
- org.eclipse.recommenders.jayes.inference,
- org.eclipse.recommenders.jayes.inference.junctionTree,
- org.eclipse.recommenders.jayes.sampling,
- org.eclipse.recommenders.jayes.util,
- org.eclipse.recommenders.jayes.util.sharing,
- org.eclipse.recommenders.jayes.util.triangulation
+Export-Package: org.eclipse.recommenders.internal.jayes.util;x-friends
+ :="org.eclipse.recommenders.jayes.tests",org.eclipse.recommenders.jay
+ es,org.eclipse.recommenders.jayes.factor,org.eclipse.recommenders.jay
+ es.factor.arraywrapper,org.eclipse.recommenders.jayes.inference,org.e
+ clipse.recommenders.jayes.inference.junctionTree,org.eclipse.recommen
+ ders.jayes.sampling,org.eclipse.recommenders.jayes.util,org.eclipse.r
+ ecommenders.jayes.util.sharing,org.eclipse.recommenders.jayes.util.tr
+ iangulation

@@ -39,10 +39,7 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)",
  org.slf4j;version="[1.0.0,2.0.0)",
  org.sonatype.aether
-Export-Package: org.eclipse.recommenders.internal.models.rcp;x-internal:=true,
- org.eclipse.recommenders.models.rcp;
-  uses:="org.eclipse.jdt.core.dom,
-   org.eclipse.recommenders.utils.names,
-   org.eclipse.jdt.core,
-   org.eclipse.recommenders.models,
-   com.google.common.base"
+Export-Package: org.eclipse.recommenders.internal.models.rcp;x-interna
+ l:=true,org.eclipse.recommenders.models.rcp; uses:="org.eclipse.jdt.c
+ ore.dom,  org.eclipse.recommenders.utils.names,  org.eclipse.jdt.core
+ ,  org.eclipse.recommenders.models,  com.google.common.base"
