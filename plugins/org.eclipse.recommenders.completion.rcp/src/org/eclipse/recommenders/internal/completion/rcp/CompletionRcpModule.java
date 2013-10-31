@@ -25,6 +25,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.Expect
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.ExpectedTypeNamesContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.InternalCompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.JavaContentAssistInvocationContextFunction;
+import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.LookupEnvironmentContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.ReceiverNameContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.ReceiverTypeBindingContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleFieldsContextFunction;
@@ -58,6 +59,7 @@ public class CompletionRcpModule extends AbstractModule {
         functions.addBinding(INTERNAL_COMPLETIONCONTEXT).to(InternalCompletionContextFunction.class);
         functions.addBinding(JAVA_PROPOSALS).to(InternalCompletionContextFunction.class);
         functions.addBinding(JAVA_CONTENTASSIST_CONTEXT).to(JavaContentAssistInvocationContextFunction.class);
+        functions.addBinding(LOOKUP_ENVIRONMENT).to(LookupEnvironmentContextFunction.class);
         functions.addBinding(RECEIVER_TYPEBINDING).to(ReceiverTypeBindingContextFunction.class);
         functions.addBinding(RECEIVER_NAME).to(ReceiverNameContextFunction.class);
         functions.addBinding(VISIBLE_METHODS).to(VisibleMethodsContextFunction.class);

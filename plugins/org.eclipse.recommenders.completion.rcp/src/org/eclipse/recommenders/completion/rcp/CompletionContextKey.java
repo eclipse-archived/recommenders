@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -57,6 +58,7 @@ public class CompletionContextKey<T> {
 
     public static final CompletionContextKey<JavaContentAssistInvocationContext> JAVA_CONTENTASSIST_CONTEXT = make();
     public static final CompletionContextKey<Map<IJavaCompletionProposal, CompletionProposal>> JAVA_PROPOSALS = make();
+    public static final CompletionContextKey<LookupEnvironment> LOOKUP_ENVIRONMENT = make();
     public static final CompletionContextKey<String> RECEIVER_NAME = make();
     public static final CompletionContextKey<TypeBinding> RECEIVER_TYPEBINDING = make();
     public static final CompletionContextKey<List<IField>> VISIBLE_FIELDS = make();
