@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
-	<version>2.0.0</version>
+	<version>2.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<organization>
 		<name>Eclipse Foundation</name>
@@ -46,7 +46,7 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<properties>
-		<recommenders-version>2.0.0</recommenders-version>
+		<recommenders-version>2.0.1-SNAPSHOT</recommenders-version>
 		<java-version>1.6</java-version>
 		<tycho-version>0.19.0</tycho-version>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
@@ -216,6 +216,8 @@
 							<generate>true</generate>
 						</sourceReferences>
 						<timestampProvider>jgit</timestampProvider>
+						<!-- Changed back to "error" in the "build-server" profile below. -->
+						<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
 					</configuration>
 					<dependencies>
 						<!-- Required by sourceReferences/generate configuration. -->
@@ -251,9 +253,6 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-p2-repository-plugin</artifactId>
 					<version>${tycho-version}</version>
-					<configuration>
-						<includeAllDependencies>false</includeAllDependencies>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -418,6 +417,19 @@
 			<properties>
 				<build-alias>b${env.BUILD_NUMBER}</build-alias>
 			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.tycho</groupId>
+							<artifactId>tycho-packaging-plugin</artifactId>
+							<configuration>
+								<jgit.dirtyWorkingTree>error</jgit.dirtyWorkingTree>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
 		</profile>
 		<profile>
 			<id>kepler</id>
