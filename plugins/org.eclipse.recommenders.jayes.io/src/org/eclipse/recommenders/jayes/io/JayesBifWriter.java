@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -54,7 +53,7 @@ import com.google.common.primitives.Shorts;
  * 
  * Multi-byte primitive types are serialized in network byte-order.
  */
-public class JayesBifWriter implements Closeable {
+public class JayesBifWriter implements IBayesNetWriter {
 
     private static final int HEADER_BYTES = 2 * Ints.BYTES;
 

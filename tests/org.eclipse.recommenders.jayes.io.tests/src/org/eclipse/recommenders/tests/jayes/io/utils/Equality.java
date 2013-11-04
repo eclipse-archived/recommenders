@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.recommenders.tests.jayes.io.utils;
 
-import java.util.Arrays;
-
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.hamcrest.Description;
@@ -25,8 +23,7 @@ public class Equality {
 
             @Override
             public void describeTo(Description description) {
-                // TODO Auto-generated method stub
-
+                description.appendValue(net1);
             }
 
             @Override
@@ -78,7 +75,7 @@ public class Equality {
                     return false;
                 }
 
-                if (!Arrays.equals(node1.getProbabilities(), node2.getProbabilities())) {
+                if (!IsCloseTo.isCloseTo(node1.getProbabilities(), 1e-9).matches(node2.getProbabilities())) {
                     mismatchDescription.appendValue(node2.getProbabilities());
                     return false;
                 }

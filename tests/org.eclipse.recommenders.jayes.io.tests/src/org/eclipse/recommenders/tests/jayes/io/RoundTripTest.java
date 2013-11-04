@@ -24,8 +24,14 @@ import java.util.LinkedList;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetReader;
+import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 import org.eclipse.recommenders.jayes.io.JayesBifReader;
 import org.eclipse.recommenders.jayes.io.JayesBifWriter;
+import org.eclipse.recommenders.jayes.io.XDSLReader;
+import org.eclipse.recommenders.jayes.io.XDSLWriter;
+import org.eclipse.recommenders.jayes.io.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.XMLBIFWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -36,10 +42,10 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class RoundTripTest {
 
-    private final Class<?> readerClass;
-    private final Class<?> writerClass;
+    private final Class<? extends IBayesNetReader> readerClass;
+    private final Class<? extends IBayesNetWriter> writerClass;
 
-    public RoundTripTest(Class<?> readerClass, Class<?> writerClass) {
+    public RoundTripTest(Class<? extends IBayesNetReader> readerClass, Class<? extends IBayesNetWriter> writerClass) {
         this.readerClass = readerClass;
         this.writerClass = writerClass;
     }
@@ -49,11 +55,14 @@ public class RoundTripTest {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
 
         scenarios.add(scenario(JayesBifReader.class, JayesBifWriter.class));
+        scenarios.add(scenario(XDSLReader.class, XDSLWriter.class));
+        scenarios.add(scenario(XMLBIFReader.class, XMLBIFWriter.class));
 
         return scenarios;
     }
 
-    private static Object[] scenario(Class<JayesBifReader> readerClass, Class<JayesBifWriter> writerClass) {
+    private static Object[] scenario(Class<? extends IBayesNetReader> readerClass,
+            Class<? extends IBayesNetWriter> writerClass) {
         return new Object[] { readerClass, writerClass };
     }
 
@@ -62,12 +71,12 @@ public class RoundTripTest {
         BayesNet netBefore = new BayesNet();
         BayesNode a = netBefore.createNode("A");
         a.addOutcomes("t", "f");
-        a.setProbabilities(0.5, 0.5);
+        a.setProbabilities(0.4, 0.6);
 
         BayesNode b = netBefore.createNode("B");
         b.addOutcomes("t", "f");
         b.setParents(Arrays.asList(a));
-        b.setProbabilities(0.5, 0.5, 0.5, 0.5);
+        b.setProbabilities(0.4, 0.6, 0.7, 0.3);
 
         BayesNet netAfter = read(write(netBefore));
 
@@ -89,8 +98,8 @@ public class RoundTripTest {
 
         a.setParents(Arrays.asList(b));
 
-        a.setProbabilities(0.5, 0.5, 0.5, 0.5);
-        b.setProbabilities(0.5, 0.5);
+        a.setProbabilities(0.4, 0.6, 0.7, 0.3);
+        b.setProbabilities(0.4, 0.6);
 
         BayesNet netAfter = read(write(netBefore));
 
@@ -98,17 +107,17 @@ public class RoundTripTest {
     }
 
     private BayesNet read(InputStream in) throws Exception {
-        Object reader = readerClass.getConstructor(InputStream.class).newInstance(in);
-        BayesNet net = (BayesNet) readerClass.getMethod("read").invoke(reader);
-        readerClass.getMethod("close").invoke(reader);
+        IBayesNetReader reader = readerClass.getConstructor(InputStream.class).newInstance(in);
+        BayesNet net = reader.read();
+        reader.close();
         return net;
     }
 
     private InputStream write(BayesNet net) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Object writer = writerClass.getConstructor(OutputStream.class).newInstance(out);
-        writerClass.getMethod("write", BayesNet.class).invoke(writer, net);
-        writerClass.getMethod("close").invoke(writer);
+        IBayesNetWriter writer = writerClass.getConstructor(OutputStream.class).newInstance(out);
+        writer.write(net);
+        writer.close();
         return new ByteArrayInputStream(out.toByteArray());
     }
 }

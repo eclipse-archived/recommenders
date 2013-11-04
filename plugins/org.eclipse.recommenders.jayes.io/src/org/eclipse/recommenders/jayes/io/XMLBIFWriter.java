@@ -10,10 +10,18 @@
  */
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.*;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.DEFINITION;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.FOR;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.GIVEN;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.NAME;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.OUTCOME;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.TABLE;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.VARIABLE;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
@@ -27,7 +35,7 @@ import org.eclipse.recommenders.jayes.BayesNode;
  * @author Michael Kutschke
  * 
  */
-public class XMLBIFWriter {
+public class XMLBIFWriter implements IBayesNetWriter {
 
     private static final String xmlHeader = "<?xml version=\"1.0\"?>\n";
     private static final String comment = "<!--\n\t Bayesian Network in XMLBIF v0.3 \n-->\n";
@@ -40,7 +48,13 @@ public class XMLBIFWriter {
             + "\t<!ELEMENT FOR (#PCDATA)>\n" + "\t<!ELEMENT GIVEN (#PCDATA)>\n" + "\t<!ELEMENT TABLE (#PCDATA)>\n"
             + "\t<!ELEMENT PROPERTY (#PCDATA)>\n" + "]>\n";
 
-    public String write(BayesNet net) {
+    private final Writer wrtr;
+
+    public XMLBIFWriter(OutputStream out) {
+        this.wrtr = new OutputStreamWriter(out);
+    }
+
+    public void write(BayesNet net) throws IOException {
         StringBuilder bldr = new StringBuilder();
         bldr.append(xmlHeader);
         bldr.append(comment);
@@ -61,13 +75,7 @@ public class XMLBIFWriter {
         XMLUtil.surround(offset, bldr, "NETWORK");
         XMLUtil.surround(offset, bldr, "BIF", "VERSION", "0.3");
 
-        return bldr.toString();
-    }
-
-    public void writeToFile(BayesNet net, String filename) throws IOException {
-        FileWriter wrtr = new FileWriter(filename);
-        wrtr.write(write(net));
-        wrtr.close();
+        wrtr.write(bldr.toString());
     }
 
     private void writeVariableDefs(StringBuilder bldr, BayesNet net) {
@@ -118,5 +126,11 @@ public class XMLBIFWriter {
             }
             XMLUtil.surround(offset, bldr, VARIABLE);
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        wrtr.close();
+
     }
 }

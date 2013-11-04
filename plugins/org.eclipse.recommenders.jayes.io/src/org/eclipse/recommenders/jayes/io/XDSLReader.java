@@ -11,12 +11,13 @@
 package org.eclipse.recommenders.jayes.io;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.*;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -39,19 +40,16 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Doubles;
 
-public class XDSLReader {
+public class XDSLReader implements IBayesNetReader {
 
     private boolean legacyMode = false;
+    private final InputStream str;
 
-    public BayesNet read(String filename) throws IOException {
-        return read(new File(filename));
+    public XDSLReader(InputStream str) {
+        this.str = str;
     }
 
-    public BayesNet read(File biffile) throws IOException {
-        return read(new BufferedInputStream(new FileInputStream(biffile)));
-    }
-
-    public BayesNet read(InputStream str) throws IOException {
+    public BayesNet read() throws IOException {
         Document doc = obtainDocument(str);
 
         return readFromDocument(doc);
@@ -169,5 +167,9 @@ public class XDSLReader {
 
     public void setLegacyMode(boolean legacyMode) {
         this.legacyMode = legacyMode;
+    }
+
+    public void close() throws IOException {
+        str.close();
     }
 }

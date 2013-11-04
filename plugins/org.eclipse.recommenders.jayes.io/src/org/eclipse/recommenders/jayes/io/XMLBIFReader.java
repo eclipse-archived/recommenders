@@ -10,12 +10,15 @@
  */
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.*;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.DEFINITION;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.FOR;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.GIVEN;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.NAME;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.OUTCOME;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.TABLE;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.VARIABLE;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,19 +47,27 @@ import com.google.common.primitives.Doubles;
  * >specification</a>)
  * 
  */
-public class XMLBIFReader {
+public class XMLBIFReader implements IBayesNetReader {
 
     /**
      * when set to true, methods that were not available in version 1.0.0 will be skipped
      */
     private boolean legacyMode = false;
+    private InputStream in;
 
-    public BayesNet read(String filename) throws ParserConfigurationException, SAXException, IOException {
-        return read(new File(filename));
+    public XMLBIFReader(InputStream in) {
+        this.in = in;
     }
 
-    public BayesNet read(File biffile) throws ParserConfigurationException, SAXException, IOException {
-        Document doc = obtainDocument(new BufferedInputStream(new FileInputStream(biffile)));
+    public BayesNet read() throws IOException {
+        Document doc;
+        try {
+            doc = obtainDocument(in);
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e);
+        } catch (SAXException e) {
+            throw new IOException(e);
+        }
 
         return readFromDocument(doc);
     }
@@ -153,12 +164,6 @@ public class XMLBIFReader {
         bNode.setProbabilities(Doubles.toArray(probabilities));
     }
 
-    public BayesNet read(InputStream systemResourceAsStream) throws ParserConfigurationException, SAXException,
-            IOException {
-        Document doc = obtainDocument(systemResourceAsStream);
-        return readFromDocument(doc);
-    }
-
     public boolean isLegacyMode() {
         return legacyMode;
     }
@@ -170,5 +175,11 @@ public class XMLBIFReader {
      */
     public void setLegacyMode(boolean legacyMode) {
         this.legacyMode = legacyMode;
+    }
+
+    @Override
+    public void close() throws IOException {
+        in.close();
+
     }
 }

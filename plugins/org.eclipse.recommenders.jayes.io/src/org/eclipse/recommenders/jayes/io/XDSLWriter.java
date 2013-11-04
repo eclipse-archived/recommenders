@@ -10,22 +10,34 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.*;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 
-public class XDSLWriter {
+public class XDSLWriter implements IBayesNetWriter {
 
     private static final String xmlHeader = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     private static final String comment = "<!--\n\t Bayesian Network in XDSL format \n-->\n";
+    private final Writer out;
 
-    public String write(BayesNet net) {
+    public XDSLWriter(OutputStream out) {
+        this.out = new OutputStreamWriter(out);
+
+    }
+
+    public void write(BayesNet net) throws IOException {
         StringBuilder bldr = new StringBuilder();
         bldr.append(xmlHeader);
         bldr.append(comment);
@@ -36,7 +48,7 @@ public class XDSLWriter {
         XMLUtil.surround(offset, bldr, "smile", "version", "1.0", ID, net.getName(), "numsamples", "1000",
                 "discsamples", "10000");
 
-        return bldr.toString();
+        out.write(bldr.toString());
     }
 
     private void getVariableDefs(StringBuilder bldr, BayesNet net) {
@@ -86,9 +98,9 @@ public class XDSLWriter {
         XMLUtil.surround(offset, bldr, PROBABILITIES);
     }
 
-    public void writeToFile(BayesNet net, String filename) throws IOException {
-        FileWriter wrtr = new FileWriter(filename);
-        wrtr.write(write(net));
-        wrtr.close();
+    @Override
+    public void close() throws IOException {
+        out.close();
     }
+
 }

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -28,7 +27,7 @@ import com.google.common.primitives.Ints;
 /**
  * Reader for the Jayes Binary Interchange Format (JBIF) written by {@link JayesBifWriter}.
  */
-public class JayesBifReader implements Closeable {
+public class JayesBifReader implements IBayesNetReader {
 
     private InputStream in;
 
@@ -36,6 +35,7 @@ public class JayesBifReader implements Closeable {
         in = str;
     }
 
+    @Override
     public BayesNet read() throws IOException {
         return read(IOUtils.toByteArray(in));
     }

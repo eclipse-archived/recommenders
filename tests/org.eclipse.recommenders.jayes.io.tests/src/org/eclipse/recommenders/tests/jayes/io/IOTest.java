@@ -12,9 +12,12 @@ package org.eclipse.recommenders.tests.jayes.io;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -23,12 +26,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.recommenders.jayes.BayesNet;
-import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.io.XDSLReader;
 import org.eclipse.recommenders.jayes.io.XDSLWriter;
 import org.eclipse.recommenders.jayes.io.XMLBIFReader;
-import org.eclipse.recommenders.jayes.io.XMLBIFWriter;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -37,33 +38,13 @@ import org.xml.sax.SAXException;
 public class IOTest {
 
     @Test
-    public void XMLBIFreaderTest() throws ParserConfigurationException, SAXException, IOException {
+    public void XMLBIFreaderTest() throws IOException {
         // tests whether parsing functions
-        XMLBIFReader rdr = new XMLBIFReader();
-        BayesNet net = rdr.read(new File("test/models/dog.xml"));
+        XMLBIFReader rdr = new XMLBIFReader(getClass().getResourceAsStream("/test/models/dog.xml"));
+        BayesNet net = rdr.read();
+        rdr.close();
         assertTrue(net != null);
         assertEquals(5, net.getNodes().size());
-    }
-
-    @Test
-    public void XMLBIFroundtripTest() throws ParserConfigurationException, SAXException, IOException {
-        // tests whether XMLBIF reader and writer are consistent
-        XMLBIFReader rdr = new XMLBIFReader();
-
-        BayesNet net = rdr.read(new File("test/models/dog.xml"));
-
-        JunctionTreeAlgorithm jta1 = new JunctionTreeAlgorithm();
-        jta1.setNetwork(net);
-
-        BayesNet net2 = rdr.readFromString(new XMLBIFWriter().write(net));
-
-        JunctionTreeAlgorithm jta2 = new JunctionTreeAlgorithm();
-        jta2.setNetwork(net2);
-
-        for (BayesNode node : net.getNodes()) {
-            assertEquals(node.getName(), net2.getNode(node.getId()).getName());
-            assertArrayEquals(jta1.getBeliefs(node), jta2.getBeliefs(node), 0.000001);
-        }
     }
 
     /**
@@ -75,10 +56,11 @@ public class IOTest {
      * @throws IOException
      */
     @Test
-    public void XDSLreaderTest() throws ParserConfigurationException, SAXException, IOException {
-        XDSLReader rdr = new XDSLReader();
+    public void XDSLreaderTest() throws IOException {
+        XDSLReader rdr = new XDSLReader(getClass().getResourceAsStream("/test/models/rain.xdsl"));
 
-        BayesNet net = rdr.read("test/models/rain.xdsl");
+        BayesNet net = rdr.read();
+        rdr.close();
 
         JunctionTreeAlgorithm jta = new JunctionTreeAlgorithm();
         jta.setNetwork(net);
@@ -86,19 +68,23 @@ public class IOTest {
         jta.addEvidence(net.getNode("neighbor_grass_wet"), "yes");
 
         // compare with computed results from GeNIe
-        assertArrayEquals(new double[] { 0.7271, 0.2729 }, jta.getBeliefs(net.getNode("sprinkler_on")), 0.0001);
-        assertArrayEquals(new double[] { 0.4596, 0.5404 }, jta.getBeliefs(net.getNode("rain")), 0.0001);
+        assertArrayEquals(new double[] { 0.7271, 0.2729 }, jta.getBeliefs(net.getNode("sprinkler_on")), 1e-4);
+        assertArrayEquals(new double[] { 0.4596, 0.5404 }, jta.getBeliefs(net.getNode("rain")), 1e-4);
 
     }
 
     @Test
     public void XDSLWriterTest() throws Exception {
-        XDSLReader rdr = new XDSLReader();
+        XDSLReader rdr = new XDSLReader(getClass().getResourceAsStream("/test/models/rain.xdsl"));
 
-        BayesNet net = rdr.read("test/models/rain.xdsl");
+        BayesNet net = rdr.read();
+        rdr.close();
 
-        XDSLWriter wrtr = new XDSLWriter();
-        String xdslRepresentation = wrtr.write(net);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        XDSLWriter wrtr = new XDSLWriter(out);
+        wrtr.write(net);
+        wrtr.close();
+        String xdslRepresentation = out.toString();
 
         // check that there are no nested cpt's
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -110,24 +96,4 @@ public class IOTest {
         assertThat(doc.getDocumentElement(), not(hasXPath("//cpt/cpt")));
     }
 
-    @Test
-    public void XDSLroundtripTest() throws ParserConfigurationException, SAXException, IOException {
-        XDSLReader rdr = new XDSLReader();
-
-        BayesNet net = rdr.read("test/models/rain.xdsl");
-
-        XDSLWriter wrtr = new XDSLWriter();
-        String xdslRepresentation = wrtr.write(net);
-
-        net = rdr.readFromString(xdslRepresentation);
-
-        JunctionTreeAlgorithm jta = new JunctionTreeAlgorithm();
-        jta.setNetwork(net);
-        jta.addEvidence(net.getNode("grass_wet"), "yes");
-        jta.addEvidence(net.getNode("neighbor_grass_wet"), "yes");
-
-        // compare with computed results from GeNIe
-        assertArrayEquals(new double[] { 0.7271, 0.2729 }, jta.getBeliefs(net.getNode("sprinkler_on")), 0.0001);
-        assertArrayEquals(new double[] { 0.4596, 0.5404 }, jta.getBeliefs(net.getNode("rain")), 0.0001);
-    }
 }
