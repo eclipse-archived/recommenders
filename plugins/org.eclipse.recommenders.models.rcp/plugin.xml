@@ -45,7 +45,7 @@
      <extension
            point="org.eclipse.core.runtime.preferences">
         <initializer
-              class="org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer">
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer">
         </initializer>
      </extension>
 </plugin>

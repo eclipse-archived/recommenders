@@ -11,7 +11,8 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PACKAGE_FRAGMENT_ROOTS;
@@ -51,6 +52,7 @@ import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
@@ -291,6 +293,11 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     @Subscribe
     public void onEvent(ProjectCoordinateChangeEvent e) {
         projectCoordianteCache.invalidate(e.dependencyInfo);
+    }
+
+    @Subscribe
+    public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
+        projectCoordianteCache.invalidateAll();
     }
 
     @Subscribe

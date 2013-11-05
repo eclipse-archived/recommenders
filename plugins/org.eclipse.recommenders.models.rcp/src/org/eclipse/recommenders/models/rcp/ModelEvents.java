@@ -59,6 +59,10 @@ public class ModelEvents {
     }
 
     @Beta
+    public static class AdvisorConfigurationChangedEvent {
+    }
+
+    @Beta
     public static class ModelArchiveDownloadedEvent {
         public ModelCoordinate model;
 

@@ -14,6 +14,7 @@ import static com.google.inject.Scopes.SINGLETON;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -25,6 +26,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.MavenCentralFingerprintSearchAdvisor;
 import org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor;
 import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
@@ -42,6 +44,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
@@ -108,19 +112,28 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    public ProjectCoordinateAdvisorService provideMappingProvider(IModelIndex index,
+    public List<IProjectCoordinateAdvisor> provideAdvisors(IModelIndex index,
             ManualProjectCoordinateAdvisor manualMappingStrategy) {
+        List<IProjectCoordinateAdvisor> availableAdvisors = Lists.newArrayList();
+        availableAdvisors.add(manualMappingStrategy);
+        availableAdvisors.add(new MavenPomPropertiesAdvisor());
+        availableAdvisors.add(new JREExecutionEnvironmentAdvisor());
+        availableAdvisors.add(new JREReleaseFileAdvisor());
+        availableAdvisors.add(new JREDirectoryNameAdvisor());
+        availableAdvisors.add(new MavenPomXmlAdvisor());
+        availableAdvisors.add(new ModelIndexBundleSymbolicNameAdvisor(index));
+        availableAdvisors.add(new ModelIndexFingerprintAdvisor(index));
+        availableAdvisors.add(new OsgiManifestAdvisor());
+        availableAdvisors.add(new MavenCentralFingerprintSearchAdvisor());
+        return ImmutableList.copyOf(availableAdvisors);
+    }
+
+    @Singleton
+    @Provides
+    public ProjectCoordinateAdvisorService provideMappingProvider(List<IProjectCoordinateAdvisor> availableAdvisors,
+            ModelsRcpPreferences prefs) {
         ProjectCoordinateAdvisorService mappingProvider = new ProjectCoordinateAdvisorService();
-        mappingProvider.addAdvisor(manualMappingStrategy);
-        mappingProvider.addAdvisor(new MavenPomPropertiesAdvisor());
-        mappingProvider.addAdvisor(new JREExecutionEnvironmentAdvisor());
-        mappingProvider.addAdvisor(new JREReleaseFileAdvisor());
-        mappingProvider.addAdvisor(new JREDirectoryNameAdvisor());
-        mappingProvider.addAdvisor(new MavenPomXmlAdvisor());
-        mappingProvider.addAdvisor(new ModelIndexBundleSymbolicNameAdvisor(index));
-        mappingProvider.addAdvisor(new ModelIndexFingerprintAdvisor(index));
-        mappingProvider.addAdvisor(new OsgiManifestAdvisor());
-        mappingProvider.addAdvisor(new MavenCentralFingerprintSearchAdvisor());
+        mappingProvider.setAdvisors(Advisors.createAdvisorList(availableAdvisors, prefs.advisors));
         return mappingProvider;
     }
 

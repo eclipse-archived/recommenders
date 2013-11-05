@@ -57,6 +57,7 @@ import org.eclipse.recommenders.models.Coordinates;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelCoordinatesAction;
@@ -527,6 +528,11 @@ public class ModelCoordinatesView extends ViewPart {
 
     @Subscribe
     public void onModelIndexOpened(ModelIndexOpenedEvent e) {
+        refreshData();
+    }
+
+    @Subscribe
+    public void onAdvisorConfigurationChanged(AdvisorConfigurationChangedEvent e) throws IOException {
         refreshData();
     }
 

@@ -11,14 +11,22 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Optional.*;
-import static com.google.common.collect.Iterables.*;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.presentInstances;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.*;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
+import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
+import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +65,7 @@ import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
+import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.swt.SWT;
@@ -70,6 +79,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -79,13 +89,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public class ProjectCoordinatesView extends ViewPart {
 
     private static final int COLUMN_LOCATION = 0;
     private static final int COLUMN_COORDINATE = 1;
 
-    private Composite parent;
     private TableViewer tableViewer;
     private ContentProvider contentProvider;
 
@@ -109,13 +119,12 @@ public class ProjectCoordinatesView extends ViewPart {
         this.pcAdvisors = pcAdvisors;
         manualPcAdvisor = manualProjectCoordinateAdvisor;
         this.bus = bus;
+        bus.register(this);
         this.images = images;
     }
 
     @Override
     public void createPartControl(final Composite parent) {
-
-        this.parent = parent;
 
         Composite composite = new Composite(parent, SWT.NONE);
         TableColumnLayout tableLayout = new TableColumnLayout();
@@ -539,17 +548,18 @@ public class ProjectCoordinatesView extends ViewPart {
     }
 
     private void refreshData() {
-        if (parent != null) {
-            parent.getDisplay().syncExec(new Runnable() {
+        new UIJob("Refreshing View...") {
+            {
+                schedule();
+            }
 
-                @Override
-                public void run() {
-                    contentProvider.setData(dependencyListener.getDependencies());
-                    refreshTableUI();
-                }
-
-            });
-        }
+            @Override
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                contentProvider.setData(dependencyListener.getDependencies());
+                refreshTableUI();
+                return Status.OK_STATUS;
+            }
+        };
     }
 
     private void refreshTableUI() {
@@ -723,6 +733,11 @@ public class ProjectCoordinatesView extends ViewPart {
     @Override
     public void setFocus() {
         tableViewer.getControl().setFocus();
+    }
+
+    @Subscribe
+    public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
+        refreshData();
     }
 
     private Optional<ProjectCoordinate> findFirstMatchingCoordinate(Collection<Optional<ProjectCoordinate>> pcs) {

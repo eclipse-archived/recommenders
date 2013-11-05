@@ -12,12 +12,16 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -32,6 +36,7 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForDependencyInfosAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Checks;
@@ -43,9 +48,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public class CoordinatesToModelsView extends ViewPart {
 
@@ -135,6 +142,20 @@ public class CoordinatesToModelsView extends ViewPart {
         column.setWidth(width);
     }
 
+    private void refreshData() {
+        new UIJob("Refreshing View...") {
+            {
+                schedule();
+            }
+
+            @Override
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                updateContent();
+                return Status.OK_STATUS;
+            }
+        };
+    }
+
     private void updateContent() {
         List<Project> projects = createModel();
         treeViewer.setInput(projects);
@@ -161,6 +182,11 @@ public class CoordinatesToModelsView extends ViewPart {
     @Override
     public void setFocus() {
         treeViewer.getControl().setFocus();
+    }
+
+    @Subscribe
+    public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
+        refreshData();
     }
 
     public class Project {

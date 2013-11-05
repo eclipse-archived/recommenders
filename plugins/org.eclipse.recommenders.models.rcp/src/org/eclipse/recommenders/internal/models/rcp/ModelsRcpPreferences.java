@@ -31,6 +31,8 @@ public class ModelsRcpPreferences {
     public boolean autoDownloadEnabled;
 
     public String[] remotes;
+    
+    public String advisors;
 
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
 
@@ -39,14 +41,19 @@ public class ModelsRcpPreferences {
     @Inject
     void setRemote(@Preference(Constants.P_REPOSITORY_URL_LIST_ACTIV) String newRemote) throws Exception {
         String[] old = remotes;
-        remotes = split(newRemote);
+        remotes = split(newRemote, URL_SEPARATOR);
         if (!isEquals(remotes, old)) {
             bus.post(new ModelRepositoryUrlChangedEvent());
         }
     }
+    
+    @Inject
+    void setAdvisors(@Preference(Constants.P_ADVISOR_LIST_SORTED) String advisor) throws Exception {
+        advisors = advisor;
+    }
 
-    private static String[] split(String stringList) {
-        Iterable<String> split = Splitter.on(URL_SEPARATOR).omitEmptyStrings().split(stringList);
+    private static String[] split(String stringList, String separator) {
+        Iterable<String> split = Splitter.on(separator).omitEmptyStrings().split(stringList);
         return Iterables.toArray(split, String.class);
     }
 

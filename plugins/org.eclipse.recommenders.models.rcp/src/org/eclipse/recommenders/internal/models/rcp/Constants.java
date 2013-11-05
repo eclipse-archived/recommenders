@@ -15,6 +15,7 @@ public class Constants {
     public static final String BUNDLE_ID = "org.eclipse.recommenders.models.rcp";
     public static final String P_REPOSITORY_URL_LIST_ACTIV = "repository.url.list.active";
     public static final String P_REPOSITORY_URL_LIST = "repository.url.list";
+    public static final String P_ADVISOR_LIST_SORTED = "advisor.list.sorted";
     public static final String P_REPOSITORY_ENABLE_AUTO_DOWNLOAD = "repository.auto.download"; //$NON-NLS-1$
 
 }
