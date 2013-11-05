@@ -46,6 +46,7 @@ import org.eclipse.recommenders.utils.Zips;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -61,25 +62,28 @@ import com.google.common.eventbus.Subscribe;
  */
 public class EclipseModelIndex implements IModelIndex, IRcpService {
 
-    Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Inject
-    @Named(INDEX_BASEDIR)
-    File basedir;
+    private final File basedir;
 
-    @Inject
-    ModelsRcpPreferences prefs;
+    private final ModelsRcpPreferences prefs;
 
-    @Inject
-    IModelRepository repository;
+    private final IModelRepository repository;
 
-    @Inject
-    EventBus bus;
+    private final EventBus bus;
 
-    private Map<String, Pair<File, IModelIndex>> delegates = Maps.newHashMap();
+    private final Map<String, Pair<File, IModelIndex>> delegates = Maps.newHashMap();
 
-    private Cache<Pair<ProjectCoordinate, String>, Optional<ModelCoordinate>> cache = CacheBuilder.newBuilder()
+    private final Cache<Pair<ProjectCoordinate, String>, Optional<ModelCoordinate>> cache = CacheBuilder.newBuilder()
             .maximumSize(10).concurrencyLevel(1).build();
+
+    @Inject
+    public EclipseModelIndex(@Named(INDEX_BASEDIR) File basedir, ModelsRcpPreferences prefs, IModelRepository repository, EventBus bus){
+        this.basedir = basedir;
+        this.prefs = prefs;
+        this.repository = repository;
+        this.bus = bus;
+    }
 
     @PostConstruct
     @Override
@@ -99,7 +103,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     private void doOpen(String remoteUrl, boolean scheduleIndexUpdate) throws IOException {
         File indexLocation = new File(basedir, Urls.mangle(remoteUrl));
-        IModelIndex modelIndex = new ModelIndex(indexLocation);
+        IModelIndex modelIndex = createModelIndex(indexLocation);
         delegates.put(remoteUrl, Pair.newPair(indexLocation, modelIndex));
         if (!indexAlreadyDownloaded(indexLocation) || scheduleIndexUpdate) {
             triggerIndexDownload(remoteUrl);
@@ -107,6 +111,11 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         }
         modelIndex.open();
         bus.post(new ModelIndexOpenedEvent());
+    }
+
+    @VisibleForTesting
+    public IModelIndex createModelIndex(File indexLocation){
+        return new ModelIndex(indexLocation);
     }
 
     private void triggerIndexDownload(String remoteUrl) {
@@ -146,16 +155,19 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
                 @Override
                 public Optional<ModelCoordinate> call() {
-                    for (Entry<String, Pair<File, IModelIndex>> entry : delegates.entrySet()) {
-                        IModelIndex index = entry.getValue().getSecond();
+                    for (String remote : prefs.remotes) {
+                        Pair<File, IModelIndex> pair = delegates.get(remote);
+                        if (pair == null){
+                            return absent();
+                        }
+                        IModelIndex index = pair.getSecond();
                         Optional<ModelCoordinate> suggest = index.suggest(pc, modelType);
                         if (suggest.isPresent()) {
                             ModelCoordinate mc = suggest.get();
-                            mc.setHint(ModelCoordinate.HINT_REPOSITORY_URL, entry.getKey());
+                            mc.setHint(ModelCoordinate.HINT_REPOSITORY_URL, remote);
                             return of(mc);
                         }
                     }
-
                     return absent();
                 }
             });
