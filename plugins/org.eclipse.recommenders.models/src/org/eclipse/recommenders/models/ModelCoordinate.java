@@ -109,22 +109,18 @@ public final class ModelCoordinate {
         return Optional.fromNullable(hints.get(key));
     }
 
-    public void setHint(String key, String value) {
-        hints.put(key, value);
-    }
-
     public ImmutableMap<String, String> getHints() {
         return ImmutableMap.copyOf(hints);
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "hints");
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "hints");
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
@@ -161,4 +157,5 @@ public final class ModelCoordinate {
         aid = split[1];
         return new ModelCoordinate(gid, aid, clss, ext, vers);
     }
+
 }

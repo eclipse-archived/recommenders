@@ -11,7 +11,8 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.INDEX_BASEDIR;
 import static org.eclipse.recommenders.models.ModelCoordinate.HINT_REPOSITORY_URL;
 
@@ -78,7 +79,8 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
             .maximumSize(10).concurrencyLevel(1).build();
 
     @Inject
-    public EclipseModelIndex(@Named(INDEX_BASEDIR) File basedir, ModelsRcpPreferences prefs, IModelRepository repository, EventBus bus){
+    public EclipseModelIndex(@Named(INDEX_BASEDIR) File basedir, ModelsRcpPreferences prefs,
+            IModelRepository repository, EventBus bus) {
         this.basedir = basedir;
         this.prefs = prefs;
         this.repository = repository;
@@ -114,7 +116,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     }
 
     @VisibleForTesting
-    public IModelIndex createModelIndex(File indexLocation){
+    public IModelIndex createModelIndex(File indexLocation) {
         return new ModelIndex(indexLocation);
     }
 
@@ -126,7 +128,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     private ModelCoordinate createIndexCoordinateWithRemoteUrlHint(String remoteUrl) {
         ModelCoordinate mc = new ModelCoordinate(INDEX.getGroupId(), INDEX.getArtifactId(), INDEX.getClassifier(),
                 INDEX.getExtension(), INDEX.getVersion());
-        return addRepositoryUrlHint(mc, remoteUrl);
+        return createCopyWithRepositoryUrlHint(mc, remoteUrl);
     }
 
     private boolean indexAlreadyDownloaded(File location) {
@@ -157,15 +159,13 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
                 public Optional<ModelCoordinate> call() {
                     for (String remote : prefs.remotes) {
                         Pair<File, IModelIndex> pair = delegates.get(remote);
-                        if (pair == null){
+                        if (pair == null) {
                             return absent();
                         }
                         IModelIndex index = pair.getSecond();
                         Optional<ModelCoordinate> suggest = index.suggest(pc, modelType);
                         if (suggest.isPresent()) {
-                            ModelCoordinate mc = suggest.get();
-                            mc.setHint(ModelCoordinate.HINT_REPOSITORY_URL, remote);
-                            return of(mc);
+                            return of(createCopyWithRepositoryUrlHint(suggest.get(), remote));
                         }
                     }
                     return absent();
@@ -190,14 +190,17 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     public Set<ModelCoordinate> addRepositoryUrlHint(Set<ModelCoordinate> modelCoordinates, String url) {
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
-            addRepositoryUrlHint(modelCoordinate, url);
+            createCopyWithRepositoryUrlHint(modelCoordinate, url);
         }
         return modelCoordinates;
     }
 
-    private ModelCoordinate addRepositoryUrlHint(ModelCoordinate modelCoordinate, String url) {
-        modelCoordinate.setHint(ModelCoordinate.HINT_REPOSITORY_URL, url);
-        return modelCoordinate;
+    private ModelCoordinate createCopyWithRepositoryUrlHint(ModelCoordinate mc, String url) {
+        Map<String, String> hints = Maps.newHashMap(mc.getHints());
+        hints.put(ModelCoordinate.HINT_REPOSITORY_URL, url);
+        ModelCoordinate copy = new ModelCoordinate(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
+                mc.getExtension(), mc.getVersion(), hints);
+        return copy;
     }
 
     @Override
@@ -249,7 +252,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Subscribe
     public void onEvent(ModelArchiveDownloadedEvent e) throws IOException {
-        if (INDEX.equals(e.model)) {
+        if (isIndex(e.model)) {
             File location = repository.getLocation(e.model, false).orNull();
             String remoteUrl = e.model.getHint(HINT_REPOSITORY_URL).orNull();
             if (remoteUrl != null) {
@@ -262,5 +265,12 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
                 doOpen(remoteUrl, false);
             }
         }
+    }
+
+    private boolean isIndex(ModelCoordinate model) {
+        return model.getGroupId().equals(INDEX.getGroupId())
+                && model.getArtifactId().equals(INDEX.getArtifactId())
+                && model.getExtension().equals(INDEX.getExtension())
+                && model.getVersion().equals(INDEX.getVersion());
     }
 }
