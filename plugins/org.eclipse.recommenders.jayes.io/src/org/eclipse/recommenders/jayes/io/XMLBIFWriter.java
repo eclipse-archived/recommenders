@@ -76,6 +76,7 @@ public class XMLBIFWriter implements IBayesNetWriter {
         XMLUtil.surround(offset, bldr, "BIF", "VERSION", "0.3");
 
         wrtr.write(bldr.toString());
+        wrtr.flush();
     }
 
     private void writeVariableDefs(StringBuilder bldr, BayesNet net) {

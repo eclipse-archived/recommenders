@@ -22,7 +22,6 @@ import org.eclipse.recommenders.jayes.factor.SparseFactor;
 import org.eclipse.recommenders.jayes.factor.arraywrapper.DoubleArrayWrapper;
 import org.eclipse.recommenders.jayes.factor.arraywrapper.FloatArrayWrapper;
 import org.eclipse.recommenders.jayes.util.MathUtils;
-import org.eclipse.recommenders.tests.jayes.util.NetExamples;
 import org.junit.Test;
 
 public class SparseFactorTest {

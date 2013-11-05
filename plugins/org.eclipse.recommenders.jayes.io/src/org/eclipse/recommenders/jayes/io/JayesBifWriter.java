@@ -33,7 +33,7 @@ import com.google.common.primitives.Shorts;
  * <dl>
  * <dt><var>JBIF</var></dt>
  * <dd><var>Header</var> <var>BayesNet</var></dd>
- * <dt><ar>Header<var></dt>
+ * <dt><var>Header<var></dt>
  * <dd>(magicNumber: 0xBA7E5B1F) (formatVersion: 1)</dd>
  * <dt><var>BayesNet</var></dt>
  * <dd><var>Name</var> (nodeCount: <code>int</code>) <var>NodeDeclaration</var>* <var>NodeDefinition</var>*</dd>
