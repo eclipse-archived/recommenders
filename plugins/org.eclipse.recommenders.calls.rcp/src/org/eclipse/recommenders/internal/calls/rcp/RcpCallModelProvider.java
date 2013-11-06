@@ -36,7 +36,7 @@ public class RcpCallModelProvider implements ICallModelProvider, IRcpService {
     @Inject
     IModelArchiveCoordinateAdvisor index;
 
-    PoolingCallModelProvider delegate;
+    ICallModelProvider delegate;
 
     @Override
     @PostConstruct

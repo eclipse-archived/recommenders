@@ -60,6 +60,11 @@ public abstract class Constants {
     public static final String EXT_JSON = "json";
 
     /** {@value} */
+    public static final String DOT_JBIF = ".jbif";
+    /** {@value} */
+    public static final String DOT_DATA = ".data";
+
+    /** {@value} */
     public static final String CLASS_CALL_MODELS = "call";
     /** {@value} */
     public static final String CLASS_DECLARES = "declares";
