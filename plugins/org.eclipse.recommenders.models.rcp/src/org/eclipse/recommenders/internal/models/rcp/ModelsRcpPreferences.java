@@ -32,7 +32,7 @@ public class ModelsRcpPreferences {
 
     public String[] remotes;
     
-    public String advisors;
+    public String advisorIds;
 
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
 
@@ -48,13 +48,12 @@ public class ModelsRcpPreferences {
     }
     
     @Inject
-    void setAdvisors(@Preference(Constants.P_ADVISOR_LIST_SORTED) String advisor) throws Exception {
-        advisors = advisor;
+    void setAdvisorIds(@Preference(Constants.P_ADVISOR_LIST_SORTED) String advisorIds) throws Exception {
+        this.advisorIds = advisorIds;
     }
 
     private static String[] split(String stringList, String separator) {
         Iterable<String> split = Splitter.on(separator).omitEmptyStrings().split(stringList);
         return Iterables.toArray(split, String.class);
     }
-
 }

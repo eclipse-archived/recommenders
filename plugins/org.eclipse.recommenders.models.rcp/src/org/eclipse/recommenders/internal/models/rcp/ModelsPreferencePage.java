@@ -39,10 +39,10 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
-public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class ModelsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
     private ModelRepositoryListEditor repoEditor;
 
-    public PreferencePage() {
+    public ModelsPreferencePage() {
         super(GRID);
     }
 

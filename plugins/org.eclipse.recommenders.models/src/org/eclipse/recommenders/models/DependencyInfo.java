@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.models;
 
-import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 
 import java.io.File;
 import java.util.Collections;

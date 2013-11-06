@@ -1,51 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.recommenders.injection.modules">
-      <module
-            class="org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule">
-      </module>
-   </extension>
-     <extension
-         point="org.eclipse.ui.views">
-      <view
-            id="org.eclipse.recommenders.models.rcp.views.ModelCoordinatesView"
-            icon="icons/view16/depinsp.gif"
-            name="Model Coordinates"
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ModelCoordinatesView">
-      </view>
-      <view
-            id="org.eclipse.recommenders.models.rcp.views.ProjectCoordinatesView"
-            name="Project Coordinates"
-            icon="icons/view16/depinsp.gif"
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ProjectCoordinatesView">
-      </view>
-      <view
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.CoordinatesToModelsView"
-            icon="icons/view16/depinsp.gif"
-            id="org.eclipse.recommenders.models.rcp.CoordinatesToModelsView"
-            name="Dependency Overview"
-            restorable="true">
-      </view>
-      
-   </extension>
-     <extension
-           point="org.eclipse.ui.preferencePages">
-        <page
-              category="org.eclipse.recommenders.rcp.category.preferences"
-              class="org.eclipse.recommenders.internal.models.rcp.PreferencePage"
-              id="org.eclipse.recommenders.models.rcp.preferencepage"
-              name="Models">
-        </page>
-     </extension>
-     <extension
-           point="org.eclipse.core.runtime.preferences">
-        <initializer
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer">
-        </initializer>
-     </extension>
+	<extension-point id="org.eclipse.recommenders.models.rcp.advisors" name="%extension-point.name" schema="schema/advisors.exsd"/>
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule"/>
+	</extension>
+	<extension point="org.eclipse.ui.views">
+		<view id="org.eclipse.recommenders.models.rcp.views.ModelCoordinatesView"
+			category="org.eclipse.recommenders.rcp.category.views"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ModelCoordinatesView"
+			icon="icons/view16/depinsp.gif"
+			name="Model Coordinates">
+		</view>
+		<view id="org.eclipse.recommenders.models.rcp.views.ProjectCoordinatesView"
+			category="org.eclipse.recommenders.rcp.category.views"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ProjectCoordinatesView"
+			icon="icons/view16/depinsp.gif"
+			name="Project Coordinates">
+		</view>
+		<view id="org.eclipse.recommenders.models.rcp.CoordinatesToModelsView"
+			category="org.eclipse.recommenders.rcp.category.views"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.CoordinatesToModelsView"
+			restorable="true"
+			icon="icons/view16/depinsp.gif"
+			name="Dependency Overview">
+		</view>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page id="org.eclipse.recommenders.models.rcp.preferencePages.advisors"
+			category="org.eclipse.recommenders.rcp.category.preferences"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.AdvisorsPreferencePage"
+			name="Advisors">
+		</page>
+		<page id="org.eclipse.recommenders.models.rcp.preferencePages.models"
+			category="org.eclipse.recommenders.rcp.category.preferences"
+			class="org.eclipse.recommenders.internal.models.rcp.ModelsPreferencePage"
+			name="Models">
+		</page>
+	</extension>
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.models.rcp.advisors">
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.manual"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ManualProjectCoordinateAdvisor"
+			defaultPriority="0"
+			name="Manual mappings">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenPomProperties"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.MavenPomPropertiesAdvisor"
+			defaultPriority="10"
+			name="Apache Maven pom.properties"
+			description="Assign project coordinates based on a pom.properties file. This file is part of many JARs build with Apache Maven or similar tools. (JAR files only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreExecutionEnvironment"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor"
+			defaultPriority="20"
+			name="Execution Environment hint"
+			description="Assign project coordinates based on the Execution Environment that Eclipse associates with the JRE. (JRE only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreReleaseFile"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor"
+			defaultPriority="30"
+			name="JRE release file"
+			description="Assign project coordinates based on the release file shipped with most Java Runtime Environments. (JRE only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreDirectoryName"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor"
+			defaultPriority="40"
+			name="JRE directory name"
+			description="Assign project coordinates based on name of the Java Runtime Environment’s home directory. (JRE only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenPomXml"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor"
+			defaultPriority="50"
+			name="Apache Maven pom.xml"
+			description="Assign project coordinates based on a pom.xml file. This file is part of all projects build with Apache Maven. (Workspace projects only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.modelIndexBundleSymbolicName"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvisor"
+			defaultPriority="60"
+			name="OSGi Bundle-SymbolicName (Model repository)"
+			description="Assign project coordinates based on a dependency’s SHA-1 fingerprint. The fingerprint is searched for in all registered model repositories. (Workspace projects and JAR files)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.modelIndexFingerprint"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor"
+			defaultPriority="70"
+			name="SHA-1 Fingerprint (Model repository)"
+			description="Assign project coordinates based on a dependency’s SHA-1 fingerprint. The fingerprint is searched for in all registered model repositories. (JAR files only)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.osgiManifest"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.OsgiManifestAdvisor"
+			defaultPriority="80"
+			name="OSGi MANIFEST.MF"
+			description="Assign project coordinates based on an OSGi MANIFEST.MF. The coordinate is derived from the Bundle-SymbolicName and Bundle-Version headers found therein. (Workspace projects and JAR files)">
+		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenCentralFingerprintSearch"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.MavenCentralFingerprintSearchAdvisor"
+			defaultPriority="90"
+			name="SHA-1 Fingerrint (Maven Central)"
+			description="Assign project coordinates based on a dependency’s SHA-1 fingerprint. The fingerprint is searched for in the Maven Central repository. Note: This advisor performs a HTTP request. (JAR files only)">
+		</advisor>
+	</extension>
 </plugin>

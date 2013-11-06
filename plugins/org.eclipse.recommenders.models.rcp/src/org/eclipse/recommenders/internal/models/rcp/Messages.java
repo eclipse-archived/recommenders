@@ -26,6 +26,11 @@ public final class Messages extends NLS {
     public static String STATUS_DOWNLOAD_FINISHED;
     public static String STATUS_DOWNLOAD_CORRUPTED;
     public static String STATUS_DOWNLOAD_FAILED;
+    public static String PREFPAGE_ADVISOR_ADVISORS;
+    public static String PREFPAGE_ADVISOR_BUTTON_DOWN;
+    public static String PREFPAGE_ADVISOR_BUTTON_UP;
+    public static String PREFPAGE_ADVISOR_DESCRIPTION;
+    public static String PREFPAGE_ADVISOR_TITLE;
     public static String PREFPAGE_URI_ALREADY_ADDED;
     public static String PREFPAGE_OVERVIEW_INTRO;
     public static String PREFPAGE_CLEAR_CACHES;

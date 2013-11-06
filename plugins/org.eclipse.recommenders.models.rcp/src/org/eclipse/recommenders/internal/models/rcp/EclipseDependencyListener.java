@@ -12,7 +12,8 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.jdt.core.IJavaElement.JAVA_PROJECT;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.*;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForProject;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -197,7 +198,7 @@ public class EclipseDependencyListener implements IDependencyListener {
         IJavaProject project = (IJavaProject) pfr.getAncestor(JAVA_PROJECT);
 
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR,
-                createSurroundingProjectHint(project));
+                Dependencies.createSurroundingProjectHint(project));
         return dependencyInfo;
     }
 
@@ -256,5 +257,4 @@ public class EclipseDependencyListener implements IDependencyListener {
         Set<DependencyInfo> infos = workspaceDependenciesByProject.keySet();
         return ImmutableSet.copyOf(infos);
     }
-
 }
