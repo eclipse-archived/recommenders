@@ -278,9 +278,9 @@ public abstract class AbstractFactor implements Cloneable {
         AbstractFactor f = null;
         try {
             f = (AbstractFactor) super.clone();
-        } catch (CloneNotSupportedException exception) {
+        } catch (CloneNotSupportedException x) {
             // should not be possible to happen
-            exception.printStackTrace();
+            throw new RuntimeException(x);
         }
         f.values = values.clone();
         f.selections = selections.clone();
