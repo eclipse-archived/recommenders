@@ -49,19 +49,6 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.xtend</groupId>
-				<artifactId>xtend-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<phase>generate-sources</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<executions>

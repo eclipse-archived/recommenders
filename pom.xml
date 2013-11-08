@@ -412,6 +412,15 @@
 					<configuration>
 						<outputDirectory>${project.build.directory}/generated-sources/xtend</outputDirectory>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-compile</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>

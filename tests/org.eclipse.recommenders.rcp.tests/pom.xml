@@ -10,6 +10,14 @@
 	</parent>
 	<artifactId>org.eclipse.recommenders.rcp.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 	<profiles>
 		<profile>
 			<id>mac</id>
