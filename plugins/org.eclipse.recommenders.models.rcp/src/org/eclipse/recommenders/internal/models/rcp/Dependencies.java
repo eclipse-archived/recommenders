@@ -29,13 +29,15 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 public final class Dependencies {
 
     @Inject
-    static IWorkspaceRoot workspace;
+    @VisibleForTesting
+    public static IWorkspaceRoot workspace;
 
     public static Optional<DependencyInfo> createJREDependencyInfo(final IJavaProject javaProject) {
         Optional<String> executionEnvironmentId = getExecutionEnvironmentId(javaProject);
