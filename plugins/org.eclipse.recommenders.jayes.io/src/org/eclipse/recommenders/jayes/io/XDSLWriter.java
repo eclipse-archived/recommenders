@@ -49,6 +49,7 @@ public class XDSLWriter implements IBayesNetWriter {
                 "discsamples", "10000");
 
         out.write(bldr.toString());
+        out.flush();
     }
 
     private void getVariableDefs(StringBuilder bldr, BayesNet net) {

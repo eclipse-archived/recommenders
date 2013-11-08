@@ -16,7 +16,6 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.IBayesInferer;
 import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
-import org.eclipse.recommenders.tests.jayes.util.NetExamples;
 import org.junit.Test;
 
 public class LBPTest {
