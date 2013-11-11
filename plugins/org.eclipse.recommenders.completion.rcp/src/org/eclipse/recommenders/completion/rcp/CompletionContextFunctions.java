@@ -52,6 +52,7 @@ import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -89,6 +90,7 @@ public class CompletionContextFunctions {
         res.put(INTERNAL_COMPLETIONCONTEXT, new InternalCompletionContextFunction());
         res.put(JAVA_PROPOSALS, new InternalCompletionContextFunction());
         res.put(JAVA_CONTENTASSIST_CONTEXT, new JavaContentAssistInvocationContextFunction());
+        res.put(LOOKUP_ENVIRONMENT, new LookupEnvironmentContextFunction());
         res.put(RECEIVER_TYPEBINDING, new ReceiverTypeBindingContextFunction());
         res.put(RECEIVER_NAME, new ReceiverNameContextFunction());
         res.put(VISIBLE_METHODS, new VisibleMethodsContextFunction());
@@ -491,6 +493,44 @@ public class CompletionContextFunctions {
             }
             context.set(key, astMethod);
             return astMethod;
+        }
+    }
+
+    public static class LookupEnvironmentContextFunction implements ICompletionContextFunction<LookupEnvironment> {
+
+        private static Field fExtendedContext;
+        private static Field fLookupEnvironment;
+
+        static {
+            try {
+                Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
+                fExtendedContext = clazzCtx.getDeclaredField("extendedContext");
+                fExtendedContext.setAccessible(true);
+
+                Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
+                fLookupEnvironment = clazzExt.getDeclaredField("lookupEnvironment");
+                fLookupEnvironment.setAccessible(true);
+            } catch (Exception e) {
+                LOG.error("Accessing InternalExtendedCompletionContext.LookupEnvironment per reflection failed.", e);
+            }
+        }
+
+        @Override
+        public LookupEnvironment compute(IRecommendersCompletionContext context,
+                CompletionContextKey<LookupEnvironment> key) {
+            LookupEnvironment env = null;
+            try {
+                InternalCompletionContext ctx = context.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
+                InternalExtendedCompletionContext extCtx = cast(fExtendedContext.get(ctx));
+                if (extCtx == null) {
+                    return null;
+                }
+                env = cast(fLookupEnvironment.get(extCtx));
+            } catch (Exception e) {
+                LOG.error("Accessing LookupEnvironment per reflection failed.", e);
+            }
+            context.set(key, env);
+            return env;
         }
     }
 
