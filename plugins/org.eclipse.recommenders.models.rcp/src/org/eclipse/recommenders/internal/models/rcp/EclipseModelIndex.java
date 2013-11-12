@@ -189,10 +189,11 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     }
 
     public Set<ModelCoordinate> addRepositoryUrlHint(Set<ModelCoordinate> modelCoordinates, String url) {
+        Set<ModelCoordinate> modelCoordinatesWithUrlHint = Sets.newHashSet();
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
-            createCopyWithRepositoryUrlHint(modelCoordinate, url);
+            modelCoordinatesWithUrlHint.add(createCopyWithRepositoryUrlHint(modelCoordinate, url));
         }
-        return modelCoordinates;
+        return modelCoordinatesWithUrlHint;
     }
 
     private ModelCoordinate createCopyWithRepositoryUrlHint(ModelCoordinate mc, String url) {

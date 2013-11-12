@@ -483,6 +483,7 @@ public class ModelCoordinatesView extends ViewPart {
         for (String classifier : Constants.MODEL_CLASSIFIER) {
             addModelCoordinateToIndex(temp, classifier);
         }
+
         return temp;
     }
 
