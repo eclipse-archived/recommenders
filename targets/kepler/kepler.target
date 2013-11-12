@@ -6,8 +6,11 @@
 <unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.xtext.xbase.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.xtend.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.m2e.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/releases/kepler"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.m2e.feature.feature.group" version="1.4.0.20130601-0317"/>
+<repository location="http://download.eclipse.org/technology/m2e/releases/1.4/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
