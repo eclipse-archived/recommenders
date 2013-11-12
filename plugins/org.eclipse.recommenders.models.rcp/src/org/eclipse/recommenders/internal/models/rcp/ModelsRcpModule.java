@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.core.internal.net.ProxyManager;
@@ -27,10 +28,10 @@ import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
-import org.eclipse.recommenders.models.MavenCentralFingerprintSearchAdvisor;
 import org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor;
 import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
 import org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor;
+import org.eclipse.recommenders.models.advisors.MavenCentralFingerprintSearchAdvisor;
 import org.eclipse.recommenders.models.advisors.MavenPomPropertiesAdvisor;
 import org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor;
 import org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvisor;
@@ -62,6 +63,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
     public static final String INDEX_BASEDIR = "INDEX_BASEDIR";
     public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS";
+    public static final String AVAILABLE_ADVISORS = "DEFAULT_ADVISORS";
 
     @Override
     protected void configure() {
@@ -112,29 +114,69 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    public List<IProjectCoordinateAdvisor> provideAdvisors(IModelIndex index,
-            ManualProjectCoordinateAdvisor manualMappingStrategy) {
-        List<IProjectCoordinateAdvisor> availableAdvisors = Lists.newArrayList();
-        availableAdvisors.add(manualMappingStrategy);
-        availableAdvisors.add(new MavenPomPropertiesAdvisor());
-        availableAdvisors.add(new JREExecutionEnvironmentAdvisor());
-        availableAdvisors.add(new JREReleaseFileAdvisor());
-        availableAdvisors.add(new JREDirectoryNameAdvisor());
-        availableAdvisors.add(new MavenPomXmlAdvisor());
-        availableAdvisors.add(new ModelIndexBundleSymbolicNameAdvisor(index));
-        availableAdvisors.add(new ModelIndexFingerprintAdvisor(index));
-        availableAdvisors.add(new OsgiManifestAdvisor());
-        availableAdvisors.add(new MavenCentralFingerprintSearchAdvisor());
+    @Named(AVAILABLE_ADVISORS)
+    public List<String> provideAdvisors() {
+        List<String> availableAdvisors = Lists.newArrayList();
+        ManualProjectCoordinateAdvisor.class.getName();
+        availableAdvisors.add(ManualProjectCoordinateAdvisor.class.getName());
+        availableAdvisors.add(MavenPomPropertiesAdvisor.class.getName());
+        availableAdvisors.add(JREExecutionEnvironmentAdvisor.class.getName());
+        availableAdvisors.add(JREReleaseFileAdvisor.class.getName());
+        availableAdvisors.add(JREDirectoryNameAdvisor.class.getName());
+        availableAdvisors.add(MavenPomXmlAdvisor.class.getName());
+        availableAdvisors.add(ModelIndexBundleSymbolicNameAdvisor.class.getName());
+        availableAdvisors.add(ModelIndexFingerprintAdvisor.class.getName());
+        availableAdvisors.add(OsgiManifestAdvisor.class.getName());
+        availableAdvisors.add(MavenCentralFingerprintSearchAdvisor.class.getName());
         return ImmutableList.copyOf(availableAdvisors);
     }
 
     @Singleton
     @Provides
-    public ProjectCoordinateAdvisorService provideMappingProvider(List<IProjectCoordinateAdvisor> availableAdvisors,
-            ModelsRcpPreferences prefs) {
+    public ProjectCoordinateAdvisorService provideMappingProvider(ModelsRcpPreferences prefs, IModelIndex index,
+            ManualProjectCoordinateAdvisor manualMappingStrategy) throws Exception {
+        List<IProjectCoordinateAdvisor> availableAdvisors = Lists.newArrayList();
         ProjectCoordinateAdvisorService mappingProvider = new ProjectCoordinateAdvisorService();
+        for (String advisorName : prefs.advisors.split(";")) {
+            availableAdvisors.add(createAdvisor(advisorName, manualMappingStrategy, index));
+        }
         mappingProvider.setAdvisors(Advisors.createAdvisorList(availableAdvisors, prefs.advisors));
         return mappingProvider;
+    }
+
+    private IProjectCoordinateAdvisor createAdvisor(String advisorName,
+            ManualProjectCoordinateAdvisor manualMappingStrategy, IModelIndex index) {
+        if (advisorName.equals(ManualProjectCoordinateAdvisor.class.getName())) {
+            return manualMappingStrategy;
+        }
+        if (advisorName.equals(MavenPomPropertiesAdvisor.class.getName())) {
+            return new MavenPomPropertiesAdvisor();
+        }
+        if (advisorName.equals(JREExecutionEnvironmentAdvisor.class.getName())) {
+            return new MavenPomPropertiesAdvisor();
+        }
+        if (advisorName.equals(JREReleaseFileAdvisor.class.getName())) {
+            return new JREReleaseFileAdvisor();
+        }
+        if (advisorName.equals(JREDirectoryNameAdvisor.class.getName())) {
+            return new JREDirectoryNameAdvisor();
+        }
+        if (advisorName.equals(MavenPomXmlAdvisor.class.getName())) {
+            return new MavenPomXmlAdvisor();
+        }
+        if (advisorName.equals(ModelIndexBundleSymbolicNameAdvisor.class.getName())) {
+            return new ModelIndexBundleSymbolicNameAdvisor(index);
+        }
+        if (advisorName.equals(ModelIndexFingerprintAdvisor.class.getName())) {
+            return new ModelIndexFingerprintAdvisor(index);
+        }
+        if (advisorName.equals(OsgiManifestAdvisor.class.getName())) {
+            return new OsgiManifestAdvisor();
+        }
+        if (advisorName.equals(MavenCentralFingerprintSearchAdvisor.class.getName())) {
+            return new MavenCentralFingerprintSearchAdvisor();
+        }
+        throw new IllegalArgumentException("No advisor of name" + advisorName + " found");
     }
 
     @Provides

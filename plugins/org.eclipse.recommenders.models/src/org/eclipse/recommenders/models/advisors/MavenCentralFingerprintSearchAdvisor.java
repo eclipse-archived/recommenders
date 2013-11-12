@@ -8,7 +8,7 @@
  * Contributors:
  *     Andreas Sewe - initial API and implementation
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
@@ -29,7 +29,9 @@ import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.eclipse.recommenders.models.advisors.AbstractProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Fingerprints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
