@@ -47,7 +47,7 @@ import com.google.common.base.Optional;
 public class JavaElementSelections {
 
     @VisibleForTesting
-    public static Logger log = LoggerFactory.getLogger(JavaElementSelections.class);
+    static Logger log = LoggerFactory.getLogger(JavaElementSelections.class);
 
     @SuppressWarnings("serial")
     private static Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {

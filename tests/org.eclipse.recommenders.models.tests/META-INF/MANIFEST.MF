@@ -5,11 +5,8 @@ Bundle-Version: 2.0.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.models
-Require-Bundle: org.junit,
- org.mockito;bundle-version="1.8.4",
- org.hamcrest;bundle-version="1.1.0",
- org.eclipse.recommenders.tests
+Require-Bundle: org.eclipse.recommenders.tests;bundle-version="2.0.0",
+ org.hamcrest,
+ org.junit,
+ org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.apache.maven.model,
- org.apache.maven.model.io.xpp3,
- org.eclipse.recommenders.utils

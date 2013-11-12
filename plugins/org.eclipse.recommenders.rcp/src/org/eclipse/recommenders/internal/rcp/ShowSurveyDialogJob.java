@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 class ShowSurveyDialogJob extends UIJob {
 
-    Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     RcpPreferences prefs;

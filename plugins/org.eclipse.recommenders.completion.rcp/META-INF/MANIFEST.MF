@@ -1,45 +1,31 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp;singleton:=true
 Bundle-Version: 2.0.1.qualifier
-Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPlugin
+Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Export-Package: org.eclipse.recommenders.completion.rcp; uses:="org.ec
- lipse.jface.text,  org.eclipse.recommenders.rcp,  org.eclipse.jdt.ui.
- text.java,  org.eclipse.jdt.core.dom,  org.eclipse.core.runtime,  org
- .eclipse.jdt.core,  org.eclipse.jdt.internal.compiler.ast,  com.googl
- e.common.base,  org.eclipse.ui.progress",org.eclipse.recommenders.com
- pletion.rcp.processable; uses:="org.eclipse.jface.text,  org.eclipse.
- recommenders.rcp,  org.eclipse.jface.text.source,  org.eclipse.core.r
- untime,  com.google.common.base,  org.eclipse.jface.text.contentassis
- t,  org.eclipse.jdt.ui.text.java,  org.eclipse.jdt.internal.ui.text.j
- ava,  org.eclipse.jdt.core,  org.eclipse.jdt.internal.codeassist,  or
- g.eclipse.jface.viewers,  org.eclipse.swt.graphics,  org.eclipse.jdt.
- core.compiler,  org.eclipse.recommenders.completion.rcp.utils",org.ec
- lipse.recommenders.internal.completion.rcp;x-internal:=true
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.jdt.core,
- org.eclipse.jdt.ui,
- org.eclipse.jface.text,
- org.eclipse.ui.workbench.texteditor,
- org.eclipse.recommenders.injection;bundle-version="1.100.0",
- org.eclipse.recommenders.rcp;bundle-version="1.100.0",
- org.eclipse.recommenders.utils,
- org.eclipse.ui.editors,
- org.eclipse.e4.core.di.extensions,
- org.eclipse.e4.core.contexts,
- org.eclipse.e4.core.di,
- org.eclipse.core.databinding,
+Eclipse-ExtensibleAPI: true
+Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPlugin
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.observable,
  org.eclipse.core.databinding.property,
+ org.eclipse.core.runtime,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di,
+ org.eclipse.e4.core.di.extensions,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
  org.eclipse.jface.databinding,
- com.ibm.icu
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Eclipse-ExtensibleAPI: true
-Bundle-ActivationPolicy: lazy
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.injection;bundle-version="2.0.0",
+ org.eclipse.recommenders.rcp;bundle-version="2.0.0",
+ org.eclipse.recommenders.utils;bundle-version="2.0.0",
+ org.eclipse.ui,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
@@ -47,3 +33,9 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.mutable;version="[3.0.0,4.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
+Export-Package: org.eclipse.recommenders.completion.rcp;
+  uses:="com.google.common.base,
+   com.google.common.collect",
+ org.eclipse.recommenders.completion.rcp.processable;
+  uses:="com.google.common.base",
+ org.eclipse.recommenders.internal.completion.rcp;x-internal:=true
