@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
+import com.google.common.base.Joiner;
+
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     private List<String> availableAdvisors;
@@ -43,17 +45,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.put(P_REPOSITORY_URL_LIST_ACTIV, SERVER_URL);
         s.put(P_REPOSITORY_URL_LIST, SERVER_URL);
 
-        s.put(P_ADVISOR_LIST_SORTED, getSemicolonSeparatedList(availableAdvisors));
+        s.put(P_ADVISOR_LIST_SORTED, Joiner.on(";").join(availableAdvisors));
         s.putBoolean(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, true);
-    }
-
-    private String getSemicolonSeparatedList(List<String> advisors) {
-        StringBuilder sb = new StringBuilder();
-        for (String advisor : advisors) {
-            sb.append(advisor);
-            sb.append(";");
-        }
-        return sb.toString();
     }
 
 }

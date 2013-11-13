@@ -244,7 +244,7 @@ public class EclipseDependencyListenerTest {
         DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
 
         eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, jarFileExample)));
-        DependencyInfo expected = new DependencyInfo(jarFileExample, DependencyType.JAR);
+        DependencyInfo expected = new DependencyInfo(jarFileExample, DependencyType.JAR, Dependencies.createSurroundingProjectHint(javaProject));
 
         assertTrue(sut.getDependenciesForProject(projectDependencyInfo).contains(expected));
     }
