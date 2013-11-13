@@ -15,23 +15,23 @@ import static org.eclipse.recommenders.internal.models.rcp.Constants.P_ADVISOR_L
 import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST_ACTIV;
+import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.AVAILABLE_ADVISORS;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private List<IProjectCoordinateAdvisor> availableAdvisors;
+    private List<String> availableAdvisors;
 
     @Inject
-    public PreferenceInitializer(List<IProjectCoordinateAdvisor> availableAdvisors) {
+    public PreferenceInitializer(@Named(AVAILABLE_ADVISORS) List<String> availableAdvisors) {
         this.availableAdvisors = availableAdvisors;
     }
 
@@ -42,9 +42,18 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(BUNDLE_ID);
         s.put(P_REPOSITORY_URL_LIST_ACTIV, SERVER_URL);
         s.put(P_REPOSITORY_URL_LIST, SERVER_URL);
-        s.put(P_ADVISOR_LIST_SORTED,
-                Advisors.createPreferenceString(availableAdvisors, Collections.<IProjectCoordinateAdvisor>emptySet()));
+
+        s.put(P_ADVISOR_LIST_SORTED, getSemicolonSeparatedList(availableAdvisors));
         s.putBoolean(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, true);
+    }
+
+    private String getSemicolonSeparatedList(List<String> advisors) {
+        StringBuilder sb = new StringBuilder();
+        for (String advisor : advisors) {
+            sb.append(advisor);
+            sb.append(";");
+        }
+        return sb.toString();
     }
 
 }
