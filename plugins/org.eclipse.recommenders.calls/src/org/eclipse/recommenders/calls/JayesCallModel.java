@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Recommendation.newRecommendation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -140,46 +141,41 @@ public class JayesCallModel implements ICallModel {
         }
     }
 
-    private BayesNet net;
-    private BayesNode callgroupNode;
-    private BayesNode overridesNode;
-    private BayesNode definedByNode;
-    private BayesNode defKindNode;
-    private JunctionTreeAlgorithm junctionTree;
+    private final BayesNet net;
+    private final BayesNode callgroupNode;
+    private final BayesNode overridesNode;
+    private final BayesNode definedByNode;
+    private final BayesNode defKindNode;
+    private final JunctionTreeAlgorithm junctionTree;
 
-    private ITypeName typeName;
-    private HashMap<IMethodName, BayesNode> callNodes;
+    private final ITypeName typeName;
+    private final HashMap<IMethodName, BayesNode> callNodes;
+
+    private static final List<String> SPECIAL_NODES = Arrays.asList(N_NODEID_CONTEXT, N_NODEID_CALL_GROUPS,
+            N_NODEID_DEF_KIND, N_NODEID_DEF);
 
     public JayesCallModel(final ITypeName name, final BayesNet net) {
         this.net = net;
-        initalizeIndexes(typeName);
-        initializeNetwork(net);
-    }
+        this.typeName = name;
+        this.callNodes = new HashMap<IMethodName, BayesNode>();
+        this.junctionTree = new JunctionTreeAlgorithm();
 
-    private void initalizeIndexes(final ITypeName name) {
-        typeName = name;
-        callNodes = new HashMap<IMethodName, BayesNode>();
-    }
-
-    private void initializeNetwork(BayesNet net) {
-        setSpecialNodes(net);
-        junctionTree = new JunctionTreeAlgorithm();
         junctionTree.setJunctionTreeBuilder(JunctionTreeBuilder.forHeuristic(new MinDegree()));
         junctionTree.setNetwork(net);
+
+        overridesNode = net.getNode(N_NODEID_CONTEXT);
+        callgroupNode = net.getNode(N_NODEID_CALL_GROUPS);
+        defKindNode = net.getNode(N_NODEID_DEF_KIND);
+        definedByNode = net.getNode(N_NODEID_DEF);
+
+        setCallNodes(net);
     }
 
-    private void setSpecialNodes(BayesNet net) {
+    private void setCallNodes(BayesNet net) {
         for (BayesNode bayesNode : net.getNodes()) {
-            if (bayesNode.getName().equals(N_NODEID_CONTEXT)) {
-                overridesNode = bayesNode;
-            } else if (bayesNode.getName().equals(N_NODEID_CALL_GROUPS)) {
-                callgroupNode = bayesNode;
-            } else if (bayesNode.getName().equals(N_NODEID_DEF_KIND)) {
-                defKindNode = bayesNode;
-            } else if (bayesNode.getName().equals(N_NODEID_DEF)) {
-                definedByNode = bayesNode;
-            } else {
-                VmMethodName vmMethodName = VmMethodName.get(bayesNode.getName());
+            String name = bayesNode.getName();
+            if (!SPECIAL_NODES.contains(name)) {
+                VmMethodName vmMethodName = VmMethodName.get(name);
                 callNodes.put(vmMethodName, bayesNode);
             }
         }
