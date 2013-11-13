@@ -36,7 +36,7 @@ public class SurveyPreferencePage extends org.eclipse.jface.preference.Preferenc
 
     private static final String SURVEY_LINK_TEXT = "<a>Take the survey</a> (will open in a browser window).";
 
-    Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     RcpPreferences prefs;

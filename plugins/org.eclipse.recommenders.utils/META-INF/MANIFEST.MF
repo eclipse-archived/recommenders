@@ -5,12 +5,7 @@ Bundle-Version: 2.0.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.utils; uses:="com.google.comm
- on.collect,  org.eclipse.recommenders.utils.names,  com.google.common
- .base,  org.sonatype.aether.artifact,  org.w3c.dom",org.eclipse.recom
- menders.utils.gson;uses:="com.google.common.collect,org.eclipse.recom
- menders.utils.names,com.google.gson",org.eclipse.recommenders.utils.n
- ames
+Require-Bundle: org.eclipse.m2e.maven.runtime;bundle-version="[1.4.0,1.5.0)"
 Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
@@ -21,9 +16,18 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.gson;version="[2.1.0,3.0.0)",
  com.google.gson.reflect;version="[2.1.0,3.0.0)",
  com.google.gson.stream;version="[2.1.0,3.0.0)",
+ javax.inject;resolution:=optional,
  org.apache.commons.io;version="[2.0.0,3.0.0)",
  org.apache.commons.io.filefilter;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
- org.slf4j;version="[1.7.0,2.0.0)",
- org.sonatype.aether.artifact;resolution:=optional,
- org.sonatype.aether.util.artifact;resolution:=optional
+ org.slf4j;version="[1.6.0,2.0.0)"
+Export-Package: org.eclipse.recommenders.utils;
+  uses:="com.google.common.base,
+   com.google.common.collect,
+   org.sonatype.aether.artifact,
+   org.w3c.dom",
+ org.eclipse.recommenders.utils.gson;
+  uses:="com.google.common.collect,
+   com.google.gson,
+   com.google.gson.stream",
+ org.eclipse.recommenders.utils.names

@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 
 public class AstBindings {
 
-    static Logger log = LoggerFactory.getLogger(AstBindings.class);
+    private static final Logger log = LoggerFactory.getLogger(AstBindings.class);
 
     public static Optional<ITypeName> toTypeName(ITypeBinding b) {
         if (b == null) {

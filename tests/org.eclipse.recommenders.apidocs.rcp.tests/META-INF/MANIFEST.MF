@@ -5,11 +5,7 @@ Bundle-Version: 2.0.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.apidocs.rcp
-Require-Bundle: com.google.guava;bundle-version="[14.0.1,15.0.0)",
- org.junit;bundle-version="4.10.0",
- org.mockito,
- org.objenesis,
- org.hamcrest,
- org.eclipse.equinox.ds,
- org.eclipse.recommenders.tests
+Require-Bundle: org.hamcrest,
+ org.junit,
+ org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

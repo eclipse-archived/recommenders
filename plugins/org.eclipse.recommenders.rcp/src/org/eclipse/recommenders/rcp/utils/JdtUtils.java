@@ -71,7 +71,8 @@ import com.google.common.base.Predicate;
 
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
 public class JdtUtils {
-    static Logger log = LoggerFactory.getLogger(JdtUtils.class);
+
+    private static final Logger log = LoggerFactory.getLogger(JdtUtils.class);
 
     private static final Util.BindingsToNodesMap EMPTY_NODE_MAP = new Util.BindingsToNodesMap() {
         @Override

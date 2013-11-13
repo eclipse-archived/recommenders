@@ -4,9 +4,8 @@ Bundle-SymbolicName: org.eclipse.recommenders.models.rcp.tests;singleton:=true
 Bundle-Version: 2.0.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Fragment-Host: org.eclipse.recommenders.models.rcp;bundle-version="0.0.0.qualifier"
-Require-Bundle: org.junit;bundle-version="4.11.0",
- org.mockito;bundle-version="1.8.4",
- org.hamcrest;bundle-version="1.1.0",
- org.eclipse.recommenders.rcp;bundle-version="1.100.0"
+Fragment-Host: org.eclipse.recommenders.models.rcp
+Require-Bundle: org.hamcrest,
+ org.junit,
+ org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

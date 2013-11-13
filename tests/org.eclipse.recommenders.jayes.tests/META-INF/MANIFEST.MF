@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.eclipse.recommenders.jayes.tests
 Bundle-Version: 2.0.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit,
- org.eclipse.recommenders.tests
 Fragment-Host: org.eclipse.recommenders.jayes
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.recommenders.tests,
+ org.junit

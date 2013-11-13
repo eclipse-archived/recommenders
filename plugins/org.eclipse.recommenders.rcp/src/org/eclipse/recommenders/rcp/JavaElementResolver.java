@@ -64,7 +64,7 @@ public class JavaElementResolver {
         INSTANCE = this;
     }
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final BiMap<IName, IJavaElement> cache = HashBiMap.create();
     public HashSet<IMethodName> failedRecMethods = Sets.newHashSet();

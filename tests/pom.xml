@@ -12,17 +12,17 @@
 	<packaging>pom</packaging>
 	<name>Tests</name>
 	<modules>
-		<module>org.eclipse.recommenders.tests</module>
+		<module>org.eclipse.recommenders.apidocs.rcp.tests</module>
 		<module>org.eclipse.recommenders.calls.rcp.tests</module>
 		<module>org.eclipse.recommenders.completion.rcp.tests</module>
-		<module>org.eclipse.recommenders.apidocs.rcp.tests</module>
-		<module>org.eclipse.recommenders.jayes.tests</module>
 		<module>org.eclipse.recommenders.jayes.io.tests</module>
+		<module>org.eclipse.recommenders.jayes.tests</module>
 		<module>org.eclipse.recommenders.jayes.transformation.tests</module>
-		<module>org.eclipse.recommenders.rcp.tests</module>
-		<module>org.eclipse.recommenders.utils.tests</module>
 		<module>org.eclipse.recommenders.models.tests</module>
 		<module>org.eclipse.recommenders.models.rcp.tests</module>
+		<module>org.eclipse.recommenders.rcp.tests</module>
+		<module>org.eclipse.recommenders.utils.tests</module>
+		<module>org.eclipse.recommenders.tests</module>
 	</modules>
 	<build>
 		<pluginManagement>
