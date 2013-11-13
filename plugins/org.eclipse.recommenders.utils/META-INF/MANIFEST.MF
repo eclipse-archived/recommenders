@@ -21,13 +21,8 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  org.apache.commons.io.filefilter;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.utils;
-  uses:="com.google.common.base,
-   com.google.common.collect,
-   org.sonatype.aether.artifact,
-   org.w3c.dom",
- org.eclipse.recommenders.utils.gson;
-  uses:="com.google.common.collect,
-   com.google.gson,
-   com.google.gson.stream",
- org.eclipse.recommenders.utils.names
+Export-Package: org.eclipse.recommenders.utils; uses:="com.google.comm
+ on.base,  com.google.common.collect,  org.sonatype.aether.artifact,  
+ org.w3c.dom",org.eclipse.recommenders.utils.gson; uses:="com.google.c
+ ommon.collect,  com.google.gson,  com.google.gson.stream",org.eclipse
+ .recommenders.utils.names

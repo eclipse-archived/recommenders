@@ -12,5 +12,6 @@ Import-Package: com.google.common.base;version="[14.0.0,15.0.0)",
  org.apache.commons.math.linear;version="[2.0.0,3.0.0)",
  org.apache.commons.math.optimization;version="[2.0.0,3.0.0)",
  org.apache.commons.math.optimization.linear;version="[2.0.0,3.0.0)"
-Export-Package: org.eclipse.recommenders.jayes.transformation,
- org.eclipse.recommenders.jayes.transformation.util;uses:="com.google.common.base"
+Export-Package: org.eclipse.recommenders.jayes.transformation,org.ecli
+ pse.recommenders.jayes.transformation.util;uses:="com.google.common.b
+ ase"
