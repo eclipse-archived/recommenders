@@ -17,11 +17,11 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.stat.StatUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
@@ -53,15 +53,6 @@ public class JayesOverrideModelBuilder {
         network = new BayesNet();
     }
 
-    // private void filterInfrequentOverridingPatterns() {
-    // for (final Iterator<ClassOverridesObservation> it = overriddenMethods.iterator(); it.hasNext();) {
-    // final ClassOverridesObservation next = it.next();
-    // if (next.frequency < 5) {
-    // it.remove();
-    // }
-    // }
-    // }
-
     private void computeTotalNumberOfSubtypes() {
         for (final OverrideObservation usage : overriddenMethods) {
             totalNumberOfSubtypesFound += usage.frequency;
@@ -69,40 +60,37 @@ public class JayesOverrideModelBuilder {
     }
 
     public IOverrideModel build() {
-        return new JayesOverrideModel(typeName, network, patternNode, methodNodes);
-    }
-
-    public void createPatternsNode() {
         createPatternNodeInNetwork();
+        createMethodNodes();
+        return new JayesOverrideModel(typeName, network, patternNode, methodNodes);
     }
 
     private void createPatternNodeInNetwork() {
         patternNode = network.createNode("patternNode");
         patternNode.addOutcome("none");
-        //
-        final ArrayDoubleList def = new ArrayDoubleList();
-        def.add(MIN);
+
+        final double[] def = new double[1 + overriddenMethods.size()];
+        def[0] = MIN;
         int i = 0;
         for (final OverrideObservation obs : overriddenMethods) {
             i++;
             final String name = "observation_" + String.valueOf(i);
             patternNode.addOutcome(name);
             final double priorPatternProbability = obs.frequency / (double) totalNumberOfSubtypesFound;
-            def.add(priorPatternProbability);
+            def[i] = priorPatternProbability;
         }
         scaleMaximalValue(def);
-        patternNode.setProbabilities(def.toArray());
+        patternNode.setProbabilities(def);
     }
 
-    private void scaleMaximalValue(final ArrayDoubleList subDefinition) {
-        final double[] values = subDefinition.toArray();
-        final double diff = StatUtils.sum(values) - 1.0;
-        final double max = StatUtils.max(values);
-        final int indexOf = ArrayUtils.indexOf(values, max);
-        subDefinition.set(indexOf, values[indexOf] - diff);
+    private void scaleMaximalValue(final double[] subDefinition) {
+        final double diff = StatUtils.sum(subDefinition) - 1.0;
+        final double max = StatUtils.max(subDefinition);
+        final int indexOf = ArrayUtils.indexOf(subDefinition, max);
+        subDefinition[indexOf] = subDefinition[indexOf] - diff;
     }
 
-    public void createMethodNodes() {
+    private void createMethodNodes() {
         final Set<IMethodName> methods = collectInvokedMethodsFromPatterns();
         methodNodes = Lists.newLinkedList();
         for (final IMethodName ref : methods) {
@@ -116,21 +104,22 @@ public class JayesOverrideModelBuilder {
     }
 
     private double[] createMethodNodeDefinition(final IMethodName ref) {
-        final ArrayDoubleList definition = new ArrayDoubleList();
-        definition.add(0.0);
-        definition.add(1.0);
+        final double[] definition = new double[2 + 2 * overriddenMethods.size()];
+        definition[0] = 0.0;
+        definition[1] = 1.0;
+        int i = 2;
         for (final OverrideObservation pattern : overriddenMethods) {
             final boolean overridesMethod = pattern.overriddenMethods.contains(ref);
             if (overridesMethod) {
-                definition.add(MAX);
-                definition.add(MIN);
+                definition[i++] = MAX;
+                definition[i++] = MIN;
             } else {
                 // just flip
-                definition.add(MIN);
-                definition.add(MAX);
+                definition[i++] = MIN;
+                definition[i++] = MAX;
             }
         }
-        return definition.toArray();
+        return definition;
     }
 
     private TreeSet<IMethodName> collectInvokedMethodsFromPatterns() {

@@ -26,6 +26,5 @@ Import-Package: com.google.common.annotations;version="[14.0.0,15.0.0)",
  com.google.common.collect;version="[14.0.0,15.0.0)",
  com.google.common.io;version="[14.0.0,15.0.0)",
  com.google.gson;version="[2.1.0,3.0.0)",
- org.apache.commons.collections.primitives,
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.math.stat;version="[2.1.0,3.0.0)"
