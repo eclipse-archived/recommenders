@@ -70,6 +70,9 @@ public class BayesNode {
     }
 
     public void setParents(final List<BayesNode> parents) {
+        if (parents.contains(null)) {
+            throw new NullPointerException("found null in parents - null is not a valid BayesNode");
+        }
         for (BayesNode oldParent : this.parents) {
             oldParent.children.remove(this);
         }
