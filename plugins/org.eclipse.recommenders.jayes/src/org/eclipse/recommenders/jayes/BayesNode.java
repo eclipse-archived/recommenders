@@ -39,6 +39,9 @@ public class BayesNode {
      */
     @Deprecated
     public BayesNode(String name) {
+        if (name == null) {
+            throw new NullPointerException("A BayesNode's name may not be null");
+        }
         this.name = name;
     }
 
