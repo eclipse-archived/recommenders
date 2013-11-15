@@ -209,14 +209,16 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
             }
             String newValue = AdvisorDescriptors.store(descriptors);
             getPreferenceStore().setValue(getPreferenceName(), newValue);
-            reconfigureAdvisorService(tableViewer.getCheckedElements());
+            reconfigureAdvisorService(descriptors);
         }
 
-        private void reconfigureAdvisorService(Object... newValues) {
-            List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(newValues.length);
-            for (Object descriptor : newValues) {
+        private void reconfigureAdvisorService(List<AdvisorDescriptor> descriptors) {
+            List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(descriptors.size());
+            for (AdvisorDescriptor descriptor : descriptors) {
                 try {
-                    advisors.add(((AdvisorDescriptor) descriptor).createAdvisor());
+                    if (descriptor.isEnabled()) {
+                        advisors.add(descriptor.createAdvisor());
+                    }
                 } catch (CoreException e) {
                     continue; // skip
                 }
