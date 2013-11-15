@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.util.BayesNodeUtil;
 
 public class BasicSampler implements ISampler {
 
@@ -42,7 +43,7 @@ public class BasicSampler implements ISampler {
     }
 
     private int sampleOutcome(BayesNode node, Map<BayesNode, String> currentSample) {
-        double[] probs = node.marginalize(currentSample);
+        double[] probs = BayesNodeUtil.getSubCpt(node, currentSample);
         double currentProb = 0;
         int newEvidence = 0;
         double rand = random.nextDouble();

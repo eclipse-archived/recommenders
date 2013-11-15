@@ -8,7 +8,7 @@
  * Contributors:
  *     Andreas Sewe - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes.io;
+package org.eclipse.recommenders.jayes.io;
 
 import static org.eclipse.recommenders.tests.jayes.Equality.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -24,14 +24,12 @@ import java.util.LinkedList;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.io.IBayesNetReader;
-import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
-import org.eclipse.recommenders.jayes.io.JayesBifReader;
-import org.eclipse.recommenders.jayes.io.JayesBifWriter;
-import org.eclipse.recommenders.jayes.io.XDSLReader;
-import org.eclipse.recommenders.jayes.io.XDSLWriter;
-import org.eclipse.recommenders.jayes.io.XMLBIFReader;
-import org.eclipse.recommenders.jayes.io.XMLBIFWriter;
+import org.eclipse.recommenders.jayes.io.jbif.JayesBifReader;
+import org.eclipse.recommenders.jayes.io.jbif.JayesBifWriter;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLWriter;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,7 +48,7 @@ public class RoundTripTest {
         this.writerClass = writerClass;
     }
 
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<Object[]> scenarios() {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
 
@@ -88,7 +86,7 @@ public class RoundTripTest {
      * that parents have a lower ID than their children.
      */
     @Test
-    public void nonTopologicallySortedNetworkTest() throws Exception {
+    public void testNonTopologicallySortedNetwork() throws Exception {
         BayesNet netBefore = new BayesNet();
         BayesNode a = netBefore.createNode("A");
         a.addOutcomes("t", "f");
@@ -100,6 +98,23 @@ public class RoundTripTest {
 
         a.setProbabilities(0.4, 0.6, 0.7, 0.3);
         b.setProbabilities(0.4, 0.6);
+
+        BayesNet netAfter = read(write(netBefore));
+
+        assertThat(netAfter, is(equalTo(netBefore)));
+    }
+
+    @Test
+    public void testNetworkWith3Outcomes() throws Exception {
+        BayesNet netBefore = new BayesNet();
+        BayesNode a = netBefore.createNode("A");
+        a.addOutcomes("t", "f", "a");
+        a.setProbabilities(0.3, 0.3, 0.4);
+
+        BayesNode b = netBefore.createNode("B");
+        b.addOutcomes("t", "f", "u");
+        b.setParents(Arrays.asList(a));
+        b.setProbabilities(0.4, 0.6, 0.0, 0.0, 0.7, 0.3, 0.1, 0.2, 0.7);
 
         BayesNet netAfter = read(write(netBefore));
 

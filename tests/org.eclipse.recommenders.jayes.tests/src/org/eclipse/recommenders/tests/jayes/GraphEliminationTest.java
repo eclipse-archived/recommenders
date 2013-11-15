@@ -10,9 +10,10 @@
  ******************************************************************************/
 package org.eclipse.recommenders.tests.jayes;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Iterator;

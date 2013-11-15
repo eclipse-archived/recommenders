@@ -8,7 +8,9 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.jayes.io;
+package org.eclipse.recommenders.jayes.io.jbif;
+
+import static org.eclipse.recommenders.jayes.io.jbif.Constants.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,6 +20,7 @@ import java.nio.DoubleBuffer;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -56,9 +59,6 @@ import com.google.common.primitives.Shorts;
 public class JayesBifWriter implements IBayesNetWriter {
 
     private static final int HEADER_BYTES = 2 * Ints.BYTES;
-
-    protected static final int MAGIC_NUMBER = 0xBA7E5B1F;
-    protected static final int FORMAT_VERSION = 1;
 
     private OutputStream out;
 

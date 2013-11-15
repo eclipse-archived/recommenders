@@ -8,14 +8,14 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.jayes.io;
+package org.eclipse.recommenders.jayes.io.xdsl;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.CPT;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.ID;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.PARENTS;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.PROBABILITIES;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.STATE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

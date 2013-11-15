@@ -35,9 +35,9 @@ public final class AddressCalc {
     }
 
     /**
-     * computes a mapping from the factors' addresses to the corresponding index of the flat value array of a factor
-     * consisting of the dimensions with the given dimensionIDs. dimensionIDs is expected to be a superset of the
-     * dimension ids of the factor
+     * computes a linear map that can be used to transform the factors' addresses to the corresponding index of the flat
+     * value array of another factor consisting of the dimensions with the given dimensionIDs. dimensionIDs is expected
+     * to be a superset of the dimension ids of the first factor
      */
     public static int[] computeLinearMap(AbstractFactor factor, int... dimensionIDs) {
         return computeLinearMap(computeIdToDimensionIndexMap(factor), factor.getDimensions(), dimensionIDs);

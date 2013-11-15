@@ -32,8 +32,8 @@ public class NetExamples {
      * 
      * </pre>
      * 
-     * so while this is an easy network, LBP should show some expected trouble with this. JunctionTree will merge a, b
-     * and c together to form a Clique
+     * so although this is an easy network, LBP should show some expected trouble with this. JunctionTree will merge a,
+     * b and c together to form a Clique
      * 
      * @return
      */

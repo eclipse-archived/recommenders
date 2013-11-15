@@ -10,8 +10,20 @@
  */
 package org.eclipse.recommenders.jayes.inference;
 
+import java.util.Map;
 
-@Deprecated
-public abstract class AbstractInferer extends AbstractInferrer {
+import org.eclipse.recommenders.jayes.BayesNet;
+import org.eclipse.recommenders.jayes.BayesNode;
 
+public interface IBayesInferrer {
+
+    void setNetwork(BayesNet bayesNet);
+
+    void setEvidence(Map<BayesNode, String/* outcome */> evidence);
+
+    void addEvidence(BayesNode node, String outcome);
+
+    Map<BayesNode, String> getEvidence();
+
+    double[] getBeliefs(BayesNode node);
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jayes.io;
+package org.eclipse.recommenders.jayes.io;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
@@ -27,9 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
-import org.eclipse.recommenders.jayes.io.XDSLReader;
-import org.eclipse.recommenders.jayes.io.XDSLWriter;
-import org.eclipse.recommenders.jayes.io.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLWriter;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;

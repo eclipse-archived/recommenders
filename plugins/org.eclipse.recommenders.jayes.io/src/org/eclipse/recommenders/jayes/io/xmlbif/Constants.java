@@ -8,9 +8,9 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.internal.jayes.io.util;
+package org.eclipse.recommenders.jayes.io.xmlbif;
 
-public class XMLBIFConstants {
+class Constants {
 
     public static final String NAME = "NAME";
     public static final String DEFINITION = "DEFINITION";

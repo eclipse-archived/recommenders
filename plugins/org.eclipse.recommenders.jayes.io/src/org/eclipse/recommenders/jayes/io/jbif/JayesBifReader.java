@@ -8,7 +8,9 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.jayes.io;
+package org.eclipse.recommenders.jayes.io.jbif;
+
+import static org.eclipse.recommenders.jayes.io.jbif.Constants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetReader;
 
 import com.google.common.base.Charsets;
 import com.google.common.primitives.Doubles;
@@ -71,12 +74,12 @@ public class JayesBifReader implements IBayesNetReader {
 
     private void readHeader(ByteBuffer buffer) throws IOException {
         int magicNumber = buffer.getInt();
-        if (magicNumber != JayesBifWriter.MAGIC_NUMBER) {
+        if (magicNumber != MAGIC_NUMBER) {
             throw new IOException("Wrong magic number: " + Integer.toHexString(magicNumber).toUpperCase());
         }
 
         int formatVersion = buffer.getInt();
-        if (formatVersion != JayesBifWriter.FORMAT_VERSION) {
+        if (formatVersion != FORMAT_VERSION) {
             throw new IOException("Wrong JBIF format version: " + formatVersion);
         }
     }
