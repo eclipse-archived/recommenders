@@ -158,7 +158,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
             return Optional.<IProjectCoordinateAdvisor>of(new MavenPomPropertiesAdvisor());
         }
         if (advisorName.equals(JREExecutionEnvironmentAdvisor.class.getName())) {
-            return Optional.<IProjectCoordinateAdvisor>of(new MavenPomPropertiesAdvisor());
+            return Optional.<IProjectCoordinateAdvisor>of(new JREExecutionEnvironmentAdvisor());
         }
         if (advisorName.equals(JREReleaseFileAdvisor.class.getName())) {
             return Optional.<IProjectCoordinateAdvisor>of(new JREReleaseFileAdvisor());
