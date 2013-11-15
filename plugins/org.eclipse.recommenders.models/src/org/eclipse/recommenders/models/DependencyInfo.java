@@ -28,6 +28,7 @@ public class DependencyInfo {
     public static final String EXECUTION_ENVIRONMENT = "EXECUTION_ENVIRONMENT";
     public static final String EXECUTION_ENVIRONMENT_VERSION = "EXECUTION_ENVIRONMENT_VERSION";
     public static final String PROJECT_NAME = "PROJECT_NAME";
+    public static final String SURROUNDING_PROJECT_FILE = "SURROUNDING_PROJECT_FILE";
 
     private final File file;
     private final DependencyType type;
