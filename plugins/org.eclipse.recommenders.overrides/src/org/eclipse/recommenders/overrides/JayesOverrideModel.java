@@ -57,8 +57,6 @@ public class JayesOverrideModel implements IOverrideModel {
             observations.add(new OverrideObservation());
         }
         final JayesOverrideModelBuilder b = new JayesOverrideModelBuilder(type, observations);
-        b.createPatternsNode();
-        b.createMethodNodes();
         final IOverrideModel network = b.build();
         return Optional.of(network);
     }
