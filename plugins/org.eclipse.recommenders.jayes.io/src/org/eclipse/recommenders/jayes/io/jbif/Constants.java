@@ -8,17 +8,10 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.io.jbif;
 
-import org.eclipse.recommenders.jayes.BayesNet;
-import org.junit.Test;
+class Constants {
 
-public class BayesNetTest {
-
-    @Test(expected = NullPointerException.class)
-    public void testNamesMayNotBeNull() {
-        BayesNet net = new BayesNet();
-        net.createNode(null);
-    }
-
+    public static final int MAGIC_NUMBER = 0xBA7E5B1F;
+    public static final int FORMAT_VERSION = 1;
 }

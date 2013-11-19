@@ -35,7 +35,7 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeBuilder;
 import org.eclipse.recommenders.jayes.io.IBayesNetReader;
-import org.eclipse.recommenders.jayes.io.JayesBifReader;
+import org.eclipse.recommenders.jayes.io.jbif.JayesBifReader;
 import org.eclipse.recommenders.jayes.util.triangulation.MinDegree;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.IOUtils;

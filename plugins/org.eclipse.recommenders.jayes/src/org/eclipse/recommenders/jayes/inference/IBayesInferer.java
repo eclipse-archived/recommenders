@@ -10,20 +10,8 @@
  */
 package org.eclipse.recommenders.jayes.inference;
 
-import java.util.Map;
 
-import org.eclipse.recommenders.jayes.BayesNet;
-import org.eclipse.recommenders.jayes.BayesNode;
+@Deprecated
+public interface IBayesInferer extends IBayesInferrer {
 
-public interface IBayesInferer {
-
-    void setNetwork(BayesNet bayesNet);
-
-    void setEvidence(Map<BayesNode, String/* outcome */> evidence);
-
-    void addEvidence(BayesNode node, String outcome);
-
-    Map<BayesNode, String> getEvidence();
-
-    double[] getBeliefs(BayesNode node);
 }

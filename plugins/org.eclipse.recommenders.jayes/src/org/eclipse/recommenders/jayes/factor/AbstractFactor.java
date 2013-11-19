@@ -116,6 +116,7 @@ public abstract class AbstractFactor implements Cloneable {
      *            -1 for last dimension (default)
      * @return
      */
+    @Deprecated
     public double[] marginalizeAllBut(int sumDimensionID) {
         validateCut();
         if (sumDimensionID == -1) {

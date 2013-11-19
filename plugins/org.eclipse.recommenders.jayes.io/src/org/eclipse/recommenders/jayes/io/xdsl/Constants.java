@@ -8,9 +8,9 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.internal.jayes.io.util;
+package org.eclipse.recommenders.jayes.io.xdsl;
 
-public class XDSLConstants {
+class Constants {
 
     public static final String PROBABILITIES = "probabilities";
     public static final String PARENTS = "parents";

@@ -15,6 +15,7 @@ import java.util.Map;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.sampling.BasicSampler;
+import org.eclipse.recommenders.jayes.util.BayesNodeUtil;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 
 public class LikelihoodWeightedSampling extends AbstractInferer {
@@ -52,7 +53,7 @@ public class LikelihoodWeightedSampling extends AbstractInferer {
     private double computeEvidenceProbability(Map<BayesNode, String> sample) {
         double factor = 1.0;
         for (BayesNode n : evidence.keySet()) {
-            factor *= n.marginalize(sample)[n.getOutcomeIndex(evidence.get(n))];
+            factor *= BayesNodeUtil.getSubCpt(n, sample)[n.getOutcomeIndex(evidence.get(n))];
         }
         return factor;
     }

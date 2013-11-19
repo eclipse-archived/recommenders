@@ -8,15 +8,15 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.jayes.io;
+package org.eclipse.recommenders.jayes.io.xmlbif;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.DEFINITION;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.FOR;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.GIVEN;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.NAME;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.OUTCOME;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.TABLE;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.VARIABLE;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.DEFINITION;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.FOR;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.GIVEN;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.NAME;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.OUTCOME;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.TABLE;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.VARIABLE;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,13 +27,11 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
 /**
  * a Writer thats writes the XMLBIF v0.3 format (<a href="http://www.cs.cmu.edu/~fgcozman/Research/InterchangeFormat/"
  * >specification</a>)
- * 
- * @author Michael Kutschke
- * 
  */
 public class XMLBIFWriter implements IBayesNetWriter {
 
@@ -132,6 +130,5 @@ public class XMLBIFWriter implements IBayesNetWriter {
     @Override
     public void close() throws IOException {
         wrtr.close();
-
     }
 }

@@ -8,13 +8,9 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.jayes.io;
+package org.eclipse.recommenders.jayes.io.xdsl;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,6 +21,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
 public class XDSLWriter implements IBayesNetWriter {
 
@@ -91,7 +88,7 @@ public class XDSLWriter implements IBayesNetWriter {
                     + " has an empty conditional probability table");
         }
         int offset = bldr.length();
-        for (Number d : node.getFactor().getValues()) {
+        for (double d : node.getProbabilities()) {
             bldr.append(d);
             bldr.append(' ');
         }

@@ -106,12 +106,19 @@ public class BayesNode {
         }
     }
 
+    /**
+     * Marginalizes the conditional distribution with regard to the evidence. This only corresponds to any meaningful
+     * probability distribution if all parents are assigned a probability. This method is mostly used for sampling
+     * purposes.
+     * 
+     */
+    @Deprecated
     public double[] marginalize(final Map<BayesNode, String> evidence) {
         for (final BayesNode p : parents) {
             if (evidence.containsKey(p)) {
-                factor.select(p.getId(), p.getOutcomeIndex(evidence.get(p)));
+                getFactor().select(p.getId(), p.getOutcomeIndex(evidence.get(p)));
             } else {
-                factor.select(p.getId(), -1);
+                getFactor().select(p.getId(), -1);
             }
         }
         final double[] result = MathUtils.normalize(factor.marginalizeAllBut(-1));
