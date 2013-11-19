@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.launching.JavaRuntime.getVMInstall;
 import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
-import static org.eclipse.recommenders.models.DependencyInfo.SURROUNDING_PROJECT_FILE;
 
 import java.io.File;
 import java.util.Map;
@@ -29,11 +28,9 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public final class Dependencies {
@@ -80,16 +77,5 @@ public final class Dependencies {
         hints.put(PROJECT_NAME, project.getElementName());
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT, hints);
         return dependencyInfo;
-    }
-
-    public static ImmutableMap<String, String> createSurroundingProjectHint(IJavaProject project) {
-        ImmutableMap<String, String> hints;
-        File location = JdtUtils.getLocation(project).orNull();
-        if (location != null) {
-            hints = ImmutableMap.of(SURROUNDING_PROJECT_FILE, location.getAbsolutePath());
-        } else {
-            hints = ImmutableMap.of();
-        }
-        return hints;
     }
 }

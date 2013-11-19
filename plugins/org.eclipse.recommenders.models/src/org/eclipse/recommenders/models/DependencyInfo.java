@@ -24,12 +24,20 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * A {@code DependencyInfo} identifies a single compile-time dependency of a project. This dependency can be another
+ * project, a JAR file, or the Java Runtime Environment (JRE) itself. In all three cases, as distinguished by the
+ * dependency's {@link DependencyType}, the dependency has a single, canonical {@code File} associated with it. A
+ * {@code DependencyInfo} may also have any number of associated hints, which may help an
+ * {@link IProjectCoordinateAdvisor} in suggesting a {@link ProjectCoordinate} for the dependency in question. This
+ * hints are entirely optional, however. In particular, no two {@code DependencyInfo}s must be identical <em>except</em>
+ * for their associated hints.
+ */
 public class DependencyInfo {
 
     public static final String EXECUTION_ENVIRONMENT = "EXECUTION_ENVIRONMENT";
     public static final String EXECUTION_ENVIRONMENT_VERSION = "EXECUTION_ENVIRONMENT_VERSION";
     public static final String PROJECT_NAME = "PROJECT_NAME";
-    public static final String SURROUNDING_PROJECT_FILE = "SURROUNDING_PROJECT_FILE";
 
     private final File file;
     private final DependencyType type;

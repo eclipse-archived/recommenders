@@ -194,11 +194,7 @@ public class EclipseDependencyListener implements IDependencyListener {
 
     private DependencyInfo createDependencyInfoForJAR(final JarPackageFragmentRoot pfr) {
         File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr);
-
-        IJavaProject project = (IJavaProject) pfr.getAncestor(JAVA_PROJECT);
-
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR,
-                Dependencies.createSurroundingProjectHint(project));
+        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
         return dependencyInfo;
     }
 
