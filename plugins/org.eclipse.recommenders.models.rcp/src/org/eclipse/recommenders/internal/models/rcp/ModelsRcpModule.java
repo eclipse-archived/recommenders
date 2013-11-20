@@ -22,6 +22,7 @@ import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
@@ -34,8 +35,6 @@ import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.ui.IWorkbench;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +83,8 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     }
 
     private void createAndBindNamedFile(String fileName, String name) {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File stateLocation = Platform.getStateLocation(bundle).toFile();
+        File rootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+        File stateLocation = new File(rootLocation, ".recommenders");
         File file = new File(stateLocation, fileName);
         try {
             Files.createParentDirs(file);
