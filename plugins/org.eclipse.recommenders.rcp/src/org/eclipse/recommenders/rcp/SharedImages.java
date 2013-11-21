@@ -105,6 +105,7 @@ public final class SharedImages implements IDisposable {
         OBJ_BULLET_RED(obj16("bullet_red.png")),
         OBJ_BULLET_STAR(obj16("bullet_star.png")),
         OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")),
+        OBJ_LIGHTBULB(obj16("lightbulb.gif")),
         OBJ_JAR(obj16("jar.gif")),
         OBJ_JAVA_PROJECT(obj16("project.gif")),
         OBJ_JRE(obj16("jre.gif")),

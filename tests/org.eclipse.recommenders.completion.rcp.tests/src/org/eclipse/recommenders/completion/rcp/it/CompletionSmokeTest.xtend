@@ -455,7 +455,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
     new(T processor) {
         super(
             #{new SessionProcessorDescriptor("", "", "", null, 0, true, "", processor)}.toArray(
-                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), CallCompletionContextFunctions.registerDefaults( CompletionContextFunctions.defaultFunctions));
+                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), new SharedImages,  CallCompletionContextFunctions.registerDefaults( CompletionContextFunctions.defaultFunctions));
         this.processor = processor
     }
 
@@ -463,7 +463,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
         return processor
     }
 
-    override shouldReturnResults() {
+    override isContentAssistConfigurationOkay() {
         true;
     }
 }
