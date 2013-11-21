@@ -26,9 +26,11 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
-import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
+import org.eclipse.recommenders.internal.completion.rcp.ConfigureCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
+import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.SharedImages.Images;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
@@ -37,13 +39,15 @@ import com.google.common.collect.Sets;
 public class IntelligentCompletionProposalComputer extends ProcessableCompletionProposalComputer {
 
     private SessionProcessorDescriptor[] descriptors;
+    private SharedImages images;
 
     @Inject
     public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors,
-            ProcessableProposalFactory proposalFactory, IAstProvider astProvider,
+            ProcessableProposalFactory proposalFactory, IAstProvider astProvider, SharedImages images,
             Map<CompletionContextKey, ICompletionContextFunction> map) {
         super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, map);
         this.descriptors = descriptors;
+        this.images = images;
     }
 
     @Override
@@ -61,14 +65,15 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
     public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
             IProgressMonitor monitor) {
 
-        if (!shouldReturnResults()) {
-            return Collections.emptyList();
+        if (!isContentAssistConfigurationOkay()) {
+            ConfigureCompletionProposal config = new ConfigureCompletionProposal(images);
+            return Collections.<ICompletionProposal>singletonList(config);
         }
         return super.computeCompletionProposals(context, monitor);
     }
 
     @VisibleForTesting
-    protected boolean shouldReturnResults() {
+    protected boolean isContentAssistConfigurationOkay() {
         Set<String> cats = Sets.newHashSet(PreferenceConstants.getExcludedCompletionProposalCategories());
         if (cats.contains(RECOMMENDERS_ALL_CATEGORY_ID)) {
             // we are excluded on default tab?
@@ -76,10 +81,7 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
             // then make completions:
             return true;
         }
-
         if (isJdtAllEnabled(cats) || isMylynInstalledAndEnabled(cats)) {
-            // do not compute any recommendations and deactivate yourself in background
-            new DisableContentAssistCategoryJob(RECOMMENDERS_ALL_CATEGORY_ID).schedule(300);
             return false;
         }
         return true;
