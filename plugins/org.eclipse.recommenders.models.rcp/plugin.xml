@@ -101,5 +101,12 @@
 			name="SHA-1 Fingerrint (Maven Central)"
 			description="Assign project coordinates based on a dependency’s SHA-1 fingerprint. The fingerprint is searched for in the Maven Central repository. Note: This advisor performs a HTTP request. (JAR files only)">
 		</advisor>
+		<advisor id="org.eclipse.recommenders.models.rcp.advisors.sharedManualMappings"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor"
+			defaultPriority="100"
+			enabledByDefault="false"
+			name="Shared manual mappings"
+			description="Assign project coordinates based on a manual-mappings file shared through the model repository. (All dependencies)">
+		</advisor>
 	</extension>
 </plugin>

@@ -176,5 +176,4 @@ public class OsgiManifestStrategyTest {
         fileOutputStream.close();
         return projectFolder;
     }
-
 }
