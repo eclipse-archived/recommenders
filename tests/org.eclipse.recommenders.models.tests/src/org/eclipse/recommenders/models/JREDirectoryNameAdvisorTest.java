@@ -11,6 +11,7 @@
  */
 package org.eclipse.recommenders.models;
 
+import static org.eclipse.recommenders.tests.models.utils.FolderUtils.dir;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,14 +62,6 @@ public class JREDirectoryNameAdvisorTest {
 
     private static Object[] jre(File javaHome, String jreVersion) {
         return new Object[] { javaHome, jreVersion };
-    }
-
-    private static File dir(String... dirs) {
-        File file = File.listRoots()[0];
-        for (String dir : dirs) {
-            file = new File(file, dir);
-        }
-        return file;
     }
 
     @Test

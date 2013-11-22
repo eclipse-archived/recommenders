@@ -10,69 +10,107 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor.matchesSuffixPattern;
+import static com.google.common.base.Charsets.UTF_8;
+import static com.google.common.io.Files.append;
+import static org.eclipse.recommenders.models.DependencyType.JAR;
+import static org.eclipse.recommenders.tests.models.utils.FolderUtils.dir;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.io.File;
+import java.io.IOException;
 
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.rules.TemporaryFolder;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Optional;
 
-@RunWith(Parameterized.class)
 public class SharedManualMappingsAdvisorTest {
 
-    private final String path;
-    private final String suffixPattern;
-    private final boolean expected;
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
 
-    public SharedManualMappingsAdvisorTest(String path, String suffixPattern, boolean matches) {
-        this.path = path;
-        this.suffixPattern = suffixPattern;
-        expected = matches;
-    }
+    private File mappingsFile;
 
-    @Parameters(name = "\"{1}\" matches \"{0}\"? {2}!")
-    public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+    private SharedManualMappingsAdvisor sut;
 
-        final String path = "/home/user/workspace/project/lib/example.jar";
+    @Before
+    public void setUp() throws IOException {
+        mappingsFile = temp.newFile();
+        IModelRepository repository = mock(IModelRepository.class);
+        when(repository.resolve(eq(SharedManualMappingsAdvisor.MAPPINGS), anyBoolean())).thenReturn(
+                Optional.of(mappingsFile));
 
-        scenarios.add(match(path, "example.jar"));
-        scenarios.add(match(path, "*.jar"));
-        scenarios.add(match(path, "???????.jar"));
-        scenarios.add(mismatch(path, "?.jar"));
-
-        scenarios.add(match(path, "lib/example.jar"));
-        scenarios.add(match(path, "*/*.jar"));
-        scenarios.add(mismatch(path, "libs/*.jar"));
-
-        scenarios.add(match(path, "project/lib/example.jar"));
-        scenarios.add(mismatch(path, "workspace/lib/example.jar"));
-
-        scenarios.add(match(path, "home/user/workspace/project/lib/example.jar"));
-        scenarios.add(mismatch(path, "home/user/workspace/*/example.jar"));
-
-        scenarios.add(match(path, "/home/user/workspace/project/lib/example.jar"));
-
-        return scenarios;
-    }
-
-    private static Object[] match(String absolutePath, String suffixPattern) {
-        return new Object[] { absolutePath, suffixPattern, true };
-    }
-
-    private static Object[] mismatch(String absolutePath, String suffixPattern) {
-        return new Object[] { absolutePath, suffixPattern, false };
+        sut = new SharedManualMappingsAdvisor(repository);
     }
 
     @Test
-    public void testMatchesSuffixPattern() {
-        assertThat(matchesSuffixPattern(path, suffixPattern), is(expected));
+    public void testEmptyMappingsFile() throws IOException {
+        appendLine("");
+
+        Optional<ProjectCoordinate> suggestion = sut.doSuggest(jarDependency(dir("home", "user", "workspace",
+                "project", "lib", "example.jar")));
+
+        assertThat(suggestion.isPresent(), is(false));
+    }
+
+    @Test
+    public void testSingleEntryMappingsFile() throws IOException {
+        appendLine("example.jar=org.example:example:1.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut.doSuggest(jarDependency(dir("home", "user", "workspace",
+                "project", "lib", "example.jar")));
+
+        assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:example:1.0.0"))));
+    }
+
+    @Test
+    public void testMultiEntryMappingsFile() throws IOException {
+        appendLine("first.jar=org.example:first:1.0.0");
+        appendLine("second.jar=org.example:second:2.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "second.jar")));
+
+        assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:second:2.0.0"))));
+    }
+
+    @Test
+    public void testMismatch() throws IOException {
+        appendLine("mismatch.jar=org.example:mismatch:1.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
+
+        assertThat(suggestion.isPresent(), is(false));
+    }
+
+    @Test
+    public void testFirstMatchWins() throws IOException {
+        appendLine("*.jar=org.example:any:0.0.0");
+        appendLine("example.jar=org.example:example:1.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
+
+        assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:any:0.0.0"))));
+    }
+
+    private void appendLine(String line) throws IOException {
+        append(line + '\n', mappingsFile, UTF_8);
+    }
+
+    private DependencyInfo jarDependency(File file) {
+        return new DependencyInfo(file, JAR);
     }
 }
