@@ -17,7 +17,6 @@ public interface IDependencyListener {
     ImmutableSet<DependencyInfo> getDependenciesForProject(DependencyInfo project);
 
     ImmutableSet<DependencyInfo> getProjects();
-    
-    ImmutableSet<DependencyInfo> getDependencies();
 
+    ImmutableSet<DependencyInfo> getDependencies();
 }

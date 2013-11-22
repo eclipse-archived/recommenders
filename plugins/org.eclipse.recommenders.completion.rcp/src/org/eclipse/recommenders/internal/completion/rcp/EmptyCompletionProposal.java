@@ -34,7 +34,7 @@ public class EmptyCompletionProposal extends AbstractJavaCompletionProposal {
     public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
         // don't do anything. In particular do not call the super implementation.
     }
-    
+
     @Override
     protected boolean isValidPrefix(String prefix) {
         return true;

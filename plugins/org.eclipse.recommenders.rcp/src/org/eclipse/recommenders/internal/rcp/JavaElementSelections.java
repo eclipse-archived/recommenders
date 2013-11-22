@@ -16,7 +16,7 @@ import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeRoot;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.HashMap;
-import java.util.Map; 
+import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ISourceRange;

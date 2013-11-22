@@ -31,7 +31,7 @@ public class ModelsRcpPreferences {
     public boolean autoDownloadEnabled;
 
     public String[] remotes;
-    
+
     public String advisorIds;
 
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
@@ -46,7 +46,7 @@ public class ModelsRcpPreferences {
             bus.post(new ModelRepositoryUrlChangedEvent());
         }
     }
-    
+
     @Inject
     void setAdvisorIds(@Preference(Constants.P_ADVISOR_LIST_SORTED) String advisorIds) throws Exception {
         this.advisorIds = advisorIds;

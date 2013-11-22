@@ -92,15 +92,15 @@ public final class SharedImages implements IDisposable {
 
     public static enum Images implements ImageResource {
         // @formatter:off
-        ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")), 
-        ELCL_DELETE(elcl16("delete.gif")), 
-        ELCL_EXPAND_ALL(elcl16("expandall.gif")), 
+        ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")),
+        ELCL_DELETE(elcl16("delete.gif")),
+        ELCL_EXPAND_ALL(elcl16("expandall.gif")),
         ELCL_REFRESH(elcl16("refresh_tab.gif")),
-        ELCL_SYNCED(elcl16("synced.gif")), 
+        ELCL_SYNCED(elcl16("synced.gif")),
         OBJ_CHECK_GREEN(obj16("tick_small.png")),
         OBJ_CROSS_RED(obj16("cross_small.png")),
-        OBJ_BULLET_BLUE(obj16("bullet_blue.png")), 
-        OBJ_BULLET_GREEN(obj16("bullet_green.png")), 
+        OBJ_BULLET_BLUE(obj16("bullet_blue.png")),
+        OBJ_BULLET_GREEN(obj16("bullet_green.png")),
         OBJ_BULLET_ORANGE(obj16("bullet_orange.png")),
         OBJ_BULLET_RED(obj16("bullet_red.png")),
         OBJ_BULLET_STAR(obj16("bullet_star.png")),

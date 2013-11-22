@@ -317,7 +317,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     @Override
     public <T> Optional<T> get(CompletionContextKey<T> key) {
         // if the key is in already, the value was already computed. May be null though:
-        if (data.containsKey(key)) {// data.remove(key)
+        if (data.containsKey(key)) { // data.remove(key)
             return fromNullable((T) data.get(key));
         }
         // if it's not yet in, try computing it using a context-function
