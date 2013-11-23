@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
@@ -193,12 +194,13 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
                 type = (IType) enclosingElement;
             } else if (enclosingElement instanceof IField) {
                 type = ((IField) enclosingElement).getDeclaringType();
+            } else if (enclosingElement instanceof IMethod) {
+                type = ((IMethod) enclosingElement).getDeclaringType();
             }
             if (type != null) {
                 return postConstruct(ProcessableMethodDeclarationCompletionProposal.newProposal(coreProposal, type,
                         uiProposal.getRelevance()));
             }
-
         } catch (CoreException e) {
             throw Throwables.propagate(e);
         }
