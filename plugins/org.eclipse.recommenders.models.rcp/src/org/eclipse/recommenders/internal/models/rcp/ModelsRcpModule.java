@@ -16,22 +16,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvisor;
 import org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor;
-import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.ui.IWorkbench;
@@ -49,7 +49,7 @@ import com.google.inject.name.Names;
 @SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule implements Module {
 
-    public static final String IDENTIFIED_PACKAGE_FRAGMENT_ROOTS = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
+    public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
     public static final String INDEX_BASEDIR = "INDEX_BASEDIR";
     public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS";
@@ -78,7 +78,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         // configure caching
         bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
         createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS);
-        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PACKAGE_FRAGMENT_ROOTS);
+        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PROJECT_COORDINATES);
 
     }
 
@@ -139,10 +139,13 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    public ProjectCoordinateAdvisorService provideMappingProvider(List<IProjectCoordinateAdvisor> advisors) {
-        ProjectCoordinateAdvisorService mappingProvider = new ProjectCoordinateAdvisorService();
-        mappingProvider.setAdvisors(advisors);
-        return mappingProvider;
+    public IProjectCoordinateAdvisorService provideMappingProvider(List<IProjectCoordinateAdvisor> advisors,
+            @Named(IDENTIFIED_PROJECT_COORDINATES) File persistenceFile, EventBus bus) {
+        // Setup will be moved to EclipseProjectCoordinateAdvisorService in a later change.
+        EclipseProjectCoordinateAdvisorService advisorService = new EclipseProjectCoordinateAdvisorService(
+                persistenceFile, bus);
+        advisorService.setAdvisors(advisors);
+        return advisorService;
     }
 
     @Provides
