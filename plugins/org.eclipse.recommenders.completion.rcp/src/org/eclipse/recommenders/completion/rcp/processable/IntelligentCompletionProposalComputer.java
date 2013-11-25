@@ -27,6 +27,7 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
+import org.eclipse.recommenders.internal.completion.rcp.DiscoverCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
@@ -76,6 +77,10 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
             res.add(new EmptyCompletionProposal(offset));
             res.add(config);
             return res;
+        }
+        if (res.isEmpty()) {
+            res.add(new EmptyCompletionProposal(offset));
+            res.add(new DiscoverCompletionProposal(images, offset));
         }
         return res;
     }
