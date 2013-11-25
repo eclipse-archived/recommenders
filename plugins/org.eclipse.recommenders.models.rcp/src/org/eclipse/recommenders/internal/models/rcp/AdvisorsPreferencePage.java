@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.FieldEditor;
@@ -97,7 +98,8 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
             GridDataFactory.swtDefaults().span(numColumns, 1).applyTo(control);
 
             tableViewer = getTableControl(parent);
-            GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).span(numColumns - 1, 1).applyTo(tableViewer.getTable());
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override
@@ -107,7 +109,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
             });
 
             buttonBox = getButtonControl(parent);
-            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).applyTo(buttonBox);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonBox);
         }
 
         private void updateButtonStatus() {
@@ -140,19 +142,24 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
             Composite box = new Composite(parent, SWT.NONE);
             GridLayoutFactory.fillDefaults().applyTo(box);
 
-            upButton = new Button(box, SWT.PUSH);
-            upButton.setText(PREFPAGE_ADVISOR_BUTTON_UP);
-            upButton.setEnabled(false);
-            upButton.addSelectionListener(new MoveSelectionListener(UP));
-            GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(upButton);
-
-            downButton = new Button(box, SWT.PUSH);
-            downButton.setText(PREFPAGE_ADVISOR_BUTTON_DOWN);
-            downButton.setEnabled(false);
-            downButton.addSelectionListener(new MoveSelectionListener(DOWN));
-            GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(downButton);
+            upButton = createUpDownButton(box, PREFPAGE_ADVISOR_BUTTON_UP, UP);
+            downButton = createUpDownButton(box, PREFPAGE_ADVISOR_BUTTON_DOWN, DOWN);
 
             return box;
+        }
+
+        private Button createUpDownButton(Composite box, String text, int mode) {
+            Button button = new Button(box, SWT.PUSH);
+            button.setText(text);
+            button.setEnabled(false);
+            button.addSelectionListener(new MoveSelectionListener(mode));
+
+            int widthHint = Math.max(convertHorizontalDLUsToPixels(button, IDialogConstants.BUTTON_WIDTH),
+                    button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+
+            GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).hint(widthHint, SWT.DEFAULT).applyTo(button);
+
+            return button;
         }
 
         private CheckboxTableViewer getTableControl(Composite parent) {
@@ -164,14 +171,14 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
                     AdvisorDescriptor descriptor = cast(element);
                     return descriptor.getName();
                 }
-                
+
                 @Override
                 public String getToolTipText(Object element) {
                     AdvisorDescriptor descriptor = cast(element);
                     return descriptor.getDescription();
                 }
             });
-            ColumnViewerToolTipSupport.enableFor(tableViewer); 
+            ColumnViewerToolTipSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new ArrayContentProvider());
             return tableViewer;
         }
@@ -185,7 +192,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
         private void load(String value) {
             List<AdvisorDescriptor> input = AdvisorDescriptors.load(value, AdvisorDescriptors.getRegisteredAdvisors());
             List<AdvisorDescriptor> checkedElements = Lists.newArrayList();
-            for (AdvisorDescriptor descriptor :input) {
+            for (AdvisorDescriptor descriptor : input) {
                 if (descriptor.isEnabled()) {
                     checkedElements.add(descriptor);
                 }
