@@ -6,6 +6,10 @@
    <feature id="org.eclipse.recommenders.rcp.feature.source" version="0.0.0">
       <category name="sources"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.rcp" version="0.0.0">
+      <category name="migration"/>
+   </feature>
    <category-def name="main" label="Code Recommenders"/>
    <category-def name="sources" label="Sources"/>
+   <category-def name="migration" label="Migration Features (do not install manually)"/>
 </site>
