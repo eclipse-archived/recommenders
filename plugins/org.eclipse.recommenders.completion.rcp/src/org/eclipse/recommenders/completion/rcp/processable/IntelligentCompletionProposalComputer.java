@@ -27,10 +27,10 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
-import org.eclipse.recommenders.internal.completion.rcp.ConfigureCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
-import org.eclipse.recommenders.rcp.SharedImages.Images;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
@@ -64,12 +64,20 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
     @Override
     public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
             IProgressMonitor monitor) {
-
+        List<ICompletionProposal> res = super.computeCompletionProposals(context, monitor);
+        int offset = context.getInvocationOffset();
         if (!isContentAssistConfigurationOkay()) {
-            ConfigureCompletionProposal config = new ConfigureCompletionProposal(images);
-            return Collections.<ICompletionProposal>singletonList(config);
+            EnableCompletionProposal config = new EnableCompletionProposal(images, offset);
+            if (!res.isEmpty()) {
+                // Return the configure proposal:
+                return Collections.<ICompletionProposal>singletonList(config);
+            }
+            // make sure that we have at least two proposal to prevent auto-apply
+            res.add(new EmptyCompletionProposal(offset));
+            res.add(config);
+            return res;
         }
-        return super.computeCompletionProposals(context, monitor);
+        return res;
     }
 
     @VisibleForTesting
