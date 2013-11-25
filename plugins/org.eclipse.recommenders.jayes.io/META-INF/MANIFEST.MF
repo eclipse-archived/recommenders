@@ -11,8 +11,7 @@ Import-Package: com.google.common.base;version="[14.0.0,15.0.0)",
  com.google.common.primitives;version="[14.0.0,15.0.0)",
  org.apache.commons.io;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)"
-Export-Package: org.eclipse.recommenders.commons.bayesnet,
- org.eclipse.recommenders.jayes.io,
- org.eclipse.recommenders.jayes.io.jbif,
- org.eclipse.recommenders.jayes.io.xdsl,
- org.eclipse.recommenders.jayes.io.xmlbif
+Export-Package: org.eclipse.recommenders.commons.bayesnet,org.eclipse.
+ recommenders.jayes.io,org.eclipse.recommenders.jayes.io.jbif,org.ecli
+ pse.recommenders.jayes.io.xdsl,org.eclipse.recommenders.jayes.io.xmlb
+ if
