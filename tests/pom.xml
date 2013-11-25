@@ -21,6 +21,7 @@
 		<module>org.eclipse.recommenders.jayes.transformation.tests</module>
 		<module>org.eclipse.recommenders.models.tests</module>
 		<module>org.eclipse.recommenders.models.rcp.tests</module>
+		<module>org.eclipse.recommenders.overrides.tests</module>
 		<module>org.eclipse.recommenders.rcp.tests</module>
 		<module>org.eclipse.recommenders.tests</module>
 		<module>org.eclipse.recommenders.utils.tests</module>
