@@ -10,16 +10,11 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.util.triangulation;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.recommenders.jayes.util.Graph;
-import org.eclipse.recommenders.jayes.util.Graph.Edge;
 
 /**
  * Quotient graphs are special data structures for the perfect elimination order problem. Their size stays in O(|E|)
@@ -33,49 +28,48 @@ public class QuotientGraph {
     private final Graph variables;
     private final Graph variablesToElements;
 
-    private final Map<Integer, Set<Integer>> neighborCache = new HashMap<Integer, Set<Integer>>();
+    private final Set<Integer>[] neighborCache;
 
+    @SuppressWarnings("unchecked")
     public QuotientGraph(Graph graph) {
         this.variables = graph.clone();
         this.variablesToElements = new Graph();
         variablesToElements.initialize(variables.getAdjacency().size());
+        neighborCache = new Set[variables.getAdjacency().size()];
     }
 
     public Set<Integer> getNeighbors(int variable) {
-        if (neighborCache.containsKey(variable)) {
-            return neighborCache.get(variable);
+        if (neighborCache[variable] != null) {
+            return neighborCache[variable];
         }
         Set<Integer> neighbors = new HashSet<Integer>();
-        neighbors.addAll(getNeighbors(variables, variable));
-        for (Edge e : variablesToElements.getIncidentEdges(variable)) {
-            neighbors.addAll(getNeighbors(variablesToElements, e.getSecond()));
+        neighbors.addAll(variables.getNeighbors(variable));
+        for (Integer neighbor : variablesToElements.getNeighbors(variable)) {
+            neighbors.addAll(variablesToElements.getNeighbors(neighbor));
         }
         neighbors.remove(variable);
-        neighborCache.put(variable, Collections.unmodifiableSet(neighbors));
-        return Collections.unmodifiableSet(neighbors);
+        neighborCache[variable] = Collections.unmodifiableSet(neighbors);
+        return neighborCache[variable];
     }
 
     public void eliminate(int variable) {
-        for (int elementNeighbor : getNeighbors(variablesToElements, variable)) { // merge eliminated nodes
+        Set<Integer> neighbors = getNeighbors(variable);
+        for (int elementNeighbor : variablesToElements.getNeighbors(variable)) { // merge eliminated nodes
             merge(variablesToElements, variable, elementNeighbor);
         }
-        for (Edge e : variables.getIncidentEdges(variable)) { // interconnect neigbors
-            variablesToElements.addEdge(variable, e.getSecond());
+        for (Integer neighbor : variables.getNeighbors(variable)) { // interconnect neigbors
+            variablesToElements.addEdge(variable, neighbor);
         }
         virtualRemoveNode(variables, variable);
-        neighborCache.clear();
-    }
 
-    private List<Integer> getNeighbors(Graph graph, int var) {
-        List<Integer> elementNeighbors = new ArrayList<Integer>();
-        for (Edge e : graph.getIncidentEdges(var)) {
-            elementNeighbors.add(e.getSecond());
+        neighborCache[variable] = null;
+        for (Integer neighbor : neighbors) {
+            neighborCache[neighbor] = null;
         }
-        return elementNeighbors;
     }
 
     public void merge(Graph graph, int v1, int v2) {
-        for (int e2 : getNeighbors(graph, v2)) {
+        for (int e2 : graph.getNeighbors(v2)) {
             if (v1 != e2) {
                 graph.addEdge(v1, e2);
             }

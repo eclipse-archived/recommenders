@@ -171,10 +171,10 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     private void recursiveSkipCollection(final int node, final Set<Integer> visited, final Set<Integer> skipped) {
         visited.add(node);
         boolean areAllDescendantsSkipped = true;
-        for (final Edge e : junctionTree.getIncidentEdges(node)) {
-            if (!visited.contains(e.getSecond())) {
-                recursiveSkipCollection(e.getSecond(), visited, skipped);
-                if (!skipped.contains(e.getSecond())) {
+        for (final int neighbor : junctionTree.getNeighbors(node)) {
+            if (!visited.contains(neighbor)) {
+                recursiveSkipCollection(neighbor, visited, skipped);
+                if (!skipped.contains(neighbor)) {
                     areAllDescendantsSkipped = false;
                 }
             }
@@ -204,10 +204,10 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     private void recursiveSkipDistribution(final int node, final Set<Integer> visited, final Set<Integer> skipped) {
         visited.add(node);
         boolean areAllDescendantsSkipped = true;
-        for (final Edge e : junctionTree.getIncidentEdges(node)) {
-            if (!visited.contains(e.getSecond())) {
-                recursiveSkipDistribution(e.getSecond(), visited, skipped);
-                if (!skipped.contains(e.getSecond())) {
+        for (final Integer e : junctionTree.getNeighbors(node)) {
+            if (!visited.contains(e)) {
+                recursiveSkipDistribution(e, visited, skipped);
+                if (!skipped.contains(e)) {
                     areAllDescendantsSkipped = false;
                 }
             }
@@ -340,7 +340,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         queryFactors = new AbstractFactor[numNodes];
         preparedQueries = new int[numNodes][];
         sepSets = new HashMap<Edge, AbstractFactor>();
-        preparedMultiplications = new IdentityHashMap<Graph.Edge, int[]>();
+        preparedMultiplications = new IdentityHashMap<Edge, int[]>();
         initializations = new ArrayList<Pair<AbstractFactor, IArrayWrapper>>();
         clustersHavingEvidence = new HashSet<Integer>();
         isObserved = new boolean[numNodes];

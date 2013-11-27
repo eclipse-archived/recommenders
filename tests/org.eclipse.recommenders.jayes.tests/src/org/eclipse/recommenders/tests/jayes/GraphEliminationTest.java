@@ -10,10 +10,10 @@
  ******************************************************************************/
 package org.eclipse.recommenders.tests.jayes;
 
+import static org.eclipse.recommenders.tests.jayes.GraphTest.createTestGraph;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -61,16 +61,6 @@ public class GraphEliminationTest {
         assertThat(fourth, is(Arrays.asList(2)));
 
         assertFalse(it.hasNext()); // sanity check
-    }
-
-    public Graph createTestGraph() {
-        Graph graph = new Graph();
-        graph.initialize(4);
-        graph.addEdge(0, 1);
-        graph.addEdge(1, 3);
-        graph.addEdge(3, 0);
-        graph.addEdge(0, 2);
-        return graph;
     }
 
     @Test
