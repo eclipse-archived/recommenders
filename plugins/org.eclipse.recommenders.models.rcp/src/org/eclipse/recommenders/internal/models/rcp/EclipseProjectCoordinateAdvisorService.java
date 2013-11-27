@@ -27,6 +27,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -49,6 +50,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
@@ -61,6 +63,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
     private final ProjectCoordinateAdvisorService delgate;
+    private final ModelsRcpPreferences prefs;
     private final LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> projectCoordianteCache;
 
     private final File persistenceFile;
@@ -72,8 +75,9 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
 
     @Inject
     public EclipseProjectCoordinateAdvisorService(@Named(IDENTIFIED_PROJECT_COORDINATES) File persistenceFile,
-            EventBus bus) {
+            EventBus bus, ModelsRcpPreferences prefs) {
         bus.register(this);
+        this.prefs = prefs;
         this.delgate = new ProjectCoordinateAdvisorService();
         this.persistenceFile = persistenceFile;
         this.cacheGson = new GsonBuilder()
@@ -82,6 +86,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
                 .registerTypeAdapter(Optional.class, new OptionalJsonTypeAdapter<ProjectCoordinate>())
                 .enableComplexMapKeySerialization().serializeNulls().create();
         projectCoordianteCache = createCache();
+        configureAdvisorList(prefs.advisorConfiguration);
     }
 
     private LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> createCache() {
@@ -93,6 +98,26 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
                         return delgate.suggest(info);
                     }
                 });
+    }
+
+    private void configureAdvisorList(String advisorConfiguration) {
+        setAdvisors(provideAdvisors(advisorConfiguration));
+    }
+
+    private List<IProjectCoordinateAdvisor> provideAdvisors(String advisorConfiguration) {
+        List<AdvisorDescriptor> registeredAdvisors = AdvisorDescriptors.getRegisteredAdvisors();
+        List<AdvisorDescriptor> loadedDescriptors = AdvisorDescriptors.load(advisorConfiguration, registeredAdvisors);
+        List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(loadedDescriptors.size());
+        for (AdvisorDescriptor descriptor : loadedDescriptors) {
+            try {
+                if (descriptor.isEnabled()) {
+                    advisors.add(descriptor.createAdvisor());
+                }
+            } catch (CoreException e) {
+                LOG.error("Exception during creation of Advisor with id: " + descriptor.getId(), e);
+            }
+        }
+        return advisors;
     }
 
     @Override
@@ -147,6 +172,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     @Subscribe
     public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
         projectCoordianteCache.invalidateAll();
+        configureAdvisorList(prefs.advisorConfiguration);
     }
 
     @Subscribe

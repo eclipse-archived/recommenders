@@ -14,21 +14,17 @@ import static com.google.inject.Scopes.SINGLETON;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvisor;
 import org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor;
@@ -38,7 +34,6 @@ import org.eclipse.ui.IWorkbench;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
@@ -62,6 +57,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         requestStaticInjection(Dependencies.class);
         //
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(SINGLETON);
+        bind(IProjectCoordinateAdvisorService.class).to(EclipseProjectCoordinateAdvisorService.class).in(SINGLETON);
 
         // bind all clients of IRecommendersModelIndex or its super interface IModelArchiveCoordinateProvider to a
         // single instance in Eclipse:
@@ -106,23 +102,6 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     }
 
     @Provides
-    public List<IProjectCoordinateAdvisor> provideAdvisors(ModelsRcpPreferences preferences) {
-        List<AdvisorDescriptor> registeredAdvisors = AdvisorDescriptors.getRegisteredAdvisors();
-        List<AdvisorDescriptor> loadedDescriptors = AdvisorDescriptors.load(preferences.advisorIds, registeredAdvisors);
-        List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(loadedDescriptors.size());
-        for (AdvisorDescriptor descriptor : loadedDescriptors) {
-            try {
-                if (descriptor.isEnabled()) {
-                    advisors.add(descriptor.createAdvisor());
-                }
-            } catch (CoreException e) {
-                continue; // skip
-            }
-        }
-        return advisors;
-    }
-
-    @Provides
     public ModelIndexBundleSymbolicNameAdvisor provideModelIndexBundleSymbolicNameAdvisor(IModelIndex index) {
         return new ModelIndexBundleSymbolicNameAdvisor(index);
     }
@@ -135,17 +114,6 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     @Provides
     public SharedManualMappingsAdvisor provideWorkspaceMappingsAdvisor(IModelRepository repository) {
         return new SharedManualMappingsAdvisor(repository);
-    }
-
-    @Singleton
-    @Provides
-    public IProjectCoordinateAdvisorService provideMappingProvider(List<IProjectCoordinateAdvisor> advisors,
-            @Named(IDENTIFIED_PROJECT_COORDINATES) File persistenceFile, EventBus bus) {
-        // Setup will be moved to EclipseProjectCoordinateAdvisorService in a later change.
-        EclipseProjectCoordinateAdvisorService advisorService = new EclipseProjectCoordinateAdvisorService(
-                persistenceFile, bus);
-        advisorService.setAdvisors(advisors);
-        return advisorService;
     }
 
     @Provides
