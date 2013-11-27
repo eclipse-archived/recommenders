@@ -51,6 +51,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
@@ -72,6 +73,8 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     @SuppressWarnings("serial")
     private final Type cacheType = new TypeToken<Map<DependencyInfo, Optional<ProjectCoordinate>>>() {
     }.getType();
+
+    private Map<IProjectCoordinateAdvisor, AdvisorDescriptor> descriptors = Maps.newHashMap();
 
     @Inject
     public EclipseProjectCoordinateAdvisorService(@Named(IDENTIFIED_PROJECT_COORDINATES) File persistenceFile,
@@ -105,19 +108,27 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     }
 
     private List<IProjectCoordinateAdvisor> provideAdvisors(String advisorConfiguration) {
+        Map<IProjectCoordinateAdvisor, AdvisorDescriptor> newDescriptors = Maps.newHashMap();
         List<AdvisorDescriptor> registeredAdvisors = AdvisorDescriptors.getRegisteredAdvisors();
         List<AdvisorDescriptor> loadedDescriptors = AdvisorDescriptors.load(advisorConfiguration, registeredAdvisors);
         List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(loadedDescriptors.size());
         for (AdvisorDescriptor descriptor : loadedDescriptors) {
             try {
                 if (descriptor.isEnabled()) {
-                    advisors.add(descriptor.createAdvisor());
+                    IProjectCoordinateAdvisor advisor = descriptor.createAdvisor();
+                    advisors.add(advisor);
+                    newDescriptors.put(advisor, descriptor);
                 }
             } catch (CoreException e) {
                 LOG.error("Exception during creation of Advisor with id: " + descriptor.getId(), e);
             }
         }
+        descriptors = newDescriptors;
         return advisors;
+    }
+
+    public AdvisorDescriptor getDescriptor(IProjectCoordinateAdvisor advisor) {
+        return descriptors.get(advisor);
     }
 
     @Override
