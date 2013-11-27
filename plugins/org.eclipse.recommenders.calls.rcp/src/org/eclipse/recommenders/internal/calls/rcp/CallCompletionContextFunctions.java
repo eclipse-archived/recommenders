@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
 
@@ -29,11 +30,8 @@ import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
-import com.google.common.collect.ImmutableSet;
-
 @SuppressWarnings({ "rawtypes", "restriction" })
 public class CallCompletionContextFunctions {
-    private static final ImmutableSet<String> THIS_NAMES = ImmutableSet.of("", "this", "super");
     // TODO need to rename
     public static final CompletionContextKey<IType> RECEIVER_TYPE2 = new CompletionContextKey<IType>();
     public static final CompletionContextKey<IMethodName> RECEIVER_DEF_BY = new CompletionContextKey<IMethodName>();
@@ -105,7 +103,7 @@ public class CallCompletionContextFunctions {
         private IType findReceiver(IRecommendersCompletionContext context) throws Exception {
             IType receiverType = context.getReceiverType().orNull();
             String receiverName = context.getReceiverName();
-            if (receiverType == null && THIS_NAMES.contains(receiverName)) {
+            if (isExplicitThis(receiverName) || isImplicitThis(receiverType, receiverName)) {
                 final IMethod m = context.getEnclosingMethod().orNull();
                 if (m == null || JdtFlags.isStatic(m)) {
                     return receiverType;
@@ -115,6 +113,14 @@ public class CallCompletionContextFunctions {
                 receiverType = hierarchy.getSuperclass(type);
             }
             return receiverType;
+        }
+
+        private boolean isImplicitThis(IType receiverType, String receiverName) {
+            return receiverType == null && isEmpty(receiverName);
+        }
+
+        private boolean isExplicitThis(String receiverName) {
+            return "this".equals(receiverName);
         }
     }
 }
