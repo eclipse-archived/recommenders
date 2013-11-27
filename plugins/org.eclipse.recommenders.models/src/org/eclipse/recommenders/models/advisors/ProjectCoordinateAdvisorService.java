@@ -16,14 +16,14 @@ import java.util.List;
 
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisorRegistry;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-public class ProjectCoordinateAdvisorService implements IProjectCoordinateAdvisorRegistry, IProjectCoordinateAdvisor {
+public class ProjectCoordinateAdvisorService implements IProjectCoordinateAdvisorService {
 
     private List<IProjectCoordinateAdvisor> advisors = Lists.newArrayList();
 

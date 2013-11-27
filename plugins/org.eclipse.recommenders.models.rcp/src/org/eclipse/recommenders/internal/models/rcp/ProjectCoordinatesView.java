@@ -63,8 +63,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -100,7 +100,7 @@ public class ProjectCoordinatesView extends ViewPart {
     private ContentProvider contentProvider;
 
     private final EclipseDependencyListener dependencyListener;
-    private final ProjectCoordinateAdvisorService pcAdvisors;
+    private final IProjectCoordinateAdvisorService pcAdvisorsService;
     private ManualProjectCoordinateAdvisor manualPcAdvisor;
 
     private Table table;
@@ -113,10 +113,10 @@ public class ProjectCoordinatesView extends ViewPart {
 
     @Inject
     public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
-            final ProjectCoordinateAdvisorService pcAdvisors,
+            final IProjectCoordinateAdvisorService pcAdvisorService,
             final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus, SharedImages images) {
         this.dependencyListener = dependencyListener;
-        this.pcAdvisors = pcAdvisors;
+        this.pcAdvisorsService = pcAdvisorService;
         manualPcAdvisor = manualProjectCoordinateAdvisor;
         this.bus = bus;
         bus.register(this);
@@ -283,7 +283,7 @@ public class ProjectCoordinatesView extends ViewPart {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 monitor.beginTask("Resolving dependencies", dependencyInfos.size());
-                strategies = pcAdvisors.getAdvisors();
+                strategies = pcAdvisorsService.getAdvisors();
                 for (DependencyInfo dependency : dependencyInfos) {
                     monitor.subTask("Resolving: " + dependency.getFile().getName());
                     for (IProjectCoordinateAdvisor strategy : strategies) {
@@ -446,7 +446,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
 
             private boolean isManualMapping(Collection<Optional<ProjectCoordinate>> pcs) {
-                int indexOfManualMapping = pcAdvisors.getAdvisors().indexOf(manualPcAdvisor);
+                int indexOfManualMapping = pcAdvisorsService.getAdvisors().indexOf(manualPcAdvisor);
                 Optional<ProjectCoordinate> opc = get(pcs, indexOfManualMapping);
                 return opc.isPresent();
             }

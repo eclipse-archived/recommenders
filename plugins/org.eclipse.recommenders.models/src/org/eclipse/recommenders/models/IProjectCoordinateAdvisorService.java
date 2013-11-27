@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * Registry for managing advisors that suggest {@link ProjectCoordinate}s for {@link DependencyInfo}s.
  */
-public interface IProjectCoordinateAdvisorRegistry {
+public interface IProjectCoordinateAdvisorService extends IProjectCoordinateAdvisor {
 
     /**
      * Returns all advisors this registry is configured with.
