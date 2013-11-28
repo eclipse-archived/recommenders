@@ -25,7 +25,7 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.factor.AbstractFactor;
 import org.eclipse.recommenders.jayes.factor.DenseFactor;
 import org.eclipse.recommenders.jayes.factor.arraywrapper.DoubleArrayWrapper;
-import org.eclipse.recommenders.jayes.inference.AbstractInferer;
+import org.eclipse.recommenders.jayes.inference.AbstractInferrer;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.jayes.util.Pair;
 
@@ -34,9 +34,8 @@ import org.eclipse.recommenders.jayes.util.Pair;
  * the other algorithms on simple networks.
  * 
  * @author Michael Kutschke
- * 
  */
-public class LoopyBeliefPropagation extends AbstractInferer {
+public class LoopyBeliefPropagation extends AbstractInferrer {
 
     /**
      * the Factor/Node Graph is represented as bipartite Graph, with nodes being edge sources and factors being the edge

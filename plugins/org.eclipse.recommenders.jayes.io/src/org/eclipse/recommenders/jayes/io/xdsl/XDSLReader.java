@@ -11,11 +11,7 @@
 package org.eclipse.recommenders.jayes.io.xdsl;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.recommenders.jayes.io.xdsl.Constants.CPT;
-import static org.eclipse.recommenders.jayes.io.xdsl.Constants.ID;
-import static org.eclipse.recommenders.jayes.io.xdsl.Constants.PARENTS;
-import static org.eclipse.recommenders.jayes.io.xdsl.Constants.PROBABILITIES;
-import static org.eclipse.recommenders.jayes.io.xdsl.Constants.STATE;
+import static org.eclipse.recommenders.jayes.io.xdsl.Constants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,7 +39,6 @@ import com.google.common.primitives.Doubles;
 
 public class XDSLReader implements IBayesNetReader {
 
-    private boolean legacyMode = false;
     private final InputStream str;
 
     public XDSLReader(InputStream str) {
@@ -82,9 +77,7 @@ public class XDSLReader implements IBayesNetReader {
 
         Node smileNode = doc.getElementsByTagName("smile").item(0);
         String networkName = getId(smileNode);
-        if (!legacyMode) {
-            net.setName(networkName);
-        }
+        net.setName(networkName);
 
         intializeNodes(doc, net);
         initializeNodeOutcomes(doc, net);
@@ -95,13 +88,11 @@ public class XDSLReader implements IBayesNetReader {
         return net;
     }
 
-    @SuppressWarnings("deprecation")
     private void intializeNodes(Document doc, BayesNet net) {
         NodeList nodelist = doc.getElementsByTagName(CPT);
 
         for (int i = 0; i < nodelist.getLength(); i++) {
-            BayesNode bNode = new BayesNode(getId(nodelist.item(i)));
-            net.addNode(bNode);
+            net.createNode(getId(nodelist.item(i)));
         }
 
     }
@@ -160,14 +151,6 @@ public class XDSLReader implements IBayesNetReader {
 
             bNode.setProbabilities(Doubles.toArray(probabilities));
         }
-    }
-
-    public boolean isLegacyMode() {
-        return legacyMode;
-    }
-
-    public void setLegacyMode(boolean legacyMode) {
-        this.legacyMode = legacyMode;
     }
 
     public void close() throws IOException {

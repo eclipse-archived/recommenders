@@ -14,7 +14,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public class LBPTest {
         BayesNode b = net.getNode("b");
         BayesNode c = net.getNode("c");
 
-        IBayesInferer sampler = new LoopyBeliefPropagation();
+        IBayesInferrer sampler = new LoopyBeliefPropagation();
         sampler.setNetwork(net);
         sampler.addEvidence(a, "false");
         sampler.addEvidence(b, "lu");

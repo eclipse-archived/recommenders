@@ -19,7 +19,7 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.factor.AbstractFactor;
 import org.eclipse.recommenders.jayes.factor.FactorFactory;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
@@ -34,12 +34,12 @@ public class JunctionTreeTest {
         BayesNode a = net.getNode("a");
         BayesNode b = net.getNode("b");
 
-        IBayesInferer inference = new JunctionTreeAlgorithm();
+        IBayesInferrer inference = new JunctionTreeAlgorithm();
         inference.addEvidence(a, "false");
         inference.addEvidence(b, "lu");
         inference.setNetwork(net);
 
-        IBayesInferer compare = new LoopyBeliefPropagation();
+        IBayesInferrer compare = new LoopyBeliefPropagation();
         compare.setNetwork(net);
         compare.addEvidence(a, "false");
         compare.addEvidence(b, "lu");
@@ -61,7 +61,7 @@ public class JunctionTreeTest {
         inferer.addEvidence(b, "lu");
         inferer.setNetwork(net);
 
-        IBayesInferer compare = new LoopyBeliefPropagation();
+        IBayesInferrer compare = new LoopyBeliefPropagation();
         compare.setNetwork(net);
         compare.addEvidence(a, "false");
         compare.addEvidence(b, "lu");
@@ -90,7 +90,7 @@ public class JunctionTreeTest {
         inferer.addEvidence(b, "lu");
         inferer.setNetwork(net);
 
-        IBayesInferer compare = new LoopyBeliefPropagation();
+        IBayesInferrer compare = new LoopyBeliefPropagation();
         compare.setNetwork(net);
         compare.addEvidence(a, "false");
         compare.addEvidence(b, "lu");
@@ -124,12 +124,12 @@ public class JunctionTreeTest {
         BayesNode a = net.getNode("a");
         BayesNode b = net.getNode("b");
 
-        IBayesInferer inference = new JunctionTreeAlgorithm();
+        IBayesInferrer inference = new JunctionTreeAlgorithm();
         inference.addEvidence(a, "false");
         inference.addEvidence(b, "true");
         inference.setNetwork(net);
 
-        IBayesInferer compare = new LoopyBeliefPropagation();
+        IBayesInferrer compare = new LoopyBeliefPropagation();
         compare.setNetwork(net);
         compare.addEvidence(a, "false");
         compare.addEvidence(b, "true");
@@ -146,12 +146,12 @@ public class JunctionTreeTest {
         BayesNode a = net.getNode("a");
         BayesNode b = net.getNode("b");
 
-        IBayesInferer inference = new JunctionTreeAlgorithm();
+        IBayesInferrer inference = new JunctionTreeAlgorithm();
         inference.addEvidence(a, "false");
         inference.addEvidence(b, "lu");
         inference.setNetwork(net);
 
-        IBayesInferer compare = new LoopyBeliefPropagation();
+        IBayesInferrer compare = new LoopyBeliefPropagation();
         compare.setNetwork(net);
         compare.addEvidence(a, "false");
         compare.addEvidence(b, "lu");

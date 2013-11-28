@@ -10,13 +10,7 @@
  */
 package org.eclipse.recommenders.jayes.io.xmlbif;
 
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.DEFINITION;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.FOR;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.GIVEN;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.NAME;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.OUTCOME;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.TABLE;
-import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.VARIABLE;
+import static org.eclipse.recommenders.jayes.io.xmlbif.Constants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,11 +43,7 @@ import com.google.common.primitives.Doubles;
  */
 public class XMLBIFReader implements IBayesNetReader {
 
-    /**
-     * when set to true, methods that were not available in version 1.0.0 will be skipped
-     */
-    private boolean legacyMode = false;
-    private InputStream in;
+    private final InputStream in;
 
     public XMLBIFReader(InputStream in) {
         this.in = in;
@@ -97,9 +87,7 @@ public class XMLBIFReader implements IBayesNetReader {
     private BayesNet readFromDocument(Document doc) {
         BayesNet net = new BayesNet();
 
-        if (!legacyMode) {
-            net.setName(doc.getElementsByTagName(NAME).item(0).getTextContent());
-        }
+        net.setName(doc.getElementsByTagName(NAME).item(0).getTextContent());
 
         initializeNodes(doc, net);
 
@@ -120,8 +108,6 @@ public class XMLBIFReader implements IBayesNetReader {
         return net;
     }
 
-    @SuppressWarnings("deprecation")
-    // the Jayes 1.0.0 API is used here intentionally
     private void initializeNodes(Document doc, BayesNet net) {
         XPathEvaluator xpath = getXPathEvaluator(doc);
 
@@ -130,13 +116,12 @@ public class XMLBIFReader implements IBayesNetReader {
             Node node = nodelist.item(i);
             Node name = XPathUtil.evalXPath(xpath, NAME, node).next();
 
-            BayesNode bNode = new BayesNode(name.getTextContent());
+            BayesNode bNode = net.createNode(name.getTextContent());
 
             for (Iterator<Node> it = XPathUtil.evalXPath(xpath, OUTCOME, node); it.hasNext();) {
                 bNode.addOutcome(StringEscapeUtils.unescapeXml(it.next().getTextContent()));
             }
 
-            net.addNode(bNode);
         }
     }
 
@@ -162,19 +147,6 @@ public class XMLBIFReader implements IBayesNetReader {
         }
 
         bNode.setProbabilities(Doubles.toArray(probabilities));
-    }
-
-    public boolean isLegacyMode() {
-        return legacyMode;
-    }
-
-    /**
-     * 
-     * @param legacyMode
-     *            when set to true, the object will only use Jayes 1.0.0 API
-     */
-    public void setLegacyMode(boolean legacyMode) {
-        this.legacyMode = legacyMode;
     }
 
     @Override

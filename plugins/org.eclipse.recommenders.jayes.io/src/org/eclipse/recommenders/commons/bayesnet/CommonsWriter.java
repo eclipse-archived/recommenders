@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.eclipse.recommenders.internal.jayes.io.util.BayesNetConverter;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
@@ -24,7 +23,6 @@ import com.google.common.collect.Lists;
 public class CommonsWriter implements IBayesNetWriter {
 
     private OutputStream out;
-    private BayesNetConverter conv = new BayesNetConverter();
 
     public CommonsWriter(OutputStream out) {
         this.out = out;
