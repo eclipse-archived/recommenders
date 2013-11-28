@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * undirected graph
+ */
 public class Graph implements Cloneable {
 
     // we need to remove edges a lot, thats why we use Set here instead of List
@@ -50,6 +53,15 @@ public class Graph implements Cloneable {
         return adjacency.get(v);
     }
 
+    public List<Integer> getNeighbors(int var) {
+        Set<Edge> incidentEdges = getIncidentEdges(var);
+        List<Integer> elementNeighbors = new ArrayList<Integer>(incidentEdges.size());
+        for (Edge e : incidentEdges) {
+            elementNeighbors.add(e.getSecond());
+        }
+        return elementNeighbors;
+    }
+
     public static class Edge extends OrderIgnoringPair<Integer> {
 
         private Edge backEdge;
@@ -80,7 +92,7 @@ public class Graph implements Cloneable {
             return clone;
         } catch (CloneNotSupportedException e) {
             // should not happen
-            throw new RuntimeException(e);
+            throw new AssertionError(e.getMessage());
         }
     }
 }
