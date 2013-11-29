@@ -106,6 +106,28 @@ public class SharedManualMappingsAdvisorTest {
         assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:any:0.0.0"))));
     }
 
+    @Test
+    public void testEmptyLinesAreAllowed() throws IOException {
+        appendLine("");
+        appendLine("*.jar=org.example:any:0.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
+
+        assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:any:0.0.0"))));
+    }
+
+    @Test
+    public void testCommentsAreAllowed() throws IOException {
+        appendLine("# A comment");
+        appendLine("*.jar=org.example:any:0.0.0");
+
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
+
+        assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:any:0.0.0"))));
+    }
+
     private void appendLine(String line) throws IOException {
         append(line + '\n', mappingsFile, UTF_8);
     }
