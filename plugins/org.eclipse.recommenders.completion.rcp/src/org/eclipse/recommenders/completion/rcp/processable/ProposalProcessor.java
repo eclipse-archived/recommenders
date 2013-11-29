@@ -46,5 +46,4 @@ public abstract class ProposalProcessor {
     public int modifyRelevance() {
         return 0;
     }
-
 }
