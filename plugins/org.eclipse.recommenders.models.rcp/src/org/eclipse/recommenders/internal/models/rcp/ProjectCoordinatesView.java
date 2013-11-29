@@ -63,7 +63,6 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
@@ -100,7 +99,7 @@ public class ProjectCoordinatesView extends ViewPart {
     private ContentProvider contentProvider;
 
     private final EclipseDependencyListener dependencyListener;
-    private final IProjectCoordinateAdvisorService pcAdvisorsService;
+    private final EclipseProjectCoordinateAdvisorService pcAdvisorsService;
     private ManualProjectCoordinateAdvisor manualPcAdvisor;
 
     private Table table;
@@ -113,7 +112,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
     @Inject
     public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
-            final IProjectCoordinateAdvisorService pcAdvisorService,
+            final EclipseProjectCoordinateAdvisorService pcAdvisorService,
             final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus, SharedImages images) {
         this.dependencyListener = dependencyListener;
         this.pcAdvisorsService = pcAdvisorService;
@@ -699,22 +698,33 @@ public class ProjectCoordinatesView extends ViewPart {
 
     class CoordinateTooltip extends ToolTipProvider {
 
+        private String getDisplayName(IProjectCoordinateAdvisor advisor) {
+            AdvisorDescriptor descriptor = pcAdvisorsService.getDescriptor(advisor);
+            String name = descriptor.getName();
+            if (name.isEmpty()) {
+                name = descriptor.getId() + " (ID)";
+            }
+            return name;
+        }
+
         @Override
         protected String generateTooltip(final Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry) {
             DependencyInfo dependencyInfo = entry.getKey();
             StringBuilder sb = new StringBuilder();
-            List<IProjectCoordinateAdvisor> strategies = contentProvider.getStrategies();
+            List<IProjectCoordinateAdvisor> advisors = contentProvider.getStrategies();
             List<Optional<ProjectCoordinate>> coordinates = Lists.newArrayList(entry.getValue());
 
-            for (int i = 0; i < strategies.size(); i++) {
-                IProjectCoordinateAdvisor strategy = strategies.get(i);
+            for (int i = 0; i < advisors.size(); i++) {
+                IProjectCoordinateAdvisor advisor = advisors.get(i);
+
                 Optional<ProjectCoordinate> coordinate = coordinates.get(i);
                 if (i != 0) {
                     sb.append(LINE_SEPARATOR);
                 }
-                sb.append(strategy.getClass().getSimpleName());
+
+                sb.append(getDisplayName(advisor));
                 sb.append(": ");
-                Optional<ProjectCoordinate> optionalCoordinate = strategy.suggest(dependencyInfo);
+                Optional<ProjectCoordinate> optionalCoordinate = advisor.suggest(dependencyInfo);
                 if (optionalCoordinate.isPresent()) {
                     sb.append(optionalCoordinate.get().toString());
                 } else {
