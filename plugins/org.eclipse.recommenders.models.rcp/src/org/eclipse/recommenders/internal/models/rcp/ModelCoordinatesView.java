@@ -166,7 +166,7 @@ public class ModelCoordinatesView extends ViewPart {
         TreeViewerColumn tvcPrimary = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn tcPrimary = tvcPrimary.getColumn();
         treeLayout.setColumnData(tcPrimary, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-        tcPrimary.setText("Primary");
+        tcPrimary.setText("Repository");
         tvcPrimary.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
@@ -176,7 +176,7 @@ public class ModelCoordinatesView extends ViewPart {
                 if (element instanceof String) {
                     String url = (String) element;
                     text.append(url);
-                    text.append(" (" + fetchNumberOfModels(url) + " known coordiantes) ", StyledString.COUNTER_STYLER);
+                    text.append(" (" + fetchNumberOfModels(url) + " known coordinates) ", StyledString.COUNTER_STYLER);
                     cell.setImage(images.getImage(OBJ_REPOSITORY));
                 }
                 if (element instanceof KnownCoordinate) {
