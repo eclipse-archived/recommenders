@@ -29,7 +29,7 @@
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.models.rcp.preferencePages.advisors"
 			category="org.eclipse.recommenders.rcp.category.preferences"
-			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.AdvisorsPreferencePage"
+			class="org.eclipse.recommenders.internal.models.rcp.AdvisorsPreferencePage"
 			name="Advisors">
 		</page>
 		<page id="org.eclipse.recommenders.models.rcp.preferencePages.models"

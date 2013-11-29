@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
@@ -32,7 +33,7 @@ public class ModelsRcpPreferences {
 
     public String[] remotes;
 
-    public String advisorIds;
+    public String advisorConfiguration;
 
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
 
@@ -48,8 +49,13 @@ public class ModelsRcpPreferences {
     }
 
     @Inject
-    void setAdvisorIds(@Preference(Constants.P_ADVISOR_LIST_SORTED) String advisorIds) throws Exception {
-        this.advisorIds = advisorIds;
+    void setAdvisorConfiguration(@Preference(Constants.P_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
+            throws Exception {
+        String old = advisorConfiguration;
+        advisorConfiguration = newAdvisorConfiguration;
+        if (!isEquals(advisorConfiguration, old)) {
+            bus.post(new AdvisorConfigurationChangedEvent());
+        }
     }
 
     private static String[] split(String stringList, String separator) {
