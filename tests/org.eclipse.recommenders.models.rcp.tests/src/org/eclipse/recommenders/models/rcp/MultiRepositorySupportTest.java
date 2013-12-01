@@ -14,6 +14,8 @@ import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Constants.EXT_ZIP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -93,7 +95,8 @@ public class MultiRepositorySupportTest {
         for (int i = 0; i < configuration.length; i++) {
             Pair<String, ModelCoordinate[]> pair = configuration[i];
             map.put(Urls.mangle(pair.getFirst()), createMockedModelIndex(pair.getSecond()));
-            remotes[i] = configuration[i].getFirst();
+            String url = configuration[i].getFirst();
+            remotes[i] = url;
         }
 
         prefs.remotes = remotes;
@@ -109,6 +112,8 @@ public class MultiRepositorySupportTest {
                 return map.get(captor.getValue().getName());
             }
         });
+
+        doReturn(true).when(sut).indexAlreadyDownloaded(any(File.class));
 
         sut.open();
         return sut;

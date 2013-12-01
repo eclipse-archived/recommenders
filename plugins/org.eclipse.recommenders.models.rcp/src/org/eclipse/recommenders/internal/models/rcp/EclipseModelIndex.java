@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.models.ModelCoordinate.HINT_REPOSITORY_UR
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -51,6 +52,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -73,7 +75,11 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     private final EventBus bus;
 
-    private final Map<String, Pair<File, IModelIndex>> delegates = Maps.newHashMap();
+    /*
+     * Contains only open indices: An IModelIndex will only be added after it is opened and removed before it is closed.
+     * For all read access openDelegates provides a consistent version.
+     */
+    private volatile ImmutableMap<String, Pair<File, IModelIndex>> openDelegates;
 
     private final Cache<Pair<ProjectCoordinate, String>, Optional<ModelCoordinate>> cache = CacheBuilder.newBuilder()
             .maximumSize(10).concurrencyLevel(1).build();
@@ -93,26 +99,44 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         doOpen(false);
     }
 
-    private void doOpen(boolean scheduleIndexUpdate) throws IOException {
+    private void doOpen(boolean forceIndexUpdate) throws IOException {
         Checks.ensureNoDuplicates(prefs.remotes);
-        String[] remoteUrls = prefs.remotes;
-        delegates.clear();
+        clearDelegates();
         basedir.mkdir();
-        for (String url : remoteUrls) {
-            doOpen(url, scheduleIndexUpdate);
+        for (String remoteUrl : prefs.remotes) {
+            File indexLocation = createIndexLocation(remoteUrl);
+            if (!indexAlreadyDownloaded(indexLocation) || forceIndexUpdate) {
+                triggerIndexDownload(remoteUrl);
+            } else {
+                openDelegate(remoteUrl, indexLocation);
+            }
         }
     }
 
-    private void doOpen(String remoteUrl, boolean scheduleIndexUpdate) throws IOException {
-        File indexLocation = new File(basedir, Urls.mangle(remoteUrl));
+    private synchronized void storeDelegate(String remoteUrl, Pair<File, IModelIndex> pair) {
+        openDelegates = new ImmutableMap.Builder<String, Pair<File, IModelIndex>>().putAll(openDelegates)
+                .put(remoteUrl, pair).build();
+    }
+
+    private synchronized void removeDelegate(Pair<File, IModelIndex> delegate) {
+        HashMap<String, Pair<File, IModelIndex>> delegates = Maps.newHashMap(openDelegates);
+        delegates.values().remove(delegate);
+        openDelegates = new ImmutableMap.Builder<String, Pair<File, IModelIndex>>().putAll(delegates).build();
+    }
+
+    private synchronized void clearDelegates() {
+        openDelegates = ImmutableMap.of();
+    }
+
+    private void openDelegate(String remoteUrl, File indexLocation) throws IOException {
         IModelIndex modelIndex = createModelIndex(indexLocation);
-        delegates.put(remoteUrl, Pair.newPair(indexLocation, modelIndex));
-        if (!indexAlreadyDownloaded(indexLocation) || scheduleIndexUpdate) {
-            triggerIndexDownload(remoteUrl);
-            return;
-        }
         modelIndex.open();
+        storeDelegate(remoteUrl, Pair.newPair(indexLocation, modelIndex));
         bus.post(new ModelIndexOpenedEvent());
+    }
+
+    private File createIndexLocation(String remoteUrl) {
+        return new File(basedir, Urls.mangle(remoteUrl));
     }
 
     @VisibleForTesting
@@ -131,7 +155,8 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         return createCopyWithRepositoryUrlHint(mc, remoteUrl);
     }
 
-    private boolean indexAlreadyDownloaded(File location) {
+    @VisibleForTesting
+    public boolean indexAlreadyDownloaded(File location) {
         return location.exists() && location.listFiles().length > 1;
         // 2 = if this folder contains an index, there must be more than one file...
         // On mac, we often have hidden files in the folder. This is just simple heuristic.
@@ -141,7 +166,8 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @Override
     public void close() throws IOException {
         cache.invalidateAll();
-        for (Pair<File, IModelIndex> delegate : delegates.values()) {
+        for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
+            removeDelegate(delegate);
             delegate.getSecond().close();
         }
     }
@@ -158,7 +184,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
                 @Override
                 public Optional<ModelCoordinate> call() {
                     for (String remote : prefs.remotes) {
-                        Pair<File, IModelIndex> pair = delegates.get(remote);
+                        Pair<File, IModelIndex> pair = openDelegates.get(remote);
                         if (pair == null) {
                             return absent();
                         }
@@ -180,7 +206,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @Override
     public ImmutableSet<ModelCoordinate> suggestCandidates(ProjectCoordinate pc, String modelType) {
         Set<ModelCoordinate> candidates = Sets.newHashSet();
-        for (Entry<String, Pair<File, IModelIndex>> entry : delegates.entrySet()) {
+        for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
             candidates.addAll(addRepositoryUrlHint(index.suggestCandidates(pc, modelType), entry.getKey()));
         }
@@ -207,7 +233,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @Override
     public ImmutableSet<ModelCoordinate> getKnownModels(String modelType) {
         Set<ModelCoordinate> models = Sets.newHashSet();
-        for (Entry<String, Pair<File, IModelIndex>> entry : delegates.entrySet()) {
+        for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
             models.addAll(addRepositoryUrlHint(index.getKnownModels(modelType), entry.getKey()));
         }
@@ -217,7 +243,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId) {
-        for (Pair<File, IModelIndex> delegate : delegates.values()) {
+        for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
             IModelIndex index = delegate.getSecond();
             Optional<ProjectCoordinate> suggest = index.suggestProjectCoordinateByArtifactId(artifactId);
             if (suggest.isPresent()) {
@@ -230,7 +256,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint) {
-        for (Pair<File, IModelIndex> delegate : delegates.values()) {
+        for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
             IModelIndex index = delegate.getSecond();
             Optional<ProjectCoordinate> suggest = index.suggestProjectCoordinateByFingerprint(fingerprint);
             if (suggest.isPresent()) {
@@ -257,21 +283,17 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
             File location = repository.getLocation(e.model, false).orNull();
             String remoteUrl = e.model.getHint(HINT_REPOSITORY_URL).orNull();
             if (remoteUrl != null) {
-                Pair<File, IModelIndex> delegate = delegates.get(remoteUrl);
-                delegate.getSecond().close();
-                File file = delegate.getFirst();
+                File file = createIndexLocation(remoteUrl);
                 file.mkdir();
                 FileUtils.cleanDirectory(file);
                 Zips.unzip(location, file);
-                doOpen(remoteUrl, false);
+                openDelegate(remoteUrl, file);
             }
         }
     }
 
     private boolean isIndex(ModelCoordinate model) {
-        return model.getGroupId().equals(INDEX.getGroupId())
-                && model.getArtifactId().equals(INDEX.getArtifactId())
-                && model.getExtension().equals(INDEX.getExtension())
-                && model.getVersion().equals(INDEX.getVersion());
+        return model.getGroupId().equals(INDEX.getGroupId()) && model.getArtifactId().equals(INDEX.getArtifactId())
+                && model.getExtension().equals(INDEX.getExtension()) && model.getVersion().equals(INDEX.getVersion());
     }
 }

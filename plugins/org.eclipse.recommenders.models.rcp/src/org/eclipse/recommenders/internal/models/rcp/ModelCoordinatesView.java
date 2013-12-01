@@ -214,8 +214,11 @@ public class ModelCoordinatesView extends ViewPart {
 
             @Override
             public Object getParent(Object element) {
-                KnownCoordinate v = (KnownCoordinate) element;
-                return v.url;
+                if (element instanceof KnownCoordinate) {
+                    KnownCoordinate v = (KnownCoordinate) element;
+                    return v.url;
+                }
+                return null;
             }
 
             @Override
