@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 
 import com.google.common.annotations.Beta;
@@ -44,7 +45,7 @@ public final class ScopeAccessWorkaround {
     }
 
     static Optional<Scope> resolveScope(final IRecommendersCompletionContext ctx) {
-        final InternalCompletionContext context = (InternalCompletionContext) ctx.getJavaContext().getCoreContext();
+        InternalCompletionContext context = ctx.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
         if (context == null) {
             return Optional.absent();
         }

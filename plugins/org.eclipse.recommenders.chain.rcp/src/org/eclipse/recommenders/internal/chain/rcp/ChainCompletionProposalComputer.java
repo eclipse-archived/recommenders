@@ -48,6 +48,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
@@ -212,9 +213,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void findEntrypointsForCompletionOnSingleName() {
-        final InternalCompletionContext context = (InternalCompletionContext) ctx.getJavaContext().getCoreContext();
-        final ObjectVector visibleLocalVariables = context.getVisibleLocalVariables();
-        final Set<String> localVariableNames = getLocalVariableNames(visibleLocalVariables);
+        InternalCompletionContext context = ctx.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
+        ObjectVector visibleLocalVariables = context.getVisibleLocalVariables();
+        Set<String> localVariableNames = getLocalVariableNames(visibleLocalVariables);
         resolveEntrypoints(visibleLocalVariables, localVariableNames);
         resolveEntrypoints(context.getVisibleFields(), localVariableNames);
         resolveEntrypoints(context.getVisibleMethods(), localVariableNames);
