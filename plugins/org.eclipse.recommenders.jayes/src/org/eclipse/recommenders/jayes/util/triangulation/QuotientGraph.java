@@ -10,8 +10,7 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.util.triangulation;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.recommenders.jayes.util.Graph;
@@ -42,33 +41,32 @@ public class QuotientGraph {
         if (neighborCache[variable] != null) {
             return neighborCache[variable];
         }
-        Set<Integer> neighbors = new HashSet<Integer>();
-        neighbors.addAll(variables.getNeighbors(variable));
+        Set<Integer> neighbors = new LinkedHashSet<Integer>(variables.getNeighbors(variable));
         for (Integer neighbor : variablesToElements.getNeighbors(variable)) {
             neighbors.addAll(variablesToElements.getNeighbors(neighbor));
         }
         neighbors.remove(variable);
-        neighborCache[variable] = Collections.unmodifiableSet(neighbors);
+        neighborCache[variable] = neighbors;
         return neighborCache[variable];
     }
 
     public void eliminate(int variable) {
         Set<Integer> neighbors = getNeighbors(variable);
-        for (int elementNeighbor : variablesToElements.getNeighbors(variable)) { // merge eliminated nodes
-            merge(variablesToElements, variable, elementNeighbor);
-        }
-        for (Integer neighbor : variables.getNeighbors(variable)) { // interconnect neigbors
-            variablesToElements.addEdge(variable, neighbor);
-        }
-        virtualRemoveNode(variables, variable);
-
         neighborCache[variable] = null;
         for (Integer neighbor : neighbors) {
             neighborCache[neighbor] = null;
         }
+
+        for (Integer elementNeighbor : variablesToElements.getNeighbors(variable)) { // merge eliminated nodes
+            merge(variablesToElements, variable, elementNeighbor);
+        }
+        for (Integer neighbor : variables.getNeighbors(variable)) { // interconnect neighbors
+            variablesToElements.addEdge(variable, neighbor);
+        }
+        virtualRemoveNode(variables, variable);
     }
 
-    public void merge(Graph graph, int v1, int v2) {
+    private void merge(Graph graph, int v1, int v2) {
         for (int e2 : graph.getNeighbors(v2)) {
             if (v1 != e2) {
                 graph.addEdge(v1, e2);

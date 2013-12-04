@@ -21,9 +21,9 @@ import java.util.Set;
 public class Graph implements Cloneable {
 
     // we need to remove edges a lot, thats why we use Set here instead of List
-    private List<Set<Edge>> adjacency = new ArrayList<Set<Edge>>();
+    private List<HashSet<Edge>> adjacency = new ArrayList<HashSet<Edge>>();
 
-    public List<Set<Edge>> getAdjacency() {
+    public List<? extends Set<Edge>> getAdjacency() {
         return adjacency;
     }
 
@@ -81,13 +81,14 @@ public class Graph implements Cloneable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Graph clone() {
         try {
             Graph clone = (Graph) super.clone();
-            clone.adjacency = new ArrayList<Set<Edge>>();
-            for (Set<Edge> edges : adjacency) {
-                clone.adjacency.add(new HashSet<Edge>(edges));
+            clone.adjacency = new ArrayList<HashSet<Edge>>(adjacency.size());
+            for (HashSet<Edge> edges : adjacency) {
+                clone.adjacency.add((HashSet<Edge>) edges.clone());
             }
             return clone;
         } catch (CloneNotSupportedException e) {

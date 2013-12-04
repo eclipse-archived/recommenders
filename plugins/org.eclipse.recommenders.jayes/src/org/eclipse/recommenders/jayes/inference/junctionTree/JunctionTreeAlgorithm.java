@@ -301,7 +301,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         super.setNetwork(net);
         initializeFields(net.getNodes().size());
         JunctionTree jtree = buildJunctionTree(net);
-        int[] homeClusters = computeHomeClusters(net, jtree.getClusters());
+        Map<AbstractFactor, Integer> homeClusters = computeHomeClusters(net, jtree.getClusters());
         initializeClusterFactors(net, jtree.getClusters(), homeClusters);
         initializeSepsetFactors(jtree.getSepSets());
         determineConcernedClusters();
@@ -339,10 +339,10 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         Arrays.fill(isBeliefValid, false);
         queryFactors = new AbstractFactor[numNodes];
         preparedQueries = new int[numNodes][];
-        sepSets = new HashMap<Edge, AbstractFactor>();
-        preparedMultiplications = new IdentityHashMap<Edge, int[]>();
+        sepSets = new HashMap<Edge, AbstractFactor>(numNodes);
+        preparedMultiplications = new IdentityHashMap<Edge, int[]>(numNodes);
         initializations = new ArrayList<Pair<AbstractFactor, IArrayWrapper>>();
-        clustersHavingEvidence = new HashSet<Integer>();
+        clustersHavingEvidence = new HashSet<Integer>(numNodes);
         isObserved = new boolean[numNodes];
     }
 
@@ -353,13 +353,13 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         return jtree;
     }
 
-    private int[] computeHomeClusters(BayesNet net, final List<List<Integer>> clusters) {
-        int[] homeClusters = new int[net.getNodes().size()];
+    private Map<AbstractFactor, Integer> computeHomeClusters(BayesNet net, final List<List<Integer>> clusters) {
+        Map<AbstractFactor, Integer> homeClusters = new HashMap<AbstractFactor, Integer>();
         for (final BayesNode node : net.getNodes()) {
             final List<Integer> nodeAndParents = getNodeAndParentIds(node);
             for (final ListIterator<List<Integer>> clusterIt = clusters.listIterator(); clusterIt.hasNext();) {
                 if (clusterIt.next().containsAll(nodeAndParents)) {
-                    homeClusters[node.getId()] = clusterIt.nextIndex() - 1;
+                    homeClusters.put(node.getFactor(), clusterIt.nextIndex() - 1);
                     break;
                 }
             }
@@ -368,15 +368,11 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     }
 
     private List<Integer> getNodeAndParentIds(final BayesNode n) {
-        final List<Integer> nodeAndParents = new ArrayList<Integer>(n.getParents().size() + 1);
-        nodeAndParents.add(n.getId());
-        for (final BayesNode p : n.getParents()) {
-            nodeAndParents.add(p.getId());
-        }
-        return nodeAndParents;
+        return Arrays.asList(ArrayUtils.<Integer>boxArray(n.getFactor().getDimensionIDs()));
     }
 
-    private void initializeClusterFactors(BayesNet net, final List<List<Integer>> clusters, int[] homeClusters) {
+    private void initializeClusterFactors(BayesNet net, final List<List<Integer>> clusters,
+            Map<AbstractFactor, Integer> homeClusters) {
         nodePotentials = new AbstractFactor[clusters.size()];
         Map<Integer, List<AbstractFactor>> multiplicationPartners = findMultiplicationPartners(net, homeClusters);
         for (final ListIterator<List<Integer>> cliqueIt = clusters.listIterator(); cliqueIt.hasNext();) {
@@ -390,10 +386,11 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         }
     }
 
-    private Map<Integer, List<AbstractFactor>> findMultiplicationPartners(BayesNet net, int[] homeClusters) {
+    private Map<Integer, List<AbstractFactor>> findMultiplicationPartners(BayesNet net,
+            Map<AbstractFactor, Integer> homeClusters) {
         Map<Integer, List<AbstractFactor>> potentialMap = new HashMap<Integer, List<AbstractFactor>>();
         for (final BayesNode node : net.getNodes()) {
-            final Integer nodeHome = homeClusters[node.getId()];
+            final Integer nodeHome = homeClusters.get(node.getFactor());
             if (!potentialMap.containsKey(nodeHome)) {
                 potentialMap.put(nodeHome, new ArrayList<AbstractFactor>());
             }
@@ -489,9 +486,9 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         }
     }
 
-    private void multiplyCPTsIntoPotentials(BayesNet net, int[] homeClusters) {
+    private void multiplyCPTsIntoPotentials(BayesNet net, Map<AbstractFactor, Integer> homeClusters) {
         for (final BayesNode node : net.getNodes()) {
-            final AbstractFactor nodeHome = nodePotentials[homeClusters[node.getId()]];
+            final AbstractFactor nodeHome = nodePotentials[homeClusters.get(node.getFactor())];
             if (nodeHome.isLogScale()) {
                 nodeHome.multiplyCompatibleToLog(node.getFactor());
             } else {
