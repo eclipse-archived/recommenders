@@ -11,9 +11,12 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,12 +35,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -53,6 +61,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.models.Coordinates;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -62,6 +71,7 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEve
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelCoordinatesAction;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
@@ -78,6 +88,9 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
+import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -92,11 +105,15 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class ModelCoordinatesView extends ViewPart {
+public class ModelRepositoriesView extends ViewPart {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModelRepositoriesView.class);
 
     private DataBindingContext m_bindingContext;
 
     private Tree tree;
+
+    private Action addRemoteRepositoryAction;
 
     @Inject
     IModelIndex index;
@@ -265,10 +282,46 @@ public class ModelCoordinatesView extends ViewPart {
         });
 
         initializeContent();
-        addRefreshButton();
-        addExpandAllButton();
-        addCollapseAllButton();
-        addDeleteButton();
+
+        addRemoteRepositoryAction = new Action() {
+            @Override
+            public void run() {
+                addRemoteRepository();
+            }
+        };
+
+        IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+        addAction("Add repository", ELCL_ADD_REPOSITORY, toolBarManager, addRemoteRepositoryAction);
+
+        addAction("Refresh", ELCL_REFRESH, toolBarManager, new Action() {
+            @Override
+            public void run() {
+                refreshData();
+            }
+        });
+
+        addAction("Expand all", ELCL_EXPAND_ALL, toolBarManager, new Action() {
+            @Override
+            public void run() {
+                treeViewer.expandAll();
+            }
+        });
+
+        addAction("Collapse all", ELCL_COLLAPSE_ALL, toolBarManager, new Action() {
+            @Override
+            public void run() {
+                treeViewer.collapseAll();
+            }
+        });
+
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        addAction("Delete downloaded models", ELCL_DELETE, menuManager, new Action() {
+            @Override
+            public void run() {
+                deleteCacheAndRefresh();
+            }
+        });
+
         addContextMenu();
         m_bindingContext = initDataBindings();
     }
@@ -331,53 +384,12 @@ public class ModelCoordinatesView extends ViewPart {
 
     }
 
-    private void addRefreshButton() {
-        IAction refreshAction = new Action() {
-            @Override
-            public void run() {
-                refreshData();
-            }
-        };
-        refreshAction.setToolTipText("Refresh");
-        refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
-        getViewSite().getActionBars().getToolBarManager().add(refreshAction);
-    }
-
-    private void addCollapseAllButton() {
-        IAction expandAction = new Action() {
-            @Override
-            public void run() {
-                treeViewer.collapseAll();
-            }
-        };
-        expandAction.setToolTipText("Collaps all");
-        expandAction.setImageDescriptor(images.getDescriptor(ELCL_COLLAPSE_ALL));
-        getViewSite().getActionBars().getToolBarManager().add(expandAction);
-    }
-
-    private void addExpandAllButton() {
-        IAction expandAction = new Action() {
-            @Override
-            public void run() {
-                treeViewer.expandAll();
-            }
-        };
-        expandAction.setToolTipText("Expand all");
-        expandAction.setImageDescriptor(images.getDescriptor(ELCL_EXPAND_ALL));
-        getViewSite().getActionBars().getToolBarManager().add(expandAction);
-    }
-
-    private void addDeleteButton() {
-        IAction deleteAction = new Action() {
-
-            @Override
-            public void run() {
-                deleteCacheAndRefresh();
-            }
-        };
-        deleteAction.setText("Delete models");
-        deleteAction.setImageDescriptor(images.getDescriptor(ELCL_DELETE));
-        getViewSite().getActionBars().getMenuManager().add(deleteAction);
+    private void addAction(String text, ImageResource imageResource, IContributionManager contributionManager,
+            IAction action) {
+        action.setImageDescriptor(images.getDescriptor(imageResource));
+        action.setText(text);
+        action.setToolTipText(text);
+        contributionManager.add(action);
     }
 
     private void addContextMenu() {
@@ -389,24 +401,37 @@ public class ModelCoordinatesView extends ViewPart {
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                if (!isValidType(treeViewer.getSelection(), KnownCoordinate.class)) {
-                    return;
+                if (isValidType(treeViewer.getSelection(), KnownCoordinate.class)) {
+                    Set<KnownCoordinate> selectedValues = Selections.toSet(treeViewer.getSelection());
+                    Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
+                    for (KnownCoordinate value : selectedValues) {
+                        Collection<ModelCoordinate> mcs = value.mcs;
+                        selectedModelCoordinates.addAll(mcs);
+                    }
+                    if (!selectedValues.isEmpty()) {
+                        TriggerModelDownloadForModelCoordinatesAction action = new TriggerModelDownloadForModelCoordinatesAction(
+                                "Download models", selectedModelCoordinates, repo, bus);
+                        menuManager.add(action);
+                    }
                 }
-                Set<KnownCoordinate> selectedValues = Selections.toSet(treeViewer.getSelection());
-                Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
-                for (KnownCoordinate value : selectedValues) {
-                    Collection<ModelCoordinate> mcs = value.mcs;
-                    selectedModelCoordinates.addAll(mcs);
-                }
-                if (!selectedValues.isEmpty()) {
-                    TriggerModelDownloadForModelCoordinatesAction action = new TriggerModelDownloadForModelCoordinatesAction(
-                            "Download models", selectedModelCoordinates, repo, bus);
-                    menuManager.add(action);
+
+                addAction("Add repository", ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
+
+                if (isValidType(treeViewer.getSelection(), String.class)) {
+                    final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
+                    if (url.isPresent() && prefs.remotes.length > 1) {
+                        addAction("Remove repository", ELCL_REMOVE_REPOSITORY, menuManager, new Action() {
+                            public void run() {
+                                deleteRepository(url.get());
+                                refreshData();
+                            }
+                        });
+                    }
                 }
             }
 
-            private boolean isValidType(ISelection selection, Class<KnownCoordinate> expectedType) {
-                return Selections.safeFirstElement(treeViewer.getSelection(), KnownCoordinate.class).isPresent();
+            private boolean isValidType(ISelection selection, Class<?> expectedType) {
+                return Selections.safeFirstElement(treeViewer.getSelection(), expectedType).isPresent();
             }
         });
     }
@@ -577,6 +602,35 @@ public class ModelCoordinatesView extends ViewPart {
                 return Status.OK_STATUS;
             }
         };
+    }
+
+    private void addRemoteRepository() {
+        InputDialog inputDialog = Dialogs.newModelRepositoryUrlDialog(tree.getShell(), prefs.remotes);
+        if (inputDialog.open() == Window.OK) {
+            addRepository(inputDialog.getValue());
+        }
+    }
+
+    private void deleteRepository(String remoteUrl) {
+        ArrayList<String> newRemotes = Lists.newArrayList(prefs.remotes);
+        newRemotes.remove(remoteUrl);
+        storeRepositories(newRemotes);
+    }
+
+    private void addRepository(String remoteUrl) {
+        ArrayList<String> newRemotes = Lists.newArrayList(prefs.remotes);
+        newRemotes.add(remoteUrl);
+        storeRepositories(newRemotes);
+    }
+
+    private void storeRepositories(ArrayList<String> newRemotes) {
+        try {
+            IEclipsePreferences s = InstanceScope.INSTANCE.getNode(BUNDLE_ID);
+            s.put(P_REPOSITORY_URL_LIST, ModelsRcpPreferences.joinRemoteRepositoriesToString(newRemotes));
+            s.flush();
+        } catch (BackingStoreException e) {
+            LOG.error("Exception during storing of remote repository preferences", e);
+        }
     }
 
     private void deleteCacheAndRefresh() {

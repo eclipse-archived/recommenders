@@ -17,9 +17,10 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
@@ -40,9 +41,9 @@ public class ModelsRcpPreferences {
     static final String URL_SEPARATOR = "\t";
 
     @Inject
-    void setRemote(@Preference(Constants.P_REPOSITORY_URL_LIST_ACTIV) String newRemote) throws Exception {
+    void setRemote(@Preference(Constants.P_REPOSITORY_URL_LIST) String newRemote) throws Exception {
         String[] old = remotes;
-        remotes = split(newRemote, URL_SEPARATOR);
+        remotes = splitRemoteRepositoryString(newRemote);
         if (!isEquals(remotes, old)) {
             bus.post(new ModelRepositoryUrlChangedEvent());
         }
@@ -58,8 +59,17 @@ public class ModelsRcpPreferences {
         }
     }
 
-    private static String[] split(String stringList, String separator) {
-        Iterable<String> split = Splitter.on(separator).omitEmptyStrings().split(stringList);
+    public static String[] splitRemoteRepositoryString(String remoteUrls) {
+        Iterable<String> split = Splitter.on(URL_SEPARATOR).omitEmptyStrings().split(remoteUrls);
         return Iterables.toArray(split, String.class);
     }
+
+    public static String joinRemoteRepositoriesToString(String[] remotes) {
+        return Joiner.on(ModelsRcpPreferences.URL_SEPARATOR).join(remotes);
+    }
+
+    public static String joinRemoteRepositoriesToString(Iterable<String> remotes) {
+        return joinRemoteRepositoriesToString(Iterables.toArray(remotes, String.class));
+    }
+
 }

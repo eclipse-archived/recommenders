@@ -13,7 +13,9 @@ package org.eclipse.recommenders.internal.models.rcp;
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
+
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.models.rcp.messages"; //$NON-NLS-1$
+
     public static String JOB_INITIALIZE_PROJECTS;
     public static String JOB_UPDATE_MODEL_INDEX;
     public static String JOB_CLEAR_MODEL_REPOSITORY;
@@ -38,9 +40,10 @@ public final class Messages extends NLS {
     public static String PREFPAGE_MODEL_REPOSITORY_HEADLINE;
     public static String PREFPAGE_MODEL_REPOSITORY_INTRO;
     public static String PREFPAGE_URI;
-    public static String PREFPAGE_URI_INSERT;
-    public static String PREFPAGE_URI_INVALID;
-    public static String PREFPAGE_URI_MODEL_REPOSITORY;
+    public static String DIALOG_ADD_MODEL_REPOSITORY;
+    public static String DIALOG_ENTER_REPOSITORY_URI;
+    public static String DIALOG_INVALID_REPOSITORY_URI;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }

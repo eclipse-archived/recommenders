@@ -11,16 +11,14 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.*;
-import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpPreferences.URL_SEPARATOR;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Set;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST;
+import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ENABLE_AUTO_DOWNLOAD;
+import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_MODEL_REPOSITORY_HEADLINE;
+import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_MODEL_REPOSITORY_INTRO;
+import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_URI;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -35,11 +33,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 
 public class ModelsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+
     private ModelRepositoryListEditor repoEditor;
 
     public ModelsPreferencePage() {
@@ -65,7 +61,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
     public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
         String repositoryURLList = Joiner.on(ModelsRcpPreferences.URL_SEPARATOR).join(repoEditor.getItems());
-        store.setValue(P_REPOSITORY_URL_LIST_ACTIV, repositoryURLList);
+        store.setValue(P_REPOSITORY_URL_LIST, repositoryURLList);
         return super.performOk();
     }
 
@@ -90,45 +86,12 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
 
         @Override
         protected String[] parseString(String stringList) {
-            Iterable<String> split = Splitter.on(URL_SEPARATOR).omitEmptyStrings().split(stringList);
-            return Iterables.toArray(split, String.class);
+            return ModelsRcpPreferences.splitRemoteRepositoryString(stringList);
         }
 
         @Override
         protected String getNewInputObject() {
-            InputDialog inputDialog = new InputDialog(getFieldEditorParent().getShell(), PREFPAGE_URI_MODEL_REPOSITORY,
-                    PREFPAGE_URI_INSERT, "http://download.eclipse.org/recommenders/models/<version>", //$NON-NLS-1$
-                    new IInputValidator() {
-
-                        @Override
-                        public String isValid(String newText) {
-                            if (isURIAlreadyAdded(newText)) {
-                                return PREFPAGE_URI_ALREADY_ADDED;
-                            }
-                            if (isInvalidRepoURI(newText)) {
-                                return PREFPAGE_URI_INVALID;
-                            }
-                            return null;
-                        }
-
-                        private boolean isURIAlreadyAdded(String newText) {
-                            Set<String> items = Sets.newHashSet(getItems());
-                            if (items.contains(newText)) {
-                                return true;
-                            }
-                            return false;
-                        }
-
-                        private boolean isInvalidRepoURI(String uri) {
-                            try {
-                                new URI(uri);
-                            } catch (URISyntaxException e) {
-                                return true;
-                            }
-                            return false;
-                        }
-
-                    });
+            InputDialog inputDialog = Dialogs.newModelRepositoryUrlDialog(getShell(), getItems());
             if (inputDialog.open() == Window.OK) {
                 return inputDialog.getValue();
             }
@@ -137,8 +100,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
 
         @Override
         protected String createList(String[] items) {
-            return Joiner.on(URL_SEPARATOR).join(items);
+            return ModelsRcpPreferences.joinRemoteRepositoriesToString(items);
         }
-
     }
 }
