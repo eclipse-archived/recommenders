@@ -53,6 +53,14 @@ public class Graph implements Cloneable {
         return adjacency.get(v);
     }
 
+    public void removeIncidentEdges(int v) {
+        Set<Edge> edges = getIncidentEdges(v);
+        for (Edge e : edges) {
+            adjacency.get(e.getSecond()).remove(e.getBackEdge());
+        }
+        adjacency.get(v).clear();
+    }
+
     public List<Integer> getNeighbors(int var) {
         Set<Edge> incidentEdges = getIncidentEdges(var);
         List<Integer> elementNeighbors = new ArrayList<Integer>(incidentEdges.size());

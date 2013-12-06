@@ -77,9 +77,7 @@ public class QuotientGraph {
 
     // isolating node = virtually removing it
     private void virtualRemoveNode(Graph graph, final int node) {
-        while (!graph.getIncidentEdges(node).isEmpty()) {
-            graph.removeEdge(graph.getIncidentEdges(node).iterator().next());
-        }
+        graph.removeIncidentEdges(node);
     }
 
     // TODO indistinguishable variables and external degree
