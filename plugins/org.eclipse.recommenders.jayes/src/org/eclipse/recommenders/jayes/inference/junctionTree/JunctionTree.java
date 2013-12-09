@@ -13,17 +13,16 @@ package org.eclipse.recommenders.jayes.inference.junctionTree;
 import java.util.List;
 
 import org.eclipse.recommenders.jayes.util.Graph;
-import org.eclipse.recommenders.jayes.util.Graph.Edge;
+import org.eclipse.recommenders.jayes.util.OrderIgnoringPair;
 import org.eclipse.recommenders.jayes.util.Pair;
 
 public class JunctionTree {
 
     private List<List<Integer>> clusters;
-    private List<Pair<Edge, List<Integer>>> sepSets;
-    private final Graph junctionTreeGraph;
+    private List<Pair<OrderIgnoringPair<Integer>, List<Integer>>> sepSets;
+    private Graph junctionTreeGraph;
 
-    public JunctionTree(Graph junctionTree) {
-        this.junctionTreeGraph = junctionTree;
+    public JunctionTree() {
     }
 
     public List<List<Integer>> getClusters() {
@@ -32,14 +31,14 @@ public class JunctionTree {
 
     public void setClusters(List<List<Integer>> clusters) {
         this.clusters = clusters;
-        junctionTreeGraph.initialize(clusters.size());
+        junctionTreeGraph = new Graph(clusters.size());
     }
 
-    public List<Pair<Edge, List<Integer>>> getSepSets() {
+    public List<Pair<OrderIgnoringPair<Integer>, List<Integer>>> getSepSets() {
         return sepSets;
     }
 
-    public void setSepSets(List<Pair<Edge, List<Integer>>> sepSets) {
+    public void setSepSets(List<Pair<OrderIgnoringPair<Integer>, List<Integer>>> sepSets) {
         this.sepSets = sepSets;
     }
 

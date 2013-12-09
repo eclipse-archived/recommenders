@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -28,9 +27,9 @@ import org.eclipse.recommenders.jayes.factor.arraywrapper.DoubleArrayWrapper;
 import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
 import org.eclipse.recommenders.jayes.inference.AbstractInferer;
 import org.eclipse.recommenders.jayes.util.Graph;
-import org.eclipse.recommenders.jayes.util.Graph.Edge;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.jayes.util.NumericalInstabilityException;
+import org.eclipse.recommenders.jayes.util.OrderIgnoringPair;
 import org.eclipse.recommenders.jayes.util.Pair;
 import org.eclipse.recommenders.jayes.util.sharing.CanonicalArrayWrapperManager;
 import org.eclipse.recommenders.jayes.util.sharing.CanonicalIntArrayManager;
@@ -38,13 +37,10 @@ import org.eclipse.recommenders.jayes.util.triangulation.MinFillIn;
 
 public class JunctionTreeAlgorithm extends AbstractInferer {
 
-    protected Map<Edge, AbstractFactor> sepSets;
+    protected Map<OrderIgnoringPair<Integer>, AbstractFactor> sepSets;
     protected Graph junctionTree;
     protected AbstractFactor[] nodePotentials;
-    // need IdentityHashmap here because an Edge and
-    // it's backward Edge are considered equal
-    // (which is also needed for simplicity)
-    protected IdentityHashMap<Edge, int[]> preparedMultiplications;
+    protected Map<Pair<Integer, Integer>, int[]> preparedMultiplications;
 
     // mapping from variables to clusters that contain them
     protected int[][] concernedClusters;
@@ -204,10 +200,10 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     private void recursiveSkipDistribution(final int node, final Set<Integer> visited, final Set<Integer> skipped) {
         visited.add(node);
         boolean areAllDescendantsSkipped = true;
-        for (final Integer e : junctionTree.getNeighbors(node)) {
-            if (!visited.contains(e)) {
-                recursiveSkipDistribution(e, visited, skipped);
-                if (!skipped.contains(e)) {
+        for (final Integer neighbor : junctionTree.getNeighbors(node)) {
+            if (!visited.contains(neighbor)) {
+                recursiveSkipDistribution(neighbor, visited, skipped);
+                if (!skipped.contains(neighbor)) {
                     areAllDescendantsSkipped = false;
                 }
             }
@@ -228,25 +224,27 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
 
     private void collectEvidence(final int cluster, final Set<Integer> marked) {
         marked.add(cluster);
-        for (final Edge e : junctionTree.getIncidentEdges(cluster)) {
-            if (!marked.contains(e.getSecond())) {
-                collectEvidence(e.getSecond(), marked);
-                messagePass(e.getBackEdge());
+        for (final int n : junctionTree.getNeighbors(cluster)) {
+            if (!marked.contains(n)) {
+                collectEvidence(n, marked);
+                messagePass(n, cluster);
             }
         }
     }
 
     private void distributeEvidence(final int cluster, final Set<Integer> marked) {
         marked.add(cluster);
-        for (final Edge e : junctionTree.getIncidentEdges(cluster)) {
-            if (!marked.contains(e.getSecond())) {
-                messagePass(e);
-                distributeEvidence(e.getSecond(), marked);
+        for (final int n : junctionTree.getNeighbors(cluster)) {
+            if (!marked.contains(n)) {
+                messagePass(cluster, n);
+                distributeEvidence(n, marked);
             }
         }
     }
 
-    private void messagePass(final Edge sepSetEdge) {
+    private void messagePass(final int v1, int v2) {
+
+        OrderIgnoringPair<Integer> sepSetEdge = new OrderIgnoringPair<Integer>(v1, v2);
 
         final AbstractFactor sepSet = sepSets.get(sepSetEdge);
         if (!needMessagePass(sepSet)) {
@@ -256,7 +254,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         final IArrayWrapper newSepValues = sepSet.getValues();
         System.arraycopy(newSepValues.toDoubleArray(), 0, scratchpad, 0, newSepValues.length());
 
-        final int[] preparedOp = preparedMultiplications.get(sepSetEdge.getBackEdge());
+        final int[] preparedOp = preparedMultiplications.get(Pair.newPair(v2, v1));
         nodePotentials[sepSetEdge.getFirst()].sumPrepared(newSepValues, preparedOp);
 
         if (isOnlyFirstLogScale(sepSetEdge)) {
@@ -273,7 +271,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         }
         // TODO scratchpad -> ArrayWrapper
         nodePotentials[sepSetEdge.getSecond()].multiplyPrepared(new DoubleArrayWrapper(scratchpad),
-                preparedMultiplications.get(sepSetEdge));
+                preparedMultiplications.get(Pair.newPair(v1, v2)));
     }
 
     /*
@@ -288,11 +286,11 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         return false;
     }
 
-    private boolean isOnlyFirstLogScale(final Edge edge) {
+    private boolean isOnlyFirstLogScale(final OrderIgnoringPair<Integer> edge) {
         return nodePotentials[edge.getFirst()].isLogScale() && !nodePotentials[edge.getSecond()].isLogScale();
     }
 
-    private boolean isOnlySecondLogScale(final Edge edge) {
+    private boolean isOnlySecondLogScale(final OrderIgnoringPair<Integer> edge) {
         return !nodePotentials[edge.getFirst()].isLogScale() && nodePotentials[edge.getSecond()].isLogScale();
     }
 
@@ -339,8 +337,8 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         Arrays.fill(isBeliefValid, false);
         queryFactors = new AbstractFactor[numNodes];
         preparedQueries = new int[numNodes][];
-        sepSets = new HashMap<Edge, AbstractFactor>(numNodes);
-        preparedMultiplications = new IdentityHashMap<Edge, int[]>(numNodes);
+        sepSets = new HashMap<OrderIgnoringPair<Integer>, AbstractFactor>(numNodes);
+        preparedMultiplications = new HashMap<Pair<Integer, Integer>, int[]>(numNodes);
         initializations = new ArrayList<Pair<AbstractFactor, IArrayWrapper>>();
         clustersHavingEvidence = new HashSet<Integer>(numNodes);
         isObserved = new boolean[numNodes];
@@ -404,8 +402,8 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         return potentialMap;
     }
 
-    private void initializeSepsetFactors(final List<Pair<Edge, List<Integer>>> sepSets) {
-        for (final Pair<Edge, List<Integer>> sep : sepSets) {
+    private void initializeSepsetFactors(final List<Pair<OrderIgnoringPair<Integer>, List<Integer>>> sepSets) {
+        for (final Pair<OrderIgnoringPair<Integer>, List<Integer>> sep : sepSets) {
             this.sepSets.put(sep.getFirst(), factory.create(sep.getSecond(), Collections.<AbstractFactor>emptyList()));
         }
     }
@@ -442,10 +440,11 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
 
     private void prepareSepsetMultiplications(final CanonicalIntArrayManager flyWeight) {
         for (int node = 0; node < nodePotentials.length; node++) {
-            for (final Edge e : junctionTree.getIncidentEdges(node)) {
-                final int[] preparedMultiplication = nodePotentials[e.getSecond()]
-                        .prepareMultiplication(sepSets.get(e));
-                preparedMultiplications.put(e, flyWeight.getInstance(preparedMultiplication));
+            for (final int n : junctionTree.getNeighbors(node)) {
+                final int[] preparedMultiplication = nodePotentials[n]
+                        .prepareMultiplication(sepSets.get(new OrderIgnoringPair<Integer>(node, n)));
+                preparedMultiplications.put(Pair.newPair(node, n),
+                        flyWeight.getInstance(preparedMultiplication));
             }
         }
     }
@@ -481,7 +480,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
             f.fill(f.isLogScale() ? ONE_LOG : ONE);
         }
 
-        for (final Entry<Edge, AbstractFactor> sepSet : sepSets.entrySet()) {
+        for (final Entry<OrderIgnoringPair<Integer>, AbstractFactor> sepSet : sepSets.entrySet()) {
             if (!areBothEndsLogScale(sepSet.getKey())) {
                 // if one part is log-scale, we transform to non-log-scale
                 sepSet.getValue().fill(ONE);
@@ -502,7 +501,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
         }
     }
 
-    private boolean areBothEndsLogScale(final Edge edge) {
+    private boolean areBothEndsLogScale(final OrderIgnoringPair<Integer> edge) {
         return nodePotentials[edge.getFirst()].isLogScale() && nodePotentials[edge.getSecond()].isLogScale();
     }
 

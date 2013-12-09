@@ -35,7 +35,7 @@ public class GraphElimination implements Iterable<List<Integer>> {
 
     private List<Integer> getNodeList() {
         final List<Integer> moralNodes = new LinkedList<Integer>();
-        for (int i = 0; i < graph.getAdjacency().size(); i++) {
+        for (int i = 0; i < graph.numberOfVertices(); i++) {
             moralNodes.add(i);
         }
         return moralNodes;
