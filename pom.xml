@@ -52,11 +52,12 @@
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<coverage.skip>false</coverage.skip>
-		<coverage.filter>org.eclipse.recommenders.*</coverage.filter>
-		<coverage.destFile>../target/jacoco.exec</coverage.destFile>
 		<!-- Overwritten when the "build-server" profile (see below) is activated. -->
 		<build-alias>b000</build-alias>
+		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<!-- Single jacoco.exec referenced from both plugins/* and tests/*. -->
+		<sonar.jacoco.reportPath>../../target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
 	<prerequisites>
 		<maven>3.0.5</maven>
@@ -376,35 +377,6 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.6.3.201306030806</version>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jacoco</groupId>
-										<artifactId>
-											jacoco-maven-plugin
-										</artifactId>
-										<versionRange>
-											[0.6.3.201306030806,)
-										</versionRange>
-										<goals>
-											<goal>prepare-agent</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
 				<plugin>
 					<groupId>org.eclipse.xtend</groupId>
 					<artifactId>xtend-maven-plugin</artifactId>
@@ -421,6 +393,31 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jacoco</groupId>
+										<artifactId>jacoco-maven-plugin</artifactId>
+										<versionRange>[0.6.3.201306030806,)</versionRange>
+										<goals>
+											<goal>prepare-agent</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
