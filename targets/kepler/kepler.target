@@ -42,14 +42,8 @@
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
-<unit id="org.apache.lucene" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.lucene.source" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.lucene.misc" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.lucene.misc.source" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.lucene.queries" version="3.5.0.v20120725-1805"/>
-<unit id="org.apache.lucene.queries.source" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20120530-0900"/>
 <unit id="org.apache.solr.client.solrj.source" version="3.5.0.v20120530-0900"/>
 <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
