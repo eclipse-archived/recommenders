@@ -10,12 +10,15 @@
  */
 package org.eclipse.recommenders.jayes.util;
 
-public class OrderIgnoringPair<T> extends Pair<T, T> {
+public class OrderIgnoringPair<T> {
 
     private final int hashcode;
 
+    private final T o1, o2;
+
     public OrderIgnoringPair(final T o1, final T o2) {
-        super(o1, o2);
+        this.o1 = o1;
+        this.o2 = o2;
         hashcode = Math.min(o1.hashCode(), o2.hashCode()) + 67 * Math.max(o1.hashCode(), o2.hashCode());
     }
 
@@ -25,11 +28,24 @@ public class OrderIgnoringPair<T> extends Pair<T, T> {
             return false;
         }
         final OrderIgnoringPair<?> other = (OrderIgnoringPair<?>) o;
-        return super.equals(other) || equalsReverse(other);
+        return (bothNullOrEqual(getFirst(), other.getFirst()) && bothNullOrEqual(getSecond(), other.getSecond()))
+                || equalsReverse(other);
     }
 
     private boolean equalsReverse(final OrderIgnoringPair<?> other) {
         return bothNullOrEqual(getSecond(), other.getFirst()) && bothNullOrEqual(getFirst(), other.getSecond());
+    }
+
+    private boolean bothNullOrEqual(T second, Object first) {
+        return second == null ? first == null : second.equals(first);
+    }
+
+    public T getFirst() {
+        return o1;
+    }
+
+    public T getSecond() {
+        return o2;
     }
 
     @Override

@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.recommenders.jayes.util.Graph;
-import org.eclipse.recommenders.jayes.util.Graph.Edge;
 import org.junit.Test;
 
 public class GraphTest {
@@ -29,8 +28,7 @@ public class GraphTest {
      * </pre>
      */
     public static Graph createTestGraph() {
-        Graph graph = new Graph();
-        graph.initialize(4);
+        Graph graph = new Graph(4);
         graph.addEdge(0, 1);
         graph.addEdge(1, 3);
         graph.addEdge(3, 0);
@@ -73,7 +71,7 @@ public class GraphTest {
         assertThat(g.getNeighbors(1), hasItem(3));
         assertThat(g.getNeighbors(3), hasItem(1));
 
-        g.removeEdge(new Edge(1, 3).initializeBackEdge());
+        g.removeEdge(1, 3);
 
         assertThat(g.getNeighbors(1), not(hasItem(3)));
         assertThat(g.getNeighbors(3), not(hasItem(1)));

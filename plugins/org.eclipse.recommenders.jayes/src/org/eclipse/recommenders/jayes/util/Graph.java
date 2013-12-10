@@ -11,82 +11,61 @@
 package org.eclipse.recommenders.jayes.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * undirected graph
  */
 public class Graph implements Cloneable {
 
-    // we need to remove edges a lot, thats why we use Set here instead of List
-    private List<HashSet<Edge>> adjacency = new ArrayList<HashSet<Edge>>();
+    private final ArrayList<Integer>[] adjacency;
 
-    public List<? extends Set<Edge>> getAdjacency() {
-        return adjacency;
+    public int numberOfVertices() {
+        return adjacency.length;
     }
 
-    public void initialize(final int nodes) {
-        adjacency.clear();
+    @SuppressWarnings("unchecked")
+    public Graph(final int nodes) {
+        adjacency = new ArrayList[nodes];
         for (int i = 0; i < nodes; i++) {
-            adjacency.add(new HashSet<Edge>());
+            adjacency[i] = new ArrayList<Integer>();
         }
     }
 
-    public Edge addEdge(final int v1, final int v2) {
-        for (int i = 0; i < Math.max(v1, v2) - adjacency.size(); i++) {
-            adjacency.add(new HashSet<Edge>());
+    public void addEdge(final int v1, final int v2) {
+        addOrdered(adjacency[v1], v2);
+        addOrdered(adjacency[v2], v1);
+    }
+
+    private void addOrdered(List<Integer> list, int v2) {
+        int i = Collections.binarySearch(list, v2);
+        if (i < 0) {
+            list.add(-i - 1, v2);
         }
-        final Edge e = new Edge(v1, v2);
-        adjacency.get(v1).add(e);
-        adjacency.get(v2).add(e.initializeBackEdge());
-        return e;
     }
 
-    public void removeEdge(final Edge e) {
-        adjacency.get(e.getFirst()).remove(e);
-        adjacency.get(e.getSecond()).remove(e.getBackEdge());
+    public void removeEdge(final int v1, final int v2) {
+        removeOrdered(adjacency[v1], v2);
+        removeOrdered(adjacency[v2], v1);
     }
 
-    public Set<Edge> getIncidentEdges(final int v) {
-        return adjacency.get(v);
+    private void removeOrdered(List<Integer> list, int v2) {
+        int i = Collections.binarySearch(list, v2);
+        if (i >= 0) {
+            list.remove(i);
+        }
     }
 
     public void removeIncidentEdges(int v) {
-        Set<Edge> edges = getIncidentEdges(v);
-        for (Edge e : edges) {
-            adjacency.get(e.getSecond()).remove(e.getBackEdge());
+        for (int n : adjacency[v]) {
+            removeOrdered(adjacency[n], v);
         }
-        adjacency.get(v).clear();
+        adjacency[v].clear();
     }
 
     public List<Integer> getNeighbors(int var) {
-        Set<Edge> incidentEdges = getIncidentEdges(var);
-        List<Integer> elementNeighbors = new ArrayList<Integer>(incidentEdges.size());
-        for (Edge e : incidentEdges) {
-            elementNeighbors.add(e.getSecond());
-        }
-        return elementNeighbors;
-    }
-
-    public static class Edge extends OrderIgnoringPair<Integer> {
-
-        private Edge backEdge;
-
-        public Edge(final Integer o1, final Integer o2) {
-            super(o1, o2);
-        }
-
-        public Edge initializeBackEdge() {
-            backEdge = new Edge(getSecond(), getFirst());
-            backEdge.backEdge = this;
-            return getBackEdge();
-        }
-
-        public Edge getBackEdge() {
-            return backEdge;
-        }
+        return adjacency[var];
     }
 
     @SuppressWarnings("unchecked")
@@ -94,9 +73,8 @@ public class Graph implements Cloneable {
     public Graph clone() {
         try {
             Graph clone = (Graph) super.clone();
-            clone.adjacency = new ArrayList<HashSet<Edge>>(adjacency.size());
-            for (HashSet<Edge> edges : adjacency) {
-                clone.adjacency.add((HashSet<Edge>) edges.clone());
+            for (int i = 0; i < adjacency.length; i++) {
+                clone.adjacency[i] = (ArrayList<Integer>) adjacency[i].clone();
             }
             return clone;
         } catch (CloneNotSupportedException e) {

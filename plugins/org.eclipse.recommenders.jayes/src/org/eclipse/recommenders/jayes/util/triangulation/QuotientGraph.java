@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.util.triangulation;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,52 +25,60 @@ import org.eclipse.recommenders.jayes.util.Graph;
  */
 public class QuotientGraph {
 
-    private final Graph variables;
-    private final Graph variablesToElements;
+    private final Graph graph;
+    private final boolean[] isElement;
 
     private final Set<Integer>[] neighborCache;
 
     @SuppressWarnings("unchecked")
     public QuotientGraph(Graph graph) {
-        this.variables = graph.clone();
-        this.variablesToElements = new Graph();
-        variablesToElements.initialize(variables.getAdjacency().size());
-        neighborCache = new Set[variables.getAdjacency().size()];
+        this.graph = graph.clone();
+        isElement = new boolean[graph.numberOfVertices()];
+        neighborCache = new Set[graph.numberOfVertices()];
     }
 
     public Set<Integer> getNeighbors(int variable) {
         if (neighborCache[variable] != null) {
             return neighborCache[variable];
         }
-        Set<Integer> neighbors = new LinkedHashSet<Integer>(variables.getNeighbors(variable));
-        for (Integer neighbor : variablesToElements.getNeighbors(variable)) {
-            neighbors.addAll(variablesToElements.getNeighbors(neighbor));
+        Set<Integer> neighbors = new LinkedHashSet<Integer>();
+        if (!isElement[variable]) {
+            for (int neighbor : graph.getNeighbors(variable)) {
+                if (isElement[neighbor]) {
+                    neighbors.addAll(graph.getNeighbors(neighbor));
+                } else {
+                    neighbors.add(neighbor);
+                }
+            }
+            neighbors.remove(variable);
         }
-        neighbors.remove(variable);
         neighborCache[variable] = neighbors;
         return neighborCache[variable];
     }
 
     public void eliminate(int variable) {
+        if (isElement[variable]) {
+            throw new IllegalArgumentException("variable already eliminated");
+        }
+
         Set<Integer> neighbors = getNeighbors(variable);
         neighborCache[variable] = null;
         for (Integer neighbor : neighbors) {
             neighborCache[neighbor] = null;
         }
 
-        for (Integer elementNeighbor : variablesToElements.getNeighbors(variable)) { // merge eliminated nodes
-            merge(variablesToElements, variable, elementNeighbor);
+        for (int elementNeighbor : new ArrayList<Integer>(graph.getNeighbors(variable))) { // merge eliminated nodes
+            if (isElement[elementNeighbor])
+                merge(graph, variable, elementNeighbor);
         }
-        for (Integer neighbor : variables.getNeighbors(variable)) { // interconnect neighbors
-            variablesToElements.addEdge(variable, neighbor);
-        }
-        virtualRemoveNode(variables, variable);
+
+        isElement[variable] = true;
     }
 
     private void merge(Graph graph, int v1, int v2) {
-        for (int e2 : graph.getNeighbors(v2)) {
-            if (v1 != e2) {
-                graph.addEdge(v1, e2);
+        for (int n : graph.getNeighbors(v2)) {
+            if (v1 != n) {
+                graph.addEdge(v1, n);
             }
         }
         virtualRemoveNode(graph, v2);
