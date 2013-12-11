@@ -216,4 +216,8 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         }
     }
 
+    public void clearCache() {
+        projectCoordianteCache.invalidateAll();
+    }
+
 }

@@ -97,6 +97,7 @@ public final class SharedImages implements IDisposable {
         ELCL_SYNCED(elcl16("synced.gif")),
         ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")),
         ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.gif")),
+        ELCL_CLEAR(elcl16("clear.gif")),
         OBJ_CHECK_GREEN(obj16("tick_small.png")),
         OBJ_CROSS_RED(obj16("cross_small.png")),
         OBJ_BULLET_BLUE(obj16("bullet_blue.png")),

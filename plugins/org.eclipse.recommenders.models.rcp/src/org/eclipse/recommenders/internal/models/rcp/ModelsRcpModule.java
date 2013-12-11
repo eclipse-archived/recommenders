@@ -57,7 +57,9 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         requestStaticInjection(Dependencies.class);
         //
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(SINGLETON);
-        bind(IProjectCoordinateAdvisorService.class).to(EclipseProjectCoordinateAdvisorService.class).in(SINGLETON);
+
+        bind(EclipseProjectCoordinateAdvisorService.class).in(SINGLETON);
+        bind(IProjectCoordinateAdvisorService.class).to(EclipseProjectCoordinateAdvisorService.class);
 
         // bind all clients of IRecommendersModelIndex or its super interface IModelArchiveCoordinateProvider to a
         // single instance in Eclipse:

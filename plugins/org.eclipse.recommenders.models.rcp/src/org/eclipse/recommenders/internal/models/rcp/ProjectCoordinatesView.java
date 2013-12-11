@@ -15,11 +15,13 @@ import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.presentInstances;
 import static com.google.common.collect.Iterables.get;
 import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
 import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_CLEAR;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
@@ -41,6 +43,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -154,9 +157,121 @@ public class ProjectCoordinatesView extends ViewPart {
 
         addSortingFunctionality();
         addFilterFunctionality();
+        addClearCacheButton();
         addRefreshButton();
 
         refreshData();
+    }
+
+    private void addSortingFunctionality() {
+        comparator = new TableComparator();
+        tableViewer.setComparator(comparator);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            TableColumn column = table.getColumn(i);
+            column.addSelectionListener(new SelectionListener(column, i));
+        }
+        table.setSortDirection(SWT.UP);
+        table.setSortColumn(locationColumn.getColumn());
+    }
+
+    private void addFilterFunctionality() {
+        final ViewerFilter manualAssignedFilter = new ViewerFilter() {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element) {
+                if (element instanceof Entry) {
+                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
+                    return isManualMapping(value);
+                }
+                return false;
+            }
+
+            private boolean isManualMapping(Collection<Optional<ProjectCoordinate>> pcs) {
+                int indexOfManualMapping = pcAdvisorsService.getAdvisors().indexOf(manualPcAdvisor);
+                Optional<ProjectCoordinate> opc = get(pcs, indexOfManualMapping);
+                return opc.isPresent();
+            }
+        };
+
+        final ViewerFilter conflictingCoordinatesFilter = new ViewerFilter() {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element) {
+                if (element instanceof Entry) {
+                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
+                    return newHashSet(presentInstances(value)).size() > 1;
+                }
+                return false;
+            }
+        };
+
+        final ViewerFilter missingCoordinatesFilter = new ViewerFilter() {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element) {
+                if (element instanceof Entry) {
+                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
+                    return isEmpty(presentInstances(value));
+                }
+                return true;
+            }
+        };
+
+        IAction showAll = new Action("All", Action.AS_RADIO_BUTTON) {
+
+            @Override
+            public void run() {
+                refreshTableUI();
+            }
+
+        };
+
+        IAction showMissingCoord = new TableFilterAction("Only missing coordinates", Action.AS_RADIO_BUTTON,
+                missingCoordinatesFilter);
+        IAction showConflictingCoord = new TableFilterAction("Only conflicting coordinates",
+                Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
+        IAction showManualAssignedCoord = new TableFilterAction("Only manually assigned coordinates",
+                Action.AS_RADIO_BUTTON, manualAssignedFilter);
+
+        MenuManager showMenu = new MenuManager("Show");
+        showMenu.add(showAll);
+        showMenu.add(showMissingCoord);
+        showMenu.add(showConflictingCoord);
+        showMenu.add(showManualAssignedCoord);
+        getViewSite().getActionBars().getMenuManager().add(showMenu);
+        showAll.setChecked(true);
+    }
+
+    private void addClearCacheButton() {
+        Action clearCache = new Action() {
+            @Override
+            public void run() {
+                clearProjectCoordianteCache();
+                refreshData();
+            }
+        };
+        clearCache.setText("Clear cache");
+        clearCache.setImageDescriptor(images.getDescriptor(ELCL_CLEAR));
+        getViewSite().getActionBars().getMenuManager().add(clearCache);
+    }
+
+    private void clearProjectCoordianteCache() {
+        pcAdvisorsService.clearCache();
+    }
+
+    private void addRefreshButton() {
+
+        IAction refreshAction = new Action() {
+
+            @Override
+            public void run() {
+                refreshData();
+            }
+        };
+        refreshAction.setToolTipText("Refresh");
+        refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
+
+        getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
 
     class ProjectCoordinateEditing extends EditingSupport {
@@ -225,8 +340,8 @@ public class ProjectCoordinatesView extends ViewPart {
                         manualPcAdvisor.setManualMapping(dependencyInfo, valueOf);
                         bus.post(new ProjectCoordinateChangeEvent(dependencyInfo));
                     } catch (Exception e) {
-                        MessageDialog.openError(table.getShell(), "Input value has wrong format!",
-                                String.format("The value '%s' did not have the right format.", value));
+                        MessageDialog.openError(table.getShell(), "Invalid coordinate format.",
+                                String.format("The value '%s' did not have the right format.\nExpected format: groupId:artifactId:x.y.z", value));
                         return;
                     }
                 }
@@ -237,17 +352,6 @@ public class ProjectCoordinatesView extends ViewPart {
              */
             refreshData();
         }
-    }
-
-    private void addSortingFunctionality() {
-        comparator = new TableComparator();
-        tableViewer.setComparator(comparator);
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            TableColumn column = table.getColumn(i);
-            column.addSelectionListener(new SelectionListener(column, i));
-        }
-        table.setSortDirection(SWT.UP);
-        table.setSortColumn(locationColumn.getColumn());
     }
 
     class ContentProvider implements IStructuredContentProvider {
@@ -283,11 +387,13 @@ public class ProjectCoordinatesView extends ViewPart {
             protected IStatus run(IProgressMonitor monitor) {
                 monitor.beginTask("Resolving dependencies", dependencyInfos.size());
                 strategies = pcAdvisorsService.getAdvisors();
-                for (DependencyInfo dependency : dependencyInfos) {
-                    monitor.subTask("Resolving: " + dependency.getFile().getName());
+                for (DependencyInfo dependencyInfo : dependencyInfos) {
+                    monitor.subTask("Resolving: " + dependencyInfo.getFile().getName());
                     for (IProjectCoordinateAdvisor strategy : strategies) {
-                        data.put(dependency, strategy.suggest(dependency));
+                        data.put(dependencyInfo, strategy.suggest(dependencyInfo));
                     }
+                    // Put the cached value as last element.
+                    data.put(dependencyInfo, pcAdvisorsService.suggest(dependencyInfo));
                     monitor.worked(1);
                 }
                 refreshUI();
@@ -432,73 +538,6 @@ public class ProjectCoordinatesView extends ViewPart {
         }
     }
 
-    private void addFilterFunctionality() {
-        final ViewerFilter manualAssignedFilter = new ViewerFilter() {
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element) {
-                if (element instanceof Entry) {
-                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
-                    return isManualMapping(value);
-                }
-                return false;
-            }
-
-            private boolean isManualMapping(Collection<Optional<ProjectCoordinate>> pcs) {
-                int indexOfManualMapping = pcAdvisorsService.getAdvisors().indexOf(manualPcAdvisor);
-                Optional<ProjectCoordinate> opc = get(pcs, indexOfManualMapping);
-                return opc.isPresent();
-            }
-        };
-
-        final ViewerFilter conflictingCoordinatesFilter = new ViewerFilter() {
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element) {
-                if (element instanceof Entry) {
-                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
-                    return newHashSet(presentInstances(value)).size() > 1;
-                }
-                return false;
-            }
-        };
-
-        final ViewerFilter missingCoordinatesFilter = new ViewerFilter() {
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element) {
-                if (element instanceof Entry) {
-                    Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
-                    return isEmpty(presentInstances(value));
-                }
-                return true;
-            }
-        };
-
-        IAction showAll = new Action("Show all", Action.AS_RADIO_BUTTON) {
-
-            @Override
-            public void run() {
-                refreshTableUI();
-            }
-
-        };
-
-        IAction showMissingCoord = new TableFilterAction("Show only missing coordinates", Action.AS_RADIO_BUTTON,
-                missingCoordinatesFilter);
-        IAction showConflictingCoord = new TableFilterAction("Show only conflicting coordinates",
-                Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
-        IAction showManualAssignedCoord = new TableFilterAction("Show only manually assigned coordinates",
-                Action.AS_RADIO_BUTTON, manualAssignedFilter);
-
-        getViewSite().getActionBars().getMenuManager().add(showAll);
-        getViewSite().getActionBars().getMenuManager().add(showMissingCoord);
-        getViewSite().getActionBars().getMenuManager().add(showConflictingCoord);
-        getViewSite().getActionBars().getMenuManager().add(showManualAssignedCoord);
-        showAll.setChecked(true);
-
-    }
-
     class TableFilterAction extends Action {
 
         private ViewerFilter filter;
@@ -529,21 +568,6 @@ public class ProjectCoordinatesView extends ViewPart {
             return false;
         }
 
-    }
-
-    private void addRefreshButton() {
-
-        IAction refreshAction = new Action() {
-
-            @Override
-            public void run() {
-                refreshData();
-            }
-        };
-        refreshAction.setToolTipText("Refresh");
-        refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
-
-        getViewSite().getActionBars().getToolBarManager().add(refreshAction);
     }
 
     private void refreshData() {
@@ -586,7 +610,8 @@ public class ProjectCoordinatesView extends ViewPart {
                         return name;
                     }
                 case COLUMN_COORDINATE:
-                    Optional<ProjectCoordinate> pc = findFirstMatchingCoordinate(entry.getValue());
+                    // The last element contains the cached value
+                    Optional<ProjectCoordinate> pc = getLast(entry.getValue(), Optional.<ProjectCoordinate>absent());
                     if (pc.isPresent()) {
                         return pc.get().toString();
                     }
