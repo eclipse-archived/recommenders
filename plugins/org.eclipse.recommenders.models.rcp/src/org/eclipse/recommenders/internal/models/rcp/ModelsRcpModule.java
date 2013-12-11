@@ -20,6 +20,8 @@ import javax.inject.Singleton;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
@@ -34,17 +36,24 @@ import org.eclipse.ui.IWorkbench;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule implements Module {
 
+    private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models";
+    private static final String MODEL_CLASSIFIER_ATTRIBUTE = "classifier";
+
     public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
+    public static final String MODEL_CLASSIFIER = "MODEL_CLASSIFIER";
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
     public static final String INDEX_BASEDIR = "INDEX_BASEDIR";
     public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS";
@@ -125,4 +134,21 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         ModelsRcpPreferences prefs = ContextInjectionFactory.make(ModelsRcpPreferences.class, context);
         return prefs;
     }
+
+    @Provides
+    @Named(MODEL_CLASSIFIER)
+    public ImmutableSet<String> provideModelClassifiers() {
+
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXT_ID_MODEL_CLASSIFIER);
+
+        Builder<String> builder = ImmutableSet.builder();
+        for (IConfigurationElement element : elements) {
+            String classifier = element.getAttribute(MODEL_CLASSIFIER_ATTRIBUTE);
+            builder.add(classifier);
+        }
+
+        return builder.build();
+    }
+
 }

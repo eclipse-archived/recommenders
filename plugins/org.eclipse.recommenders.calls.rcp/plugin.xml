@@ -59,4 +59,10 @@
             name="Call Recommendations">
       </provider>
    </extension>
+   <extension
+         point="org.eclipse.recommenders.models.rcp.models">
+      <model
+            classifier="call">
+      </model>
+   </extension>
 </plugin>

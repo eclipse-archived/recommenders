@@ -33,5 +33,11 @@
             class="org.eclipse.recommenders.internal.overrides.rcp.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.recommenders.models.rcp.models">
+      <model
+            classifier="ovrm">
+      </model>
+   </extension>
 
 </plugin>

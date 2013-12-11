@@ -17,8 +17,6 @@ import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
-import com.google.common.collect.ImmutableList;
-
 public abstract class Constants {
 
     /*
@@ -96,9 +94,6 @@ public abstract class Constants {
     public static final String CLASS_CHAIN_MODEL = "chain";
     /** {@value} */
     public static final String CLASS_OUP_DATA = "oups";
-    /** {@value} */
-    public static final ImmutableList<String> MODEL_CLASSIFIER = ImmutableList.of(CLASS_CALL_MODELS, CLASS_OVRD_MODEL,
-            CLASS_OVRP_MODEL, CLASS_OVRM_MODEL, CLASS_SELFC_MODEL, CLASS_SELFM_MODEL);
 
     /*
      * Type and method name constants. Used in many different locations: analysis, networks, etc.

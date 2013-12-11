@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.recommenders.models.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.recommenders.models.rcp" id="org.eclipse.recommenders.models.rcp.advisors" name="Project Coordinate Providers"/>
+         <meta.schema plugin="org.eclipse.recommenders.models.rcp" id="org.eclipse.recommenders.models.rcp.advisors" name="%extension-point.name.advisors"/>
       </appinfo>
       <documentation>
          

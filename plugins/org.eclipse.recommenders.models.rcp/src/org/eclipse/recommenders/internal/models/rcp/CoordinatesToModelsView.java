@@ -10,10 +10,14 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
+import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +44,6 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChang
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForDependencyInfosAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -50,30 +53,37 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.name.Named;
 
 public class CoordinatesToModelsView extends ViewPart {
 
     private TreeViewer treeViewer;
-    private EclipseDependencyListener dependencyListener;
-    IProjectCoordinateProvider pcProvider;
-    IModelIndex modelIndex;
-    EclipseModelRepository eclipseModelRepository;
-    private SharedImages images;
-    private EventBus bus;
+    private final EclipseDependencyListener dependencyListener;
+    private final IProjectCoordinateProvider pcProvider;
+    private final IModelIndex modelIndex;
+    private final EclipseModelRepository eclipseModelRepository;
+    private final SharedImages images;
+    private final EventBus bus;
+    private final List<String> modelClassifiers;
 
     @Inject
     public CoordinatesToModelsView(final EventBus workspaceBus,
             final EclipseDependencyListener eclipseDependencyListener, final IProjectCoordinateProvider pcProvider,
-            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository, SharedImages images) {
+            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository, SharedImages images,
+            @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers) {
         bus = workspaceBus;
         dependencyListener = eclipseDependencyListener;
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
         this.eclipseModelRepository = eclipseModelRepository;
         this.images = images;
+        this.modelClassifiers = Lists.newArrayList(modelClassifiers);
+        Collections.sort(this.modelClassifiers);
         bus.register(this);
     }
 
@@ -85,12 +95,11 @@ public class CoordinatesToModelsView extends ViewPart {
         dependencyTree.setLinesVisible(true);
         createColumn(dependencyTree, "Dependency", 400);
         createColumn(dependencyTree, "Project Coordinate", 200);
-        createColumn(dependencyTree, "CALL", 50);
-        createColumn(dependencyTree, "OVRM", 50);
-        createColumn(dependencyTree, "OVRP", 50);
-        createColumn(dependencyTree, "OVRD", 50);
-        createColumn(dependencyTree, "SELFC", 50);
-        createColumn(dependencyTree, "SELFM", 50);
+
+        for (String classifier : modelClassifiers) {
+            createColumn(dependencyTree, classifier.toUpperCase(), 50);
+        }
+
         treeViewer = new TreeViewer(dependencyTree);
         treeViewer.setContentProvider(new ContentProvider());
         treeViewer.setLabelProvider(new LabelProvider());
@@ -113,7 +122,7 @@ public class CoordinatesToModelsView extends ViewPart {
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
                     menuManager.add(new TriggerModelDownloadForDependencyInfosAction("Download models", deps,
-                            Constants.MODEL_CLASSIFIER, pcProvider, modelIndex, eclipseModelRepository, bus));
+                            modelClassifiers, pcProvider, modelIndex, eclipseModelRepository, bus));
                 }
             }
         });
@@ -251,29 +260,9 @@ public class CoordinatesToModelsView extends ViewPart {
                     ProjectCoordinate pc = pcProvider.resolve(dependency.info).orNull();
                     return pc == null ? null : pc.toString();
                 }
-            case 2:
+            default:
                 if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_CALL_MODELS);
-                }
-            case 3:
-                if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_OVRM_MODEL);
-                }
-            case 4:
-                if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_OVRP_MODEL);
-                }
-            case 5:
-                if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_OVRD_MODEL);
-                }
-            case 6:
-                if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_SELFC_MODEL);
-                }
-            case 7:
-                if (element instanceof Dependency) {
-                    return findModelCoordinateVersion((Dependency) element, Constants.CLASS_SELFM_MODEL);
+                    return findModelCoordinateVersion((Dependency) element, modelClassifiers.get(columnIndex - 2));
                 }
             }
             return null;

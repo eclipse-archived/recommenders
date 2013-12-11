@@ -43,5 +43,23 @@
              name="Templates">
        </provider>
    </extension>
+   <extension
+         point="org.eclipse.recommenders.models.rcp.models">
+      <model
+            classifier="call">
+      </model>
+      <model
+            classifier="selfc">
+      </model>
+      <model
+            classifier="selfm">
+      </model>
+      <model
+            classifier="ovrp">
+      </model>
+      <model
+            classifier="ovrd">
+      </model>
+   </extension>
 
 </plugin>

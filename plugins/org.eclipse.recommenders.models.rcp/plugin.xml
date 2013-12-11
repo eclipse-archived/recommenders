@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension-point id="org.eclipse.recommenders.models.rcp.advisors" name="%extension-point.name" schema="schema/advisors.exsd"/>
+	<extension-point id="org.eclipse.recommenders.models.rcp.advisors" name="%extension-point.name.advisors" schema="schema/advisors.exsd"/>
+	<extension-point id="org.eclipse.recommenders.models.rcp.models" name="%extension-point.name.models" schema="schema/models.exsd"/>
 	<extension point="org.eclipse.recommenders.injection.modules">
 		<module class="org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule"/>
 	</extension>
