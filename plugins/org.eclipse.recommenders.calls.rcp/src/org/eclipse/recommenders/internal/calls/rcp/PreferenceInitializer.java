@@ -27,5 +27,6 @@ public final class PreferenceInitializer extends AbstractPreferenceInitializer {
         node.putBoolean(P_DECORATE_PROPOSAL_ICON, true);
         node.putBoolean(P_DECORATE_PROPOSAL_TEXT, true);
         node.putBoolean(P_UPDATE_PROPOSAL_RELEVANCE, true);
+        node.putBoolean(P_HIGHLIGHT_USED_PROPOSALS, true);
     }
 }

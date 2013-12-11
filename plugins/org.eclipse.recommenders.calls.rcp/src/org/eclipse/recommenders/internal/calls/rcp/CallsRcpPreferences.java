@@ -41,6 +41,10 @@ public class CallsRcpPreferences {
     public boolean decorateProposalText;
 
     @Inject
+    @Preference(P_HIGHLIGHT_USED_PROPOSALS)
+    public boolean highlightUsedProposals;
+
+    @Inject
     @Preference
     public IEclipsePreferences store;
 }

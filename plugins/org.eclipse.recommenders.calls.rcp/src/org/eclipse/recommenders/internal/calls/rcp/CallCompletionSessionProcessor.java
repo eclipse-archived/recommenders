@@ -36,7 +36,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameRefere
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.calls.ICallModel;
-import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.NullCallModel;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
@@ -57,7 +56,7 @@ import com.google.common.collect.Lists;
 @SuppressWarnings({ "serial", "restriction" })
 public class CallCompletionSessionProcessor extends SessionProcessor {
 
-    private final Set<Class<?>> supportedCompletionRequests = new HashSet<Class<?>>() {
+    private final Set<Class<? extends ASTNode>> supportedCompletionRequests = new HashSet<Class<? extends ASTNode>>() {
         {
             add(CompletionOnMemberAccess.class);
             add(CompletionOnMessageSend.class);
@@ -77,6 +76,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private CallsRcpPreferences prefs;
     private ImageDescriptor overlay;
+    private HashSet<IMethodName> observedCalls;
 
     @Inject
     public CallCompletionSessionProcessor(final IProjectCoordinateProvider pcProvider,
@@ -120,7 +120,16 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private boolean isCompletionRequestSupported() {
         final ASTNode node = ctx.getCompletionNode().orNull();
-        return node == null ? false : supportedCompletionRequests.contains(node.getClass());
+        if (node == null) {
+            return false;
+        } else {
+            for (Class<? extends ASTNode> supportedCompletionRequest : supportedCompletionRequests) {
+                if (supportedCompletionRequest.isInstance(node)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private boolean findRecommendations() {
@@ -135,8 +144,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         // set definition-type and defined-by
         model.setObservedDefinitionKind(ctx.get(RECEIVER_DEF_TYPE, null));
         model.setObservedDefiningMethod(ctx.get(RECEIVER_DEF_BY, null));
-        // set calls:
-        model.setObservedCalls(newHashSet(ctx.get(RECEIVER_CALLS, Collections.<IMethodName>emptyList())));
+        observedCalls = newHashSet(ctx.get(RECEIVER_CALLS, Collections.<IMethodName>emptyList()));
+        model.setObservedCalls(observedCalls);
 
         // read
         recommendations = model.recommendCalls();
@@ -166,28 +175,58 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
         case CompletionProposal.METHOD_NAME_REFERENCE:
             final ProposalMatcher matcher = new ProposalMatcher(coreProposal);
-            for (final Recommendation<IMethodName> call : recommendations) {
-                final IMethodName crMethod = call.getProposal();
-                if (!matcher.match(crMethod)) {
-                    continue;
+
+            if (prefs.highlightUsedProposals && handleAlreadyUsedProposal(proposal, matcher)) {
+                return;
+            }
+            handleRecommendation(proposal, matcher);
+        }
+    }
+
+    private boolean handleAlreadyUsedProposal(IProcessableProposal proposal, ProposalMatcher matcher) {
+        for (IMethodName observed : observedCalls) {
+            if (matcher.match(observed)) {
+                String label = "";
+                if (prefs.decorateProposalText) {
+                    label = "used";
                 }
                 int relevance = 0;
                 if (prefs.changeProposalRelevance) {
-                    relevance = 200 + asPercentage(call);
-                    proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
-                }
-                String label = "";
-                if (prefs.decorateProposalText) {
-                    label = asPercentage(call) + " %";
-                }
-                if (prefs.decorateProposalIcon) {
-                    overlay(proposal, overlay);
+                    relevance = 1;
                 }
                 ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
                 mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
-                // we found the proposal we are looking for. So quit.
-                break;
+                if (prefs.decorateProposalIcon) {
+                    overlay(proposal, overlay);
+                }
+                return true;
             }
+        }
+        return false;
+    }
+
+    private void handleRecommendation(IProcessableProposal proposal, ProposalMatcher matcher) {
+        for (final Recommendation<IMethodName> call : recommendations) {
+            final IMethodName crMethod = call.getProposal();
+            if (!matcher.match(crMethod)) {
+                continue;
+            }
+            int relevance = 0;
+            if (prefs.changeProposalRelevance) {
+                relevance = 200 + asPercentage(call);
+                proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
+            }
+            String label = "";
+            if (prefs.decorateProposalText) {
+                label = asPercentage(call) + " %";
+            }
+            if (prefs.decorateProposalIcon) {
+                overlay(proposal, overlay);
+            }
+            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+            mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
+            // we found the proposal we are looking for. So quit.
+            return;
         }
     }
 

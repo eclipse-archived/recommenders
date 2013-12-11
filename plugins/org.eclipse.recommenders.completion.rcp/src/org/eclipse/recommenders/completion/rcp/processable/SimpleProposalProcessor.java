@@ -17,8 +17,8 @@ import org.eclipse.jface.viewers.StyledString;
 
 public class SimpleProposalProcessor extends ProposalProcessor {
 
-    private int increment;
-    private String addon;
+    private final int increment;
+    private final String addon;
 
     public SimpleProposalProcessor(int increment, String addon) {
         this.increment = increment;
@@ -39,5 +39,35 @@ public class SimpleProposalProcessor extends ProposalProcessor {
         if (!isEmpty(addon)) {
             displayString.append(" - " + addon, COUNTER_STYLER);
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (this.getClass() != other.getClass()) {
+            return false;
+        }
+        SimpleProposalProcessor that = (SimpleProposalProcessor) other;
+        if (this.addon == null && that.addon != null || !this.addon.equals(that.addon)) {
+            return false;
+        }
+        if (this.increment != that.increment) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((addon == null) ? 0 : addon.hashCode());
+        result = prime * result + increment;
+        return result;
     }
 }

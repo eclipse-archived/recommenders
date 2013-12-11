@@ -34,6 +34,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
                 getFieldEditorParent()));
         addField(new BooleanFieldEditor(P_DECORATE_PROPOSAL_TEXT, "Enable proposal text decorations.",
                 getFieldEditorParent()));
+        addField(new BooleanFieldEditor(P_HIGHLIGHT_USED_PROPOSALS, "Highlight proposals of already observed methods.",
+                getFieldEditorParent()));
 
     }
 
