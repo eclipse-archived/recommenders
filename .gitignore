@@ -7,6 +7,7 @@
 *.class
 bin/
 target/
+workspace/
 .recommenders/
 aggregators/
 screenshots/

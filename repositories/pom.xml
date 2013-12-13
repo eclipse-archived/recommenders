@@ -20,6 +20,8 @@
 		<module>stable</module>
 		<!-- Contains features that are contributed to the current simultaneous release. -->
 		<module>simrel</module>
+		<!-- Composite update site referring to Code Recommenders Incubator projects. -->
+		<module>incubators</module>
 	</modules>
 	<properties>
 		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>
@@ -28,6 +30,7 @@
 		<statsTrackedArtifacts>org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature,org.eclipse.recommenders.simrel.feature</statsTrackedArtifacts>
 	</properties>
 	<build>
+		<outputDirectory>${project.build.directory}/repository</outputDirectory>
 		<pluginManagement>
 			<plugins>
 				<plugin>
