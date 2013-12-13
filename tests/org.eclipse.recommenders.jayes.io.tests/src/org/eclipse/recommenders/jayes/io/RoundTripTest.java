@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.eclipse.recommenders.commons.bayesnet.CommonsReader;
+import org.eclipse.recommenders.commons.bayesnet.CommonsWriter;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.jbif.JayesBifReader;
@@ -55,6 +57,7 @@ public class RoundTripTest {
         scenarios.add(scenario(JayesBifReader.class, JayesBifWriter.class));
         scenarios.add(scenario(XDSLReader.class, XDSLWriter.class));
         scenarios.add(scenario(XMLBIFReader.class, XMLBIFWriter.class));
+        scenarios.add(scenario(CommonsReader.class, CommonsWriter.class));
 
         return scenarios;
     }
