@@ -11,19 +11,9 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_ADD_REPOSITORY;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_COLLAPSE_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_DELETE;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_EXPAND_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REMOVE_REPOSITORY;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_BULLET_BLUE;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CHECK_GREEN;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CROSS_RED;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_REPOSITORY;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -84,6 +76,7 @@ import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -112,14 +105,13 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 public class ModelRepositoriesView extends ViewPart {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelRepositoriesView.class);
 
-    private DataBindingContext m_bindingContext;
+    private DataBindingContext bindingContext;
 
     private Tree tree;
 
@@ -199,11 +191,11 @@ public class ModelRepositoriesView extends ViewPart {
         tree.setHeaderVisible(true);
         tree.setLinesVisible(true);
 
-        TreeViewerColumn tvcPrimary = new TreeViewerColumn(treeViewer, SWT.NONE);
-        TreeColumn tcPrimary = tvcPrimary.getColumn();
-        treeLayout.setColumnData(tcPrimary, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-        tcPrimary.setText("Repository");
-        tvcPrimary.setLabelProvider(new StyledCellLabelProvider() {
+        TreeViewerColumn repositoryViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
+        TreeColumn repositoryColumn = repositoryViewerColumn.getColumn();
+        treeLayout.setColumnData(repositoryColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+        repositoryColumn.setText("Repository");
+        repositoryViewerColumn.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
             public void update(ViewerCell cell) {
@@ -226,8 +218,9 @@ public class ModelRepositoriesView extends ViewPart {
 
         });
 
+        int minWidth = calculateMinColumnWidthForClassifier();
         for (String classifier : modelClassifiers) {
-            newColumn(treeLayout, classifier);
+            newColumn(treeLayout, classifier, minWidth);
         }
 
         treeViewer.setContentProvider(new ITreeContentProvider() {
@@ -342,7 +335,20 @@ public class ModelRepositoriesView extends ViewPart {
         });
 
         addContextMenu();
-        m_bindingContext = initDataBindings();
+        bindingContext = initDataBindings();
+    }
+
+    private int calculateMinColumnWidthForClassifier() {
+        GC gc = new GC(tree);
+        int maxLength = 0;
+        for (String classifier : modelClassifiers) {
+            int extent = gc.textExtent(classifier).x;
+            if (extent > maxLength) {
+                maxLength = extent;
+            }
+        }
+        gc.dispose();
+        return maxLength;
     }
 
     private ImmutableListMultimap<String, KnownCoordinate> groupByUrl(List<KnownCoordinate> values) {
@@ -456,14 +462,14 @@ public class ModelRepositoriesView extends ViewPart {
         });
     }
 
-    private void newColumn(TreeColumnLayout treeLayout, final String classifier) {
-        TreeViewerColumn tvColumn = new TreeViewerColumn(treeViewer, SWT.CENTER);
-        TreeColumn column = tvColumn.getColumn();
-        column.setMoveable(true);
-        column.setResizable(false);
-        treeLayout.setColumnData(column, new ColumnPixelData(20, false, true));
-        column.setText(classifier.toUpperCase());
-        tvColumn.setLabelProvider(new ColumnLabelProvider() {
+    private void newColumn(TreeColumnLayout treeLayout, final String classifier, int minWidth) {
+        TreeViewerColumn classifierViewerColumn = new TreeViewerColumn(treeViewer, SWT.CENTER);
+        TreeColumn classifierColumn = classifierViewerColumn.getColumn();
+        classifierColumn.setMoveable(true);
+        classifierColumn.setResizable(false);
+        treeLayout.setColumnData(classifierColumn, new ColumnPixelData(minWidth, false, true));
+        classifierColumn.setText(classifier.toUpperCase());
+        classifierViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
             public String getText(Object element) {
@@ -562,6 +568,7 @@ public class ModelRepositoriesView extends ViewPart {
     // needs to be public to work with PojoProperties
     public void setFilter(final String filter) {
         treeViewer.getTree().setRedraw(false);
+        PatternFilter patternFilter = new KnownCoordinatePatternFilter();
         patternFilter.setPattern("*" + filter);
         treeViewer.setFilters(new ViewerFilter[] { patternFilter });
         treeViewer.getTree().setRedraw(true);
@@ -571,7 +578,7 @@ public class ModelRepositoriesView extends ViewPart {
     @Override
     public void dispose() {
         super.dispose();
-        m_bindingContext.dispose();
+        bindingContext.dispose();
         bus.unregister(this);
     }
 
@@ -663,8 +670,6 @@ public class ModelRepositoriesView extends ViewPart {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     repo.deleteModels();
-                    // TODO Would be nice to have something like schule(job1).then(job2), rather than having the first
-                    // job schedule the second.
                     refreshData();
                     return Status.OK_STATUS;
                 } catch (IOException e) {
