@@ -108,6 +108,7 @@ public class Zips {
             zos = new ZipOutputStream(s.getOutput());
             for (File f : FileUtils.listFiles(directory, FILE, DIRECTORY)) {
                 String path = removeStart(f.getPath(), directory.getAbsolutePath() + File.separator);
+                path = path.replace(File.separatorChar, '/');
                 ZipEntry e = new ZipEntry(path);
                 zos.putNextEntry(e);
                 byte[] data = Files.toByteArray(f);
