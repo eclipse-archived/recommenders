@@ -29,8 +29,48 @@
 		<!-- At the moment, this list of features needs to be maintained manually. -->
 		<statsTrackedArtifacts>org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature,org.eclipse.recommenders.simrel.feature</statsTrackedArtifacts>
 	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.recommenders</groupId>
+			<artifactId>repository-resources</artifactId>
+			<version>${recommenders-version}</version>
+			<!-- Needed to determine reactor build order only; not a runtime dependency. -->
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<outputDirectory>${project.build.directory}/repository</outputDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>process-repository-resources</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<resourceBundles>
+								<resourceBundle>org.eclipse.recommenders:repository-resources:${recommenders-version}</resourceBundle>
+							</resourceBundles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>resources</id>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>

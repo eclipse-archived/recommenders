@@ -11,8 +11,8 @@
 	</feature>
 	<!-- IDs are shared among all Eclipse Code Recommenders (Incubator) updates sites; this allows them to be merged on composite sites. -->
 	<category-def name="org.eclipse.recommenders.repositories.categories.main" label="Code Recommenders"/>
-	<category-def name="org.eclipse.recommenders.repositories.categories.incubators" label="Code Recommenders: Incubator Projects"/>
-	<category-def name="org.eclipse.recommenders.repositories.categories.sources" label="Code Recommenders: Sources"/>
-	<category-def name="org.eclipse.recommenders.repositories.categories.deps" label="Code Recommenders: Dependencies (do not install manually)"/>
-	<category-def name="org.eclipse.recommenders.repositories.categories.migration" label="Code Recommenders: Migration Support (do not install manually)"/>
+	<category-def name="org.eclipse.recommenders.repositories.categories.incubators" label="Code Recommenders Incubator Projects"/>
+	<category-def name="org.eclipse.recommenders.repositories.categories.sources" label="Code Recommenders Sources"/>
+	<category-def name="org.eclipse.recommenders.repositories.categories.deps" label="Code Recommenders Third-Party Dependencies (do not install manually)"/>
+	<category-def name="org.eclipse.recommenders.repositories.categories.migration" label="Code Recommenders Migration Support (do not install manually)"/>
 </site>

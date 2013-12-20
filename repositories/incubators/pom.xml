@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>incubators</artifactId>
 	<packaging>pom</packaging>
-	<name>Code Recommender Incubators: Update Site</name>
+	<name>Code Recommender Incubators Update Site</name>
 	<build>
 		<plugins>
 			<plugin>

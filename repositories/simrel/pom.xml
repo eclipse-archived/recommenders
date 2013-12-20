@@ -10,6 +10,6 @@
 	</parent>
 	<artifactId>simrel</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Code Recommenders: Simultaneous Release Update Site</name>
+	<name>Code Recommenders Simultaneous-Release Update Site</name>
 	<!-- No mirroring, no stats URI. -->
 </project>

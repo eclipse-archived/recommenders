@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>stable</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Code Recommenders: Stable Update Site</name>
+	<name>Code Recommenders Stable Update Site</name>
 	<profiles>
 		<profile>
 			<id>build-server</id>

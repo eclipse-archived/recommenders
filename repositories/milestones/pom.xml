@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>milestones</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Code Recommenders: Milestones Update Site</name>
+	<name>Code Recommenders Milestones Update Site</name>
 	<profiles>
 		<profile>
 			<id>build-server</id>

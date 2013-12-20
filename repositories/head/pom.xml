@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>head</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Code Recommenders: Head Update Site</name>
+	<name>Code Recommenders Head Update Site</name>
 	<profiles>
 		<profile>
 			<id>build-server</id>
