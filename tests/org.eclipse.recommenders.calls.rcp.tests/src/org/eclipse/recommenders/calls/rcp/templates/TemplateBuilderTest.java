@@ -115,7 +115,7 @@ public class TemplateBuilderTest {
 
     @Test
     public void testToLiteralReferenceType() {
-        assertEquals("java.lang.ExceptionInInitializerError", sut.toLiteral(JavaLangExceptionInInitializerError));
+        assertEquals("java.lang.ExceptionInInitializerError", sut.toLiteral(JAVA_LANG_EXCEPTION_IN_INITIALIZER_ERROR));
     }
 
     @Test

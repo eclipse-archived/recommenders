@@ -60,6 +60,8 @@ import com.google.common.eventbus.EventBus;
 
 public final class JavadocProvider extends ApidocProvider {
 
+    private static final String FG_STYLE_SHEET = loadStyleSheet();
+
     private final EventBus workspaceBus;
     private final JavaElementResolver resolver;
 
@@ -167,8 +169,6 @@ public final class JavadocProvider extends ApidocProvider {
         });
     }
 
-    private static final String fgStyleSheet = loadStyleSheet();
-
     private String findJavadoc(final IMember element) throws JavaModelException {
         String html = JavadocContentAccess2.getHTMLContent(element, true);
         if (html == null) {
@@ -182,7 +182,7 @@ public final class JavadocProvider extends ApidocProvider {
         }
 
         final StringBuffer info = new StringBuffer(512 + html.length());
-        HTMLPrinter.insertPageProlog(info, 0, fgStyleSheet);
+        HTMLPrinter.insertPageProlog(info, 0, FG_STYLE_SHEET);
         info.append(html);
         HTMLPrinter.addPageEpilog(info);
         return info.toString();

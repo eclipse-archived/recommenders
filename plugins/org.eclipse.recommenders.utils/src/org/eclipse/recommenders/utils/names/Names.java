@@ -60,9 +60,9 @@ public class Names {
         }
     }
 
-    public static int STYLE_SHORT = 0;
+    public static final int STYLE_SHORT = 0;
 
-    public static int STYLE_LONG = 1;
+    public static final int STYLE_LONG = 1;
 
     public static final String DOUBLE = "double";
 

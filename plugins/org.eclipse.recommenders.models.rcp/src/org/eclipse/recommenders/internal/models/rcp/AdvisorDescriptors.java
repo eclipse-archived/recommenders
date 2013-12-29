@@ -110,8 +110,9 @@ public class AdvisorDescriptors {
 
     private static AdvisorDescriptor find(List<AdvisorDescriptor> descriptors, String id) {
         for (AdvisorDescriptor descriptor : descriptors) {
-            if (descriptor.getId().equals(id))
+            if (descriptor.getId().equals(id)) {
                 return descriptor;
+            }
         }
         return null;
     }

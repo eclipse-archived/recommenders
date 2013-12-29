@@ -65,6 +65,9 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("restriction")
 public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionProposal implements IProcessableProposal {
 
+    private static final char LESS = '<'; //$NON-NLS-1$
+    private static final char GREATER = '>'; //$NON-NLS-1$
+
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
@@ -723,8 +726,6 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
         buffer.append(getReplacementString());
 
         final FormatterPrefs prefs = getFormatterPrefs();
-        final char LESS = '<';
-        final char GREATER = '>';
         if (!onlyAppendArguments) {
             if (prefs.beforeOpeningBracket) {
                 buffer.append(SPACE);

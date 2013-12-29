@@ -37,6 +37,9 @@ import org.eclipse.recommenders.jayes.util.triangulation.MinFillIn;
 
 public class JunctionTreeAlgorithm extends AbstractInferer {
 
+    private static final double ONE = 1.0;
+    private static final double ONE_LOG = 0.0;
+
     protected Map<OrderIgnoringPair<Integer>, AbstractFactor> sepSets;
     protected Graph junctionTree;
     protected AbstractFactor[] nodePotentials;
@@ -473,9 +476,6 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     }
 
     private void initializePotentialValues() {
-        final double ONE_LOG = 0.0;
-        final double ONE = 1.0;
-
         for (final AbstractFactor f : nodePotentials) {
             f.fill(f.isLogScale() ? ONE_LOG : ONE);
         }

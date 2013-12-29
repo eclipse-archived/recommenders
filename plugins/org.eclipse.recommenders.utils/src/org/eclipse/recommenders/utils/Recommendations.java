@@ -29,7 +29,7 @@ import com.google.common.collect.Ordering;
 @Beta
 public class Recommendations {
 
-    private static Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {
+    private static final Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {
 
         @Override
         public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
@@ -37,7 +37,7 @@ public class Recommendations {
         }
     };
 
-    private static Comparator<Recommendation<?>> C_BY_NAME = new Comparator<Recommendation<?>>() {
+    private static final Comparator<Recommendation<?>> C_BY_NAME = new Comparator<Recommendation<?>>() {
 
         @Override
         public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
@@ -45,7 +45,7 @@ public class Recommendations {
         }
     };
 
-    private static Predicate<Recommendation<IMethodName>> P_VOID = new Predicate<Recommendation<IMethodName>>() {
+    private static final Predicate<Recommendation<IMethodName>> P_VOID = new Predicate<Recommendation<IMethodName>>() {
 
         @Override
         public boolean apply(final Recommendation<IMethodName> input) {

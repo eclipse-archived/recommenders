@@ -36,24 +36,24 @@ public final class SourceCodeArea extends JavaSourceViewer {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
-    private static final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
-    private static final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
-    private static final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager,
-            store, null, IJavaPartitions.JAVA_PARTITIONING);;
+    private static final IPreferenceStore STORE = JavaPlugin.getDefault().getCombinedPreferenceStore();
+    private static final IColorManager COLOR_MANAGER = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
+    private static final JavaSourceViewerConfiguration CONFIGURATION = new JavaSourceViewerConfiguration(COLOR_MANAGER,
+            STORE, null, IJavaPartitions.JAVA_PARTITIONING);;
 
-    private static final Map<String, Object> options;
-    private static final CodeFormatter formatter;
+    private static final Map<String, Object> OPTIONS;
+    private static final CodeFormatter FORMATTER;
 
     static {
-        options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
-        options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120"); //$NON-NLS-1$
-        formatter = ToolFactory.createCodeFormatter(options);
+        OPTIONS = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
+        OPTIONS.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120"); //$NON-NLS-1$
+        FORMATTER = ToolFactory.createCodeFormatter(OPTIONS);
     }
 
     public SourceCodeArea(final Composite parent) {
-        super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
+        super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, STORE);
 
-        configure(configuration);
+        configure(CONFIGURATION);
         getTextWidget().setFont(ApidocsViewUtils.CODEFONT);
         setEditable(false);
         getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
@@ -70,7 +70,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
     private static void format(final IDocument document) {
         final String sourceCode = document.get();
         final int length = document.getLength();
-        final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, 0, length, 0, LINE_SEPARATOR);
+        final TextEdit edit = FORMATTER.format(CodeFormatter.K_STATEMENTS, sourceCode, 0, length, 0, LINE_SEPARATOR);
         if (edit != null) {
             applyTextFormattings(document, edit);
         }

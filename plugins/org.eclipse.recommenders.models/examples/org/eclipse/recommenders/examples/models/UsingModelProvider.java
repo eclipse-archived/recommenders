@@ -41,7 +41,7 @@ public class UsingModelProvider {
 
     private ITypeName toTypeName(IJavaElement type) {
         // fake! replace by real resolution logic
-        return VmTypeName.JavaLangString;
+        return VmTypeName.JAVA_LANG_STRING;
     }
 
     static class RecommendationModel {

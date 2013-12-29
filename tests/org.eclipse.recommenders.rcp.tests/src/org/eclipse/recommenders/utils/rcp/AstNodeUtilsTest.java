@@ -18,8 +18,9 @@ import org.junit.Test;
 
 public class AstNodeUtilsTest {
 
-    final String OBJECT_LITERAL = "Object";
-    final AST ast = AST.newAST(AST.JLS4);
+    private static final String OBJECT_LITERAL = "Object";
+
+    private final AST ast = AST.newAST(AST.JLS4);
 
     @Test
     public void testStripQualifier() {
@@ -79,5 +80,4 @@ public class AstNodeUtilsTest {
         return ast.newQualifiedName(ast.newQualifiedName(ast.newSimpleName("java"), ast.newSimpleName("lang")),
                 ast.newSimpleName(last));
     }
-
 }

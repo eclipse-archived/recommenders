@@ -35,7 +35,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
 public class SessionProcessorDescriptor implements Comparable<SessionProcessorDescriptor> {
-    private static Logger LOG = LoggerFactory.getLogger(SessionProcessorDescriptor.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(SessionProcessorDescriptor.class);
 
     private static final String PREF_NODE_ID_SESSIONPROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors";
     private static final String DISABLED = "disabled";

@@ -25,8 +25,8 @@ import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
 public class XDSLWriter implements IBayesNetWriter {
 
-    private static final String xmlHeader = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
-    private static final String comment = "<!--\n\t Bayesian Network in XDSL format \n-->\n";
+    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+    private static final String COMMENT = "<!--\n\t Bayesian Network in XDSL format \n-->\n";
     private final Writer out;
 
     public XDSLWriter(OutputStream out) {
@@ -36,8 +36,8 @@ public class XDSLWriter implements IBayesNetWriter {
 
     public void write(BayesNet net) throws IOException {
         StringBuilder bldr = new StringBuilder();
-        bldr.append(xmlHeader);
-        bldr.append(comment);
+        bldr.append(XML_HEADER);
+        bldr.append(COMMENT);
 
         int offset = bldr.length();
         getVariableDefs(bldr, net);
@@ -100,5 +100,4 @@ public class XDSLWriter implements IBayesNetWriter {
     public void close() throws IOException {
         out.close();
     }
-
 }

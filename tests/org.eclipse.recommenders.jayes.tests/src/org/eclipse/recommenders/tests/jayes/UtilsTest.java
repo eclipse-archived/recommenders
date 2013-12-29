@@ -26,35 +26,35 @@ import org.junit.rules.ExpectedException;
 
 public class UtilsTest {
 
-    private static final int[] testVector = new int[] { 2, 3, 5, 7 };
-    private static final double[] testDoubleVector = new double[] { 2.0, 3.0, 5.0, 7.0 };
+    private static final int[] TEST_VECTOR = new int[] { 2, 3, 5, 7 };
+    private static final double[] TEST_DOUBLE_VECTOR = new double[] { 2.0, 3.0, 5.0, 7.0 };
     private static final double TOLERANCE = 1e-5;
 
     @Test
     public void testSum() {
-        assertEquals(MathUtils.sum(testDoubleVector), 17.0, TOLERANCE);
+        assertEquals(MathUtils.sum(TEST_DOUBLE_VECTOR), 17.0, TOLERANCE);
     }
 
     @Test
     public void testProductOfRange() {
-        assertEquals(MathUtils.productOfRange(testVector, 1, 3), 3 * 5);
-        assertEquals(MathUtils.productOfRange(testVector, 0, 1), 2);
-        assertEquals(MathUtils.productOfRange(testVector, 2, 2), 1);
+        assertEquals(MathUtils.productOfRange(TEST_VECTOR, 1, 3), 3 * 5);
+        assertEquals(MathUtils.productOfRange(TEST_VECTOR, 0, 1), 2);
+        assertEquals(MathUtils.productOfRange(TEST_VECTOR, 2, 2), 1);
 
         // having a result of 1 if start > end is consistent,
         // because the set of numbers that are multiplied is still empty,
         // as in the case start == end
-        assertEquals(MathUtils.productOfRange(testVector, 3, 2), 1);
+        assertEquals(MathUtils.productOfRange(TEST_VECTOR, 3, 2), 1);
     }
 
     @Test
     public void testProduct() {
-        assertEquals(MathUtils.product(testVector), 2 * 3 * 5 * 7);
+        assertEquals(MathUtils.product(TEST_VECTOR), 2 * 3 * 5 * 7);
     }
 
     @Test
     public void testScalarProduct() {
-        assertEquals(MathUtils.scalarProduct(testVector, testVector), 2 * 2 + 3 * 3 + 5 * 5 + 7 * 7);
+        assertEquals(MathUtils.scalarProduct(TEST_VECTOR, TEST_VECTOR), 2 * 2 + 3 * 3 + 5 * 5 + 7 * 7);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -67,7 +67,7 @@ public class UtilsTest {
     @Test
     public void testNormalize() {
         assertArrayEquals(new double[] { 2.0 / 17.0, 3.0 / 17.0, 5.0 / 17.0, 7.0 / 17.0 },
-                MathUtils.normalize(testDoubleVector.clone()), TOLERANCE);
+                MathUtils.normalize(TEST_DOUBLE_VECTOR.clone()), TOLERANCE);
     }
 
     @Rule

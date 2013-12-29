@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.eclipse.recommenders.jayes.BayesNet;
-import org.eclipse.recommenders.jayes.io.jbif.Constants;
-import org.eclipse.recommenders.jayes.io.jbif.JayesBifReader;
 import org.junit.Test;
 
 public class JayesBifTest {

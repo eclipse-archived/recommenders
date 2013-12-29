@@ -75,7 +75,7 @@ public class VmTypeNameTest {
 
     @Test
     public void testGetClassName_MapEntry() {
-        final String actual = NamesTest.MAP$ENTRY.getClassName();
+        final String actual = NamesTest.MAP_ENTRY.getClassName();
         assertEquals("Map$Entry", actual);
     }
 
@@ -132,7 +132,7 @@ public class VmTypeNameTest {
 
     @Test
     public void testIsAnonymousType_Map$Entry() {
-        final boolean actual = NamesTest.MAP$ENTRY.isAnonymousType();
+        final boolean actual = NamesTest.MAP_ENTRY.isAnonymousType();
         assertEquals(false, actual);
     }
 
@@ -157,14 +157,14 @@ public class VmTypeNameTest {
 
     @Test
     public void testIsNestedType() {
-        assertEquals(true, NamesTest.MAP$ENTRY.isNestedType());
+        assertEquals(true, NamesTest.MAP_ENTRY.isNestedType());
         assertEquals(false, NamesTest.STRING.isNestedType());
         assertEquals(false, NamesTest.LONG_ARRAY.isNestedType());
     }
 
     @Test
     public void testIsPrimitiveType() {
-        assertEquals(false, NamesTest.MAP$ENTRY.isPrimitiveType());
+        assertEquals(false, NamesTest.MAP_ENTRY.isPrimitiveType());
         assertEquals(false, NamesTest.STRING.isPrimitiveType());
         assertEquals(false, NamesTest.LONG_ARRAY.isPrimitiveType());
         assertEquals(true, NamesTest.LONG.isPrimitiveType());
@@ -172,7 +172,7 @@ public class VmTypeNameTest {
 
     @Test
     public void testIsVoid() {
-        assertEquals(false, NamesTest.MAP$ENTRY.isVoid());
+        assertEquals(false, NamesTest.MAP_ENTRY.isVoid());
         assertEquals(false, NamesTest.STRING.isVoid());
         assertEquals(false, NamesTest.LONG_ARRAY.isVoid());
         assertEquals(false, NamesTest.LONG.isVoid());
@@ -181,8 +181,8 @@ public class VmTypeNameTest {
 
     @Test
     public void testCompareTo() {
-        assertEquals(0, NamesTest.MAP$ENTRY.compareTo(NamesTest.MAP$ENTRY));
-        assertTrue(0 < NamesTest.MAP$ENTRY.compareTo(NamesTest.STRING));
+        assertEquals(0, NamesTest.MAP_ENTRY.compareTo(NamesTest.MAP_ENTRY));
+        assertTrue(0 < NamesTest.MAP_ENTRY.compareTo(NamesTest.STRING));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -200,9 +200,9 @@ public class VmTypeNameTest {
     @Test
     @Ignore("does not work in OSGI test suite")
     public void testNewVmTypeName_Nested() {
-        final VmTypeName actual = new VmTypeName(NamesTest.MAP$ENTRY.getIdentifier());
+        final VmTypeName actual = new VmTypeName(NamesTest.MAP_ENTRY.getIdentifier());
         // NOTE: object identity is different. Don't use equals on VmTypeNames!
-        assertEquals(NamesTest.MAP$ENTRY.getIdentifier(), actual.getIdentifier());
+        assertEquals(NamesTest.MAP_ENTRY.getIdentifier(), actual.getIdentifier());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class VmTypeNameTest {
 
     @Test
     public void testGetDeclaringType() {
-        assertEquals(NamesTest.MAP, NamesTest.MAP$ENTRY.getDeclaringType());
+        assertEquals(NamesTest.MAP, NamesTest.MAP_ENTRY.getDeclaringType());
     }
 
     @Test(expected = IllegalArgumentException.class)

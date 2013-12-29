@@ -50,7 +50,7 @@ public class JavaElementSelections {
     static Logger log = LoggerFactory.getLogger(JavaElementSelections.class);
 
     @SuppressWarnings("serial")
-    private static Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {
+    private static final Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {
         {
             put(CompilationUnit.IMPORTS_PROPERTY, TYPE_DECLARATION);
             put(CompilationUnit.PACKAGE_PROPERTY, TYPE_DECLARATION);

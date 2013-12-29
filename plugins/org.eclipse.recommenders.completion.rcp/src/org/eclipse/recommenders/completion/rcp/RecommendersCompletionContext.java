@@ -63,7 +63,7 @@ import com.google.common.collect.Sets;
 @SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class RecommendersCompletionContext implements IRecommendersCompletionContext {
 
-    private static Logger LOG = LoggerFactory.getLogger(RecommendersCompletionContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RecommendersCompletionContext.class);
 
     @VisibleForTesting
     public static Set<ITypeName> createTypeNamesFromSignatures(final char[][] sigs) {

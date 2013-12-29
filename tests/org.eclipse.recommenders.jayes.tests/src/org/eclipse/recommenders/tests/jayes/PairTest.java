@@ -21,16 +21,15 @@ public class PairTest {
     @Test
     public void testOrderIgnoringPairIgnoresOrder() {
 
-        OrderIgnoringPair<Object> _21 = new OrderIgnoringPair<Object>(2, 1);
-        OrderIgnoringPair<Object> _12 = new OrderIgnoringPair<Object>(1, 2);
-        assertThat(_12, is(_21));
-        assertThat(_12.hashCode(), is(_21.hashCode()));
+        OrderIgnoringPair<Object> twoOne = new OrderIgnoringPair<Object>(2, 1);
+        OrderIgnoringPair<Object> oneTwo = new OrderIgnoringPair<Object>(1, 2);
+        assertThat(oneTwo, is(twoOne));
+        assertThat(oneTwo.hashCode(), is(twoOne.hashCode()));
 
     }
 
     @Test
     public void testPairRespectsOrder() {
         assertThat(Pair.newPair(1, 2), is(not(Pair.newPair(2, 1))));
-
     }
 }

@@ -32,7 +32,8 @@ import com.google.common.collect.Multiset;
 
 public class TemplateBuilder {
 
-    private static ToTemplateTypeNames TO_TEMPLATE_TYPE_NAMES = new ToTemplateTypeNames();
+    private static final ToTemplateTypeNames TO_TEMPLATE_TYPE_NAMES = new ToTemplateTypeNames();
+
     private StringBuilder builder = new StringBuilder();
 
     private Multiset<String> usedVariables = HashMultiset.create();

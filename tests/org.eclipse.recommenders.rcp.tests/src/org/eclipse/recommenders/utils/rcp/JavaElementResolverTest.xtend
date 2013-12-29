@@ -5,12 +5,12 @@ import org.eclipse.jdt.core.IMethod
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.Checks
 import org.eclipse.recommenders.utils.names.VmMethodName
-import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.recommenders.rcp.JavaElementResolver
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
+import org.eclipse.recommenders.utils.names.VmTypeName
 
 class JavaElementResolverTest {
 
@@ -63,7 +63,7 @@ class JavaElementResolverTest {
         assertFalse("Lnull found???", sut.toJdtType(VmTypeName::NULL).present)
         assertFalse("primitive found???", sut.toJdtType(VmTypeName::BOOLEAN).present)
         assertTrue("Object not found???", sut.toJdtType(VmTypeName::OBJECT).present)
-        assertTrue("NPE not found???", sut.toJdtType(VmTypeName::JavaLangNullPointerException).present)
+        assertTrue("NPE not found???", sut.toJdtType(VmTypeName::JAVA_LANG_NULL_POINTER_EXCEPTION).present)
         assertTrue("NPE not found???", sut.toJdtType(VmTypeName::get("Ljava/util/Map$Entry")).present)
     }
 

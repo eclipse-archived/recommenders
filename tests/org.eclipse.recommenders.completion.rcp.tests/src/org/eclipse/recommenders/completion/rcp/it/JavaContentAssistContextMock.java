@@ -61,7 +61,6 @@ public class JavaContentAssistContextMock extends JavaContentAssistInvocationCon
             cu.codeComplete(completionOffset, requestor);
         } catch (final Exception e) {
             final String source = cu.getSource();
-            final int length = source.length();
 
             final int start = Math.max(0, 0);
             final int end = Math.min(source.length(), completionOffset - 10);

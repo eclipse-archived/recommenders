@@ -5,27 +5,21 @@ import static org.eclipse.recommenders.utils.Artifacts.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.io.File;
-
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 public class ArtifactsTest {
-    String GID = "org.eclipse.recommenders";
-    String AID = "org.eclipse.recommenders.core";
-    String VERSION = "1.23.0";
-    Artifact GID_AID_VER = asArtifact(format("%s:%s:%s", GID, AID, VERSION));
-    Artifact GID_AID_EXT_VER = asArtifact(format("%s:%s:jar:%s", GID, AID, VERSION));
-    Artifact GID_AID_EXT_CLS_VER = asArtifact(format("%s:%s:jar:sources:%s", GID, AID, VERSION));
 
-    File LOCAL_M2_REPO = new File(SystemUtils.getUserHome(), ".m2/repository");
-    String MAVEN_CENTRAL = "http://repo1.maven.org/maven2/";
-    String VANDYK_JUNO = "http://vandyk.st.informatik.tu-darmstadt.de/juno/";
+    private static final String GID = "org.eclipse.recommenders";
+    private static final String AID = "org.eclipse.recommenders.core";
+    private static final String VERSION = "1.23.0";
+    private static final Artifact GID_AID_VER = asArtifact(format("%s:%s:%s", GID, AID, VERSION));
+    private static final Artifact GID_AID_EXT_VER = asArtifact(format("%s:%s:jar:%s", GID, AID, VERSION));
+    private static final Artifact GID_AID_EXT_CLS_VER = asArtifact(format("%s:%s:jar:sources:%s", GID, AID, VERSION));
 
-    public static Artifact SWT_37_CALLS = new DefaultArtifact("org.eclipse.swt", "org.eclipse.swt", "cr-calls", "zip",
+    public static final Artifact SWT_37_CALLS = new DefaultArtifact("org.eclipse.swt", "org.eclipse.swt", "cr-calls", "zip",
             "3.7.0");
 
     @Test

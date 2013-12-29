@@ -35,8 +35,8 @@ import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
  */
 public class XMLBIFWriter implements IBayesNetWriter {
 
-    private static final String xmlHeader = "<?xml version=\"1.0\"?>\n";
-    private static final String comment = "<!--\n\t Bayesian Network in XMLBIF v0.3 \n-->\n";
+    private static final String XML_HEADER = "<?xml version=\"1.0\"?>\n";
+    private static final String COMMENT = "<!--\n\t Bayesian Network in XMLBIF v0.3 \n-->\n";
     private static final String DTD = "<!-- DTD for the XMLBIF 0.3 format -->\n" + "<!DOCTYPE BIF [\n"
             + "\t<!ELEMENT BIF ( NETWORK )*>\n" + "\t\t<!ATTLIST BIF VERSION CDATA #REQUIRED>\n"
             + "\t<!ELEMENT NETWORK ( NAME, ( PROPERTY | VARIABLE | DEFINITION )* )>\n"
@@ -54,8 +54,8 @@ public class XMLBIFWriter implements IBayesNetWriter {
 
     public void write(BayesNet net) throws IOException {
         StringBuilder bldr = new StringBuilder();
-        bldr.append(xmlHeader);
-        bldr.append(comment);
+        bldr.append(XML_HEADER);
+        bldr.append(COMMENT);
         bldr.append(DTD);
 
         int offset = bldr.length();

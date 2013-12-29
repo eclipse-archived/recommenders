@@ -25,13 +25,11 @@ public class VmTypeName implements ITypeName {
 
     public static final VmTypeName OBJECT = VmTypeName.get("Ljava/lang/Object");
 
-    public static final VmTypeName JavaLangNullPointerException = VmTypeName.get("Ljava/lang/NullPointerException");
+    public static final VmTypeName JAVA_LANG_NULL_POINTER_EXCEPTION = VmTypeName.get("Ljava/lang/NullPointerException");
 
-    public static final VmTypeName JavaLangOutOfMemoryError = VmTypeName.get("Ljava/lang/OutOfMemoryError");
+    public static final VmTypeName JAVA_LANG_STRING = VmTypeName.get("Ljava/lang/String");
 
-    public static final VmTypeName JavaLangString = VmTypeName.get("Ljava/lang/String");
-
-    public static final VmTypeName JavaLangExceptionInInitializerError = VmTypeName
+    public static final VmTypeName JAVA_LANG_EXCEPTION_IN_INITIALIZER_ERROR = VmTypeName
             .get("Ljava/lang/ExceptionInInitializerError");
 
     public static final VmTypeName STRING = VmTypeName.get("Ljava/lang/String");

@@ -27,7 +27,6 @@ import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcesso
 import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
-import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -45,6 +44,7 @@ import com.google.common.collect.Sets;
 public class Stubs {
 
     private static final class CallModelSpy implements ICallModel {
+
         private Set<IMethodName> observedCalls = Sets.newHashSet();
         private IMethodName overriddenMethod;
         private IMethodName definedBy;
@@ -152,7 +152,6 @@ public class Stubs {
     }
 
     public static MockedIntelligentCompletionProposalComputer newCallComputer() {
-        JavaElementResolver jer = new JavaElementResolver();
         IProjectCoordinateProvider pcProvider = mock(IProjectCoordinateProvider.class);
 
         when(pcProvider.toUniqueName((IType) anyObject())).thenAnswer(new Answer<Optional<UniqueTypeName>>() {

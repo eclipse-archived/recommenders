@@ -57,13 +57,13 @@ import com.google.common.eventbus.EventBus;
 @SuppressWarnings("restriction")
 public class EclipseDependencyListenerTest {
 
-    private static String PROJECT_NAME = "TestProject";
-    private File jarFileExample;
-
-    private EventBus eventBus;
-    private EclipseDependencyListener sut;
+    private static final String PROJECT_NAME = "TestProject";
 
     private static int projectNumber = 0;
+
+    private File jarFileExample;
+    private EventBus eventBus;
+    private EclipseDependencyListener sut;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

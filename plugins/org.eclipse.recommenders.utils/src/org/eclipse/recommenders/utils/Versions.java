@@ -22,10 +22,9 @@ import com.google.common.collect.Iterables;
 
 public final class Versions {
 
-    private static final Pattern findVersionPattern = Pattern
+    private static final Pattern VERSION_PATTERNS = Pattern.compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){2}");
+    private static final Pattern FIND_VERSION_PATTERN = Pattern
             .compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){0,2}");
-
-    private static final Pattern versionPattern = Pattern.compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){2}");
 
     private Versions() {
     }
@@ -118,7 +117,7 @@ public final class Versions {
      * any number (but w\o leading 0).
      */
     public static boolean isValidVersion(String version) {
-        return versionPattern.matcher(version).matches();
+        return VERSION_PATTERNS.matcher(version).matches();
     }
 
     /**
@@ -130,7 +129,7 @@ public final class Versions {
      * If it is not possible to extract the version the input value is returned.
      */
     public static String canonicalizeVersion(String version) {
-        Matcher matcher = findVersionPattern.matcher(version);
+        Matcher matcher = FIND_VERSION_PATTERN.matcher(version);
         if (matcher.find()) {
             String temp = version.substring(matcher.start(), matcher.end());
             return addMissingVersionPartsIfNecessary(temp);

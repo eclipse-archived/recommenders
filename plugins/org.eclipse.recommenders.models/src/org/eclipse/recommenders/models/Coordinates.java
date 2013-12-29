@@ -19,6 +19,8 @@ import com.google.common.base.Optional;
 
 public final class Coordinates {
 
+    private static final Pattern ID_PATTERN = Pattern.compile("[A-Za-z0-9_\\-.]+");
+
     public static ModelCoordinate toModelCoordinate(ProjectCoordinate pc, String classifier, String extension) {
         return new ModelCoordinate(pc.getGroupId(), pc.getArtifactId(), classifier, extension, pc.getVersion());
     }
@@ -26,8 +28,6 @@ public final class Coordinates {
     public static ProjectCoordinate toProjectCoordinate(ModelCoordinate mc) {
         return new ProjectCoordinate(mc.getGroupId(), mc.getArtifactId(), mc.getVersion());
     }
-
-    private static final Pattern idPattern = Pattern.compile("[A-Za-z0-9_\\-.]+");
 
     /**
      * Check if a (non version) part of a coordinate like artifactId or groupId is not empty and contain no whitespace
@@ -37,7 +37,7 @@ public final class Coordinates {
         if (isBlank(id)) {
             return false;
         }
-        return idPattern.matcher(id).matches();
+        return ID_PATTERN.matcher(id).matches();
     }
 
     /**

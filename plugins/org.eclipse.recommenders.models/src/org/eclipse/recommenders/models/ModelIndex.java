@@ -64,6 +64,9 @@ import com.google.common.collect.Sets;
  * class directly.
  */
 public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
+
+    private static final int MAX_DOCUMENTS_SEARCHED = 100;
+
     private File indexdir;
     private Directory index;
     private IndexReader reader;
@@ -214,7 +217,6 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
         }
 
         final TopDocs matches;
-        final int MAX_DOCUMENTS_SEARCHED = 100;
         try {
             IndexSearcher searcher = new IndexSearcher(reader);
             matches = searcher.search(query, MAX_DOCUMENTS_SEARCHED);

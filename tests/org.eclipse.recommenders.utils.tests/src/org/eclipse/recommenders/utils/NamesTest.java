@@ -29,6 +29,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 public class NamesTest {
+
     public static final ITypeName STRING = VmTypeName.get("Ljava/lang/String");
 
     public static final IPackageName JAVA_UTIL = VmPackageName.get("java/util");
@@ -45,7 +46,7 @@ public class NamesTest {
 
     public static final ITypeName MAP = VmTypeName.get("Ljava/utils/Map");
 
-    public static final ITypeName MAP$ENTRY = VmTypeName.get("Ljava/utils/Map$Entry");
+    public static final ITypeName MAP_ENTRY = VmTypeName.get("Ljava/utils/Map$Entry");
 
     public static final ITypeName CLASS_IN_DEFAULT_PACAKGE = VmTypeName.get("LDefault");
 

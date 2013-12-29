@@ -22,8 +22,9 @@ import org.eclipse.recommenders.utils.Pair;
 import com.google.common.collect.Sets;
 
 public class AstUtils {
-    public static String MARKER = "$";
-    public static String MARKER_ESCAPE = "\\$";
+
+    public static final String MARKER = "$";
+    public static final String MARKER_ESCAPE = "\\$";
 
     public static CompilationUnit createAst(final String content) {
         final ASTParser p = ASTParser.newParser(AST.JLS3);

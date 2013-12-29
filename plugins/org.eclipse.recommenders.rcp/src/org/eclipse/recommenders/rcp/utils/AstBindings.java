@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 
 public class AstBindings {
 
-    private static final Logger log = LoggerFactory.getLogger(AstBindings.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AstBindings.class);
 
     public static Optional<ITypeName> toTypeName(ITypeBinding b) {
         if (b == null) {
@@ -68,7 +68,7 @@ public class AstBindings {
             final ITypeName res = VmTypeName.get(sb.toString());
             return of(res);
         } catch (final Exception e) {
-            log.error("failed to create type name from " + b, e);
+            LOG.error("failed to create type name from " + b, e);
             return absent();
         }
     }
@@ -149,7 +149,7 @@ public class AstBindings {
         try {
             ref = VmMethodName.get(sb.toString());
         } catch (final Exception e1) {
-            log.error("failed to create IMethodName from binding " + b, e1);
+            LOG.error("failed to create IMethodName from binding " + b, e1);
             return absent();
         }
         return Optional.of(ref);

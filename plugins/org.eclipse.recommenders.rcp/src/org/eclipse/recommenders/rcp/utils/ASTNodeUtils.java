@@ -52,7 +52,7 @@ import com.google.common.base.Optional;
 
 public class ASTNodeUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(ASTNodeUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ASTNodeUtils.class);
 
     /**
      * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"
@@ -270,7 +270,7 @@ public class ASTNodeUtils {
             final Optional<MethodDeclaration> opt = getClosestParent(node, MethodDeclaration.class);
             return opt;
         } catch (final JavaModelException e) {
-            log.error("Faield to resolve " + method, e);
+            LOG.error("Faield to resolve " + method, e);
             return absent();
         }
     }

@@ -68,8 +68,9 @@ public class QuotientGraph {
         }
 
         for (int elementNeighbor : new ArrayList<Integer>(graph.getNeighbors(variable))) { // merge eliminated nodes
-            if (isElement[elementNeighbor])
+            if (isElement[elementNeighbor]) {
                 merge(graph, variable, elementNeighbor);
+            }
         }
 
         isElement[variable] = true;

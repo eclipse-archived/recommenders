@@ -19,14 +19,15 @@ import com.google.common.collect.Sets;
 
 public class VmPackageName implements IPackageName {
 
-    private static Map<String/* name 2 */, VmPackageName> index = new MapMaker().weakValues().makeMap();
-    public static IPackageName DEFAULT_PACKAGE = get("");
+    private static final Map<String/* name 2 */, VmPackageName> INDEX = new MapMaker().weakValues().makeMap();
+
+    public static final IPackageName DEFAULT_PACKAGE = get("");
 
     public static synchronized VmPackageName get(final String vmPackageName) {
-        VmPackageName res = index.get(vmPackageName);
+        VmPackageName res = INDEX.get(vmPackageName);
         if (res == null) {
             res = new VmPackageName(vmPackageName);
-            index.put(vmPackageName, res);
+            INDEX.put(vmPackageName, res);
         }
         return res;
     }

@@ -72,7 +72,7 @@ import com.google.common.base.Predicate;
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
 public class JdtUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(JdtUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JdtUtils.class);
 
     private static final Util.BindingsToNodesMap EMPTY_NODE_MAP = new Util.BindingsToNodesMap() {
         @Override
@@ -80,9 +80,8 @@ public class JdtUtils {
             return null;
         }
     };
-    private static final IJavaElement[] EMPTY_RESULT = new IJavaElement[0];
 
-    private static Predicate<IField> STATIC_PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
+    private static final Predicate<IField> STATIC_PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
 
         @Override
         public boolean apply(final IField m) {
@@ -95,7 +94,8 @@ public class JdtUtils {
             }
         }
     };
-    private static Predicate<IField> PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
+
+    private static final Predicate<IField> PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
 
         @Override
         public boolean apply(final IField m) {
@@ -108,7 +108,8 @@ public class JdtUtils {
             }
         }
     };
-    private static Predicate<IMethod> STATIC_PUBLIC_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
+
+    private static final Predicate<IMethod> STATIC_PUBLIC_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
 
         @Override
         public boolean apply(final IMethod m) {
@@ -122,7 +123,7 @@ public class JdtUtils {
         }
     };
 
-    private static Predicate<IMethod> PUBLIC_INSTANCE_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
+    private static final Predicate<IMethod> PUBLIC_INSTANCE_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
 
         @Override
         public boolean apply(final IMethod m) {
@@ -136,7 +137,7 @@ public class JdtUtils {
         }
     };
 
-    private static Predicate<IMethod> STATIC_NON_VOID_NON_PRIMITIVE_PUBLIC_METHODS_FILTER = new Predicate<IMethod>() {
+    private static final Predicate<IMethod> STATIC_NON_VOID_NON_PRIMITIVE_PUBLIC_METHODS_FILTER = new Predicate<IMethod>() {
 
         @Override
         public boolean apply(final IMethod m) {
@@ -223,7 +224,7 @@ public class JdtUtils {
                 }
             }
         } catch (final Exception e) {
-            log.error("Failed to resolve type parameter " + t.getElementName(), e);
+            LOG.error("Failed to resolve type parameter " + t.getElementName(), e);
         }
         return fromNullable(type);
     }
@@ -518,7 +519,7 @@ public class JdtUtils {
     }
 
     public static void log(final Exception e) {
-        log.error("Exception occurred.", e);
+        LOG.error("Exception occurred.", e);
     }
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {

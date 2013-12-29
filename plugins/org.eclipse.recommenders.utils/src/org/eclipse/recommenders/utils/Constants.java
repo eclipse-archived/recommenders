@@ -17,7 +17,7 @@ import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
-public abstract class Constants {
+public final class Constants {
 
     /*
      * Repository constants. Used for identifying archives, indexes, fields in indexes in model repository related

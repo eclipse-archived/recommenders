@@ -35,7 +35,7 @@ public class ZipsTest {
 
     @Test
     public void testTypes() {
-        ITypeName[] types = { VmTypeName.JavaLangNullPointerException };
+        ITypeName[] types = { VmTypeName.JAVA_LANG_NULL_POINTER_EXCEPTION };
         for (ITypeName t : types) {
             String path = Zips.path(t, ".json");
             ZipEntry zip = new ZipEntry(path);
