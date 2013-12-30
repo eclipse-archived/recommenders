@@ -60,8 +60,7 @@ public class Cut implements Cloneable {
         try {
             return (Cut) super.clone();
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
+            throw new AssertionError("Is Cloneable but still threw CloneNotSupportedException");
         }
     }
 

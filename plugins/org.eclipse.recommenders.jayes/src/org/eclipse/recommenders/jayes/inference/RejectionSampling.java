@@ -38,8 +38,9 @@ public class RejectionSampling extends AbstractInferer {
                 i--;
                 continue;
             }
-            for (BayesNode e : sample.keySet()) {
-                beliefs[e.getId()][e.getOutcomeIndex(sample.get(e))]++;
+            for (Entry<BayesNode, String> e : sample.entrySet()) {
+                BayesNode n = e.getKey();
+                beliefs[n.getId()][n.getOutcomeIndex(e.getValue())]++;
             }
         }
 

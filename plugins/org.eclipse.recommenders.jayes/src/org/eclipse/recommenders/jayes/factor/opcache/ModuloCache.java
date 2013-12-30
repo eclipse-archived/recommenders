@@ -19,7 +19,7 @@ public class ModuloCache {
     private final int divisor;
     private final DivisionCache subCache;
 
-    int cachedSubtrahent;
+    private int cachedSubtrahent;
 
     public ModuloCache(int divisor) {
         this.divisor = divisor;

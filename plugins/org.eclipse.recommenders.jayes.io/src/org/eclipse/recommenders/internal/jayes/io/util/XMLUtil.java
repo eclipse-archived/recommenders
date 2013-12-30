@@ -12,6 +12,10 @@ package org.eclipse.recommenders.internal.jayes.io.util;
 
 public class XMLUtil {
 
+    private XMLUtil() {
+
+    }
+
     /**
      * this method expects the attributes in pairwise name, value form e.g. </br> attributes = [ "id", "12345", "size",
      * "15" ]

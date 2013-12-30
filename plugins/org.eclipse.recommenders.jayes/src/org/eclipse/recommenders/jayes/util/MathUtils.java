@@ -14,6 +14,10 @@ import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
 
 public class MathUtils {
 
+    private MathUtils() {
+
+    }
+
     public static void exp(double[] vector) {
         for (int i = 0; i < vector.length; i++) {
             vector[i] = Math.exp(vector[i]);
@@ -103,7 +107,6 @@ public class MathUtils {
     }
 
     /**
-     * 
      * @return the value that differs most from zero
      */
     private static double absMax(double[] vector) {

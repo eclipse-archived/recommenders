@@ -18,6 +18,10 @@ import org.w3c.dom.xpath.XPathResult;
 
 public class XPathUtil {
 
+    private XPathUtil() {
+
+    }
+
     public static Iterator<Node> evalXPath(XPathEvaluator eval, String xpath, Node context) {
 
         final XPathResult result = (XPathResult) eval.evaluate(xpath, context, null, (short) 0, null);

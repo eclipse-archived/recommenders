@@ -18,8 +18,11 @@ import org.eclipse.recommenders.jayes.factor.Cut;
 
 public class BayesNodeUtil {
 
+    private BayesNodeUtil() {
+
+    }
+
     /**
-     * 
      * @param evidence
      *            an evidence map containing mappings for all of the node's parents
      * @return the distribution P(node|evidence)
