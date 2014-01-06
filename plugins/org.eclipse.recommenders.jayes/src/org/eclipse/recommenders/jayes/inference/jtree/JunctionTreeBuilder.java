@@ -8,7 +8,7 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.jayes.inference.junctionTree;
+package org.eclipse.recommenders.jayes.inference.jtree;
 
 import java.util.ArrayList;
 import java.util.Collection;
