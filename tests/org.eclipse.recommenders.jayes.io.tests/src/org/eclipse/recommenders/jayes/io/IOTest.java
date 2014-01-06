@@ -26,7 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.recommenders.jayes.BayesNet;
-import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
 import org.eclipse.recommenders.jayes.io.xdsl.XDSLWriter;
 import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;

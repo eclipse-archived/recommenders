@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.transformation.IDecompositionStrategy;
 import org.eclipse.recommenders.jayes.transformation.LatentDeterministicDecomposition;
 import org.eclipse.recommenders.jayes.transformation.SmoothedFactorDecomposition;

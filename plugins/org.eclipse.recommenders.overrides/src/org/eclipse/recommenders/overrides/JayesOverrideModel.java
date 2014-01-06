@@ -23,7 +23,7 @@ import java.util.zip.ZipFile;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
