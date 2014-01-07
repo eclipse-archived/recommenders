@@ -76,6 +76,11 @@
 		</module>
 
 		<!--  http://checkstyle.sourceforge.net/config_naming.html -->
+		<module name="PackageName">
+			<property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+		</module>
+
+		<!--  http://checkstyle.sourceforge.net/config_naming.html -->
 		<module name="ParameterName"/>
 
 		<!--  http://checkstyle.sourceforge.net/config_naming.html -->
