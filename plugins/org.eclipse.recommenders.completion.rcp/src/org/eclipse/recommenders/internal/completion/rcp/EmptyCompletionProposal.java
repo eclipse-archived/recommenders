@@ -30,6 +30,7 @@ public class EmptyCompletionProposal extends AbstractJavaCompletionProposal {
         setRelevance(RELEVANCE);
         setSortString(text.getString());
         setCursorPosition(invocationOffset);
+        setReplacementString("");
     }
 
     @Override
