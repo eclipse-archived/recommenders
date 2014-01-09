@@ -440,9 +440,9 @@ public class ModelRepositoriesView extends ViewPart {
                     }
                 }
 
-                addAction("Add repository", ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
-
                 if (isValidType(treeViewer.getSelection(), String.class)) {
+                    addAction("Add repository", ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
+
                     final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
                     if (url.isPresent() && prefs.remotes.length > 1) {
                         addAction("Remove repository", ELCL_REMOVE_REPOSITORY, menuManager, new Action() {
