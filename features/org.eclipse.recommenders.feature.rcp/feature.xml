@@ -20,8 +20,10 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.recommenders.rcp.feature"
-         version="0.0.0"/>
+   <requires>
+      <!-- This migration feature can sooner or later be removed. -->
+      <!-- Any existing installations of this feature will still have their requirement fulfilled with newer versions of org.eclipse.recommenders.rcp.feature. -->
+      <import feature="org.eclipse.recommenders.rcp.feature" version="2.0.0.qualifier" match="greaterOrEqual"/>
+   </requires>
 
 </feature>
