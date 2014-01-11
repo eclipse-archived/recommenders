@@ -11,25 +11,17 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.presentInstances;
-import static com.google.common.collect.Iterables.get;
-import static com.google.common.collect.Iterables.getFirst;
-import static com.google.common.collect.Iterables.getLast;
-import static com.google.common.collect.Iterables.isEmpty;
+import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_CLEAR;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
+import static org.eclipse.recommenders.models.DependencyInfo.*;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,7 +52,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
@@ -70,10 +61,9 @@ import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.utils.TableSortConfigurator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -103,15 +93,58 @@ public class ProjectCoordinatesView extends ViewPart {
 
     private final EclipseDependencyListener dependencyListener;
     private final EclipseProjectCoordinateAdvisorService pcAdvisorsService;
-    private ManualProjectCoordinateAdvisor manualPcAdvisor;
+    private final ManualProjectCoordinateAdvisor manualPcAdvisor;
 
     private Table table;
     private TableViewerColumn locationColumn;
     private TableViewerColumn coordinateColumn;
-    private TableComparator comparator;
 
-    private EventBus bus;
-    private SharedImages images;
+    private final EventBus bus;
+    private final SharedImages images;
+
+    private static final Comparator<Object> COMPARE_COORDINATE = new Comparator<Object>() {
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            if (o1 instanceof Entry && o2 instanceof Entry) {
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = cast(o1);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = cast(o2);
+
+                Optional<ProjectCoordinate> pc1 = findFirstMatchingCoordinate(firstElement.getValue());
+                Optional<ProjectCoordinate> pc2 = findFirstMatchingCoordinate(secondElement.getValue());
+
+                if (pc1.isPresent() && pc2.isPresent()) {
+                    return pc1.get().toString().compareTo(pc2.get().toString());
+                } else if (pc1.isPresent() && !pc2.isPresent()) {
+                    return -1;
+                } else if (!pc1.isPresent() && pc2.isPresent()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+    };
+
+    private static final Comparator<Object> COMPARE_LOCATION = new Comparator<Object>() {
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            if (o1 instanceof Entry && o2 instanceof Entry) {
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = cast(o1);
+                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = cast(o2);
+
+                int compareScore = -firstElement.getKey().getType().compareTo(secondElement.getKey().getType());
+                if (compareScore == 0) {
+                    return firstElement.getKey().getFile().getName()
+                            .compareToIgnoreCase(secondElement.getKey().getFile().getName());
+                }
+                return compareScore;
+            }
+            return 0;
+        }
+    };
 
     @Inject
     public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
@@ -155,23 +188,23 @@ public class ProjectCoordinatesView extends ViewPart {
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        addSortingFunctionality();
+        Action refreshAction = new Action() {
+            @Override
+            public void run() {
+                refreshTableUI();
+            }
+        };
+
+        TableSortConfigurator.newConfigurator(tableViewer, refreshAction)
+                .add(locationColumn.getColumn(), COMPARE_LOCATION)
+                .add(coordinateColumn.getColumn(), COMPARE_COORDINATE).initialize(locationColumn.getColumn(), SWT.UP)
+                .configure();
+
         addFilterFunctionality();
         addClearCacheButton();
         addRefreshButton();
 
         refreshData();
-    }
-
-    private void addSortingFunctionality() {
-        comparator = new TableComparator();
-        tableViewer.setComparator(comparator);
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            TableColumn column = table.getColumn(i);
-            column.addSelectionListener(new SelectionListener(column, i));
-        }
-        table.setSortDirection(SWT.UP);
-        table.setSortColumn(locationColumn.getColumn());
     }
 
     private void addFilterFunctionality() {
@@ -228,8 +261,8 @@ public class ProjectCoordinatesView extends ViewPart {
 
         IAction showMissingCoord = new TableFilterAction("Only missing coordinates", Action.AS_RADIO_BUTTON,
                 missingCoordinatesFilter);
-        IAction showConflictingCoord = new TableFilterAction("Only conflicting coordinates",
-                Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
+        IAction showConflictingCoord = new TableFilterAction("Only conflicting coordinates", Action.AS_RADIO_BUTTON,
+                conflictingCoordinatesFilter);
         IAction showManualAssignedCoord = new TableFilterAction("Only manually assigned coordinates",
                 Action.AS_RADIO_BUTTON, manualAssignedFilter);
 
@@ -277,7 +310,7 @@ public class ProjectCoordinatesView extends ViewPart {
     class ProjectCoordinateEditing extends EditingSupport {
 
         private String formerValue;
-        private ComboBoxViewerCellEditor editor;
+        private final ComboBoxViewerCellEditor editor;
 
         public ProjectCoordinateEditing(TableViewer viewer) {
             super(viewer);
@@ -340,8 +373,13 @@ public class ProjectCoordinatesView extends ViewPart {
                         manualPcAdvisor.setManualMapping(dependencyInfo, valueOf);
                         bus.post(new ProjectCoordinateChangeEvent(dependencyInfo));
                     } catch (Exception e) {
-                        MessageDialog.openError(table.getShell(), "Invalid coordinate format.",
-                                String.format("The value '%s' did not have the right format.\nExpected format: groupId:artifactId:x.y.z", value));
+                        MessageDialog
+                                .openError(
+                                        table.getShell(),
+                                        "Invalid coordinate format.",
+                                        String.format(
+                                                "The value '%s' did not have the right format.\nExpected format: groupId:artifactId:x.y.z",
+                                                value));
                         return;
                     }
                 }
@@ -376,7 +414,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
         private final class ResolvingDependenciesJob extends Job {
 
-            private Set<DependencyInfo> dependencyInfos;
+            private final Set<DependencyInfo> dependencyInfos;
 
             public ResolvingDependenciesJob(String name, final Set<DependencyInfo> dependencyInfos) {
                 super(name);
@@ -432,115 +470,9 @@ public class ProjectCoordinatesView extends ViewPart {
 
     }
 
-    class TableComparator extends ViewerComparator {
-        private int column = 0;
-        private int direction = SWT.UP;
-
-        public int getDirection() {
-            return direction;
-        }
-
-        public void setColumn(final int column) {
-            if (column == this.column) {
-                switch (direction) {
-                case SWT.NONE:
-                    direction = SWT.UP;
-                    break;
-                case SWT.UP:
-                    direction = SWT.DOWN;
-                    break;
-                default:
-                    direction = SWT.NONE;
-                    break;
-                }
-            } else {
-                this.column = column;
-                direction = SWT.UP;
-            }
-        }
-
-        @Override
-        public int compare(final Viewer viewer, final Object e1, final Object e2) {
-            int result = 0;
-            if (direction == SWT.NONE) {
-                return 0;
-            }
-            if (e1 instanceof Entry && e2 instanceof Entry) {
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = cast(e1);
-                Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = cast(e2);
-
-                switch (column) {
-                case COLUMN_LOCATION:
-                    result = compareLocation(firstElement.getKey(), secondElement.getKey());
-                    break;
-                case COLUMN_COORDINATE:
-                    result = compareCoordinate(firstElement.getValue(), secondElement.getValue());
-                    break;
-                default:
-                    result = 0;
-                    break;
-                }
-            }
-            if (direction == SWT.DOWN) {
-                return -result;
-            }
-            return result;
-        }
-
-        private int compareCoordinate(final Collection<Optional<ProjectCoordinate>> firstElement,
-                final Collection<Optional<ProjectCoordinate>> secondElement) {
-            Optional<ProjectCoordinate> optionalCoordinateFirstElement = findFirstMatchingCoordinate(firstElement);
-            Optional<ProjectCoordinate> optionalCoordinateSecondElement = findFirstMatchingCoordinate(secondElement);
-
-            if (optionalCoordinateFirstElement.isPresent()) {
-                if (optionalCoordinateSecondElement.isPresent()) {
-                    return optionalCoordinateFirstElement.get().toString()
-                            .compareTo(optionalCoordinateSecondElement.get().toString());
-                } else {
-                    return -1;
-                }
-            } else {
-                if (optionalCoordinateSecondElement.isPresent()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        }
-
-        private int compareLocation(final DependencyInfo firstElement, final DependencyInfo secondElement) {
-            int compareScore = -firstElement.getType().compareTo(secondElement.getType());
-            if (compareScore == 0) {
-                return firstElement.getFile().getName().compareToIgnoreCase(secondElement.getFile().getName());
-            }
-            return compareScore;
-        }
-
-    }
-
-    class SelectionListener extends SelectionAdapter {
-
-        private final TableColumn tableColumn;
-        private final int index;
-
-        public SelectionListener(final TableColumn tableColumn, final int index) {
-            this.tableColumn = tableColumn;
-            this.index = index;
-        }
-
-        @Override
-        public void widgetSelected(final SelectionEvent e) {
-            comparator.setColumn(index);
-            int direction = comparator.getDirection();
-            tableViewer.getTable().setSortDirection(direction);
-            tableViewer.getTable().setSortColumn(tableColumn);
-            refreshTableUI();
-        }
-    }
-
     class TableFilterAction extends Action {
 
-        private ViewerFilter filter;
+        private final ViewerFilter filter;
 
         public TableFilterAction(String text, int style, ViewerFilter filter) {
             super(text, style);
@@ -775,7 +707,7 @@ public class ProjectCoordinatesView extends ViewPart {
         refreshData();
     }
 
-    private Optional<ProjectCoordinate> findFirstMatchingCoordinate(Collection<Optional<ProjectCoordinate>> pcs) {
+    private static Optional<ProjectCoordinate> findFirstMatchingCoordinate(Collection<Optional<ProjectCoordinate>> pcs) {
         return fromNullable(getFirst(presentInstances(pcs), null));
     }
 
