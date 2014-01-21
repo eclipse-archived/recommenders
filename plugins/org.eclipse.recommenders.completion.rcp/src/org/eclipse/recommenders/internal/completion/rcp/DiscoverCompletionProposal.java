@@ -58,6 +58,7 @@ public class DiscoverCompletionProposal extends AbstractJavaCompletionProposal {
         setRelevance(RELEVANCE);
         setSortString(text.getString());
         setCursorPosition(invocationOffset);
+        setReplacementString("");
     }
 
     @Override

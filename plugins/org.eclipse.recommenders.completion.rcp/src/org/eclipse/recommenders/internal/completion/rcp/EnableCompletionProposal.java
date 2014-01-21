@@ -63,6 +63,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
         setImage(image);
         setRelevance(RELEVANCE);
         setCursorPosition(offset);
+        setReplacementString("");
     }
 
     @Override
