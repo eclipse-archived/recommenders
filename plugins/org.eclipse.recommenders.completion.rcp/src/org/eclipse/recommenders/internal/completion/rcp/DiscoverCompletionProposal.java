@@ -41,23 +41,24 @@ import org.eclipse.swt.widgets.Shell;
 @SuppressWarnings("restriction")
 public class DiscoverCompletionProposal extends AbstractJavaCompletionProposal {
 
-    private static final String PROPOSAL_LABEL = "Nothing found? Discover new extensions to Code Recommenders";
-    private static final String PROPOSAL_DESCRIPTION = "There are quite a few extensions available to Code Recommenders. Press return to learn more about Code Recommenders' incubation projects or how to leverage the power of crowd-soucing in your IDE.";
+    private static final String PROPOSAL_LABEL = "Not what you’re looking for? Discover new extensions to Code Recommenders";
+    private static final String PROPOSAL_DESCRIPTION = "There are quite a few extensions available to Code Recommenders. Press return to learn more about Code Recommenders’ incubation projects or how to leverage the power of crowd-soucing in your IDE.";
     private static final String PROPOSAL_CATEGORY_NAME = "Eclipse Code Recommenders";
     private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/directory.xml";
     private static final Object DUMMY_INFO = new Object();
 
-    // leave a bit space for other, maybe more important proposals
-    private static final int RELEVANCE = Integer.MAX_VALUE - 10001;
+    // Place this proposal at the bottom of the list.
+    // Use -1 as Integer.MIN_VALUE does not work (possibly due to underflow) and other proposals (e.g., package subwords) can have a relevance of 0..
+    private static final int RELEVANCE = -1;
 
-    public DiscoverCompletionProposal(SharedImages images, int invocationOffset) {
+    public DiscoverCompletionProposal(SharedImages images) {
         Image image = images.getImage(Images.OBJ_LIGHTBULB);
         StyledString text = new StyledString(PROPOSAL_LABEL, DECORATIONS_STYLER);
         setStyledDisplayString(text);
         setImage(image);
         setRelevance(RELEVANCE);
         setSortString(text.getString());
-        setCursorPosition(invocationOffset);
+        setCursorPosition(0);
         setReplacementString("");
     }
 
@@ -84,7 +85,6 @@ public class DiscoverCompletionProposal extends AbstractJavaCompletionProposal {
 
     @Override
     public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
-
         Catalog catalog = new Catalog();
         Dictionary<Object, Object> env = DiscoveryCore.createEnvironment();
         catalog.setEnvironment(env);

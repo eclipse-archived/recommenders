@@ -40,7 +40,7 @@ public class Bug425994Test {
 
         LinkedList<Object[]> proposals = Lists.newLinkedList();
 
-        proposals.add(new Object[] { new DiscoverCompletionProposal(images, 0) });
+        proposals.add(new Object[] { new DiscoverCompletionProposal(images) });
         proposals.add(new Object[] { new EmptyCompletionProposal(0) });
         proposals.add(new Object[] { new EnableCompletionProposal(images, 0) });
 
