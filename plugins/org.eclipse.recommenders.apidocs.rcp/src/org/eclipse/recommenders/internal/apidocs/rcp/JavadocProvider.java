@@ -23,11 +23,13 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
@@ -73,10 +75,13 @@ public final class JavadocProvider extends ApidocProvider {
 
     @JavaSelectionSubscriber
     public void onCompilationUnitSelection(final ITypeRoot root, final JavaElementSelectionEvent selection,
-            final Composite parent) throws JavaModelException {
+            final Composite parent) throws CoreException {
         final IType type = root.findPrimaryType();
         if (type != null) {
             render(type, parent);
+        } else if (root.getParent() instanceof IPackageFragment) {
+            IPackageFragment packageFragment = (IPackageFragment) root.getParent();
+            render(packageFragment, parent);
         }
     }
 
@@ -100,7 +105,15 @@ public final class JavadocProvider extends ApidocProvider {
 
     private void render(final IMember element, final Composite parent) throws JavaModelException {
         final String html = findJavadoc(element);
+        renderJavadoc(html, parent);
+    }
 
+    private void render(final IPackageFragment element, final Composite parent) throws CoreException {
+        final String html = findJavadoc(element);
+        renderJavadoc(html, parent);
+    }
+
+    private void renderJavadoc(final String html, final Composite parent) {
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
@@ -171,6 +184,15 @@ public final class JavadocProvider extends ApidocProvider {
 
     private String findJavadoc(final IMember element) throws JavaModelException {
         String html = JavadocContentAccess2.getHTMLContent(element, true);
+        return extractJavadoc(html);
+    }
+
+    private String findJavadoc(final IPackageFragment element) throws CoreException {
+        String html = JavadocContentAccess2.getHTMLContent(element);
+        return extractJavadoc(html);
+    }
+
+    private String extractJavadoc(String html) {
         if (html == null) {
             html = Messages.EXTDOC_JAVADOC_NOT_FOUND;
         }
@@ -186,7 +208,6 @@ public final class JavadocProvider extends ApidocProvider {
         info.append(html);
         HTMLPrinter.addPageEpilog(info);
         return info.toString();
-
     }
 
     private static String loadStyleSheet() {
