@@ -20,7 +20,7 @@ public class Constants {
     /**
      * Templates completion category id
      */
-    public static final String TEMPLATES_CATEGORY_ID = "org.eclipse.recommenders.calls.rcp.templates.category";
+    public static final String TEMPLATES_CATEGORY_ID = "org.eclipse.recommenders.calls.rcp.proposalCategory.templates";
 
     /**
      * minimum probability a proposal needs to have before displaying it in the UI.

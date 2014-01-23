@@ -66,7 +66,7 @@ import com.google.common.util.concurrent.SimpleTimeLimiter;
 @SuppressWarnings("restriction")
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    public static final String CATEGORY_ID = "org.eclipse.recommenders.chain.rcp.category"; //$NON-NLS-1$
+    public static final String CATEGORY_ID = "org.eclipse.recommenders.chain.rcp.proposalCategory.chain"; //$NON-NLS-1$
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private IRecommendersCompletionContext ctx;

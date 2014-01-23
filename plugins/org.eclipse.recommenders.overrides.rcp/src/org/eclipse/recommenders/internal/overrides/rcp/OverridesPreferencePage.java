@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class OverridesPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     @Override
     protected void createFieldEditors() {

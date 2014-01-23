@@ -1,65 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.eclipse.recommenders.apidocs.rcp.providers" name="%extension-point.name" schema="schema/providers.exsd"/>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.ApidocsView"
-            icon="icons/extdoc.png"
-            id="org.eclipse.recommenders.apidocs.rcp.ApidocsView"
-            name="%view.name"
-            restorable="true">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.recommenders.injection.modules">
-      <module
-            class="org.eclipse.recommenders.internal.apidocs.rcp.ApidocsRcpModule">
-      </module>
-   </extension>
-   <extension
-         point="org.eclipse.recommenders.apidocs.rcp.providers">
-      <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.JavadocProvider"
-            image="icons/provider.javadoc.gif"
-            name="Javadoc"/>
-      <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.OverridesProvider"
-            image="icons/provider.subclassing.gif"
-            name="Overrides"/>
-      <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.SelfCallsProvider"
-            image="icons/tag_orange.png"
-            name="Self-calls"/>
-       <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.StaticHooksFinder"
-            image="icons/provider.hooks.png"
-            name="Static Hooks"/>
-       <provider
-             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.AdaptiveTemplatesProvider"
-             image="icons/extdoc.png"
-             name="Templates">
-       </provider>
-   </extension>
-   <extension
-         point="org.eclipse.recommenders.models.rcp.models">
-      <model
-            classifier="call">
-      </model>
-      <model
-            classifier="selfc">
-      </model>
-      <model
-            classifier="selfm">
-      </model>
-      <model
-            classifier="ovrp">
-      </model>
-      <model
-            classifier="ovrd">
-      </model>
-   </extension>
-
+	<extension-point id="org.eclipse.recommenders.apidocs.rcp.providers" name="%extension-point.providers.name" schema="schema/providers.exsd"/>
+	<extension point="org.eclipse.ui.views">
+		<view id="org.eclipse.recommenders.apidocs.rcp.views.apidocs"
+			category="org.eclipse.recommenders.rcp.views.root"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.ApidocsView"
+			icon="icons/extdoc.png"
+			name="%views.apidocs.name"
+			restorable="true"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.apidocs.rcp.ApidocsRcpModule"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.apidocs.rcp.providers">
+		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.JavadocProvider"
+				image="icons/provider.javadoc.gif"
+				name="%providers.javadoc.name"/>
+		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.OverridesProvider"
+				image="icons/provider.subclassing.gif"
+				name="%providers.overrides.name"/>
+		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.SelfCallsProvider"
+				image="icons/tag_orange.png"
+				name="%providers.selfCalls.name"/>
+		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.StaticHooksProvider"
+				image="icons/provider.hooks.png"
+				name="%providers.staticHooks.name"/>
+		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.AdaptiveTemplatesProvider"
+				image="icons/extdoc.png"
+				name="%providers.adaptiveTemplates.name">
+		</provider>
+	</extension>
+	<extension point="org.eclipse.recommenders.models.rcp.models">
+		<model classifier="call"/>
+		<model classifier="ovrd"/>
+		<model classifier="ovrp"/>
+		<model classifier="selfc"/>
+		<model classifier="selfm"/>
+	</extension>
 </plugin>

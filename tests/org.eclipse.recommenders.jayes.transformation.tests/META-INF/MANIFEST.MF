@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.jayes.transformation.tests
 Bundle-Version: 2.0.6.qualifier
 Bundle-Name: %Bundle-Name
-Bundle-Vendor: %Bundle-Version
+Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.jayes.transformation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit

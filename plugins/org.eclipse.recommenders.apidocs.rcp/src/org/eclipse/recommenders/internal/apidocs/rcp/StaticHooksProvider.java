@@ -57,7 +57,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
-public class StaticHooksFinder extends ApidocProvider {
+public class StaticHooksProvider extends ApidocProvider {
 
     private final class HooksRendererRunnable implements Runnable {
         private final TreeMultimap<IType, IMethod> index;
@@ -225,7 +225,7 @@ public class StaticHooksFinder extends ApidocProvider {
     private final EventBus workspaceBus;
 
     @Inject
-    public StaticHooksFinder(final EventBus workspaceBus) {
+    public StaticHooksProvider(final EventBus workspaceBus) {
         this.workspaceBus = workspaceBus;
 
     }

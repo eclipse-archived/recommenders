@@ -27,10 +27,14 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 import com.google.common.collect.Iterables;
 
-public class QuickAssistProcessor implements IQuickAssistProcessor {
+public class ChainQuickAssistProcessor implements IQuickAssistProcessor {
+
+    private final ChainCompletionProposalComputer computer;
 
     @Inject
-    ChainCompletionProposalComputer computer;
+    public ChainQuickAssistProcessor(ChainCompletionProposalComputer computer) {
+        this.computer = computer;
+    }
 
     @Override
     public boolean hasAssists(IInvocationContext context) throws CoreException {
@@ -45,5 +49,4 @@ public class QuickAssistProcessor implements IQuickAssistProcessor {
                 new NullProgressMonitor()));
         return Iterables.toArray(proposals, IJavaCompletionProposal.class);
     }
-
 }

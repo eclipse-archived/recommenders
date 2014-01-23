@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.feature.rcp"
-      label="Code Recommenders 1.x to 2.x Migration"
+      label="%label"
       version="2.0.6.qualifier"
-      provider-name="Eclipse Code Recommenders"
+      provider-name="%provider-name"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -21,8 +21,6 @@
    </license>
 
    <requires>
-      <!-- This migration feature can sooner or later be removed. -->
-      <!-- Any existing installations of this feature will still have their requirement fulfilled with newer versions of org.eclipse.recommenders.rcp.feature. -->
       <import feature="org.eclipse.recommenders.rcp.feature" version="2.0.0.qualifier" match="greaterOrEqual"/>
    </requires>
 

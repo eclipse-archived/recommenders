@@ -15,6 +15,6 @@ public class Constants {
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.completion.rcp";
     public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
     public static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
-    public static final String RECOMMENDERS_ALL_CATEGORY_ID = "org.eclipse.recommenders.completion.category.all";
-    public static final String COMPLETION_PREFERENCE_PAGE_ID = "org.eclipse.recommenders.completion.rcp.preferences";
+    public static final String RECOMMENDERS_ALL_CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent";
+    public static final String COMPLETION_PREFERENCE_PAGE_ID = "org.eclipse.recommenders.completion.rcp.preferencePages.completions";
 }

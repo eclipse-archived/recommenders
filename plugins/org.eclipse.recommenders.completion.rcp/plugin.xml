@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="Completion Session Processors" schema="schema/org.eclipse.recommenders.completion.rcp.sessionprocessors.exsd"/>
-	<extension point="org.eclipse.recommenders.injection.modules">
-		<module class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpModule"/>
-	</extension>
+	<extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="%extension-point.sessionprocessors.name" schema="schema/org.eclipse.recommenders.completion.rcp.sessionprocessors.exsd"/>
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
-		id="org.eclipse.recommenders.completion.category.all"
-		name="Intelligent Java Proposals (Recommenders)">
+		id="org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"
+		name="%proposalCategory.intelligent.name">
 		<proposalCategory icon="icons/view16/slice.gif"/>
 	</extension>
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
-		id="intelligent">
+		id="org.eclipse.recommenders.completion.rcp.javaCompletionProposalComputer.intelligent">
 		<javaCompletionProposalComputer
 			activate="true"
-			categoryId="org.eclipse.recommenders.completion.category.all"
+			categoryId="org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.completion.rcp.processable.IntelligentCompletionProposalComputer"
 			needsSortingAfterFiltering="true"/>
 	</extension>
 	<extension point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
 		<processor id="org.eclipse.recommenders.completion.rcp.sessionprocessors.baseRelevance"
 			class="org.eclipse.recommenders.completion.rcp.processable.BaseRelevanceSessionProcessor"
-			name="Base Relevance Processor"
-			description="Contributes the JDT relevance as base relevance for each proposal. Ensures that the proposals are somewhat in-line with what is presented by JDT."
+			priority="0"
 			icon="platform:/plugin/org.eclipse.recommenders.rcp/icons/obj16/bullet_blue.png"
-			priority="0"/>
+			name="%sessionprocessors.baseRelevance.name"
+			description="%sessionprocessors.baseRelevance.description"/>
 	</extension>
 	<extension point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
 		<processor id="org.eclipse.recommenders.completion.rcp.sessionprocessors.tips"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.tips.TipsSessionProcessor"
-			name="Completion Tips Processor"
-			description="Provides tips on how to enhance your code completion experience."
-			icon="platform:/plugin/org.eclipse.recommenders.rcp/icons/obj16/lightbulb.gif"/>
+			icon="platform:/plugin/org.eclipse.recommenders.rcp/icons/obj16/lightbulb.gif"
+			name="%sessionprocessors.tips.name"
+			description="%sessionprocessors.tips.description"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
-		<page id="org.eclipse.recommenders.completion.rcp.preferences"
-			category="org.eclipse.recommenders.rcp.category.preferences"
+		<page id="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
+			category="org.eclipse.recommenders.rcp.preferencePages.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.PreferencePage"
-			name="Completions"/>
+			name="%preferencePages.completions.name"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpModule"/>
 	</extension>
 </plugin>
