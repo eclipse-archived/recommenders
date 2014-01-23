@@ -16,19 +16,18 @@
 		<module>org.eclipse.recommenders.apidocs.rcp</module>
 		<module>org.eclipse.recommenders.calls</module>
 		<module>org.eclipse.recommenders.calls.rcp</module>
-		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.chain.rcp</module>
-		<module>org.eclipse.recommenders.sandbox.rcp</module>
+		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.injection</module>
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.io</module>
 		<module>org.eclipse.recommenders.jayes.transformation</module>
 		<module>org.eclipse.recommenders.models</module>
 		<module>org.eclipse.recommenders.models.rcp</module>
-		<module>org.eclipse.recommenders.rcp</module>
-		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.overrides</module>
 		<module>org.eclipse.recommenders.overrides.rcp</module>
+		<module>org.eclipse.recommenders.rcp</module>
+		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.utils</module>
 	</modules>
 	<build>

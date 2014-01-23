@@ -33,7 +33,7 @@
             class="org.eclipse.recommenders.completion.rcp.processable.BaseRelevanceSessionProcessor"
             description="Contributes the JDT relevance as base relevance for each proposal. Ensures that the proposals are somewhat in-line with what is presented by JDT."
             icon="icons/obj16/bullet_blue.png"
-            id="org.eclipse.recommenders.completion.rcp.sandbox.baserelevanceprocessor"
+            id="org.eclipse.recommenders.completion.rcp.sessionprocessors.baseRelevance"
             name="Base Relevance Processor"
             priority="0">
       </processor>
