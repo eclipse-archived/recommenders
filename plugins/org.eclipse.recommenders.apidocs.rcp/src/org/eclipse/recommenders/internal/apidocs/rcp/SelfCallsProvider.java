@@ -11,28 +11,25 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static com.google.common.base.Optional.*;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
 
-import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.recommenders.apidocs.ClassSelfCallsModelProvider;
 import org.eclipse.recommenders.apidocs.ClassSelfcallDirectives;
+import org.eclipse.recommenders.apidocs.MethodSelfCallsDirectivesModelProvider;
 import org.eclipse.recommenders.apidocs.MethodSelfcallDirectives;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
-import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
+import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -40,10 +37,6 @@ import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Bags;
-import org.eclipse.recommenders.utils.Constants;
-import org.eclipse.recommenders.utils.IOUtils;
-import org.eclipse.recommenders.utils.Zips;
-import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -55,16 +48,22 @@ import com.google.common.eventbus.EventBus;
 
 public final class SelfCallsProvider extends ApidocProvider {
 
+    private final JavaElementResolver resolver;
+    private final IProjectCoordinateProvider pcProvider;
+    private final EventBus workspaceBus;
+
+    private final ClassSelfCallsModelProvider cStore;
+    private final MethodSelfCallsDirectivesModelProvider mStore;
+
     @Inject
-    JavaElementResolver resolver;
-    @Inject
-    IProjectCoordinateProvider pcProvider;
-    @Inject
-    EventBus workspaceBus;
-    @Inject
-    ClassSelfCallsModelProvider cStore;
-    @Inject
-    MethodSelfCallsDirectivesModelProvider mStore;
+    public SelfCallsProvider(JavaElementResolver resolver, IProjectCoordinateProvider pcProvider,
+            EventBus workspaceBus, IModelRepository modelRepo, IModelIndex modelIndex) {
+        this.resolver = resolver;
+        this.pcProvider = pcProvider;
+        this.workspaceBus = workspaceBus;
+        mStore = new MethodSelfCallsDirectivesModelProvider(modelRepo, modelIndex);
+        cStore = new ClassSelfCallsModelProvider(modelRepo, modelIndex);
+    }
 
     @JavaSelectionSubscriber
     public void onTypeRootSelection(final ITypeRoot root, final JavaElementSelectionEvent event, final Composite parent)
@@ -177,50 +176,6 @@ public final class SelfCallsProvider extends ApidocProvider {
             final Multiset<IMethodName> b = newHashMultiset(directive.getCalls());
             renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
                     Messages.EXTDOC_SELFCALLS_CALLS);
-        }
-    }
-
-    public static class ClassSelfCallsModelProvider extends
-            PoolingModelProvider<UniqueTypeName, ClassSelfcallDirectives> {
-
-        @Inject
-        public ClassSelfCallsModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
-            super(repository, index, Constants.CLASS_SELFC_MODEL);
-        }
-
-        @Override
-        protected Optional<ClassSelfcallDirectives> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
-            String path = Zips.path(key.getName(), ".json");
-            ZipEntry entry = zip.getEntry(path);
-            if (entry == null) {
-                return absent();
-            }
-            InputStream is = zip.getInputStream(entry);
-            ClassSelfcallDirectives res = GsonUtil.deserialize(is, ClassSelfcallDirectives.class);
-            IOUtils.closeQuietly(is);
-            return of(res);
-        }
-    }
-
-    public static class MethodSelfCallsDirectivesModelProvider extends
-            PoolingModelProvider<UniqueMethodName, MethodSelfcallDirectives> {
-
-        @Inject
-        public MethodSelfCallsDirectivesModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
-            super(repository, index, Constants.CLASS_SELFM_MODEL);
-        }
-
-        @Override
-        protected Optional<MethodSelfcallDirectives> loadModel(ZipFile zip, UniqueMethodName key) throws Exception {
-            String path = Zips.path(key.getName(), ".json");
-            ZipEntry entry = zip.getEntry(path);
-            if (entry == null) {
-                return absent();
-            }
-            InputStream is = zip.getInputStream(entry);
-            MethodSelfcallDirectives res = GsonUtil.deserialize(is, MethodSelfcallDirectives.class);
-            IOUtils.closeQuietly(is);
-            return of(res);
         }
     }
 }
