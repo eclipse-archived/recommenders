@@ -11,7 +11,6 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static com.google.common.base.Optional.*;
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.String.format;
@@ -21,14 +20,11 @@ import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
 import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
@@ -39,20 +35,16 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.ClassOverrideDirectives;
 import org.eclipse.recommenders.apidocs.ClassOverridePatterns;
 import org.eclipse.recommenders.apidocs.MethodPattern;
+import org.eclipse.recommenders.apidocs.OverrideDirectivesModelProvider;
+import org.eclipse.recommenders.apidocs.OverridePatternsModelProvider;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
-import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
+import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.PoolingModelProvider;
-import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
-import org.eclipse.recommenders.utils.Constants;
-import org.eclipse.recommenders.utils.IOUtils;
-import org.eclipse.recommenders.utils.Zips;
-import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -75,18 +67,18 @@ public final class OverridesProvider extends ApidocProvider {
 
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
-    private IProjectCoordinateProvider pcProvider;
-    private OverrideDirectivesModelProvider dStore;
-    private OverridePatternsModelProvider pStore;
+    private final IProjectCoordinateProvider pcProvider;
+    private final OverrideDirectivesModelProvider dStore;
+    private final OverridePatternsModelProvider pStore;
 
     @Inject
     public OverridesProvider(IProjectCoordinateProvider pcProvider, JavaElementResolver resolver,
-            EventBus workspaceBus, OverridePatternsModelProvider pStore, OverrideDirectivesModelProvider dStore) {
+            EventBus workspaceBus, IModelRepository repository, IModelIndex index) {
         this.pcProvider = pcProvider;
         this.resolver = resolver;
         this.workspaceBus = workspaceBus;
-        this.pStore = pStore;
-        this.dStore = dStore;
+        this.pStore = new OverridePatternsModelProvider(repository, index);
+        this.dStore = new OverrideDirectivesModelProvider(repository, index);
     }
 
     @Subscribe
@@ -302,47 +294,4 @@ public final class OverridesProvider extends ApidocProvider {
         }
     }
 
-    public static class OverridePatternsModelProvider extends
-            PoolingModelProvider<UniqueTypeName, ClassOverridePatterns> {
-
-        @Inject
-        public OverridePatternsModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
-            super(repository, index, Constants.CLASS_OVRP_MODEL);
-        }
-
-        @Override
-        protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
-            String path = Zips.path(key.getName(), ".json");
-            ZipEntry entry = zip.getEntry(path);
-            if (entry == null) {
-                return absent();
-            }
-            InputStream is = zip.getInputStream(entry);
-            ClassOverridePatterns res = GsonUtil.deserialize(is, ClassOverridePatterns.class);
-            IOUtils.closeQuietly(is);
-            return of(res);
-        }
-    }
-
-    public static class OverrideDirectivesModelProvider extends
-            PoolingModelProvider<UniqueTypeName, ClassOverrideDirectives> {
-
-        @Inject
-        public OverrideDirectivesModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
-            super(repository, index, Constants.CLASS_OVRD_MODEL);
-        }
-
-        @Override
-        protected Optional<ClassOverrideDirectives> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
-            String path = Zips.path(key.getName(), ".json");
-            ZipEntry entry = zip.getEntry(path);
-            if (entry == null) {
-                return absent();
-            }
-            InputStream is = zip.getInputStream(entry);
-            ClassOverrideDirectives res = GsonUtil.deserialize(is, ClassOverrideDirectives.class);
-            IOUtils.closeQuietly(is);
-            return of(res);
-        }
-    }
 }
