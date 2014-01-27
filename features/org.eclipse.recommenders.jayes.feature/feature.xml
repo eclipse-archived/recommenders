@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.jayes.feature"
       label="Code Recommenders: Jayes Bayesian Network Library"
-      version="2.0.5.qualifier"
+      version="2.0.6.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

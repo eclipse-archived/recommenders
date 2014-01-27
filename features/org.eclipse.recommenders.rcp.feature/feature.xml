@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.rcp.feature"
       label="Code Recommenders Developer Tools"
-      version="2.0.5.qualifier"
+      version="2.0.6.qualifier"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
