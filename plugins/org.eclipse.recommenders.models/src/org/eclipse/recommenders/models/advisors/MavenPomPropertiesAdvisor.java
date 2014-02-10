@@ -12,15 +12,15 @@ package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
+import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -33,18 +33,21 @@ import org.eclipse.recommenders.utils.Zips.DefaultJarFileConverter;
 import org.eclipse.recommenders.utils.Zips.IFileToJarFileConverter;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 
 /**
  * Implementation based on {@link MavenPomJarIdExtractor}.
  */
 public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor {
 
+    public static final String GROUP_ID = "groupId";
+    public static final String ARTIFACT_ID = "artifactId";
+    public static final String VERSION = "version";
+
     private static final String POM_PROPERTIES_FILE_REGEX = "META-INF/maven/.*/.*/pom.properties";
-    public static final String PROPERTY_KEY_VERSION = "version";
-    public static final String PROPERTY_KEY_ARTIFACT_ID = "artifactId";
-    public static final String PROPERTY_KEY_GROUP_ID = "groupId";
 
     private final IFileToJarFileConverter jarFileConverter;
 
@@ -53,7 +56,7 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
     }
 
     @VisibleForTesting
-    public MavenPomPropertiesAdvisor(IFileToJarFileConverter fileToJarFileConverter) {
+    MavenPomPropertiesAdvisor(IFileToJarFileConverter fileToJarFileConverter) {
         jarFileConverter = fileToJarFileConverter;
     }
 
@@ -73,18 +76,19 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
     }
 
     private Optional<ProjectCoordinate> extractProjectCoordinateOfJarFile(JarFile jarFile) throws IOException {
-        Set<ZipEntry> pomZipEntries = findPomPropertiesEntries(jarFile);
-        for (ZipEntry zipEntry : pomZipEntries) {
-            InputStream pomPropertiesInputStream;
-            pomPropertiesInputStream = jarFile.getInputStream(zipEntry);
-            Optional<ProjectCoordinate> projectCoordinate = parseProjectCoordinate(pomPropertiesInputStream,
-                    zipEntry.getName());
-            IOUtils.closeQuietly(pomPropertiesInputStream);
-            if (projectCoordinate.isPresent()) {
-                return projectCoordinate;
+        Optional<ProjectCoordinate> candidate = absent();
+        Iterator<JarEntry> entries = pomPropertiesIterator(jarFile);
+        while (entries.hasNext()) {
+            JarEntry entry = entries.next();
+            InputStream pomProperties = jarFile.getInputStream(entry);
+            Optional<ProjectCoordinate> projectCoordinate = parseProjectCoordinate(pomProperties, entry.getName());
+            IOUtils.closeQuietly(pomProperties);
+            if (projectCoordinate.isPresent() && candidate.isPresent()) {
+                return absent(); // We have conflicting project coordinates; abort.
             }
+            candidate = candidate.or(projectCoordinate);
         }
-        return absent();
+        return candidate;
     }
 
     private Optional<ProjectCoordinate> parseProjectCoordinate(InputStream inputStream, String propertiesFileName) {
@@ -106,19 +110,14 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
         }
     }
 
-    private Set<ZipEntry> findPomPropertiesEntries(JarFile jarFile) {
-        Set<ZipEntry> pomEntries = Sets.newHashSet();
-        for (Enumeration<JarEntry> elements = jarFile.entries(); elements.hasMoreElements();) {
-            ZipEntry entry = elements.nextElement();
-            if (isPomPropertiesFile(entry.getName())) {
-                pomEntries.add(entry);
-            }
-        }
-        return pomEntries;
-    }
+    private Iterator<JarEntry> pomPropertiesIterator(JarFile jarFile) {
+        return Iterators.filter(Iterators.forEnumeration(jarFile.entries()), new Predicate<JarEntry>() {
 
-    private boolean isPomPropertiesFile(String fileName) {
-        return fileName.matches(POM_PROPERTIES_FILE_REGEX);
+            @Override
+            public boolean apply(JarEntry entry) {
+                return entry.getName().matches(POM_PROPERTIES_FILE_REGEX);
+            }
+        });
     }
 
     private Optional<JarFile> readJarFileIn(File file) {
@@ -131,20 +130,20 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
     }
 
     private String parseGroupID(final Properties properties) {
-        return parseAttribute(properties, PROPERTY_KEY_GROUP_ID);
+        return parseAttribute(properties, GROUP_ID);
     }
 
     private String parseArtifactID(final Properties properties) {
-        return parseAttribute(properties, PROPERTY_KEY_ARTIFACT_ID);
+        return parseAttribute(properties, ARTIFACT_ID);
     }
 
     private String parseVersion(final Properties properties) {
-        return parseAttribute(properties, PROPERTY_KEY_VERSION);
+        return parseAttribute(properties, VERSION);
     }
 
     @Override
     public boolean isApplicable(DependencyType dependencyType) {
-        return dependencyType == DependencyType.JAR;
+        return dependencyType == JAR;
     }
 
     public static String extractGroupID(String fileName) {
@@ -162,5 +161,4 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
         }
         return "";
     }
-
 }
