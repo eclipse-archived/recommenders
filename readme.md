@@ -22,6 +22,10 @@ That’s it.
 After a few minutes wait, you should see a `BUILD SUCCESS`.
 (The initial build may take a bit longer, as Maven automatically downloads anything required by the build.)
 
+**Windows users:** Code Recommenders uses Unix-style newlines (LF) throughout and fails the build if it finds Windows-style newlines (CRLF).
+Please make sure that your Git configuration has `core.autocrlf` set to `false` to prevent Git from changing newlines to Windows-style.
+(Changing newlines is unnecessary, as the Eclipse IDE can handle either style.)
+
 ### Building within the Eclipse IDE
 
 If you want to contribute to Code Recommenders yourself, we suggest that you use Eclipse.
