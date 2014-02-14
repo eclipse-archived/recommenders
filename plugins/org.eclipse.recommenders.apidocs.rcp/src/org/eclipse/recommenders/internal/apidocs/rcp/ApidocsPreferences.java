@@ -57,7 +57,7 @@ public class ApidocsPreferences {
             if (tmp != null) {
                 providerIds.add(tmp);
             } else {
-                RcpPlugin.logWarning("Loading entry for key " + i + " failed. No such entry."); //$NON-NLS-1$ //$NON-NLS-2$
+                RcpPlugin.logWarning(Messages.LOG_WARNING_NO_SUCH_ENTRY, i);
             }
         }
         return providerIds;
@@ -68,7 +68,7 @@ public class ApidocsPreferences {
         try {
             keys = node.keys();
         } catch (BackingStoreException e) {
-            RcpPlugin.logError(e, "Exception during loading the keys of: " + node.absolutePath()); //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_READ_PREFERENCES, node.absolutePath());
         }
         return keys;
     }
@@ -78,7 +78,7 @@ public class ApidocsPreferences {
             prefs.clear();
             return true;
         } catch (BackingStoreException e) {
-            RcpPlugin.logError(e, "Caught exception while clearing the preferences : " + prefs.absolutePath()); //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_CLEAR_PREFERENCES, prefs.absolutePath());
             return false;
         }
     }
@@ -129,7 +129,7 @@ public class ApidocsPreferences {
             pluginPreferences.flush();
             return true;
         } catch (BackingStoreException e) {
-            RcpPlugin.logError(e, "Caught exception while saving the order of ExtdocProviders"); //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_SAVE_PREFERENCES);
             return false;
         }
     }

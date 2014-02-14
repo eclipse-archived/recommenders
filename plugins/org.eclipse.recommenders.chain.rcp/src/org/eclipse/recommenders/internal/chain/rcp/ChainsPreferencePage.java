@@ -31,32 +31,37 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 
 import com.google.common.base.Joiner;
 
-public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEditorPreferencePage implements
+public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEditorPreferencePage implements
         IWorkbenchPreferencePage {
 
-    public static final String ID_MAX_CHAINS = "recommenders.chain.max_chains"; //$NON-NLS-1$
-    public static final String ID_MIN_DEPTH = "recommenders.chain.min_chain_length"; //$NON-NLS-1$
-    public static final String ID_MAX_DEPTH = "recommenders.chain.max_chain_length"; //$NON-NLS-1$
-    public static final String ID_TIMEOUT = "recommenders.chain.timeout"; //$NON-NLS-1$
-    public static final String ID_IGNORE_TYPES = "recommenders.chain.ignore_types"; //$NON-NLS-1$
+    public static final String PREF_MAX_CHAINS = "recommenders.chain.max_chains"; //$NON-NLS-1$
+    public static final String PREF_MIN_CHAIN_LENGTH = "recommenders.chain.min_chain_length"; //$NON-NLS-1$
+    public static final String PREF_MAX_CHAIN_LENGTH = "recommenders.chain.max_chain_length"; //$NON-NLS-1$
+    public static final String PREF_TIMEOUT = "recommenders.chain.timeout"; //$NON-NLS-1$
+    public static final String PREF_IGNORED_TYPES = "recommenders.chain.ignore_types"; //$NON-NLS-1$
+
     public static final char IGNORE_TYPES_SEPARATOR = '|';
 
-    public ChainPreferencePage() {
+    public ChainsPreferencePage() {
         super(GRID);
+    }
+
+    @Override
+    public void init(final IWorkbench workbench) {
+        setDescription(Messages.PREFPAGE_DESCRIPTION_CHAINS);
         setPreferenceStore(ChainRcpPlugin.getDefault().getPreferenceStore());
-        setDescription(Messages.PREFPAGE_DESCRIPTION);
     }
 
     @Override
     protected void createFieldEditors() {
-        addField(ID_MAX_CHAINS, Messages.PREFPAGE_MAX_CHAINS, 1, 99);
-        addField(ID_MIN_DEPTH, Messages.PREFPAGE_MIN_CHAIN_DEPTH, 1, 10);
-        addField(ID_MAX_DEPTH, Messages.PREFPAGE_MAX_CHAIN_DEPTH, 1, 10);
-        addField(ID_TIMEOUT, Messages.PREFPAGE_SEARCH_TIMEOUT, 1, 99);
+        addField(PREF_MAX_CHAINS, Messages.FIELD_LABEL_MAX_CHAINS, 1, 99);
+        addField(PREF_MIN_CHAIN_LENGTH, Messages.FIELD_LABEL_MIN_CHAIN_LENGTH, 1, 10);
+        addField(PREF_MAX_CHAIN_LENGTH, Messages.FIELD_LABEL_MAX_CHAIN_LENGTH, 1, 10);
+        addField(PREF_TIMEOUT, Messages.FIELD_LABEL_TIMEOUT, 1, 99);
 
-        addField(new IgnoredTypesEditor(Messages.PREFPAGE_IGNORED_OBJECT_TYPES, getFieldEditorParent()));
+        addField(new IgnoredTypesEditor(Messages.FIELD_LABEL_IGNORED_TYPES, getFieldEditorParent()));
 
-        addText(Messages.PREFPAGE_IGNORE_CONSEQUENCES);
+        addText(Messages.PREFPAGE_FOOTER_IGNORED_TYPES_WARNING);
     }
 
     private void addField(final String name, final String labeltext, final int min, final int max) {
@@ -71,14 +76,10 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
         label.setLayoutData(GridDataFactory.fillDefaults().span(2, 1).create());
     }
 
-    @Override
-    public void init(final IWorkbench workbench) {
-    }
-
     private static final class IgnoredTypesEditor extends ListEditor {
 
         IgnoredTypesEditor(final String label, final Composite parent) {
-            super(ID_IGNORE_TYPES, label, parent);
+            super(PREF_IGNORED_TYPES, label, parent);
         }
 
         @Override
@@ -113,7 +114,5 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
         protected String createList(final String[] items) {
             return Joiner.on(IGNORE_TYPES_SEPARATOR).join(items);
         }
-
     }
-
 }

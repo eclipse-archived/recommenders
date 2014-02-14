@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
@@ -19,12 +19,14 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.recommenders.internal.rcp.Messages;
 import org.osgi.framework.Bundle;
 
 public class Logs {
+
     public static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
             final String messageFormat, final Object... messageArgs) {
-        final String message = messageFormat == null ? "" : format(messageFormat, messageArgs);
+        final String message = messageFormat == null ? "" : format(messageFormat, messageArgs); //$NON-NLS-1$
         final IStatus res = new Status(kind, pluginId, message, exception);
         return res;
     }
@@ -42,7 +44,7 @@ public class Logs {
     }
 
     private static String getSymbolicName(final Plugin plugin) {
-        ensureIsNotNull(plugin, "logging requires a plug-in to be specified");
+        ensureIsNotNull(plugin, "Logging requires a plug-in to be specified"); //$NON-NLS-1$
         final Bundle bundle = plugin.getBundle();
         return bundle.getSymbolicName();
     }
@@ -93,21 +95,21 @@ public class Logs {
     }
 
     private static void appendSeverityAndMessage(final IStatus status, final StringBuilder sb) {
-        sb.append(toSeverity(status)).append(": ").append(status.getMessage());
+        sb.append(toSeverity(status)).append(':').append(' ').append(status.getMessage());
     }
 
     private static String toSeverity(final IStatus status) {
         switch (status.getSeverity()) {
         case IStatus.CANCEL:
-            return "CANCEL";
+            return Messages.LOG_CANCEL;
         case IStatus.ERROR:
-            return "ERROR";
+            return Messages.LOG_ERROR;
         case IStatus.WARNING:
-            return "WARN";
+            return Messages.LOG_WARNING;
         case IStatus.INFO:
-            return "INFO";
+            return Messages.LOG_INFO;
         case IStatus.OK:
-            return "OK";
+            return Messages.LOG_OK;
         default:
             throw throwUnreachable();
         }
@@ -115,13 +117,13 @@ public class Logs {
 
     private static void appendException(final IStatus status, final StringBuilder sb) {
         if (status.getException() != null) {
-            sb.append(" ").append(status.getException());
+            sb.append(' ').append(status.getException());
         }
     }
 
     private static void appendChildren(final IStatus status, final StringBuilder sb) {
         for (final IStatus child : status.getChildren()) {
-            sb.append("\n").append(toString(child));
+            sb.append('\n').append(toString(child));
         }
     }
 }

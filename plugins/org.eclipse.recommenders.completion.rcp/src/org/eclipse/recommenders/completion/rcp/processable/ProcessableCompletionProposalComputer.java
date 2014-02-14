@@ -37,6 +37,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
@@ -147,7 +148,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
                     it.remove();
                 }
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
     }
@@ -158,7 +159,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
                 proposal.getRelevance();
                 p.process(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
         proposal.getProposalProcessorManager().prefixChanged(crContext.getPrefix());
@@ -169,7 +170,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             try {
                 p.endSession(proposals);
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
     }
@@ -179,7 +180,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             try {
                 p.aboutToShow(proposals);
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
     }
@@ -189,7 +190,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             try {
                 p.aboutToClose();
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
     }
@@ -213,7 +214,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             try {
                 p.selected(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
     }
@@ -224,7 +225,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
             try {
                 p.applied(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
             }
         }
         unregisterCompletionListener();

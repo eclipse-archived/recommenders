@@ -12,16 +12,9 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ADVISOR_ADVISORS;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ADVISOR_BUTTON_DOWN;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ADVISOR_BUTTON_UP;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ADVISOR_DESCRIPTION;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ADVISOR_TITLE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -50,7 +43,6 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
     private static final int UP = -1;
     private static final int DOWN = +1;
 
-    @Inject
     public AdvisorsPreferencePage() {
         super(GRID);
     }
@@ -58,13 +50,13 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
     @Override
     public void init(IWorkbench workbench) {
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_ID));
-        setMessage(PREFPAGE_ADVISOR_TITLE);
-        setDescription(PREFPAGE_ADVISOR_DESCRIPTION);
+        setMessage(Messages.PREFPAGE_TITLE_ADVISORS);
+        setDescription(Messages.PREFPAGE_DESCRIPTION_ADVISORS);
     }
 
     @Override
     protected void createFieldEditors() {
-        addField(new AdvisorEditor(Constants.P_ADVISOR_LIST_SORTED, PREFPAGE_ADVISOR_ADVISORS, getFieldEditorParent()));
+        addField(new AdvisorEditor(Constants.PREF_ADVISOR_LIST_SORTED, Messages.FIELD_LABEL_ADVISORS, getFieldEditorParent()));
     }
 
     private final class AdvisorEditor extends FieldEditor {
@@ -132,8 +124,8 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
             Composite box = new Composite(parent, SWT.NONE);
             GridLayoutFactory.fillDefaults().applyTo(box);
 
-            upButton = createUpDownButton(box, PREFPAGE_ADVISOR_BUTTON_UP, UP);
-            downButton = createUpDownButton(box, PREFPAGE_ADVISOR_BUTTON_DOWN, DOWN);
+            upButton = createUpDownButton(box, Messages.BUTTON_LABEL_UP, UP);
+            downButton = createUpDownButton(box, Messages.BUTTON_LABEL_DOWN, DOWN);
 
             return box;
         }

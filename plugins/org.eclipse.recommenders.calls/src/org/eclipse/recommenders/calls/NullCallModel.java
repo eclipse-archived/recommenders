@@ -34,8 +34,6 @@ import com.google.common.collect.ImmutableSet;
 public final class NullCallModel implements ICallModel {
 
     public static final NullCallModel INSTANCE = new NullCallModel();
-    // Alias
-    public static final NullCallModel NULL_MODEL = INSTANCE;
 
     @Override
     public boolean setObservedPattern(String newPatternName) {

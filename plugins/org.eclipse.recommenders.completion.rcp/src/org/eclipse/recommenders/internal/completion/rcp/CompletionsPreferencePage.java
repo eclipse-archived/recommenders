@@ -11,7 +11,8 @@
 package org.eclipse.recommenders.internal.completion.rcp;
 
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.checkedElements;
-import static org.eclipse.jface.layout.GridDataFactory.*;
+import static org.eclipse.jface.layout.GridDataFactory.fillDefaults;
+import static org.eclipse.jface.layout.GridDataFactory.swtDefaults;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.RECOMMENDERS_ALL_CATEGORY_ID;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -31,6 +32,9 @@ import org.eclipse.jface.databinding.viewers.IViewerObservableSet;
 import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ObservableSetContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -47,6 +51,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
@@ -54,7 +59,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public class PreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
+public class CompletionsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     Set<SessionProcessorDescriptor> processors;
     Set<SessionProcessorDescriptor> enabled;
@@ -65,18 +70,15 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
     private IViewerObservableValue selected;
 
     @Inject
-    public PreferencePage(SessionProcessorDescriptor[] pr) {
+    public CompletionsPreferencePage(SessionProcessorDescriptor[] pr) {
         processors = ImmutableSet.copyOf(pr);
         enabled = Sets.filter(processors, new EnabledSessionProcessorPredicate());
     }
 
     @Override
     public void init(IWorkbench workbench) {
-        setMessage("Recommenders Completion Settings");
-        setDescription("Configure which session processors to enable on Recommenders intelligent code completion. Processors may offer advanced configuration options.\n\n"
-                + "Note that Recommenders content assist is an replacement of JDT's content assist. As such it deactivates itself if it finds JDT or Mylyn "
-                + "activated on the primary content assist list.");
-
+        setMessage(Messages.PREFPAGE_TITLE_COMPLETIONS);
+        setDescription(Messages.PREFPAGE_DESCRIPTION_COMPLETIONS);
     }
 
     @Override
@@ -84,12 +86,14 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayoutData(fillDefaults().grab(true, true).create());
         container.setLayout(new GridLayout(2, false));
+
         viewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER);
         viewer.setSorter(new ViewerSorter());
         viewer.getTable().setLayoutData(fillDefaults().hint(300, 150).grab(true, false).create());
         ColumnViewerToolTipSupport.enableFor(viewer);
+
         configureBtn = new Button(container, SWT.PUSH);
-        configureBtn.setText("Configure");
+        configureBtn.setText(Messages.BUTTON_LABEL_CONFIGURE);
         configureBtn.setLayoutData(swtDefaults().align(SWT.BEGINNING, SWT.BEGINNING).create());
         configureBtn.setEnabled(false);
         configureBtn.addSelectionListener(new SelectionAdapter() {
@@ -102,7 +106,7 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         });
 
         ContentAssistEnablementBlock enable = new ContentAssistEnablementBlock(container,
-                "Enable Intelligent code completion.", RECOMMENDERS_ALL_CATEGORY_ID) {
+                Messages.FIELD_LABEL_ENABLE_COMPLETION, RECOMMENDERS_ALL_CATEGORY_ID) {
 
             @Override
             protected void additionalExcludedCompletionCategoriesUpdates(final boolean isEnabled, final Set<String> cats) {
@@ -127,12 +131,23 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
                 boolean mylynActive = isMylynInstalled() && !ArrayUtils.contains(excluded, MYLYN_ALL_CATEGORY);
                 boolean jdtActive = !ArrayUtils.contains(excluded, JDT_ALL_CATEGORY);
                 enablement.setSelection(!(deactivated || mylynActive || jdtActive));
-                enablement.setToolTipText("Enables Recommenders content assist and disables Mylyn and JDT."
-                        + " When disabling either Mylyn or JDT content assist will be enabled.");
+                enablement.setToolTipText(Messages.FIELD_TOOLTIP_ENABLE_COMPLETION);
             }
-
         };
         enable.loadSelection();
+        Link contentAssistLink = new Link(container, SWT.NONE | SWT.WRAP);
+        contentAssistLink
+                .setLayoutData(GridDataFactory.swtDefaults().span(2, 1).align(SWT.FILL, SWT.BEGINNING).grab(true, false)
+                        .hint(convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT)
+                        .create());
+        contentAssistLink.setText(Messages.PREFPAGE_FOOTER_COMPLETIONS);
+        contentAssistLink.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                PreferencesUtil.createPreferenceDialogOn(getShell(), "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced", null, null); //$NON-NLS-1$
+            }
+        });
 
         initDataBindings();
         return container;

@@ -31,12 +31,15 @@ import com.google.common.eventbus.Subscribe;
 
 public class RcpCallModelProvider implements ICallModelProvider, IRcpService {
 
-    @Inject
-    IModelRepository repository;
-    @Inject
-    IModelArchiveCoordinateAdvisor index;
+    private final IModelRepository repository;
+    private final IModelArchiveCoordinateAdvisor index;
+    private ICallModelProvider delegate;
 
-    ICallModelProvider delegate;
+    @Inject
+    public RcpCallModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+        this.repository = repository;
+        this.index = index;
+    }
 
     @Override
     @PostConstruct

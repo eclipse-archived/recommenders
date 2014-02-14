@@ -11,9 +11,20 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
+import static java.text.MessageFormat.format;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_URL_LIST;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_ADD_REPOSITORY;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_COLLAPSE_ALL;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_DELETE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_EXPAND_ALL;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REMOVE_REPOSITORY;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_BULLET_BLUE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CHECK_GREEN;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CROSS_RED;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_REPOSITORY;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -167,7 +178,7 @@ public class ModelRepositoriesView extends ViewPart {
         container.setLayout(new GridLayout());
 
         txtSearch = new Text(container, SWT.BORDER | SWT.ICON_SEARCH | SWT.SEARCH | SWT.CANCEL);
-        txtSearch.setMessage("type filter text");
+        txtSearch.setMessage(Messages.SEARCH_PLACEHOLDER_FILTER_TEXT);
         txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -194,7 +205,7 @@ public class ModelRepositoriesView extends ViewPart {
         TreeViewerColumn repositoryViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn repositoryColumn = repositoryViewerColumn.getColumn();
         treeLayout.setColumnData(repositoryColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-        repositoryColumn.setText("Repository");
+        repositoryColumn.setText(Messages.COLUMN_LABEL_REPOSITORY);
         repositoryViewerColumn.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
@@ -204,7 +215,8 @@ public class ModelRepositoriesView extends ViewPart {
                 if (element instanceof String) {
                     String url = (String) element;
                     text.append(url);
-                    text.append(" (" + fetchNumberOfModels(url) + " known coordinates) ", StyledString.COUNTER_STYLER);
+                    text.append(" "); //$NON-NLS-1$
+                    text.append(format(Messages.TABLE_CELL_SUFFIX_KNOWN_COORDINATES, fetchNumberOfModels(url)), StyledString.COUNTER_STYLER);
                     cell.setImage(images.getImage(OBJ_REPOSITORY));
                 }
                 if (element instanceof KnownCoordinate) {
@@ -215,7 +227,6 @@ public class ModelRepositoriesView extends ViewPart {
                 cell.setStyleRanges(text.getStyleRanges());
                 super.update(cell);
             }
-
         });
 
         int minWidth = calculateMinColumnWidthForClassifier();
@@ -303,23 +314,23 @@ public class ModelRepositoriesView extends ViewPart {
         };
 
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-        addAction("Add repository", ELCL_ADD_REPOSITORY, toolBarManager, addRemoteRepositoryAction);
+        addAction(Messages.TOOLBAR_TOOLTIP_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, toolBarManager, addRemoteRepositoryAction);
 
-        addAction("Refresh", ELCL_REFRESH, toolBarManager, new Action() {
+        addAction(Messages.TOOLBAR_TOOLTIP_REFRESH, ELCL_REFRESH, toolBarManager, new Action() {
             @Override
             public void run() {
                 refreshData();
             }
         });
 
-        addAction("Expand all", ELCL_EXPAND_ALL, toolBarManager, new Action() {
+        addAction(Messages.TOOLBAR_TOOLTIP_EXPAND_ALL, ELCL_EXPAND_ALL, toolBarManager, new Action() {
             @Override
             public void run() {
                 treeViewer.expandAll();
             }
         });
 
-        addAction("Collapse all", ELCL_COLLAPSE_ALL, toolBarManager, new Action() {
+        addAction(Messages.TOOLBAR_TOOLTIP_COLLAPSE_ALL, ELCL_COLLAPSE_ALL, toolBarManager, new Action() {
             @Override
             public void run() {
                 treeViewer.collapseAll();
@@ -327,7 +338,7 @@ public class ModelRepositoriesView extends ViewPart {
         });
 
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
-        addAction("Delete downloaded models", ELCL_DELETE, menuManager, new Action() {
+        addAction(Messages.MENUITEM_DELETE_MODELS, ELCL_DELETE, menuManager, new Action() {
             @Override
             public void run() {
                 deleteCacheAndRefresh();
@@ -399,12 +410,12 @@ public class ModelRepositoriesView extends ViewPart {
 
         @Override
         public int hashCode() {
-            return HashCodeBuilder.reflectionHashCode(this, "mcs");
+            return HashCodeBuilder.reflectionHashCode(this, "mcs"); //$NON-NLS-1$
         }
 
         @Override
         public boolean equals(Object obj) {
-            return EqualsBuilder.reflectionEquals(this, obj, "mcs");
+            return EqualsBuilder.reflectionEquals(this, obj, "mcs"); //$NON-NLS-1$
         }
 
     }
@@ -435,17 +446,17 @@ public class ModelRepositoriesView extends ViewPart {
                     }
                     if (!selectedValues.isEmpty()) {
                         TriggerModelDownloadForModelCoordinatesAction action = new TriggerModelDownloadForModelCoordinatesAction(
-                                "Download models", selectedModelCoordinates, repo, bus);
+                                Messages.MENUITEM_DOWNLOAD_MODELS, selectedModelCoordinates, repo, bus);
                         menuManager.add(action);
                     }
                 }
 
                 if (isValidType(treeViewer.getSelection(), String.class)) {
-                    addAction("Add repository", ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
+                    addAction(Messages.MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
 
                     final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
                     if (url.isPresent() && prefs.remotes.length > 1) {
-                        addAction("Remove repository", ELCL_REMOVE_REPOSITORY, menuManager, new Action() {
+                        addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager, new Action() {
                             @Override
                             public void run() {
                                 deleteRepository(url.get());
@@ -482,11 +493,11 @@ public class ModelRepositoriesView extends ViewPart {
                     KnownCoordinate v = (KnownCoordinate) element;
 
                     if (!v.hasModelCoordinate(classifier)) {
-                        return "No model registered";
+                        return Messages.TABLE_CELL_TOOLTIP_UNAVAILABLE;
                     } else if (v.isDownloaded(classifier)) {
-                        return "Locally available";
+                        return Messages.TABLE_CELL_TOOLTIP_AVAILABLE_LOCALLY;
                     } else {
-                        return "Remotely available";
+                        return Messages.TABLE_CELL_TOOLTIP_AVAILABLE_REMOTELY;
                     }
                 }
                 return null;
@@ -569,7 +580,7 @@ public class ModelRepositoriesView extends ViewPart {
     public void setFilter(final String filter) {
         treeViewer.getTree().setRedraw(false);
         PatternFilter patternFilter = new KnownCoordinatePatternFilter();
-        patternFilter.setPattern("*" + filter);
+        patternFilter.setPattern("*" + filter); //$NON-NLS-1$
         treeViewer.setFilters(new ViewerFilter[] { patternFilter });
         treeViewer.getTree().setRedraw(true);
         treeViewer.expandAll();
@@ -594,7 +605,7 @@ public class ModelRepositoriesView extends ViewPart {
 
     @Subscribe
     public void onModelArchiveDownloaded(final ModelArchiveDownloadedEvent e) {
-        new UIJob("") {
+        new UIJob("") { //$NON-NLS-1$
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -618,7 +629,7 @@ public class ModelRepositoriesView extends ViewPart {
     }
 
     private void refreshData() {
-        new UIJob("Refreshing Model Index View...") {
+        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
             {
                 schedule();
             }
@@ -653,15 +664,15 @@ public class ModelRepositoriesView extends ViewPart {
     private void storeRepositories(ArrayList<String> newRemotes) {
         try {
             IEclipsePreferences s = InstanceScope.INSTANCE.getNode(BUNDLE_ID);
-            s.put(P_REPOSITORY_URL_LIST, ModelsRcpPreferences.joinRemoteRepositoriesToString(newRemotes));
+            s.put(PREF_REPOSITORY_URL_LIST, ModelsRcpPreferences.joinRemoteRepositoriesToString(newRemotes));
             s.flush();
         } catch (BackingStoreException e) {
-            LOG.error("Exception during storing of remote repository preferences", e);
+            LOG.error("Exception during storing of remote repository preferences", e); //$NON-NLS-1$
         }
     }
 
     private void deleteCacheAndRefresh() {
-        new Job("Deleting model cache...") {
+        new Job(Messages.JOB_DELETING_MODEL_CACHE) {
             {
                 schedule();
             }
@@ -674,7 +685,7 @@ public class ModelRepositoriesView extends ViewPart {
                     return Status.OK_STATUS;
                 } catch (IOException e) {
                     return new Status(Status.ERROR, org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID,
-                            "Failed to delete model cache");
+                            Messages.LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE);
                 }
             }
         };
@@ -683,7 +694,7 @@ public class ModelRepositoriesView extends ViewPart {
     protected DataBindingContext initDataBindings() {
         DataBindingContext bindingContext = new DataBindingContext();
         IObservableValue search = WidgetProperties.text(SWT.Modify).observeDelayed(400, txtSearch);
-        IObservableValue filter = PojoProperties.value("filter").observe(this);
+        IObservableValue filter = PojoProperties.value("filter").observe(this); //$NON-NLS-1$
         bindingContext.bindValue(filter, search, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
         return bindingContext;
     }

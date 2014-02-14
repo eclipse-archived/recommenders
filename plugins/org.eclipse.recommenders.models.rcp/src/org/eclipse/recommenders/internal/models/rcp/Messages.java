@@ -16,33 +16,81 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.models.rcp.messages"; //$NON-NLS-1$
 
-    public static String JOB_INITIALIZE_PROJECTS;
-    public static String JOB_UPDATE_MODEL_INDEX;
-    public static String JOB_CLEAR_MODEL_REPOSITORY;
+    public static String BUTTON_LABEL_DOWN;
+    public static String BUTTON_LABEL_UP;
+
+    public static String PREFPAGE_TITLE_ADVISORS;
+    public static String PREFPAGE_TITLE_MODEL_REPOSITORIES;
+
+    public static String PREFPAGE_DESCRIPTION_ADVISORS;
+    public static String PREFPAGE_DESCRIPTION_MODEL_REPOSITORIES;
+
+    public static String FIELD_LABEL_ADVISORS;
+    public static String FIELD_LABEL_ENABLE_AUTO_DOWNLOAD;
+    public static String FIELD_LABEL_REPOSITORY_URI;
+    public static String FIELD_LABEL_REPOSITORY_URIS;
+
+    public static String MENUITEM_ADD_REPOSITORY;
+    public static String MENUITEM_CLEAR_CACHE;
+    public static String MENUITEM_DELETE_MODELS;
+    public static String MENUITEM_DOWNLOAD_MODELS;
+    public static String MENUITEM_REMOVE_REPOSITORY;
+    public static String MENUITEM_SHOW;
+    public static String MENUITEM_SHOW_ALL;
+    public static String MENUITEM_SHOW_CONFLICTING_COORDINATES_ONLY;
+    public static String MENUITEM_SHOW_MANUALLY_ASSIGNED_COORDINATES_ONLY;
+    public static String MENUITEM_SHOW_MISSING_COORDINATES_ONLY;
+
+    public static String TOOLBAR_TOOLTIP_ADD_REPOSITORY;
+    public static String TOOLBAR_TOOLTIP_COLLAPSE_ALL;
+    public static String TOOLBAR_TOOLTIP_EXPAND_ALL;
+    public static String TOOLBAR_TOOLTIP_REFRESH;
+
+    public static String DIALOG_TITLE_ADD_MODEL_REPOSITORY;
+    public static String DIALOG_TITLE_INVALID_COORDINATE_FORMAT;
+
+    public static String DIALOG_MESSAGE_URI_ALREADY_ADDED;
+    public static String DIALOG_MESSAGE_INVALID_COORDINATE_FORMAT;
+    public static String DIALOG_MESSAGE_INVALID_REPOSITORY_URI;
+
+    public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
+
+    public static String COLUMN_LABEL_COORDINATE;
+    public static String COLUMN_LABEL_DEPENDENCY;
+    public static String COLUMN_LABEL_LOCATION;
+    public static String COLUMN_LABEL_PROJECT_COORDINATE;
+    public static String COLUMN_LABEL_REPOSITORY;
+
+    public static String TABLE_CELL_SUFFIX_KNOWN_COORDINATES;
+
+    public static String TABLE_CELL_TOOLTIP_AVAILABLE_LOCALLY;
+    public static String TABLE_CELL_TOOLTIP_AVAILABLE_REMOTELY;
+    public static String TABLE_CELL_TOOLTIP_HINTS;
+    public static String TABLE_CELL_TOOLTIP_KEY_VALUE;
+    public static String TABLE_CELL_TOOLTIP_LOCATION;
+    public static String TABLE_CELL_TOOLTIP_TYPE;
+    public static String TABLE_CELL_TOOLTIP_UNAVAILABLE;
+    public static String TABLE_CELL_TOOLTIP_UNKNOWN_COORDINATE;
+
+    public static String JOB_DELETING_MODEL_CACHE;
+    public static String JOB_DOWNLOADING_MODELS;
+    public static String JOB_REFRESHING_CACHED_COORDINATES;
+    public static String JOB_REFRESHING_DEPENDENCY_OVERVIEW_VIEW;
+    public static String JOB_REFRESHING_MODEL_REPOSITORIES_VIEW;
+    public static String JOB_REFRESHING_PROJECT_COORDINATES_VIEW;
+    public static String JOB_RESOLVING_DEPENDENCIES;
     public static String JOB_RESOLVING_MODEL;
-    public static String JOB_INDEX_DOWNLOAD_FAILED;
-    public static String TASK_RESOLVING;
-    public static String TASK_LOOKING_FOR_MODEL;
-    public static String TASK_DOWNLOADING;
-    public static String TASK_UPLOADING;
-    public static String STATUS_DOWNLOAD_FINISHED;
-    public static String STATUS_DOWNLOAD_CORRUPTED;
-    public static String STATUS_DOWNLOAD_FAILED;
-    public static String PREFPAGE_ADVISOR_ADVISORS;
-    public static String PREFPAGE_ADVISOR_BUTTON_DOWN;
-    public static String PREFPAGE_ADVISOR_BUTTON_UP;
-    public static String PREFPAGE_ADVISOR_DESCRIPTION;
-    public static String PREFPAGE_ADVISOR_TITLE;
-    public static String PREFPAGE_URI_ALREADY_ADDED;
-    public static String PREFPAGE_OVERVIEW_INTRO;
-    public static String PREFPAGE_CLEAR_CACHES;
-    public static String PREFPAGE_ENABLE_AUTO_DOWNLOAD;
-    public static String PREFPAGE_MODEL_REPOSITORY_HEADLINE;
-    public static String PREFPAGE_MODEL_REPOSITORY_INTRO;
-    public static String PREFPAGE_URI;
-    public static String DIALOG_ADD_MODEL_REPOSITORY;
-    public static String DIALOG_ENTER_REPOSITORY_URI;
-    public static String DIALOG_INVALID_REPOSITORY_URI;
+
+    public static String TASK_ASSIGNING_PROJECT_COORDINATES;
+    public static String TASK_ASSIGNING_PROJECT_COORDINATE_TO;
+    public static String TASK_REFRESHING;
+    public static String TASK_RESOLVING_MODEL;
+
+    public static String LOG_ERROR_ADVISOR_INSTANTIATION;
+    public static String LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE;
+    public static String LOG_ERROR_MODEL_RESOLUTION_FAILURE;
+
+    public static String LOG_INFO_NO_MODEL_RESOLVED;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

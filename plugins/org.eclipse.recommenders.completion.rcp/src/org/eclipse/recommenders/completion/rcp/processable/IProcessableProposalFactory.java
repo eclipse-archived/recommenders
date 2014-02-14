@@ -25,7 +25,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 @SuppressWarnings("restriction")
 public interface IProcessableProposalFactory {
 
-    // TODO: let's see we get rid of the ui proposals soon
+    // TODO: let's see whether we can get rid of the UIproposals soon
     IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
             throws JavaModelException;

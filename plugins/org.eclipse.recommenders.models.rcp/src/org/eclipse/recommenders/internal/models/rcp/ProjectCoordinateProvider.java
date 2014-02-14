@@ -156,9 +156,9 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         try {
             for (IClasspathEntry entry : javaProject.getRawClasspath()) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) {
+                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) { //$NON-NLS-1$
                         for (IPackageFragmentRoot packageFragmentRoot : javaProject.findPackageFragmentRoots(entry)) {
-                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) {
+                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) { //$NON-NLS-1$
                                 if (packageFragmentRoot.equals(root)) {
                                     return true;
                                 }
@@ -168,8 +168,7 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to traverse project dependencies of " + javaProject, e);
-
+            LOG.error("Failed to traverse project dependencies of {}.", e); //$NON-NLS-1$
         }
         return false;
     }

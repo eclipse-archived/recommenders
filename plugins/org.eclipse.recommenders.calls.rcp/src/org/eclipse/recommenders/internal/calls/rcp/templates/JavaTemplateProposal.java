@@ -95,5 +95,4 @@ public class JavaTemplateProposal extends TemplateProposal implements Comparable
         }
         return false;
     }
-
 }

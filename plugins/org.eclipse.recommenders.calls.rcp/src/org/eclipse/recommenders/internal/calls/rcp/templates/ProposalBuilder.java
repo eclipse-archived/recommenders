@@ -78,7 +78,7 @@ public class ProposalBuilder {
                     rCtx.getCompilationUnit());
             documentContext.setForceEvaluation(true);
         } else {
-            throw new IllegalStateException("No default JavaPlugin found.");
+            throw new IllegalStateException("No default JavaPlugin found."); //$NON-NLS-1$
         }
     }
 
@@ -97,7 +97,7 @@ public class ProposalBuilder {
             try {
                 result.add(new JavaTemplateProposal(createTemplate(pattern), documentContext, icon, pattern));
             } catch (Exception e) {
-                log.warn("Failed to create proposals", e);
+                log.warn("Failed to create proposals", e); //$NON-NLS-1$
             }
         }
         return result;
@@ -105,7 +105,7 @@ public class ProposalBuilder {
 
     private Template createTemplate(PatternRecommendation pattern) {
         String code = createTemplateCode(pattern);
-        return new Template(pattern.getName(), pattern.getType().getClassName(), "java", code, false);
+        return new Template(pattern.getName(), pattern.getType().getClassName(), "java", code, false); //$NON-NLS-1$
     }
 
     private String createTemplateCode(PatternRecommendation pattern) {
@@ -132,13 +132,13 @@ public class ProposalBuilder {
                 return jdtMethod.getParameterNames();
             }
         } catch (JavaModelException e) {
-            log.warn("Failed to lookup method arguments names for " + jdtMethod, e);
+            log.warn("Failed to lookup method arguments names for {}", jdtMethod, e); //$NON-NLS-1$
         }
 
         ITypeName[] parameterTypes = method.getParameterTypes();
         String[] parameterNames = new String[parameterTypes.length];
         for (int i = 0; i < parameterNames.length; i++) {
-            parameterNames[i] = "arg" + i;
+            parameterNames[i] = "arg" + i; //$NON-NLS-1$
         }
         return parameterNames;
     }

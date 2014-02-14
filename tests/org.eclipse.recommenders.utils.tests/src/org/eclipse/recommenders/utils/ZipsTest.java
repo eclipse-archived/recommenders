@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.utils;
 
+import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.eclipse.recommenders.utils.Zips.zip;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -27,9 +28,9 @@ public class ZipsTest {
         IMethodName[] methods = { VmMethodName.NULL,
                 VmMethodName.get("Lorg/eclipse.test(LString;ICC[[J)Ljava/lang/String;") };
         for (IMethodName m : methods) {
-            String path = Zips.path(m, ".json");
+            String path = Zips.path(m, DOT_JSON);
             ZipEntry zip = new ZipEntry(path);
-            assertEquals(m, Zips.method(zip, ".json"));
+            assertEquals(m, Zips.method(zip, DOT_JSON));
         }
     }
 
@@ -37,9 +38,9 @@ public class ZipsTest {
     public void testTypes() {
         ITypeName[] types = { VmTypeName.JAVA_LANG_NULL_POINTER_EXCEPTION };
         for (ITypeName t : types) {
-            String path = Zips.path(t, ".json");
+            String path = Zips.path(t, DOT_JSON);
             ZipEntry zip = new ZipEntry(path);
-            assertEquals(t, Zips.type(zip, ".json"));
+            assertEquals(t, Zips.type(zip, DOT_JSON));
         }
     }
 
@@ -73,5 +74,4 @@ public class ZipsTest {
 
         Zips.closeQuietly(zipFile);
     }
-
 }

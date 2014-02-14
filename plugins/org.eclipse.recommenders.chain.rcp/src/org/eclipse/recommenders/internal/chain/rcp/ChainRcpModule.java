@@ -33,5 +33,4 @@ public final class ChainRcpModule extends AbstractModule {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface ChainCompletion {
     }
-
 }

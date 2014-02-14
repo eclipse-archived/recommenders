@@ -18,12 +18,12 @@ public final class ChainPreferenceInitializer extends AbstractPreferenceInitiali
     @Override
     public void initializeDefaultPreferences() {
         final IPreferenceStore store = ChainRcpPlugin.getDefault().getPreferenceStore();
-        store.setDefault(ChainPreferencePage.ID_MAX_CHAINS, 20);
-        store.setDefault(ChainPreferencePage.ID_MIN_DEPTH, 2);
-        store.setDefault(ChainPreferencePage.ID_MAX_DEPTH, 4);
-        store.setDefault(ChainPreferencePage.ID_TIMEOUT, 3);
-        store.setDefault(ChainPreferencePage.ID_IGNORE_TYPES, "java.lang.Object" //$NON-NLS-1$
-                + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.Class" //$NON-NLS-1$
-                + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String"); //$NON-NLS-1$
+        store.setDefault(ChainsPreferencePage.PREF_MAX_CHAINS, 20);
+        store.setDefault(ChainsPreferencePage.PREF_MIN_CHAIN_LENGTH, 2);
+        store.setDefault(ChainsPreferencePage.PREF_MAX_CHAIN_LENGTH, 4);
+        store.setDefault(ChainsPreferencePage.PREF_TIMEOUT, 3);
+        store.setDefault(ChainsPreferencePage.PREF_IGNORED_TYPES, "java.lang.Object" //$NON-NLS-1$
+                + ChainsPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.Class" //$NON-NLS-1$
+                + ChainsPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String"); //$NON-NLS-1$
     }
 }

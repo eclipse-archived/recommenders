@@ -77,13 +77,13 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         // JDT signatures contain '.' instead of '/' and may end with ';'
         for (char[] sig : sigs) {
             try {
-                String descriptor = new String(sig).replace(".", "/");
-                descriptor = substringBeforeLast(descriptor, ";");
+                String descriptor = new String(sig).replace('.', '/');
+                descriptor = substringBeforeLast(descriptor, ";"); //$NON-NLS-1$
                 res.add(VmTypeName.get(descriptor));
             } catch (Exception e) {
                 // this fails sometimes on method argument completion.
                 // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=396595
-                LOG.error("Couldn't parse type name: '" + String.valueOf(sig) + "'", e);
+                LOG.error("Couldn't parse type name: '{}'", String.valueOf(sig), e); //$NON-NLS-1$
             }
         }
         return res;
@@ -229,7 +229,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public String getPrefix() {
-        return get(COMPLETION_PREFIX, "");
+        return get(COMPLETION_PREFIX, ""); //$NON-NLS-1$
     }
 
     @Override
@@ -244,7 +244,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public String getReceiverName() {
-        return get(RECEIVER_NAME, "");
+        return get(RECEIVER_NAME, ""); //$NON-NLS-1$
     }
 
     @Override
@@ -334,5 +334,4 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
       T res = (T) get(key).orNull();
       return res != null ? res : defaultValue;
     }
-
 }

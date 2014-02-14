@@ -29,5 +29,4 @@ public class Chain {
     public int getExpectedDimensions() {
         return expectedDimensions;
     }
-
 }

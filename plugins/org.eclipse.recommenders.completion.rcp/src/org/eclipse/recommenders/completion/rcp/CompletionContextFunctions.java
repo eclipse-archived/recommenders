@@ -12,9 +12,30 @@ package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE_PARENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_SCOPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.CCTX_COMPILATION_UNIT_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.COMPLETION_PREFIX;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_AST_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_ELEMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPENAMES;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.INTERNAL_COMPLETIONCONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.IS_COMPLETION_ON_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_CONTENTASSIST_CONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.LOOKUP_ENVIRONMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_TYPEBINDING;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_FIELDS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_LOCALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_METHODS;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -62,6 +83,7 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -218,7 +240,7 @@ public class CompletionContextFunctions {
         private char[][] simulateCompletionWithFakePrefix(ICompilationUnit cu, int offset) {
             final MutableObject<char[][]> res = new MutableObject<char[][]>(null);
             ICompilationUnit wc = null;
-            String fakePrefix = "___x";
+            String fakePrefix = "___x"; //$NON-NLS-1$
             try {
                 wc = cu.getWorkingCopy(new NullProgressMonitor());
                 IBuffer buffer = wc.getBuffer();
@@ -309,7 +331,7 @@ public class CompletionContextFunctions {
         public String compute(IRecommendersCompletionContext context, CompletionContextKey<String> key) {
             final ASTNode n = context.getCompletionNode().orNull();
             if (n == null) {
-                return "";
+                return ""; //$NON-NLS-1$
             }
 
             char[] name = null;
@@ -334,7 +356,7 @@ public class CompletionContextFunctions {
             } else if (n instanceof CompletionOnMemberAccess) {
                 final CompletionOnMemberAccess c = cast(n);
                 if (c.receiver instanceof ThisReference) {
-                    name = "this".toCharArray();
+                    name = "this".toCharArray(); //$NON-NLS-1$
                 } else if (c.receiver instanceof MessageSend) {
                     // some anonymous type/method return value that has no name...
                     // e.g.:
@@ -350,7 +372,7 @@ public class CompletionContextFunctions {
                 }
             }
             String res = new String(firstNonNull(name, EMPTY));
-            res = res.replace(" ", "");
+            res = res.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
             context.set(key, res);
             return res;
         }
@@ -371,14 +393,13 @@ public class CompletionContextFunctions {
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
             } catch (final Exception e) {
-                RcpPlugin.logError(e, "Exception during code completion");
+                RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
             }
             InternalCompletionContext internal = collector.getCoreContext();
             context.set(INTERNAL_COMPLETIONCONTEXT, internal);
             Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
             context.set(JAVA_PROPOSALS, proposals);
 
-            //
             if (JAVA_PROPOSALS.equals(key)) {
                 return proposals;
             } else {
@@ -504,14 +525,14 @@ public class CompletionContextFunctions {
         static {
             try {
                 Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
-                fExtendedContext = clazzCtx.getDeclaredField("extendedContext");
+                fExtendedContext = clazzCtx.getDeclaredField("extendedContext"); //$NON-NLS-1$
                 fExtendedContext.setAccessible(true);
 
                 Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
-                fLookupEnvironment = clazzExt.getDeclaredField("lookupEnvironment");
+                fLookupEnvironment = clazzExt.getDeclaredField("lookupEnvironment"); //$NON-NLS-1$
                 fLookupEnvironment.setAccessible(true);
             } catch (Exception e) {
-                LOG.error("Accessing InternalExtendedCompletionContext.LookupEnvironment per reflection failed.", e);
+                LOG.error("Cannot access InternalExtendedCompletionContext.LookupEnvironment by reflection.", e); //$NON-NLS-1$
             }
         }
 
@@ -527,7 +548,7 @@ public class CompletionContextFunctions {
                 }
                 env = cast(fLookupEnvironment.get(extCtx));
             } catch (Exception e) {
-                LOG.error("Accessing LookupEnvironment per reflection failed.", e);
+                LOG.error("Cannot access LookupEnvironment by reflection.", e); //$NON-NLS-1$
             }
             context.set(key, env);
             return env;
@@ -544,19 +565,18 @@ public class CompletionContextFunctions {
         static {
             try {
                 Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
-                fExtendedContext = clazzCtx.getDeclaredField("extendedContext");
+                fExtendedContext = clazzCtx.getDeclaredField("extendedContext"); //$NON-NLS-1$
                 fExtendedContext.setAccessible(true);
 
                 Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
-                fAssistScope = clazzExt.getDeclaredField("assistScope");
+                fAssistScope = clazzExt.getDeclaredField("assistScope"); //$NON-NLS-1$
                 fAssistScope.setAccessible(true);
-                fAssistNode = clazzExt.getDeclaredField("assistNode");
+                fAssistNode = clazzExt.getDeclaredField("assistNode"); //$NON-NLS-1$
                 fAssistNode.setAccessible(true);
-                fAssistNodeParent = clazzExt.getDeclaredField("assistNodeParent");
+                fAssistNodeParent = clazzExt.getDeclaredField("assistNodeParent"); //$NON-NLS-1$
                 fAssistNodeParent.setAccessible(true);
-                fCompilationUnitDeclaration = clazzExt.getDeclaredField("compilationUnitDeclaration");
+                fCompilationUnitDeclaration = clazzExt.getDeclaredField("compilationUnitDeclaration"); //$NON-NLS-1$
                 fCompilationUnitDeclaration.setAccessible(true);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -579,10 +599,9 @@ public class CompletionContextFunctions {
                 CompilationUnitDeclaration cuDeclaration = cast(fCompilationUnitDeclaration.get(extContext));
                 context.set(CCTX_COMPILATION_UNIT_DECLARATION, cuDeclaration);
             } catch (Exception e) {
-                LOG.error("reflection initalizer failed.", e);
+                LOG.error("Reflection initalizer failed.", e); //$NON-NLS-1$
             }
             return null;
         }
     }
-
 }

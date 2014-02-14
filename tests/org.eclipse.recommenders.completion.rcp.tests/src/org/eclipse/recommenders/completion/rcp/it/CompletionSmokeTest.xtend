@@ -429,7 +429,7 @@ class CompletionSmokeTest {
         switch processor {
             case "calls": {
                 val mp = mock(ICallModelProvider)
-                when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.NULL_MODEL))
+                when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.INSTANCE))
                 val sut = new CallCompletionSessionProcessor(pcProvider, mp, new CallsRcpPreferences, new SharedImages)
                 return sut
             }

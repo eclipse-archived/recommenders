@@ -11,11 +11,15 @@
 package org.eclipse.recommenders.internal.rcp;
 
 import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_ACTIVATIONS_BEFORE_SHOW_DIALOG;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.inject.Provider;
 
 public class ShowSurveyDialogJobTest {
 
@@ -26,8 +30,7 @@ public class ShowSurveyDialogJobTest {
     public void before() {
         prefs = new RcpPreferences();
         prefs.prefs = InstanceScope.INSTANCE.getNode("test");
-        sut = new ShowSurveyDialogJob();
-        sut.prefs = prefs;
+        sut = new ShowSurveyDialogJob(prefs, mock(Provider.class));
     }
 
     @Test

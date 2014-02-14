@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
@@ -33,7 +32,6 @@ import org.eclipse.recommenders.utils.Zips.DefaultJarFileConverter;
 import org.eclipse.recommenders.utils.Zips.IFileToJarFileConverter;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;

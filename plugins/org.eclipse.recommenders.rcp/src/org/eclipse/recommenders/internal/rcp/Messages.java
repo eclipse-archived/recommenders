@@ -13,27 +13,31 @@ package org.eclipse.recommenders.internal.rcp;
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
+
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.rcp.messages"; //$NON-NLS-1$
+
+    public static String PREFPAGE_DESCRIPTION_EMPTY;
+
+    public static String DIALOG_TITLE_SURVEY;
+
+    public static String DIALOG_MESSAGE_SURVEY;
+
+    public static String LINK_LABEL_TAKE_SURVEY_LATER;
+    public static String LINK_LABEL_TAKE_SURVEY;
+
+    public static String BUTTON_LABEL_YES;
+    public static String BUTTON_LABEL_NO;
+
     public static String JOB_INITIALIZE_PROJECTS;
-    public static String JOB_UPDATE_MODEL_INDEX;
-    public static String JOB_CLEAR_MODEL_REPOSITORY;
-    public static String JOB_RESOLVING_MODEL;
-    public static String TASK_RESOLVING;
-    public static String TASK_LOOKING_FOR_MODEL;
-    public static String TASK_DOWNLOADING;
-    public static String TASK_UPLOADING;
-    public static String STATUS_DOWNLOAD_FINISHED;
-    public static String STATUS_DOWNLOAD_CORRUPTED;
-    public static String STATUS_DOWNLOAD_FAILED;
-    public static String PREFPAGE_OVERVIEW_INTRO;
-    public static String PREFPAGE_CLEAR_CACHES;
-    public static String PREFPAGE_ENABLE_AUTO_DOWNLOAD;
-    public static String PREFPAGE_MODEL_REPOSITORY_HEADLINE;
-    public static String PREFPAGE_MODEL_REPOSITORY_INTRO;
-    public static String PREFPAGE_URI;
-    public static String PREFPAGE_URI_INSERT;
-    public static String PREFPAGE_URI_INVALID;
-    public static String PREFPAGE_URI_MODEL_REPOSITORY;
+
+    public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;
+    public static String LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK;
+    public static String LOG_ERROR;
+    public static String LOG_WARNING;
+    public static String LOG_INFO;
+    public static String LOG_OK;
+    public static String LOG_CANCEL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

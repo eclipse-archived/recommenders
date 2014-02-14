@@ -10,18 +10,21 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
+import static java.text.MessageFormat.format;
+
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Sets;
 
 /**
- * Disables a content assist category on default (i.e., first) content assist list.
+ * Disables a content assist category on the default (i.e., first) content assist list.
  * <p>
  * The update operation is performed on the UI thread to ensure that no running content assist session is interrupted.
  */
@@ -34,7 +37,7 @@ public class DisableContentAssistCategoryJob extends UIJob {
      *            the content assist category as specified in plugin.xml.
      */
     public DisableContentAssistCategoryJob(String categoryId) {
-        super("Disabling " + categoryId);
+        super(format(Messages.JOB_DISABLING_CONTENT_ASSIST_CATEGORY, categoryId));
         this.categoryId = categoryId;
         setSystem(true);
     }

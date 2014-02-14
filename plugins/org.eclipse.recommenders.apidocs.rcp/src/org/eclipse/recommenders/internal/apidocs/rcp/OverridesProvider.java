@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
@@ -157,7 +157,7 @@ public final class OverridesProvider extends ApidocProvider {
         }
 
         private void addHeader() {
-            final String message = format(Messages.EXTDOC_OVERRIDES_INTRO, directive.getNumberOfSubclasses(),
+            final String message = format(Messages.PROVIDER_INTRO_OVERRIDE_STATISTICS, directive.getNumberOfSubclasses(),
                     type.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
@@ -169,7 +169,7 @@ public final class OverridesProvider extends ApidocProvider {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final Multiset<IMethodName> b = newHashMultiset(directive.getOverrides());
             renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
-                    Messages.EXTDOC_OVERRIDES_OVERRIDES);
+                    Messages.TABLE_CELL_RELATION_OVERRIDE);
         }
     }
 
@@ -239,15 +239,14 @@ public final class OverridesProvider extends ApidocProvider {
 
         private void addHeader() {
             new Label(container, SWT.None);
-            final String message = format(Messages.EXTDOC_OVERRIDES_INTRO_PATTERN);
+            final String message = format(Messages.PROVIDER_INTRO_OVERRIDE_PATTERNS);
             createLabel(container, message, true);
         }
 
         private void addDirectives(final org.eclipse.recommenders.apidocs.MethodPattern pattern, final int index) {
 
-            final int patternPercentage = (int) Math.rint(100 * pattern.getNumberOfObservations()
-                    / totalNumberOfExamples);
-            final String text = format(Messages.EXTDOC_OVERRIDES_PERCENTAGE_PATTERN, index, patternPercentage,
+            final double patternPercentage = pattern.getNumberOfObservations() / (double) totalNumberOfExamples;
+            final String text = format(Messages.TABLE_HEADER_OVERRIDE_PATTERN, index, patternPercentage,
                     pattern.getNumberOfObservations());
             createLabel(container, text, true, false, SWT.COLOR_DARK_GRAY, true);
             final Composite group = createGridComposite(container, 1, 0, 0, 0, 0);
@@ -270,13 +269,13 @@ public final class OverridesProvider extends ApidocProvider {
             final TableColumn column4 = new TableColumn(table, SWT.NONE);
 
             for (final Entry<IMethodName, Double> entry : s) {
-                final int percentage = (int) Math.rint(entry.getValue() * 100);
-                final String phraseText = percentageToRecommendationPhrase(percentage);
-                final String stats = format(Messages.EXTDOC_OVERRIDES_PERCENTAGE, percentage);
+                final double percentage = entry.getValue();
+                final String phraseText = percentageToRecommendationPhrase((int) Math.rint(percentage * 100));
+                final String stats = format(Messages.TABLE_CELL_SUFFIX_PERCENTAGE, percentage);
 
                 final Link bar = createMethodLink(table, entry.getKey(), resolver, workspaceBus);
                 final TableItem item = new TableItem(table, SWT.NONE);
-                item.setText(new String[] { phraseText, Messages.EXTDOC_OVERRIDES_OVERRIDE, bar.getText(), stats });
+                item.setText(new String[] { phraseText, Messages.TABLE_CELL_RELATION_OVERRIDE, bar.getText(), stats });
                 item.setFont(0, JFaceResources.getBannerFont());
                 item.setForeground(createColor(COLOR_INFO_FOREGROUND));
                 final TableEditor editor = new TableEditor(table);
@@ -290,8 +289,6 @@ public final class OverridesProvider extends ApidocProvider {
             column4.pack();
 
             new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-
         }
     }
-
 }

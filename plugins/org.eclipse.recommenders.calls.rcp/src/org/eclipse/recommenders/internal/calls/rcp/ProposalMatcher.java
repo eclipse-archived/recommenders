@@ -11,7 +11,12 @@
 package org.eclipse.recommenders.internal.calls.rcp;
 
 import static java.lang.String.valueOf;
-import static org.eclipse.jdt.core.Signature.*;
+import static org.eclipse.jdt.core.Signature.C_TYPE_VARIABLE;
+import static org.eclipse.jdt.core.Signature.getArrayCount;
+import static org.eclipse.jdt.core.Signature.getElementType;
+import static org.eclipse.jdt.core.Signature.getParameterTypes;
+import static org.eclipse.jdt.core.Signature.getTypeErasure;
+import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
 
 import java.lang.reflect.Field;
 
@@ -36,7 +41,7 @@ public class ProposalMatcher {
         // workaround needed to handle proposals with generics properly.
         // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203
         try {
-            fOriginalSignature = InternalCompletionProposal.class.getDeclaredField("originalSignature");
+            fOriginalSignature = InternalCompletionProposal.class.getDeclaredField("originalSignature"); //$NON-NLS-1$
             fOriginalSignature.setAccessible(true);
         } catch (Exception e) {
         }
@@ -57,10 +62,10 @@ public class ProposalMatcher {
             String param = getTypeErasure(jParams[i]);
             String paramBaseType = getElementType(param);
             param = param.replace('.', '/');
-            param = StringUtils.removeEnd(param, ";");
+            param = StringUtils.removeEnd(param, ";"); //$NON-NLS-1$
             if (isWildcardCapture(paramBaseType) || isTypeParameter(paramBaseType)) {
                 int dimensions = getArrayCount(param);
-                param = StringUtils.repeat('[', dimensions) + "Ljava/lang/Object";
+                param = StringUtils.repeat('[', dimensions) + OBJECT.getIdentifier();
             }
             jParams[i] = param;
         }

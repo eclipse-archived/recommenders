@@ -11,7 +11,7 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
 
@@ -124,7 +124,7 @@ public final class SelfCallsProvider extends ApidocProvider {
         }
 
         private void addHeader() {
-            final String message = format(Messages.EXTDOC_SELFCALLS_INTRO_SUBCLASSES,
+            final String message = format(Messages.PROVIDER_INTRO_SUBCLASS_SELFCALL_STATISTICS,
                     directive.getNumberOfSubclasses(), type.getElementName());
             createLabel(container, message, true);
         }
@@ -133,7 +133,7 @@ public final class SelfCallsProvider extends ApidocProvider {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final Multiset<IMethodName> b = Bags.newHashMultiset(directive.getCalls());
             renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
-                    Messages.EXTDOC_SELFCALLS_CALLS);
+                    Messages.TABLE_CELL_RELATION_CALL);
         }
     }
 
@@ -166,7 +166,7 @@ public final class SelfCallsProvider extends ApidocProvider {
         }
 
         private void addHeader() {
-            final String message = format(Messages.EXTDOC_SELFCALLS_INTRO_IMPLEMENTORS,
+            final String message = format(Messages.PROVIDER_INTRO_IMPLEMENTOR_SELFCALL_STATISTIC,
                     directive.getNumberOfDefinitions(), method.getElementName());
             createLabel(container, message, true);
         }
@@ -175,7 +175,7 @@ public final class SelfCallsProvider extends ApidocProvider {
             final int numberOfSubclasses = directive.getNumberOfDefinitions();
             final Multiset<IMethodName> b = newHashMultiset(directive.getCalls());
             renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
-                    Messages.EXTDOC_SELFCALLS_CALLS);
+                    Messages.TABLE_CELL_RELATION_CALL);
         }
     }
 }

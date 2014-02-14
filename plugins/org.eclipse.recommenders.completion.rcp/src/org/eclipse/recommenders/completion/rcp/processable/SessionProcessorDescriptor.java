@@ -38,8 +38,8 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionProcessorDescriptor.class);
 
-    private static final String PREF_NODE_ID_SESSIONPROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors";
-    private static final String DISABLED = "disabled";
+    private static final String PREF_NODE_ID_SESSIONPROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors"; //$NON-NLS-1$
+    private static final String PREF_DISABLED = "disabled"; //$NON-NLS-1$
     private static final String EXT_POINT_SESSION_PROCESSORS = PREF_NODE_ID_SESSIONPROCESSORS;
 
     public static SessionProcessorDescriptor[] parseExtensions() {
@@ -51,32 +51,32 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
             for (IConfigurationElement elem : point.getConfigurationElements()) {
                 try {
                     final String pluginId = elem.getContributor().getName();
-                    String id = elem.getAttribute("id");
-                    String name = elem.getAttribute("name");
-                    String description = elem.getAttribute("description");
-                    final String iconPath = elem.getAttribute("icon");
-                    String priorityString = elem.getAttribute("priority");
-                    String preferencePageId = elem.getAttribute("preferencePage");
+                    String id = elem.getAttribute("id"); //$NON-NLS-1$
+                    String name = elem.getAttribute("name"); //$NON-NLS-1$
+                    String description = elem.getAttribute("description"); //$NON-NLS-1$
+                    final String iconPath = elem.getAttribute("icon"); //$NON-NLS-1$
+                    String priorityString = elem.getAttribute("priority"); //$NON-NLS-1$
+                    String preferencePageId = elem.getAttribute("preferencePage"); //$NON-NLS-1$
                     int priority = priorityString == null ? 10 : Integer.parseInt(priorityString);
                     final Image icon = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, iconPath).createImage();
-                    SessionProcessor processor = (SessionProcessor) elem.createExecutableExtension("class");
+                    SessionProcessor processor = (SessionProcessor) elem.createExecutableExtension("class"); //$NON-NLS-1$
                     boolean enable = !disabledProcessors.contains(id);
                     SessionProcessorDescriptor d = new SessionProcessorDescriptor(id, name, description, icon,
                             priority, enable, preferencePageId, processor);
                     queue.add(d);
                 } catch (Exception e) {
-                    LOG.error("Exception during extension point parsing.", e);
+                    LOG.error("Exception during extension point parsing.", e); //$NON-NLS-1$
                 }
             }
         } catch (Exception e) {
-            LOG.error("Exception during extension point parsing", e);
+            LOG.error("Exception during extension point parsing", e); //$NON-NLS-1$
         }
         SessionProcessorDescriptor[] res = queue.toArray(new SessionProcessorDescriptor[0]);
         return res;
     }
 
     private static Set<String> getDisabledProcessors() {
-        String prefs = getSessionProcessorPreferences().get(DISABLED, "");
+        String prefs = getSessionProcessorPreferences().get(PREF_DISABLED, ""); //$NON-NLS-1$
         Iterable<String> split = Splitter.on(';').omitEmptyStrings().split(prefs);
         return Sets.newHashSet(split);
 
@@ -85,11 +85,11 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
     private static void saveDisabledProcessors(Set<String> disabledProcessors) {
         String join = Joiner.on(';').skipNulls().join(disabledProcessors);
         IEclipsePreferences store = getSessionProcessorPreferences();
-        store.put(DISABLED, join);
+        store.put(PREF_DISABLED, join);
         try {
             store.flush();
         } catch (BackingStoreException e) {
-            LOG.error("Failed to flush preferences", e);
+            LOG.error("Failed to flush preferences", e); //$NON-NLS-1$
         }
     }
 
@@ -128,7 +128,7 @@ public class SessionProcessorDescriptor implements Comparable<SessionProcessorDe
     }
 
     public String getDescription() {
-        return defaultString(description, "");
+        return defaultString(description, ""); //$NON-NLS-1$
     }
 
     public Image getIcon() {

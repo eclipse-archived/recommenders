@@ -18,6 +18,7 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import com.google.common.collect.Sets;
 
 public class OverrideObservation {
+
     public int frequency;
 
     public Set<IMethodName> overriddenMethods = Sets.newTreeSet();

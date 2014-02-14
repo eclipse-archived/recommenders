@@ -82,13 +82,18 @@ import com.google.common.collect.Sets;
  */
 @SuppressWarnings("restriction")
 public class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public static enum CompletionMode {
         TYPE_NAME, MEMBER_ACCESS, THIS
     }
 
-    private IProjectCoordinateProvider pcProvider;
+    private final IProjectCoordinateProvider pcProvider;
+    private final ICallModelProvider store;
+    private final IAstProvider astProvider;
+    private final JavaElementResolver elementResolver;
+
     private IRecommendersCompletionContext rCtx;
     private IMethod enclosingMethod;
     private Set<IType> candidates;
@@ -96,11 +101,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private boolean requiresConstructor;
     private String methodPrefix;
     private CompletionMode mode;
-    private ICallModelProvider store;
-    private JavaElementResolver elementResolver;
     private Image icon;
     private ICallModel model;
-    private IAstProvider astProvider;
 
     @Inject
     public TemplatesCompletionProposalComputer(IProjectCoordinateProvider pcProvider, ICallModelProvider store,
@@ -382,7 +384,6 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private boolean findEnclosingMethod() {
         enclosingMethod = rCtx.getEnclosingMethod().orNull();
         return enclosingMethod != null;
-
     }
 
     @Override

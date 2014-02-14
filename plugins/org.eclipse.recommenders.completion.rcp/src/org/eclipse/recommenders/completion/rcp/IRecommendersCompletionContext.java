@@ -139,5 +139,4 @@ public interface IRecommendersCompletionContext {
      * Returns a snapshot view on all values currently defined in this context.
      */
     ImmutableMap<CompletionContextKey, Object> values();
-
 }

@@ -68,7 +68,7 @@ public class AstBindings {
             final ITypeName res = VmTypeName.get(sb.toString());
             return of(res);
         } catch (final Exception e) {
-            LOG.error("failed to create type name from " + b, e);
+            LOG.error("Failed to create type name from {}.", b, e); //$NON-NLS-1$
             return absent();
         }
     }
@@ -123,8 +123,8 @@ public class AstBindings {
         if (declaringType == null) {
             return absent();
         }
-        final String methodName = b.isConstructor() ? "<init>" : b.getName();
-        sb.append(declaringType).append(".").append(methodName).append("(");
+        final String methodName = b.isConstructor() ? "<init>" : b.getName(); //$NON-NLS-1$
+        sb.append(declaringType).append('.').append(methodName).append('(');
         for (final ITypeBinding param : b.getParameterTypes()) {
             final ITypeName paramType = toTypeName(param).orNull();
             if (paramType == null) {
@@ -140,7 +140,7 @@ public class AstBindings {
         if (obj == null) {
             return absent();
         }
-        sb.append(")").append(obj);
+        sb.append(')').append(obj);
         if (needsColon(returnType)) {
             sb.append(';');
         }
@@ -149,7 +149,7 @@ public class AstBindings {
         try {
             ref = VmMethodName.get(sb.toString());
         } catch (final Exception e1) {
-            LOG.error("failed to create IMethodName from binding " + b, e1);
+            LOG.error("Failed to create IMethodName from binding {}." , e1); //$NON-NLS-1$
             return absent();
         }
         return Optional.of(ref);

@@ -13,34 +13,32 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.calls.rcp.messages"; //$NON-NLS-1$
-    public static String PREFPAGE_DESCRIPTION;
-    public static String PREFPAGE_ENABLE_CALL_COMPLETION;
-    public static String PREFPAGE_MAX_NUMBER_OF_PROPOSALS;
-    public static String PREFPAGE_MIN_PROBABILITY_OF_PROPOSAL;
-    public static String PREFPAGE_TABLE_DESCRIPTION;
-    public static String PREFPAGE_TABLE_COLUMN_FILE;
-    public static String PREFPAGE_MODLE_NOT_AVAILABLE;
-    public static String PREFPAGE_MODEL_AVAILABLE;
-    public static String PREFPAGE_DEPENDENCY_DETAILS_UNKNOWN;
-    public static String PREFPAGE_DEPENDENCY_DETAILS_KNOWN;
-    public static String PREFPAGE_PACKAGE_ROOT_INFO;
-    public static String PREFPAGE_PACKAGE_ROOT_NAME;
-    public static String PREFPAGE_PACKAGE_ROOT_VERSION;
-    public static String PREFPAGE_PACKAGE_ROOT_FINGERPRINT;
-    public static String PREFPAGE_MODEL_INFO;
-    public static String PREFPAGE_MODEL_CCORDINATE;
-    public static String PREFPAGE_MODEL_RESOLUTION_STATUS;
 
-    public static String EXTDOC_RECOMMENDATIONS_ARE_NOT_MADE;
-    public static String EXTDOC_RECOMMENDATIONS_ARE_MADE;
-    public static String EXTDOC_PECOMMENDATION_PERCENTAGE;
-    public static String EXTDOC_DEFINED_BY;
-    public static String EXTDOC_UNDEFINED;
-    public static String EXTDOC_OBSERVED;
-    public static String EXTDOC_CALL;
-    public static String EXTDOC_PROPOSAL_COMPUTED_UNTRAINED;
-    public static String EXTDOC_PROPOSAL_COMPUTED;
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.calls.rcp.messages"; //$NON-NLS-1$
+
+    public static String PROPOSAL_LABEL_USED;
+    public static String PROPOSAL_LABEL_PERCENTAGE;
+
+    public static String PREFPAGE_DESCRIPTION_CALLS;
+
+    public static String FIELD_LABEL_DECORATE_PROPOSAL_ICON;
+    public static String FIELD_LABEL_DECORATE_PROPOSAL_TEXT;
+    public static String FIELD_LABEL_HIGHLIGHT_USED_PROPOSALS;
+    public static String FIELD_LABEL_MAX_NUMBER_OF_PROPOSALS;
+    public static String FIELD_LABEL_MIN_PROPOSAL_PROBABILITY;
+    public static String FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE;
+
+    public static String PROVIDER_INTRO_NO_RECOMMENDATIONS;
+    public static String PROVIDER_INTRO_RECOMMENDATIONS;
+
+    public static String PROVIDER_INFO_LOCAL_VAR_CONTEXT;
+    public static String PROVIDER_INFO_UNTRAINED_CONTEXT;
+
+    public static String TABLE_CELL_DEFINITION_UNTRAINED;
+    public static String TABLE_CELL_RELATION_CALL;
+    public static String TABLE_CELL_RELATION_DEFINED_BY;
+    public static String TABLE_CELL_RELATION_OBSERVED;
+    public static String TABLE_CELL_SUFFIX_PERCENTAGE;
 
     static {
         // initialize resource bundle

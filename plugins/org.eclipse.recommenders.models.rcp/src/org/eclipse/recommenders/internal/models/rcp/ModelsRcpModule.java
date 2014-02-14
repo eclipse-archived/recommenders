@@ -49,15 +49,14 @@ import com.google.inject.name.Names;
 @SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule implements Module {
 
-    private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models";
-    private static final String MODEL_CLASSIFIER_ATTRIBUTE = "classifier";
+    private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models"; //$NON-NLS-1$
+    private static final String MODEL_CLASSIFIER_ATTRIBUTE = "classifier"; //$NON-NLS-1$
 
-    public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
-    public static final String MODEL_CLASSIFIER = "MODEL_CLASSIFIER";
-    public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
-    public static final String INDEX_BASEDIR = "INDEX_BASEDIR";
-    public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS";
-    public static final String AVAILABLE_ADVISORS = "DEFAULT_ADVISORS";
+    public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS"; //$NON-NLS-1$
+    public static final String MODEL_CLASSIFIER = "MODEL_CLASSIFIER"; //$NON-NLS-1$
+    public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR"; //$NON-NLS-1$
+    public static final String INDEX_BASEDIR = "INDEX_BASEDIR"; //$NON-NLS-1$
+    public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS"; //$NON-NLS-1$
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelsRcpModule.class);
 
@@ -75,28 +74,28 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         bind(EclipseModelIndex.class).in(SINGLETON);
         bind(IModelArchiveCoordinateAdvisor.class).to(EclipseModelIndex.class);
         bind(IModelIndex.class).to(EclipseModelIndex.class);
-        createAndBindNamedFile("index", INDEX_BASEDIR);
+        createAndBindNamedFile("index", INDEX_BASEDIR); //$NON-NLS-1$
 
         //
         bind(EclipseModelRepository.class).in(SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class);
-        createAndBindNamedFile("repository", REPOSITORY_BASEDIR);
+        createAndBindNamedFile("repository", REPOSITORY_BASEDIR); //$NON-NLS-1$
 
         // configure caching
         bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
-        createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS);
-        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PROJECT_COORDINATES);
+        createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS); //$NON-NLS-1$
+        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PROJECT_COORDINATES); //$NON-NLS-1$
 
     }
 
     private void createAndBindNamedFile(String fileName, String name) {
         File rootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-        File stateLocation = new File(rootLocation, ".recommenders");
+        File stateLocation = new File(rootLocation, ".recommenders"); //$NON-NLS-1$
         File file = new File(stateLocation, fileName);
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            LOG.error("failed to bind file name", e);
+            LOG.error("Failed to bind file name {}.", fileName, e); //$NON-NLS-1$
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }
@@ -150,5 +149,4 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
         return builder.build();
     }
-
 }

@@ -45,13 +45,13 @@ public class DependencyInfoJsonTypeAdapter implements JsonSerializer<DependencyI
             throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
-        JsonPrimitive fileElement = jsonObject.getAsJsonPrimitive("location");
+        JsonPrimitive fileElement = jsonObject.getAsJsonPrimitive("location"); //$NON-NLS-1$
         File file = new File(fileElement.getAsString());
 
-        JsonElement typeElement = jsonObject.get("type");
+        JsonElement typeElement = jsonObject.get("type"); //$NON-NLS-1$
         DependencyType type = context.deserialize(typeElement, DependencyType.class);
 
-        JsonElement hintsElement = jsonObject.get("hints");
+        JsonElement hintsElement = jsonObject.get("hints"); //$NON-NLS-1$
         Map<String, String> hints = context.deserialize(hintsElement, cacheType);
 
         return new DependencyInfo(file, type, hints);
@@ -64,9 +64,9 @@ public class DependencyInfoJsonTypeAdapter implements JsonSerializer<DependencyI
         JsonElement hints = context.serialize(src.getHints());
 
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("location", file);
-        jsonObject.add("type", type);
-        jsonObject.add("hints", hints);
+        jsonObject.add("location", file); //$NON-NLS-1$
+        jsonObject.add("type", type); //$NON-NLS-1$
+        jsonObject.add("hints", hints); //$NON-NLS-1$
         return jsonObject;
     }
 

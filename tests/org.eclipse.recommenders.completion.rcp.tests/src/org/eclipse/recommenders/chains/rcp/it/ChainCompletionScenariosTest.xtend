@@ -8,7 +8,6 @@ import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposal
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposalComputer
-import org.eclipse.recommenders.internal.chain.rcp.ChainPreferencePage
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.tests.CodeBuilder
@@ -20,6 +19,7 @@ import org.mockito.Mockito
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
+import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
 
 class ChainCompletionScenariosTest {
 
@@ -1194,13 +1194,13 @@ public class ChainPreferenceStoreMock {
 
     static def IPreferenceStore create() {
         val store = Mockito.mock(IPreferenceStore);
-        Mockito.when(store.getInt(ChainPreferencePage.ID_MAX_CHAINS)).thenReturn(20);
-        Mockito.when(store.getInt(ChainPreferencePage.ID_MAX_DEPTH)).thenReturn(4);
-        Mockito.when(store.getInt(ChainPreferencePage.ID_TIMEOUT)).thenReturn(3);
-        Mockito.when(store.getInt(ChainPreferencePage.ID_MIN_DEPTH)).thenReturn(1);
-        Mockito.when(store.getString(ChainPreferencePage.ID_IGNORE_TYPES)).thenReturn(
-            "java.lang.Object" + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.Class" +
-                ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String");
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAINS)).thenReturn(20);
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAIN_LENGTH)).thenReturn(4);
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_TIMEOUT)).thenReturn(3);
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MIN_CHAIN_LENGTH)).thenReturn(1);
+        Mockito.when(store.getString(ChainsPreferencePage.PREF_IGNORED_TYPES)).thenReturn(
+            "java.lang.Object" + ChainsPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.Class" +
+                ChainsPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String");
         return store;
     }
 

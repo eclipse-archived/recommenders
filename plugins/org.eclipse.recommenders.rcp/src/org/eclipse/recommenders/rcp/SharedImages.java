@@ -49,7 +49,7 @@ public final class SharedImages implements IDisposable {
      *         toolbar
      */
     public static String dlcl16(String image) {
-        return "/icons/dlcl16/" + image;
+        return "/icons/dlcl16/" + image; //$NON-NLS-1$
     }
 
     /**
@@ -57,62 +57,62 @@ public final class SharedImages implements IDisposable {
      *         toolbar
      */
     public static String elcl16(String image) {
-        return "/icons/elcl16/" + image;
+        return "/icons/elcl16/" + image; //$NON-NLS-1$
     }
 
     /**
      * @return resource name for a model <strong>obj</strong>ect
      */
     public static String obj16(String image) {
-        return "/icons/obj16/" + image;
+        return "/icons/obj16/" + image; //$NON-NLS-1$
     }
 
     /**
      * @return resource name for an object <strong>ov</strong>e<strong>r</strong>lay
      */
     public static String ovr16(String image) {
-        return "/icons/ovr16/" + image;
+        return "/icons/ovr16/" + image; //$NON-NLS-1$
     }
 
     /**
      * @return resource name for a <strong>view</strong>
      */
     public static String view16(String image) {
-        return "/icons/view16/" + image;
+        return "/icons/view16/" + image; //$NON-NLS-1$
     }
 
     /**
      * @return resource name for a <strong>wiz</strong>ard <strong>ban</strong>ner graphic
      */
     public static String wizban(String image) {
-        return "/icons/wizban/" + image;
+        return "/icons/wizban/" + image; //$NON-NLS-1$
     }
 
     public static enum Images implements ImageResource {
         // @formatter:off
-        ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")),
-        ELCL_DELETE(elcl16("delete.gif")),
-        ELCL_EXPAND_ALL(elcl16("expandall.gif")),
-        ELCL_REFRESH(elcl16("refresh_tab.gif")),
-        ELCL_SYNCED(elcl16("synced.gif")),
-        ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")),
-        ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.gif")),
-        ELCL_CLEAR(elcl16("clear.gif")),
-        OBJ_CHECK_GREEN(obj16("tick_small.png")),
-        OBJ_CROSS_RED(obj16("cross_small.png")),
-        OBJ_BULLET_BLUE(obj16("bullet_blue.png")),
-        OBJ_BULLET_GREEN(obj16("bullet_green.png")),
-        OBJ_BULLET_ORANGE(obj16("bullet_orange.png")),
-        OBJ_BULLET_RED(obj16("bullet_red.png")),
-        OBJ_BULLET_STAR(obj16("bullet_star.png")),
-        OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")),
-        OBJ_LIGHTBULB(obj16("lightbulb.gif")),
-        OBJ_JAR(obj16("jar.gif")),
-        OBJ_JAVA_PROJECT(obj16("project.gif")),
-        OBJ_JRE(obj16("jre.gif")),
-        OBJ_REPOSITORY(obj16("repository.gif")),
-        OVR_STAR(ovr16("star.png")),
-        VIEW_SLICE(view16("slice.gif"));
+        ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")), //$NON-NLS-1$
+        ELCL_DELETE(elcl16("delete.gif")), //$NON-NLS-1$
+        ELCL_EXPAND_ALL(elcl16("expandall.gif")), //$NON-NLS-1$
+        ELCL_REFRESH(elcl16("refresh_tab.gif")), //$NON-NLS-1$
+        ELCL_SYNCED(elcl16("synced.gif")), //$NON-NLS-1$
+        ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")), //$NON-NLS-1$
+        ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.gif")), //$NON-NLS-1$
+        ELCL_CLEAR(elcl16("clear.gif")), //$NON-NLS-1$
+        OBJ_CHECK_GREEN(obj16("tick_small.png")), //$NON-NLS-1$
+        OBJ_CROSS_RED(obj16("cross_small.png")), //$NON-NLS-1$
+        OBJ_BULLET_BLUE(obj16("bullet_blue.png")), //$NON-NLS-1$
+        OBJ_BULLET_GREEN(obj16("bullet_green.png")), //$NON-NLS-1$
+        OBJ_BULLET_ORANGE(obj16("bullet_orange.png")), //$NON-NLS-1$
+        OBJ_BULLET_RED(obj16("bullet_red.png")), //$NON-NLS-1$
+        OBJ_BULLET_STAR(obj16("bullet_star.png")), //$NON-NLS-1$
+        OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")), //$NON-NLS-1$
+        OBJ_LIGHTBULB(obj16("lightbulb.gif")), //$NON-NLS-1$
+        OBJ_JAR(obj16("jar.gif")), //$NON-NLS-1$
+        OBJ_JAVA_PROJECT(obj16("project.gif")), //$NON-NLS-1$
+        OBJ_JRE(obj16("jre.gif")), //$NON-NLS-1$
+        OBJ_REPOSITORY(obj16("repository.gif")), //$NON-NLS-1$
+        OVR_STAR(ovr16("star.png")), //$NON-NLS-1$
+        VIEW_SLICE(view16("slice.gif")); //$NON-NLS-1$
         // @formatter:on
 
         private final String name;
@@ -156,7 +156,7 @@ public final class SharedImages implements IDisposable {
     }
 
     private static String toKey(ImageResource resource) {
-        return resource.getClass().getName() + "#" + resource.getName();
+        return resource.getClass().getName() + '#' + resource.getName();
     }
 
     @Override

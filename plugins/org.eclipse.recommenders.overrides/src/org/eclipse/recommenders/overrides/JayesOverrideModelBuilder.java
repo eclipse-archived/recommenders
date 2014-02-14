@@ -21,15 +21,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.stat.StatUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.collect.Lists;
 
 public class JayesOverrideModelBuilder {
-    private static final double MIN = 0.0001;
 
+    private static final double MIN = 0.0001;
     private static final double MAX = 1.0 - MIN;
 
     private final ITypeName typeName;

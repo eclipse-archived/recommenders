@@ -70,7 +70,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                     registerDependenciesForJavaProject(javaProject);
                 }
             } catch (CoreException e) {
-                LOG.error("failed to register dependencies for project " + project, e);
+                LOG.error("Failed to register dependencies for project {}", project, e); //$NON-NLS-1$
             }
         }
     }
@@ -118,9 +118,8 @@ public class EclipseDependencyListener implements IDependencyListener {
                     dependencies.add(dependencyInfo);
                 }
             }
-        } catch (JavaModelException e1) {
-            LOG.error("failed to search dependencies of project " + javaProject, e1);
-
+        } catch (JavaModelException e) {
+            LOG.error("Failed to search dependencies of project {}", javaProject, e); //$NON-NLS-1$
         }
         return dependencies;
     }
@@ -134,9 +133,9 @@ public class EclipseDependencyListener implements IDependencyListener {
         try {
             for (IClasspathEntry entry : javaProject.getRawClasspath()) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) {
+                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) { //$NON-NLS-1$
                         for (IPackageFragmentRoot packageFragmentRoot : javaProject.findPackageFragmentRoots(entry)) {
-                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) {
+                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) { //$NON-NLS-1$
                                 jreRoots.add(packageFragmentRoot);
                             }
                         }
@@ -144,7 +143,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to detect jre for project " + javaProject, e);
+            LOG.error("Failed to detect jre for project " + javaProject, e); //$NON-NLS-1$
         }
         return jreRoots;
     }
@@ -193,7 +192,7 @@ public class EclipseDependencyListener implements IDependencyListener {
     }
 
     private DependencyInfo createDependencyInfoForJAR(final JarPackageFragmentRoot pfr) {
-        File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr);
+        File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr); //$NON-NLS-1$
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
         return dependencyInfo;
     }

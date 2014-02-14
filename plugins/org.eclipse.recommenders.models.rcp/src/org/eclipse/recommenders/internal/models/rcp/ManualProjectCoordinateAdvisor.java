@@ -87,5 +87,4 @@ public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor
             manualMappings = deserialized;
         }
     }
-
 }

@@ -60,27 +60,27 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.name.Named;
 
-public class CoordinatesToModelsView extends ViewPart {
+public class DependencyOverviewView extends ViewPart {
 
-    private TreeViewer treeViewer;
+    private final EventBus bus;
     private final EclipseDependencyListener dependencyListener;
     private final IProjectCoordinateProvider pcProvider;
     private final IModelIndex modelIndex;
-    private final EclipseModelRepository eclipseModelRepository;
+    private final EclipseModelRepository modelRepository;
     private final SharedImages images;
-    private final EventBus bus;
     private final List<String> modelClassifiers;
+    private TreeViewer treeViewer;
 
     @Inject
-    public CoordinatesToModelsView(final EventBus workspaceBus,
-            final EclipseDependencyListener eclipseDependencyListener, final IProjectCoordinateProvider pcProvider,
-            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository, SharedImages images,
+    public DependencyOverviewView(final EventBus workspaceBus,
+            final EclipseDependencyListener dependencyListener, final IProjectCoordinateProvider pcProvider,
+            final IModelIndex modelIndex, final EclipseModelRepository modelRepository, SharedImages images,
             @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers) {
         bus = workspaceBus;
-        dependencyListener = eclipseDependencyListener;
+        this.dependencyListener = dependencyListener;
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
-        this.eclipseModelRepository = eclipseModelRepository;
+        this.modelRepository = modelRepository;
         this.images = images;
         this.modelClassifiers = Lists.newArrayList(modelClassifiers);
         Collections.sort(this.modelClassifiers);
@@ -93,8 +93,8 @@ public class CoordinatesToModelsView extends ViewPart {
                 | SWT.V_SCROLL);
         dependencyTree.setHeaderVisible(true);
         dependencyTree.setLinesVisible(true);
-        createColumn(dependencyTree, "Dependency", 400);
-        createColumn(dependencyTree, "Project Coordinate", 200);
+        createColumn(dependencyTree, Messages.COLUMN_LABEL_DEPENDENCY, 400);
+        createColumn(dependencyTree, Messages.COLUMN_LABEL_PROJECT_COORDINATE, 200);
 
         for (String classifier : modelClassifiers) {
             createColumn(dependencyTree, classifier.toUpperCase(), 50);
@@ -121,8 +121,8 @@ public class CoordinatesToModelsView extends ViewPart {
                 IStructuredSelection selection = Checks.cast(treeViewer.getSelection());
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadForDependencyInfosAction("Download models", deps,
-                            modelClassifiers, pcProvider, modelIndex, eclipseModelRepository, bus));
+                    menuManager.add(new TriggerModelDownloadForDependencyInfosAction(Messages.MENUITEM_DOWNLOAD_MODELS, deps,
+                            modelClassifiers, pcProvider, modelIndex, modelRepository, bus));
                 }
             }
         });
@@ -152,7 +152,7 @@ public class CoordinatesToModelsView extends ViewPart {
     }
 
     private void refreshData() {
-        new UIJob("Refreshing View...") {
+        new UIJob(Messages.JOB_REFRESHING_DEPENDENCY_OVERVIEW_VIEW) {
             {
                 schedule();
             }
@@ -272,9 +272,9 @@ public class CoordinatesToModelsView extends ViewPart {
             ProjectCoordinate pc = pcProvider.resolve(dependency.info).orNull();
             if (pc != null) {
                 ModelCoordinate mc = modelIndex.suggest(pc, modelType).orNull();
-                return mc == null ? "" : mc.getVersion();
+                return mc == null ? "" : mc.getVersion(); //$NON-NLS-1$
             }
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         private Image getImageForDependencyTyp(final DependencyInfo dependencyInfo) {

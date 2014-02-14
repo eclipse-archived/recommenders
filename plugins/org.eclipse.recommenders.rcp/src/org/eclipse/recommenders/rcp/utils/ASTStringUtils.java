@@ -47,13 +47,13 @@ public class ASTStringUtils {
         sb.append(toQualifiedString(type));
         final Type superclassType = type.getSuperclassType();
         if (superclassType != null) {
-            sb.append(" extends ").append(toSimpleString(superclassType));
+            sb.append(" extends ").append(toSimpleString(superclassType)); //$NON-NLS-1$
         }
         final List<Type> interfaces = type.superInterfaceTypes();
         if (!interfaces.isEmpty()) {
-            sb.append(" implements ");
+            sb.append(" implements "); //$NON-NLS-1$
             for (final Type interfaceType : interfaces) {
-                sb.append(toSimpleString(interfaceType)).append(", ");
+                sb.append(toSimpleString(interfaceType)).append(',').append(' ');
             }
             sb.setLength(sb.length() - 2);
         }
@@ -64,15 +64,15 @@ public class ASTStringUtils {
     public static String toSimpleString(final IMethodName method) {
         final StringBuilder sb = new StringBuilder();
         if (method.isInit()) {
-            sb.append("new ").append(method.getDeclaringType().getClassName());
+            sb.append("new ").append(method.getDeclaringType().getClassName()); //$NON-NLS-1$
         } else {
             sb.append(method.getName());
         }
-        sb.append("(");
+        sb.append('(');
         if (method.hasParameters()) {
-            sb.append("..");
+            sb.append('.').append('.');
         }
-        sb.append(")");
+        sb.append(')');
         return sb.toString();
     }
 
@@ -87,9 +87,9 @@ public class ASTStringUtils {
             final CompilationUnit cu = (CompilationUnit) parent;
             final PackageDeclaration package1 = cu.getPackage();
             final String fullyQualifiedName = package1.getName().getFullyQualifiedName();
-            return sb.append(fullyQualifiedName).append(".").append(type.getName()).toString();
+            return sb.append(fullyQualifiedName).append('.').append(type.getName()).toString();
         }
-        sb.append("[unresolved] " + type.getName());
+        sb.append("[unresolved] ").append(type.getName()); //$NON-NLS-1$
         return sb.toString();
     }
 
@@ -108,22 +108,22 @@ public class ASTStringUtils {
         final ASTNode parent = method.getParent();
         if (parent instanceof TypeDeclaration) {
             final TypeDeclaration declaringType = (TypeDeclaration) parent;
-            sb.append(toQualifiedString(declaringType)).append(".");
+            sb.append(toQualifiedString(declaringType)).append('.');
         } else if (parent instanceof AnonymousClassDeclaration) {
             final AnonymousClassDeclaration anonymous = (AnonymousClassDeclaration) parent;
             final String string = toQualifiedString(anonymous.resolveBinding());
-            sb.append(string).append(".");
+            sb.append(string).append('.');
         }
 
-        sb.append(method.getName()).append("(");
+        sb.append(method.getName()).append('.');
         for (final SingleVariableDeclaration param : (List<SingleVariableDeclaration>) method.parameters()) {
             final Type type = param.getType();
-            sb.append(toSimpleString(type)).append(", ");
+            sb.append(toSimpleString(type)).append(',').append(' ');
         }
         if (!method.parameters().isEmpty()) {
             sb.setLength(sb.length() - 2);
         }
-        sb.append(")");
+        sb.append(')');
         return sb.toString();
     }
 
@@ -137,7 +137,7 @@ public class ASTStringUtils {
         }
         if (binding.isAnonymous()) {
             final String binaryName = binding.getBinaryName();
-            return binaryName != null ? binaryName : toQualifiedString(binding.getDeclaringClass()) + "$<>";
+            return binaryName != null ? binaryName : toQualifiedString(binding.getDeclaringClass()) + "$<>"; //$NON-NLS-1$
         }
         return binding.getQualifiedName();
     }
@@ -147,7 +147,7 @@ public class ASTStringUtils {
         sb.append(toQualifiedString(binding));
         final ITypeBinding superclass = binding.getSuperclass();
         if (superclass != null) {
-            sb.append(" extends " + toSimpleString(superclass));
+            sb.append(" extends " + toSimpleString(superclass)); //$NON-NLS-1$
         }
         return sb.toString();
     }
