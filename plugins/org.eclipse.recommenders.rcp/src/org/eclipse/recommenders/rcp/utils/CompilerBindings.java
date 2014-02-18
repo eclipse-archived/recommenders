@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -69,7 +71,7 @@ public class CompilerBindings {
         if (binding.isArrayType()) {
             final int dimensions = binding.dimensions();
             final TypeBinding leafComponentType = binding.leafComponentType();
-            final String arrayDimensions = StringUtils.repeat("[", dimensions);
+            final String arrayDimensions = StringUtils.repeat('[', dimensions);
             final Optional<ITypeName> typeName = toTypeName(leafComponentType);
             if (!typeName.isPresent()) {
                 return absent();
@@ -98,10 +100,10 @@ public class CompilerBindings {
 
         if (signature.length() == 1) {
             // no handling needed. primitives always look the same.
-        } else if (signature.endsWith(";")) {
-            signature = StringUtils.substringBeforeLast(signature, ";");
+        } else if (signature.endsWith(";")) { //$NON-NLS-1$
+            signature = StringUtils.substringBeforeLast(signature, ";"); //$NON-NLS-1$
         } else {
-            signature = "L" + SignatureUtil.stripSignatureToFQN(signature);
+            signature = 'L' + SignatureUtil.stripSignatureToFQN(signature);
         }
         final ITypeName res = VmTypeName.get(signature);
         return fromNullable(res);
@@ -113,18 +115,18 @@ public class CompilerBindings {
         }
         try {
             final String uniqueKey = String.valueOf(binding.computeUniqueKey());
-            String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
-            if (qualifiedMethodName.endsWith(".")) {
+            String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            if (qualifiedMethodName.endsWith(".")) { //$NON-NLS-1$
                 qualifiedMethodName += new String(TypeConstants.INIT);
             }
             final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
             final String returnType = Signature.getReturnType(uniqueKey);
             final StringBuilder sb = new StringBuilder();
-            sb.append(qualifiedMethodName).append("(");
+            sb.append(qualifiedMethodName).append('(');
             for (final String parameter : parameterTypes) {
                 sb.append(parameter);
             }
-            sb.append(")").append(returnType);
+            sb.append(')').append(returnType);
             final IMethodName res = VmMethodName.get(sb.toString());
             return of(res);
         } catch (final RuntimeException e) {

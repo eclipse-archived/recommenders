@@ -194,7 +194,7 @@ public final class JavadocProvider extends ApidocProvider {
 
     private String extractJavadoc(String html) {
         if (html == null) {
-            html = Messages.EXTDOC_JAVADOC_NOT_FOUND;
+            html = Messages.PROVIDER_INTRO_JAVADOC_NOT_FOUND;
         }
 
         final int max = Math.min(100, html.length());

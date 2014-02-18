@@ -53,6 +53,7 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -404,7 +405,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
         final String[] bounds = parameter.getBounds();
         final String elementName = parameter.getElementName();
         final String displayName = computeTypeParameterDisplayName(parameter, bounds);
-        if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) {
+        if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) { //$NON-NLS-1$
             return new TypeArgumentProposal(Signature.getSimpleName(bounds[0]), true, displayName);
         } else {
             return new TypeArgumentProposal(elementName, true, displayName);
@@ -412,7 +413,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     }
 
     private String computeTypeParameterDisplayName(final ITypeParameter parameter, final String[] bounds) {
-        if (bounds.length == 0 || bounds.length == 1 && "java.lang.Object".equals(bounds[0])) {
+        if (bounds.length == 0 || bounds.length == 1 && "java.lang.Object".equals(bounds[0])) { //$NON-NLS-1$
             return parameter.getElementName();
         }
         final StringBuffer buf = new StringBuffer(parameter.getElementName());
@@ -843,7 +844,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     private void openErrorDialog(final BadLocationException e) {
         final Shell shell = getTextViewer().getTextWidget().getShell();
-        MessageDialog.openError(shell, "Failed", e.getMessage());
+        MessageDialog.openError(shell, Messages.DIALOG_TITLE_FAILURE, e.getMessage());
     }
 
     /*

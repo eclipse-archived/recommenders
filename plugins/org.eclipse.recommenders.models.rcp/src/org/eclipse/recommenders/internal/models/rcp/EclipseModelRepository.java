@@ -57,22 +57,23 @@ import com.google.common.eventbus.Subscribe;
 public class EclipseModelRepository implements IModelRepository, IRcpService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EclipseModelRepository.class);
-    @Inject
-    @Named(REPOSITORY_BASEDIR)
-    File basedir;
 
-    @Inject
-    IProxyService proxy;
-
-    @Inject
-    ModelsRcpPreferences prefs;
-
-    @Inject
-    EventBus bus;
-
-    Map<String, ModelRepository> delegates = Maps.newHashMap();
+    private final File basedir;
+    private final IProxyService proxy;
+    private final ModelsRcpPreferences prefs;
+    private final EventBus bus;
+    private final Map<String, ModelRepository> delegates = Maps.newHashMap();
 
     private boolean isOpen = false;
+
+    @Inject
+    public EclipseModelRepository(@Named(REPOSITORY_BASEDIR) File basedir, IProxyService proxy,
+            ModelsRcpPreferences prefs, EventBus bus) {
+        this.basedir = basedir;
+        this.proxy = proxy;
+        this.prefs = prefs;
+        this.bus = bus;
+    }
 
     @PostConstruct
     void open() throws Exception {
@@ -199,13 +200,13 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
             try {
                 open();
             } catch (Exception e) {
-                LOG.error("A error occurred while opening EclipseModelRepository after deleting models.", e);
+                LOG.error("A error occurred while opening EclipseModelRepository after deleting models.", e); //$NON-NLS-1$
             }
         }
     }
 
     private void ensureIsOpen() {
-        Checks.ensureIsTrue(isOpen, "model repository service is not accesible at the moment.");
+        Checks.ensureIsTrue(isOpen, "model repository service is not accesible at the moment."); //$NON-NLS-1$
     }
 
     @Override

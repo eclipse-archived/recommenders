@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLab
 import static org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn;
 
 import java.net.URL;
+import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
@@ -42,28 +43,27 @@ import org.eclipse.ui.browser.IWebBrowser;
 public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
 
     private static final Object DUMMY_INFO = new Object();
-    private static final String HERE = "here";
-    private static final String HOMEPAGE = "project homepage";
-    private static final String PAGE_NAME = "Preferences > "
-            + createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
 
-    private static final String INFO = "Code Recommenders is available in your Eclipse installation. "
-            + "If you want to enable Code Recommenders to get a smarter content assist, simply press return.\n\n"
-            + "To configure Code Recommenders first, visit <a>" + PAGE_NAME + "</a>.\n\n"
-            + "To disable Code Recommenders click <a>" + HERE
-            + "</a>. To learn more about Code Recommenders please visit the <a>" + HOMEPAGE + "</a>.";
+    private static final String ABOUT_PREFERENCES = "about:preferences"; //$NON-NLS-1$
+    private static final String ABOUT_ENABLE = "about:enable"; //$NON-NLS-1$
+    private static final String ABOUT_DISABLE = "about:disable"; //$NON-NLS-1$
+    private static final String HTTP_HOMEPAGE = "http://www.eclipse.org/recommenders/"; //$NON-NLS-1$
+    private static final String PAGE_NAME = createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
+
+    private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLE_COMPLETION, PAGE_NAME,
+            ABOUT_PREFERENCES, ABOUT_ENABLE, ABOUT_DISABLE, HTTP_HOMEPAGE);
 
     // leave a bit space for other, maybe more important proposals
     private static final int RELEVANCE = Integer.MAX_VALUE - 10000;
 
     public EnableCompletionProposal(SharedImages images, int offset) {
         Image image = images.getImage(Images.OBJ_LIGHTBULB);
-        StyledString text = new StyledString("Enable intelligent code completion?", DECORATIONS_STYLER);
+        StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLE_COMPLETION, DECORATIONS_STYLER);
         setStyledDisplayString(text);
         setImage(image);
         setRelevance(RELEVANCE);
         setCursorPosition(offset);
-        setReplacementString("");
+        setReplacementString(""); //$NON-NLS-1$
     }
 
     @Override
@@ -82,24 +82,46 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
 
             @Override
             public IInformationControl createInformationControl(Shell parent) {
-                return new ConfigureContentAssistInformationControl(parent, "Eclipse Code Recommenders");
+                return new ConfigureContentAssistInformationControl(parent);
             }
         };
+    }
+
+    @Override
+    public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
+        enableCodeRecommenders();
     }
 
     /**
      * Disables Mylyn and JDT content assists.
      */
-    @Override
-    public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
+    private void enableCodeRecommenders() {
         new DisableContentAssistCategoryJob(MYLYN_ALL_CATEGORY).schedule();
         new DisableContentAssistCategoryJob(JDT_ALL_CATEGORY).schedule();
     }
 
+    private void diableCodeRecommenders() {
+        new DisableContentAssistCategoryJob(RECOMMENDERS_ALL_CATEGORY_ID).schedule();
+    }
+
+    private void openPreferencePage() {
+        createPreferenceDialogOn(getActiveWorkbenchShell(), COMPLETION_PREFERENCE_PAGE_ID, null, null).open();
+    }
+
+    private void openHomepageInBrowser(String url) {
+        try {
+            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
+                    .createBrowser(SWT.NONE, "recommenders-homepage", Messages.BROWSER_LABEL_PROJECT_WEBSITE, //$NON-NLS-1$
+                            Messages.BROWSER_TOOLTIP_PROJECT_WEBSITE);
+            browser.openURL(new URL(url)); //$NON-NLS-1$
+        } catch (Exception e1) {
+        }
+    }
+
     private final class ConfigureContentAssistInformationControl extends AbstractInformationControl {
 
-        private ConfigureContentAssistInformationControl(Shell parentShell, String statusFieldText) {
-            super(parentShell, statusFieldText);
+        private ConfigureContentAssistInformationControl(Shell parentShell) {
+            super(parentShell, Messages.PROPOSAL_CATEGORY_CODE_RECOMMENDERS);
             create();
         }
 
@@ -118,33 +140,14 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     dispose();
-                    if (HERE.equals(e.text)) {
+                    if (ABOUT_ENABLE.equals(e.text)) {
+                        enableCodeRecommenders();
+                    } else if (ABOUT_DISABLE.equals(e.text)) {
                         diableCodeRecommenders();
-                    } else if (PAGE_NAME.equals(e.text)) {
+                    } else if (ABOUT_PREFERENCES.equals(e.text)) {
                         openPreferencePage();
-                    } else if (HOMEPAGE.equals(e.text)) {
-                        openHomepageInBrowser();
-                    }
-                }
-
-                private void diableCodeRecommenders() {
-                    new DisableContentAssistCategoryJob(RECOMMENDERS_ALL_CATEGORY_ID).schedule();
-                }
-
-                private void openPreferencePage() {
-                    createPreferenceDialogOn(getActiveWorkbenchShell(), COMPLETION_PREFERENCE_PAGE_ID, null, null)
-                            .open();
-                }
-
-                private void openHomepageInBrowser() {
-                    try {
-                        IWebBrowser browser = PlatformUI
-                                .getWorkbench()
-                                .getBrowserSupport()
-                                .createBrowser(SWT.NONE, "recommenders-homepage", "Code Recommenders",
-                                        "Learn about Code Recommenders");
-                        browser.openURL(new URL("http://eclipse.org/recommenders"));
-                    } catch (Exception e1) {
+                    } else if (HTTP_HOMEPAGE.equals(e.text)) {
+                        openHomepageInBrowser(e.text);
                     }
                 }
             });

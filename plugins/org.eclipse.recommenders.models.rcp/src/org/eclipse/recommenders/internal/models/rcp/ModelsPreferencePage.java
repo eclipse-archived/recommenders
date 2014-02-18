@@ -11,12 +11,8 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_URL_LIST;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_ENABLE_AUTO_DOWNLOAD;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_MODEL_REPOSITORY_HEADLINE;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_MODEL_REPOSITORY_INTRO;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_URI;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_URL_LIST;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -45,15 +41,15 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
     @Override
     public void init(IWorkbench workbench) {
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_ID));
-        setMessage(PREFPAGE_MODEL_REPOSITORY_HEADLINE);
-        setDescription(PREFPAGE_MODEL_REPOSITORY_INTRO);
+        setMessage(Messages.PREFPAGE_TITLE_MODEL_REPOSITORIES);
+        setDescription(Messages.PREFPAGE_DESCRIPTION_MODEL_REPOSITORIES);
     }
 
     @Override
     protected void createFieldEditors() {
-        repoEditor = new ModelRepositoryListEditor(P_REPOSITORY_URL_LIST, PREFPAGE_URI, getFieldEditorParent());
+        repoEditor = new ModelRepositoryListEditor(PREF_REPOSITORY_URL_LIST, Messages.FIELD_LABEL_REPOSITORY_URIS, getFieldEditorParent());
         addField(repoEditor);
-        addField(new BooleanFieldEditor(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, PREFPAGE_ENABLE_AUTO_DOWNLOAD,
+        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD,
                 getFieldEditorParent()));
     }
 
@@ -61,7 +57,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
     public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
         String repositoryURLList = Joiner.on(ModelsRcpPreferences.URL_SEPARATOR).join(repoEditor.getItems());
-        store.setValue(P_REPOSITORY_URL_LIST, repositoryURLList);
+        store.setValue(PREF_REPOSITORY_URL_LIST, repositoryURLList);
         return super.performOk();
     }
 

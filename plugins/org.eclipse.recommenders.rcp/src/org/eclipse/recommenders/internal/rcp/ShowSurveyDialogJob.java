@@ -10,7 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.eclipse.recommenders.internal.rcp.Constants.*;
+import static java.text.MessageFormat.format;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_ACTIVATIONS_BEFORE_SHOW_DIALOG;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_MILLIS_BEFORE_SHOW_DIALOG;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_PREFERENCE_PAGE_ID;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_URL;
+import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLabelToPreferencePage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -29,14 +34,14 @@ class ShowSurveyDialogJob extends UIJob {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Inject
-    RcpPreferences prefs;
+    private final RcpPreferences prefs;
+    private final Provider<IWebBrowser> browser;
 
     @Inject
-    Provider<IWebBrowser> browser;
-
-    public ShowSurveyDialogJob() {
-        super("");
+    public ShowSurveyDialogJob(RcpPreferences prefs, Provider<IWebBrowser> browser) {
+        super(""); //$NON-NLS-1$
+        this.prefs = prefs;
+        this.browser = browser;
         setSystem(true);
     }
 
@@ -67,9 +72,10 @@ class ShowSurveyDialogJob extends UIJob {
 
     @Override
     public IStatus runInUIThread(IProgressMonitor monitor) {
-        new PreferenceLinkDialog(getDisplay().getActiveShell(), RcpPlugin.DIALOG_TITLE, null, SURVEY_DESCRIPTION,
-                MessageDialog.QUESTION, new String[] { "Yes", "No, thank you" }, 0, SURVEY_PREFERENCES_HINT,
-                SURVEY_PREFERENCE_PAGE_ID) {
+        new PreferenceLinkDialog(getDisplay().getActiveShell(), Messages.DIALOG_TITLE_SURVEY, null,
+                Messages.DIALOG_MESSAGE_SURVEY, MessageDialog.QUESTION, new String[] { Messages.BUTTON_LABEL_YES,
+                        Messages.BUTTON_LABEL_NO }, 0, format(Messages.LINK_LABEL_TAKE_SURVEY_LATER,
+                        createLinkLabelToPreferencePage(SURVEY_PREFERENCE_PAGE_ID)), SURVEY_PREFERENCE_PAGE_ID) {
 
             @Override
             protected void buttonPressed(int buttonId) {
@@ -78,7 +84,7 @@ class ShowSurveyDialogJob extends UIJob {
                     try {
                         browser.get().openURL(SURVEY_URL);
                     } catch (PartInitException e) {
-                        log.error("Exception occured while opening survey dialog", e);
+                        log.error("Exception occured while opening survey dialog", e); //$NON-NLS-1$
                     }
                 } else {
                     prefs.setSurveyOptOut(true);

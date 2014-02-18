@@ -10,11 +10,6 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Messages.PREFPAGE_URI_ALREADY_ADDED;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.DIALOG_ENTER_REPOSITORY_URI;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.DIALOG_INVALID_REPOSITORY_URI;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.DIALOG_ADD_MODEL_REPOSITORY;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
@@ -31,17 +26,17 @@ public final class Dialogs {
     }
 
     public static InputDialog newModelRepositoryUrlDialog(Shell parent, final String[] remoteUrls) {
-        return new InputDialog(parent, DIALOG_ADD_MODEL_REPOSITORY, DIALOG_ENTER_REPOSITORY_URI,
+        return new InputDialog(parent, Messages.DIALOG_TITLE_ADD_MODEL_REPOSITORY, Messages.FIELD_LABEL_REPOSITORY_URI,
                 "http://download.eclipse.org/recommenders/models/<version>", //$NON-NLS-1$
                 new IInputValidator() {
 
                     @Override
                     public String isValid(String newText) {
                         if (isURIAlreadyAdded(newText)) {
-                            return PREFPAGE_URI_ALREADY_ADDED;
+                            return Messages.DIALOG_MESSAGE_URI_ALREADY_ADDED;
                         }
                         if (isInvalidRepoURI(newText)) {
-                            return DIALOG_INVALID_REPOSITORY_URI;
+                            return Messages.DIALOG_MESSAGE_INVALID_REPOSITORY_URI;
                         }
                         return null;
                     }

@@ -67,7 +67,7 @@ public class ASTNodeUtils {
         case ASTNode.QUALIFIED_NAME:
             return ((QualifiedName) name).getName();
         default:
-            throw throwUnreachable("unknow subtype of name: '%s'", name.getClass());
+            throw throwUnreachable("Unknown subtype of name: '%s'", name.getClass()); //$NON-NLS-1$
         }
     }
 
@@ -79,8 +79,8 @@ public class ASTNodeUtils {
 
     private static String toSimpleName(final ITypeName crParam) {
         String crSimpleName = Names.vm2srcSimpleTypeName(crParam);
-        if (crSimpleName.contains("$")) {
-            crSimpleName = StringUtils.substringAfterLast(crSimpleName, "$");
+        if (crSimpleName.contains("$")) { //$NON-NLS-1$
+            crSimpleName = StringUtils.substringAfterLast(crSimpleName, "$"); //$NON-NLS-1$
         }
         return crSimpleName;
     }
@@ -118,14 +118,14 @@ public class ASTNodeUtils {
         case ASTNode.UNION_TYPE: {
             // TODO: that will probably not work with any name matching...
             UnionType t = cast(type);
-            return "UnionType" + t.types().toString();
+            return "UnionType" + t.types().toString(); //$NON-NLS-1$
         }
         case ASTNode.ARRAY_TYPE: {
             ArrayType t = cast(type);
-            return toSimpleName(t.getElementType()) + repeat("[]", t.getDimensions());
+            return toSimpleName(t.getElementType()) + repeat("[]", t.getDimensions()); //$NON-NLS-1$
         }
         default:
-            throw throwUnreachable("no support for type '%s'", type);
+            throw throwUnreachable("No support for type '%s'", type); //$NON-NLS-1$
         }
 
         return name.getIdentifier();
@@ -270,7 +270,7 @@ public class ASTNodeUtils {
             final Optional<MethodDeclaration> opt = getClosestParent(node, MethodDeclaration.class);
             return opt;
         } catch (final JavaModelException e) {
-            LOG.error("Faield to resolve " + method, e);
+            LOG.error("Failed to resolve {}.", method, e); //$NON-NLS-1$
             return absent();
         }
     }

@@ -11,12 +11,22 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Optional.*;
-import static com.google.common.collect.Iterables.*;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.presentInstances;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Iterables.getLast;
+import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.text.MessageFormat.format;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.*;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
+import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
+import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_CLEAR;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
@@ -55,7 +65,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
@@ -175,13 +184,13 @@ public class ProjectCoordinatesView extends ViewPart {
 
         locationColumn = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tableColumn = locationColumn.getColumn();
-        tableColumn.setText("Location");
+        tableColumn.setText(Messages.COLUMN_LABEL_LOCATION);
         tableLayout.setColumnData(tableColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
 
         coordinateColumn = new TableViewerColumn(tableViewer, SWT.NONE);
         coordinateColumn.setEditingSupport(new ProjectCoordinateEditing(tableViewer));
         tableColumn = coordinateColumn.getColumn();
-        tableColumn.setText("Coordinate");
+        tableColumn.setText(Messages.COLUMN_LABEL_COORDINATE);
         tableLayout.setColumnData(tableColumn, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
 
         table = tableViewer.getTable();
@@ -250,23 +259,22 @@ public class ProjectCoordinatesView extends ViewPart {
             }
         };
 
-        IAction showAll = new Action("All", Action.AS_RADIO_BUTTON) {
+        IAction showAll = new Action(Messages.MENUITEM_SHOW_ALL, Action.AS_RADIO_BUTTON) {
 
             @Override
             public void run() {
                 refreshTableUI();
             }
-
         };
 
-        IAction showMissingCoord = new TableFilterAction("Only missing coordinates", Action.AS_RADIO_BUTTON,
-                missingCoordinatesFilter);
-        IAction showConflictingCoord = new TableFilterAction("Only conflicting coordinates", Action.AS_RADIO_BUTTON,
-                conflictingCoordinatesFilter);
-        IAction showManualAssignedCoord = new TableFilterAction("Only manually assigned coordinates",
-                Action.AS_RADIO_BUTTON, manualAssignedFilter);
+        IAction showMissingCoord = new TableFilterAction(Messages.MENUITEM_SHOW_MISSING_COORDINATES_ONLY,
+                Action.AS_RADIO_BUTTON, missingCoordinatesFilter);
+        IAction showConflictingCoord = new TableFilterAction(Messages.MENUITEM_SHOW_CONFLICTING_COORDINATES_ONLY,
+                Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
+        IAction showManualAssignedCoord = new TableFilterAction(
+                Messages.MENUITEM_SHOW_MANUALLY_ASSIGNED_COORDINATES_ONLY, Action.AS_RADIO_BUTTON, manualAssignedFilter);
 
-        MenuManager showMenu = new MenuManager("Show");
+        MenuManager showMenu = new MenuManager(Messages.MENUITEM_SHOW);
         showMenu.add(showAll);
         showMenu.add(showMissingCoord);
         showMenu.add(showConflictingCoord);
@@ -283,7 +291,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 refreshData();
             }
         };
-        clearCache.setText("Clear cache");
+        clearCache.setText(Messages.MENUITEM_CLEAR_CACHE);
         clearCache.setImageDescriptor(images.getDescriptor(ELCL_CLEAR));
         getViewSite().getActionBars().getMenuManager().add(clearCache);
     }
@@ -301,7 +309,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 refreshData();
             }
         };
-        refreshAction.setToolTipText("Refresh");
+        refreshAction.setToolTipText(Messages.TOOLBAR_TOOLTIP_REFRESH);
         refreshAction.setImageDescriptor(images.getDescriptor(ELCL_REFRESH));
 
         getViewSite().getActionBars().getToolBarManager().add(refreshAction);
@@ -345,7 +353,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 if (optionalFirstMatchingCoordinate.isPresent()) {
                     formerValue = optionalFirstMatchingCoordinate.get().toString();
                 } else {
-                    formerValue = "";
+                    formerValue = ""; //$NON-NLS-1$
                 }
                 return formerValue;
             }
@@ -364,7 +372,7 @@ public class ProjectCoordinatesView extends ViewPart {
             }
             if (element instanceof Entry) {
                 DependencyInfo dependencyInfo = extractDependencyInfo(element);
-                if ("".equals(value)) {
+                if ("".equals(value)) { //$NON-NLS-1$
                     manualPcAdvisor.removeManualMapping(dependencyInfo);
                     bus.post(new ProjectCoordinateChangeEvent(dependencyInfo));
                 } else {
@@ -373,13 +381,8 @@ public class ProjectCoordinatesView extends ViewPart {
                         manualPcAdvisor.setManualMapping(dependencyInfo, valueOf);
                         bus.post(new ProjectCoordinateChangeEvent(dependencyInfo));
                     } catch (Exception e) {
-                        MessageDialog
-                                .openError(
-                                        table.getShell(),
-                                        "Invalid coordinate format.",
-                                        String.format(
-                                                "The value '%s' did not have the right format.\nExpected format: groupId:artifactId:x.y.z",
-                                                value));
+                        MessageDialog.openError(table.getShell(), Messages.DIALOG_TITLE_INVALID_COORDINATE_FORMAT,
+                                format(Messages.DIALOG_MESSAGE_INVALID_COORDINATE_FORMAT, value));
                         return;
                     }
                 }
@@ -409,7 +412,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
         public void setData(final Set<DependencyInfo> dependencyInfos) {
             data.clear();
-            new ResolvingDependenciesJob("Resolving dependencies", dependencyInfos).schedule();
+            new ResolvingDependenciesJob(Messages.JOB_RESOLVING_DEPENDENCIES, dependencyInfos).schedule();
         }
 
         private final class ResolvingDependenciesJob extends Job {
@@ -423,10 +426,11 @@ public class ProjectCoordinatesView extends ViewPart {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                monitor.beginTask("Resolving dependencies", dependencyInfos.size());
+                monitor.beginTask(Messages.TASK_ASSIGNING_PROJECT_COORDINATES, dependencyInfos.size());
                 strategies = pcAdvisorsService.getAdvisors();
                 for (DependencyInfo dependencyInfo : dependencyInfos) {
-                    monitor.subTask("Resolving: " + dependencyInfo.getFile().getName());
+                    monitor.subTask(format(Messages.TASK_ASSIGNING_PROJECT_COORDINATE_TO, dependencyInfo.getFile()
+                            .getName()));
                     for (IProjectCoordinateAdvisor strategy : strategies) {
                         data.put(dependencyInfo, strategy.suggest(dependencyInfo));
                     }
@@ -446,7 +450,6 @@ public class ProjectCoordinatesView extends ViewPart {
                     }
                 });
             }
-
         }
 
         public List<IProjectCoordinateAdvisor> getStrategies() {
@@ -503,7 +506,7 @@ public class ProjectCoordinatesView extends ViewPart {
     }
 
     private void refreshData() {
-        new UIJob("Refreshing View...") {
+        new UIJob(Messages.JOB_REFRESHING_PROJECT_COORDINATES_VIEW) {
             {
                 schedule();
             }
@@ -548,11 +551,11 @@ public class ProjectCoordinatesView extends ViewPart {
                         return pc.get().toString();
                     }
                 default:
-                    return "";
+                    return ""; //$NON-NLS-1$
                 }
             }
 
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         @Override
@@ -596,7 +599,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = cast(element);
                 return generateTooltip(entry);
             }
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         protected abstract String generateTooltip(Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry);
@@ -624,27 +627,19 @@ public class ProjectCoordinatesView extends ViewPart {
         protected String generateTooltip(final Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry) {
             DependencyInfo dependencyInfo = entry.getKey();
             StringBuilder sb = new StringBuilder();
-            sb.append("Location: ");
-            if (dependencyInfo.getType() == DependencyType.PROJECT) {
-                sb.append(dependencyInfo.getFile().getPath());
-            } else {
-                sb.append(dependencyInfo.getFile().getAbsolutePath());
-            }
+            sb.append(format(Messages.TABLE_CELL_TOOLTIP_LOCATION, dependencyInfo.getFile().getAbsolutePath()));
             sb.append(LINE_SEPARATOR);
 
-            sb.append("Type: ");
-            sb.append(dependencyInfo.getType().toString());
+            sb.append(format(Messages.TABLE_CELL_TOOLTIP_TYPE, dependencyInfo.getType().toString()));
 
             Map<String, String> hints = dependencyInfo.getHints();
             if (hints != null && !hints.isEmpty()) {
                 sb.append(LINE_SEPARATOR);
-                sb.append("Hints: ");
+                sb.append(Messages.TABLE_CELL_TOOLTIP_HINTS);
                 for (Entry<String, String> hint : hints.entrySet()) {
                     sb.append(LINE_SEPARATOR);
-                    sb.append("  ");
-                    sb.append(hint.getKey());
-                    sb.append(": ");
-                    sb.append(hint.getValue());
+                    sb.append("  "); //$NON-NLS-1$
+                    sb.append(format(Messages.TABLE_CELL_TOOLTIP_KEY_VALUE, hint.getKey(), hint.getValue()));
                 }
             }
 
@@ -657,11 +652,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
         private String getDisplayName(IProjectCoordinateAdvisor advisor) {
             AdvisorDescriptor descriptor = pcAdvisorsService.getDescriptor(advisor);
-            String name = descriptor.getName();
-            if (name.isEmpty()) {
-                name = descriptor.getId() + " (ID)";
-            }
-            return name;
+            return descriptor.getName();
         }
 
         @Override
@@ -679,18 +670,18 @@ public class ProjectCoordinatesView extends ViewPart {
                     sb.append(LINE_SEPARATOR);
                 }
 
-                sb.append(getDisplayName(advisor));
-                sb.append(": ");
                 Optional<ProjectCoordinate> optionalCoordinate = advisor.suggest(dependencyInfo);
+                final String value;
                 if (optionalCoordinate.isPresent()) {
-                    sb.append(optionalCoordinate.get().toString());
+                    value = optionalCoordinate.get().toString();
                 } else {
                     if (coordinate.isPresent()) {
-                        sb.append(coordinate.get().toString());
+                        value = coordinate.get().toString();
                     } else {
-                        sb.append("unknown");
+                        value = Messages.TABLE_CELL_TOOLTIP_UNKNOWN_COORDINATE;
                     }
                 }
+                sb.append(format(Messages.TABLE_CELL_TOOLTIP_KEY_VALUE, getDisplayName(advisor), value));
             }
             return sb.toString();
         }

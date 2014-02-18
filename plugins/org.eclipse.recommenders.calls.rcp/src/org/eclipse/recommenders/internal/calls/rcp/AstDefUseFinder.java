@@ -53,6 +53,9 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 public class AstDefUseFinder extends ASTVisitor {
 
+    private static final String VAR_THIS = "this"; //$NON-NLS-1$
+    private static final String VAR_SUPER = "super"; //$NON-NLS-1$
+
     private IMethodName definingMethod;
     private DefinitionKind defKind = UNKNOWN;
     private final List<IMethodName> calls = Lists.newLinkedList();
@@ -63,7 +66,7 @@ public class AstDefUseFinder extends ASTVisitor {
         this.varname = ensureIsNotNull(varname);
         this.method = ensureIsNotNull(method);
 
-        if ("this".equals(varname) || "super".equals(varname)) {
+        if (VAR_THIS.equals(varname) || VAR_SUPER.equals(varname)) {
             defKind = THIS;
         }
         method.accept(this);
@@ -133,7 +136,7 @@ public class AstDefUseFinder extends ASTVisitor {
     }
 
     private boolean maybeThis() {
-        return "this".equals(varname) || "".equals(varname) || "super".equals(varname);
+        return varname.isEmpty() || VAR_THIS.equals(varname) || VAR_SUPER.equals(varname);
     }
 
     private boolean isReceiverThis(final MethodInvocation mi) {
@@ -237,7 +240,7 @@ public class AstDefUseFinder extends ASTVisitor {
     }
 
     private boolean isCompletionNode(final Expression rhs) {
-        return rhs instanceof SimpleName && ((SimpleName) rhs).getIdentifier().equals("$missing$");
+        return rhs instanceof SimpleName && ((SimpleName) rhs).getIdentifier().equals("$missing$"); //$NON-NLS-1$
     }
 
     // called only if left hand side was a match.

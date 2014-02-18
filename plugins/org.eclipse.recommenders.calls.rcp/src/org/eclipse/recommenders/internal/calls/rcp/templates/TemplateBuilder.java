@@ -47,7 +47,7 @@ public class TemplateBuilder {
     }
 
     public Optional<String> appendCall(IMethodName method, String receiver, String... argNames) {
-        Checks.ensureIsFalse(method.isInit(), "method must not be a constructor");
+        Checks.ensureIsFalse(method.isInit(), "Method must not be a constructor");
         String returnId = null;
         if (!method.isVoid()) {
             ITypeName type = method.getReturnType();
@@ -594,5 +594,4 @@ public class TemplateBuilder {
             return res;
         }
     }
-
 }

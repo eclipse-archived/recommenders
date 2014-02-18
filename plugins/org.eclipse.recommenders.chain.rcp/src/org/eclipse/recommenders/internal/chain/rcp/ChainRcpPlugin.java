@@ -32,5 +32,4 @@ public final class ChainRcpPlugin extends AbstractUIPlugin {
     public static ChainRcpPlugin getDefault() {
         return plugin;
     }
-
 }

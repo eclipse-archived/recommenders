@@ -45,6 +45,7 @@ import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.ProposalPosition;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -336,7 +337,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
     private void openErrorDialog(final Exception e) {
         final Shell shell = getTextViewer().getTextWidget().getShell();
-        MessageDialog.openError(shell, "parameter guessing error", e.getMessage());
+        MessageDialog.openError(shell, Messages.DIALOG_TITLE_FAILED_TO_GUESS_PARAMETERS, e.getMessage());
     }
 
     private void ensurePositionCategoryInstalled(final IDocument document, final LinkedModeModel model) {

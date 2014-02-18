@@ -112,5 +112,4 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
         }
         return false;
     }
-
 }

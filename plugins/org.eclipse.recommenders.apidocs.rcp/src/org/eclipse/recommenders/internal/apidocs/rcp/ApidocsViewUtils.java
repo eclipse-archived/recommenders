@@ -11,7 +11,7 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.swt.SWT.*;
 
@@ -124,12 +124,12 @@ public final class ApidocsViewUtils {
         for (final Entry<IMethodName> method : Bags.orderedByCount(methods)) {
 
             final int frequency = method.getCount();
-            final int percentage = (int) Math.round(frequency * 100.0d / total);
-            if (percentage < 5d) {
+            final double percentage = frequency / (double) total;
+            if (percentage < 0.05) {
                 continue;
             }
-            final String phraseText = percentageToRecommendationPhrase(percentage);
-            final String stats = format(Messages.EXTDOC_PERCENTAGE_TIMES, percentage, frequency);
+            final String phraseText = percentageToRecommendationPhrase((int) Math.round(100 * percentage));
+            final String stats = format(Messages.TABLE_CELL_SUFFIX_FREQUENCIES, percentage, frequency);
 
             final Link bar = createMethodLink(table, method.getElement(), resolver, bus);
             final TableItem item = new TableItem(table, SWT.NONE);
@@ -169,7 +169,7 @@ public final class ApidocsViewUtils {
 
     public static Link createMethodLink(final Composite parent, final IMethodName method,
             final JavaElementResolver resolver, final EventBus workspaceBus) {
-        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$
+        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>"; //$NON-NLS$ //$NON-NLS-1$ //$NON-NLS-2$
         final String tooltip = Names.vm2srcQualifiedMethod(method);
 
         final Link link = new Link(parent, SWT.NONE);
@@ -347,15 +347,15 @@ public final class ApidocsViewUtils {
 
     public static String percentageToRecommendationPhrase(final int percentage) {
         if (percentage >= 95) {
-            return Messages.EXTDOC_ALWAYS;
+            return Messages.TABLE_CELL_FREQUENCY_ALWAYS;
         } else if (percentage >= 65) {
-            return Messages.EXTDOC_USUALLY;
+            return Messages.TABLE_CELL_FREQUENCY_USUALLY;
         } else if (percentage >= 25) {
-            return Messages.EXTDOC_SOMETIMES;
+            return Messages.TABLE_CELL_FREQUENCY_SOMETIMES;
         } else if (percentage >= 10) {
-            return Messages.EXTDOC_OCCASIONALLY;
+            return Messages.TABLE_CELL_FREQUENCY_OCCASIONALLY;
         } else {
-            return Messages.EXTDOC_RARELY;
+            return Messages.TABLE_CELL_FREQUENCY_RARELY;
         }
     }
 

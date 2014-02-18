@@ -20,28 +20,27 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-
-    @Override
-    protected void createFieldEditors() {
-        addField(new IntegerFieldEditor(P_MAX_NUMBER_OF_PROPOSALS, "Maximal number of proposals:",
-                getFieldEditorParent(), 3));
-        addField(new IntegerFieldEditor(P_MIN_PROPOSAL_PROBABILITY, "Minimal probability threshold:",
-                getFieldEditorParent(), 3));
-        addField(new BooleanFieldEditor(P_DECORATE_PROPOSAL_ICON, "Enable proposal icon decorations.",
-                getFieldEditorParent()));
-        addField(new BooleanFieldEditor(P_UPDATE_PROPOSAL_RELEVANCE, "Enable proposal relevance updates.",
-                getFieldEditorParent()));
-        addField(new BooleanFieldEditor(P_DECORATE_PROPOSAL_TEXT, "Enable proposal text decorations.",
-                getFieldEditorParent()));
-        addField(new BooleanFieldEditor(P_HIGHLIGHT_USED_PROPOSALS, "Highlight proposals of already observed methods.",
-                getFieldEditorParent()));
-
-    }
+public class CallsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     @Override
     public void init(IWorkbench workbench) {
-        setDescription("Settings for the Call Recommender Session Processor.\n");
+        setDescription(Messages.PREFPAGE_DESCRIPTION_CALLS);
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_NAME));
+    }
+
+    @Override
+    protected void createFieldEditors() {
+        addField(new IntegerFieldEditor(PREF_MAX_NUMBER_OF_PROPOSALS, Messages.FIELD_LABEL_MAX_NUMBER_OF_PROPOSALS,
+                getFieldEditorParent(), 3));
+        addField(new IntegerFieldEditor(PREF_MIN_PROPOSAL_PROBABILITY, Messages.FIELD_LABEL_MIN_PROPOSAL_PROBABILITY,
+                getFieldEditorParent(), 3));
+        addField(new BooleanFieldEditor(PREF_DECORATE_PROPOSAL_ICON, Messages.FIELD_LABEL_DECORATE_PROPOSAL_ICON,
+                getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_UPDATE_PROPOSAL_RELEVANCE, Messages.FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE,
+                getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_DECORATE_PROPOSAL_TEXT, Messages.FIELD_LABEL_DECORATE_PROPOSAL_TEXT,
+                getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_HIGHLIGHT_USED_PROPOSALS, Messages.FIELD_LABEL_HIGHLIGHT_USED_PROPOSALS,
+                getFieldEditorParent()));
     }
 }

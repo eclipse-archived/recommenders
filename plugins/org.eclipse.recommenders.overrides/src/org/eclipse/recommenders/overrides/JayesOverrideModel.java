@@ -12,6 +12,7 @@ package org.eclipse.recommenders.overrides;
 
 import static com.google.common.base.Optional.absent;
 import static java.lang.String.format;
+import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,7 @@ import com.google.gson.reflect.TypeToken;
 public class JayesOverrideModel implements IOverrideModel {
 
     public static Optional<IOverrideModel> load(ZipFile zip, ITypeName type) throws IOException {
-        String path = Zips.path(type, ".json");
+        String path = Zips.path(type, DOT_JSON);
         ZipEntry entry = zip.getEntry(path);
         if (entry == null) {
             return absent();
@@ -128,5 +129,4 @@ public class JayesOverrideModel implements IOverrideModel {
     public String toString() {
         return format("Model for '%s'", typeName);
     }
-
 }

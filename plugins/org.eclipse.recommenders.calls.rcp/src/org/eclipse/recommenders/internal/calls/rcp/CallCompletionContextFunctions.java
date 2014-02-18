@@ -32,6 +32,7 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 
 @SuppressWarnings({ "rawtypes", "restriction" })
 public class CallCompletionContextFunctions {
+
     // TODO need to rename
     public static final CompletionContextKey<IType> RECEIVER_TYPE2 = new CompletionContextKey<IType>();
     public static final CompletionContextKey<IMethodName> RECEIVER_DEF_BY = new CompletionContextKey<IMethodName>();
@@ -69,7 +70,7 @@ public class CallCompletionContextFunctions {
                     // the context and try.
                     IMethodName def = context.getMethodDef().orNull();
                     if (def == null) {
-                        if ("".equals(receiverName)) {
+                        if (receiverName.isEmpty()) {
                             defType = THIS;
                         } else {
                             defType = FIELD;
@@ -120,7 +121,7 @@ public class CallCompletionContextFunctions {
         }
 
         private boolean isExplicitThis(String receiverName) {
-            return "this".equals(receiverName);
+            return "this".equals(receiverName); //$NON-NLS-1$
         }
     }
 }

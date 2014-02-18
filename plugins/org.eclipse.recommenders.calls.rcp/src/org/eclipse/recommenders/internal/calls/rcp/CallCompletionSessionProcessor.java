@@ -12,13 +12,18 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
-import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_CALLS;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_DEF_BY;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_DEF_TYPE;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_TYPE2;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
-import static org.eclipse.recommenders.utils.Recommendations.*;
+import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
+import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -92,12 +97,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         ctx = context;
         recommendations = Lists.newLinkedList();
         try {
-            if (!isCompletionRequestSupported() || //
-                    !findReceiverTypeAndModel() || //
-                    !findRecommendations()) {
-                return false;
-            }
-            return true;
+            return isCompletionRequestSupported() && findReceiverTypeAndModel() && findRecommendations();
         } finally {
             releaseModel();
         }
@@ -113,7 +113,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             return false;
         }
         // TODO loop until we find a model. later
-        model = modelProvider.acquireModel(name).or(NullCallModel.NULL_MODEL);
+        model = modelProvider.acquireModel(name).or(NullCallModel.INSTANCE);
         return model != null;
 
     }
@@ -186,19 +186,15 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private boolean handleAlreadyUsedProposal(IProcessableProposal proposal, ProposalMatcher matcher) {
         for (IMethodName observed : observedCalls) {
             if (matcher.match(observed)) {
-                String label = "";
-                if (prefs.decorateProposalText) {
-                    label = "used";
-                }
-                int relevance = 0;
-                if (prefs.changeProposalRelevance) {
-                    relevance = 1;
-                }
-                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-                mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
+                final int boost = prefs.changeProposalRelevance ? 1 : 0;
+                final String label = prefs.decorateProposalText ? Messages.PROPOSAL_LABEL_USED : ""; //$NON-NLS-2$
+
                 if (prefs.decorateProposalIcon) {
                     overlay(proposal, overlay);
                 }
+
+                ProposalProcessorManager manager = proposal.getProposalProcessorManager();
+                manager.addProcessor(new SimpleProposalProcessor(boost, label));
                 return true;
             }
         }
@@ -211,20 +207,22 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             if (!matcher.match(crMethod)) {
                 continue;
             }
-            int relevance = 0;
-            if (prefs.changeProposalRelevance) {
-                relevance = 200 + asPercentage(call);
-                proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
-            }
-            String label = "";
-            if (prefs.decorateProposalText) {
-                label = asPercentage(call) + " %";
-            }
+
+            final int boost = prefs.changeProposalRelevance ? 200 + asPercentage(call) : 0;
+            final String label = prefs.decorateProposalText ? format(Messages.PROPOSAL_LABEL_PERCENTAGE,
+                    call.getRelevance()) : ""; //$NON-NLS-2$
+
             if (prefs.decorateProposalIcon) {
                 overlay(proposal, overlay);
             }
+
+            if (boost > 0) {
+                // TODO Shouldn't this convey the real boost?
+                proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
+            }
+
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-            mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
+            mgr.addProcessor(new SimpleProposalProcessor(boost, label));
             // we found the proposal we are looking for. So quit.
             return;
         }

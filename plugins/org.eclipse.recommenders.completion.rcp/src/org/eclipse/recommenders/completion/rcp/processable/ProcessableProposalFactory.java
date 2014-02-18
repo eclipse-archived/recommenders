@@ -10,10 +10,6 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
-import static java.lang.String.format;
-
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
@@ -48,9 +44,8 @@ import com.google.common.base.Throwables;
 @SuppressWarnings("restriction")
 public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
-    private static Logger log = LoggerFactory.getLogger(ProcessableProposalFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessableProposalFactory.class);
 
-    @Inject
     public ProcessableProposalFactory() {
     }
 
@@ -92,13 +87,12 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
                         (GetterSetterCompletionProposal) uiProposal, context);
             }
             // return the fallback proposal
-            log.warn("Unknown JDT proposal type '%s' ('%s'). Returning original proposal instead.", c,
+            LOG.warn("Unknown JDT proposal type '{}' ('{}'). Returning original proposal instead.", c, //$NON-NLS-1$
                     uiProposal.getDisplayString());
             return uiProposal;
         } catch (final Exception e) {
-            log.warn(
-                    format("Wrapping JDT proposal '%s' ('%s') failed. Returning original proposal instead.", c,
-                            uiProposal.getDisplayString()), e);
+            LOG.warn("Wrapping JDT proposal '{}' ('{}') failed. Returning original proposal instead.", c, //$NON-NLS-1$
+                    uiProposal.getDisplayString(), e);
             return uiProposal;
         }
     }
@@ -204,7 +198,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         } catch (CoreException e) {
             throw Throwables.propagate(e);
         }
-        throw Throws.throwIllegalArgumentException("no type found");
+        throw Throws.throwIllegalArgumentException("No type found"); //$NON-NLS-1$
     }
 
     @Override
@@ -213,7 +207,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         try {
             IField field = (IField) uiProposal.getJavaElement();
             return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field, uiProposal
-                    .getDisplayString().startsWith("get"), uiProposal.getRelevance()));
+                    .getDisplayString().startsWith("get"), uiProposal.getRelevance())); //$NON-NLS-1$
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }

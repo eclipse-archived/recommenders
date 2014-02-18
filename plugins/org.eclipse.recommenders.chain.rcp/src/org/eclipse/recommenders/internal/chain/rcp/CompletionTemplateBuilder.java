@@ -11,6 +11,8 @@
  */
 package org.eclipse.recommenders.internal.chain.rcp;
 
+import static java.text.MessageFormat.format;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -38,6 +40,7 @@ import com.google.common.collect.Multiset;
  */
 @SuppressWarnings("restriction")
 public final class CompletionTemplateBuilder {
+
     private static Logger log = LoggerFactory.getLogger(CompletionTemplateBuilder.class);
 
     private CompletionTemplateBuilder() {
@@ -47,8 +50,8 @@ public final class CompletionTemplateBuilder {
         final String title = createChainCode(chain, true, 0);
         final String body = createChainCode(chain, false, chain.getExpectedDimensions());
 
-        final Template template = new Template(title, chain.getElements().size()
-                + " " + Messages.COMPLETION_TEMPLATE_ELEMENTS, "java", body, false); //$NON-NLS-1$ 
+        final Template template = new Template(title, format(Messages.PROPOSAL_LABEL_ELEMENTS, chain
+                .getElements().size()), "java", body, false); //$NON-NLS-1$ 
         return createTemplateProposal(template, context);
     }
 

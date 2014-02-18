@@ -32,12 +32,16 @@ import com.google.common.eventbus.Subscribe;
 
 public class RcpOverrideModelProvider implements IOverrideModelProvider, IRcpService {
 
-    @Inject
-    IModelRepository repository;
-    @Inject
-    IModelArchiveCoordinateAdvisor index;
+    private final IModelRepository repository;
+    private final IModelArchiveCoordinateAdvisor index;
 
-    PoolingOverrideModelProvider delegate;
+    private PoolingOverrideModelProvider delegate;
+
+    @Inject
+    public RcpOverrideModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+        this.repository = repository;
+        this.index = index;
+    }
 
     @Override
     @PostConstruct

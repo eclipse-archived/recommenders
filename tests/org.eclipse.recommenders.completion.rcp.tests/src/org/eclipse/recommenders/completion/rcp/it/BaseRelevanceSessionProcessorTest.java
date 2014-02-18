@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import com.google.common.base.Optional;
 
-@SuppressWarnings("restriction")
 public class BaseRelevanceSessionProcessorTest {
 
     @Test

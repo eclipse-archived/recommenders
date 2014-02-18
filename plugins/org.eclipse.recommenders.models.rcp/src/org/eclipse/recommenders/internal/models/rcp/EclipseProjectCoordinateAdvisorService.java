@@ -120,7 +120,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
                     newDescriptors.put(advisor, descriptor);
                 }
             } catch (CoreException e) {
-                LOG.error("Exception during creation of Advisor with id: " + descriptor.getId(), e);
+                LOG.error("Exception during creation of advisor {}.", descriptor.getId(), e); //$NON-NLS-1$
             }
         }
         descriptors = newDescriptors;
@@ -136,7 +136,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         try {
             return projectCoordianteCache.get(dependencyInfo);
         } catch (ExecutionException e) {
-            LOG.error("Exception occured while accessing project coordinates cache", e);
+            LOG.error("Exception occured while accessing project coordinates cache.", e); //$NON-NLS-1$
             return absent();
         }
     }
@@ -190,7 +190,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     public void onEvent(ModelIndexOpenedEvent e) {
         // the fingerprint strategy uses the model index to determine missing project coordinates. Thus we have to
         // invalidate at least all absent values but to be honest, all values need to be refreshed!
-        new RefreshProjectCoordinatesJob("Refreshing cached project coordinates").schedule();
+        new RefreshProjectCoordinatesJob(Messages.JOB_REFRESHING_CACHED_COORDINATES).schedule();
     }
 
     private final class RefreshProjectCoordinatesJob extends Job {
@@ -203,7 +203,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         protected IStatus run(IProgressMonitor monitor) {
             Set<DependencyInfo> dependencyInfos = projectCoordianteCache.asMap().keySet();
             try {
-                monitor.beginTask("Refreshing", dependencyInfos.size());
+                monitor.beginTask(Messages.TASK_REFRESHING, dependencyInfos.size());
                 for (DependencyInfo di : dependencyInfos) {
                     monitor.subTask(di.toString());
                     projectCoordianteCache.refresh(di);
@@ -219,5 +219,4 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     public void clearCache() {
         projectCoordianteCache.invalidateAll();
     }
-
 }

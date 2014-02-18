@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.overrides.rcp;
 
 import static java.lang.String.valueOf;
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
@@ -52,7 +53,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(OverrideCompletionSessionProcessor.class);
 
     private IProjectCoordinateProvider pcProvider;
-    private IOverrideModelProvider mProvider;
+    private IOverrideModelProvider modelProvider;
     private JavaElementResolver jdtCache;
 
     private IRecommendersCompletionContext ctx;
@@ -69,7 +70,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
             IOverrideModelProvider modelProvider, final JavaElementResolver cache, SharedImages images,
             OverridesRcpPreferences prefs) {
         this.pcProvider = pcProvider;
-        mProvider = modelProvider;
+        this.modelProvider = modelProvider;
         jdtCache = cache;
         this.prefs = prefs;
         overlay = images.getDescriptor(OVR_STAR);
@@ -86,7 +87,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 computeRecommendations();
                 return true;
             } catch (Exception e) {
-                LOG.error("An exception occured whilec omputing overrides recommendations.", e);
+                LOG.error("An exception occured whilec omputing overrides recommendations.", e); //$NON-NLS-1$
             } finally {
                 releaseModel();
             }
@@ -116,13 +117,13 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
     private boolean hasModel() {
         UniqueTypeName name = new UniqueTypeName(pc, jdtCache.toRecType(supertype));
-        model = mProvider.acquireModel(name).orNull();
+        model = modelProvider.acquireModel(name).orNull();
         return model != null;
     }
 
     private void releaseModel() {
         if (model != null) {
-            mProvider.releaseModel(model);
+            modelProvider.releaseModel(model);
         }
     }
 
@@ -152,7 +153,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
         case CompletionProposal.METHOD_DECLARATION:
             final String signature = valueOf(coreProposal.getSignature()).replace('.', '/');
             final String name = valueOf(coreProposal.getName());
-            final String propSignature = (name + signature).replaceAll("<\\.>", "");
+            final String propSignature = (name + signature).replaceAll("<\\.>", ""); //$NON-NLS-1$ //$NON-NLS-2$
             for (final Recommendation<IMethodName> r : recommendations) {
                 IMethodName rMethod = r.getProposal();
                 if (!rMethod.getName().startsWith(prefix)) {
@@ -166,20 +167,20 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
                 // XXX rather high value but otherwise the default constructor shows up between the overrides
                 // proposals
-                int increment = 0;
-                if (prefs.changeProposalRelevance) {
-                    increment = 1000 + asPercentage(r);
-                    proposal.setTag(RECOMMENDERS_SCORE, asPercentage(r));
-                }
-                String label = null;
-                if (prefs.decorateProposalText) {
-                    label = asPercentage(r) + " %";
-                }
+                final int boost = prefs.changeProposalRelevance ? 1000 + asPercentage(r) : 0;
+                final String label = prefs.decorateProposalText ? format(
+                        Messages.PROPOSAL_LABEL_PERCENTAGE, r.getRelevance()) : ""; //$NON-NLS-1$
+
                 if (prefs.decorateProposalIcon) {
                     Proposals.overlay(proposal, overlay);
                 }
 
-                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
+                if (boost > 0) {
+                    // TODO Shouldn't this convey the real boost?
+                    proposal.setTag(RECOMMENDERS_SCORE, asPercentage(r));
+                }
+
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(boost, label));
                 return;
             }
         }

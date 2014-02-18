@@ -89,7 +89,7 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
     private final class CallNetCacheLoader extends CacheLoader<ITypeName, ICallModel> {
         @Override
         public ICallModel load(ITypeName type) throws Exception {
-            return JayesCallModel.load(zip, type).or(NullCallModel.NULL_MODEL);
+            return JayesCallModel.load(zip, type).or(NullCallModel.INSTANCE);
         }
     }
 }

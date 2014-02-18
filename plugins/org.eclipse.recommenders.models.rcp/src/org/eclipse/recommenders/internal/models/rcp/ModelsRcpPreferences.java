@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.apache.commons.lang3.ArrayUtils.isEquals;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 
 import javax.inject.Inject;
 
@@ -29,7 +29,7 @@ import com.google.common.eventbus.EventBus;
 public class ModelsRcpPreferences {
 
     @Inject
-    @Preference(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD)
+    @Preference(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD)
     public boolean autoDownloadEnabled;
 
     public String[] remotes;
@@ -38,10 +38,10 @@ public class ModelsRcpPreferences {
 
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
 
-    static final String URL_SEPARATOR = "\t";
+    static final String URL_SEPARATOR = "\t"; //$NON-NLS-1$
 
     @Inject
-    void setRemote(@Preference(Constants.P_REPOSITORY_URL_LIST) String newRemote) throws Exception {
+    void setRemote(@Preference(Constants.PREF_REPOSITORY_URL_LIST) String newRemote) throws Exception {
         String[] old = remotes;
         remotes = splitRemoteRepositoryString(newRemote);
         if (!isEquals(remotes, old)) {
@@ -50,7 +50,7 @@ public class ModelsRcpPreferences {
     }
 
     @Inject
-    void setAdvisorConfiguration(@Preference(Constants.P_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
+    void setAdvisorConfiguration(@Preference(Constants.PREF_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
             throws Exception {
         String old = advisorConfiguration;
         advisorConfiguration = newAdvisorConfiguration;
@@ -71,5 +71,4 @@ public class ModelsRcpPreferences {
     public static String joinRemoteRepositoriesToString(Iterable<String> remotes) {
         return joinRemoteRepositoriesToString(Iterables.toArray(remotes, String.class));
     }
-
 }

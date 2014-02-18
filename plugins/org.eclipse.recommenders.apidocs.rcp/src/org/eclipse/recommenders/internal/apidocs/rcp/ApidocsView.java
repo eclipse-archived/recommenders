@@ -204,7 +204,7 @@ public class ApidocsView extends ViewPart {
                     return;
                 }
                 activeProvider = newProvider;
-                Job job = new Job(Messages.EXTDOC_UPDATE_JOB) {
+                Job job = new Job(Messages.JOB_UPDATING_APIDOCS) {
 
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {

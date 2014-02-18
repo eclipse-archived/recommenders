@@ -35,7 +35,7 @@ import com.google.gson.JsonSerializer;
  */
 public class OptionalJsonTypeAdapter<T> implements JsonSerializer<Optional<T>>, JsonDeserializer<Optional<T>> {
 
-    private static final String ABSENT = "ABSENT";
+    private static final String ABSENT = "ABSENT"; //$NON-NLS-1$
 
     @Override
     public JsonElement serialize(Optional<T> src, Type typeOfSrc, JsonSerializationContext context) {

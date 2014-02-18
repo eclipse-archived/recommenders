@@ -34,16 +34,18 @@ import org.slf4j.LoggerFactory;
 public class SurveyPreferencePage extends org.eclipse.jface.preference.PreferencePage implements
         IWorkbenchPreferencePage {
 
-    private static final String SURVEY_LINK_TEXT = "<a>Take the survey</a> (will open in a browser window).";
+    private static final Logger LOG = LoggerFactory.getLogger(SurveyPreferencePage.class);
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final RcpPreferences prefs;
 
     @Inject
-    RcpPreferences prefs;
+    public SurveyPreferencePage(RcpPreferences prefs) {
+        this.prefs = prefs;
+    }
 
     @Override
     public void init(IWorkbench workbench) {
-        setDescription(SURVEY_DESCRIPTION);
+        setDescription(Messages.DIALOG_MESSAGE_SURVEY);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class SurveyPreferencePage extends org.eclipse.jface.preference.Preferenc
                 .setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false)
                         .hint(convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT)
                         .create());
-        surveyLink.setText(SURVEY_LINK_TEXT);
+        surveyLink.setText(Messages.LINK_LABEL_TAKE_SURVEY);
         surveyLink.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -65,7 +67,7 @@ public class SurveyPreferencePage extends org.eclipse.jface.preference.Preferenc
                     browser.openURL(SURVEY_URL);
                     prefs.setSurveyTaken(true);
                 } catch (PartInitException e) {
-                    log.error("Failed to open browser for taking the survey", e);
+                    LOG.error("Failed to open browser for taking the survey", e); //$NON-NLS-1$
                 }
             }
         });

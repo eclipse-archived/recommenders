@@ -48,7 +48,8 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public final class TypeBindingAnalyzer {
-    private static Logger log = LoggerFactory.getLogger(TypeBindingAnalyzer.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(TypeBindingAnalyzer.class);
 
     private static final Predicate<FieldBinding> NON_STATIC_FIELDS_ONLY_FILTER = new Predicate<FieldBinding>() {
 
@@ -221,7 +222,7 @@ public final class TypeBindingAnalyzer {
                 bindings.add(Optional.of(scope.getType(type.getClassName().toCharArray())));
             }
         } else {
-            log.warn("Can't handle %s as parent of completion location.", parent.getClass()); //$NON-NLS-1$
+            LOG.warn("Can't handle %s as parent of completion location.", parent.getClass()); //$NON-NLS-1$
         }
         return bindings;
     }
@@ -244,5 +245,4 @@ public final class TypeBindingAnalyzer {
         }
         return Optional.absent();
     }
-
 }

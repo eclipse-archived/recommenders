@@ -12,7 +12,7 @@
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.calls.rcp.preferencePages.calls"
 			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
-			class="org.eclipse.recommenders.internal.calls.rcp.PreferencePage"
+			class="org.eclipse.recommenders.internal.calls.rcp.CallsPreferencePage"
 			name="%preferencePages.calls.name"/>
 	</extension>
 	<extension point="org.eclipse.equinox.preferences.preferences">

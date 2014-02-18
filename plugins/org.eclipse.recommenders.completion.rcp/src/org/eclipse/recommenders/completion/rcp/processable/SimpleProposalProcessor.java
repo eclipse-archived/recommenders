@@ -37,7 +37,7 @@ public class SimpleProposalProcessor extends ProposalProcessor {
     @Override
     public void modifyDisplayString(StyledString displayString) {
         if (!isEmpty(addon)) {
-            displayString.append(" - " + addon, COUNTER_STYLER);
+            displayString.append(" - " + addon, COUNTER_STYLER); //$NON-NLS-1$
         }
     }
 

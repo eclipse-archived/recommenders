@@ -256,10 +256,10 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private List<ICompletionProposal> executeCallChainSearch() {
-        final int maxChains = prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS);
-        final int minDepth = prefStore.getInt(ChainPreferencePage.ID_MIN_DEPTH);
-        final int maxDepth = prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH);
-        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|"); //$NON-NLS-1$
+        final int maxChains = prefStore.getInt(ChainsPreferencePage.PREF_MAX_CHAINS);
+        final int minDepth = prefStore.getInt(ChainsPreferencePage.PREF_MIN_CHAIN_LENGTH);
+        final int maxDepth = prefStore.getInt(ChainsPreferencePage.PREF_MAX_CHAIN_LENGTH);
+        final String[] excludedTypes = prefStore.getString(ChainsPreferencePage.PREF_IGNORED_TYPES).split("\\|"); //$NON-NLS-1$
         for (int i = 0; i < excludedTypes.length; ++i) {
             excludedTypes[i] = "L" + excludedTypes[i].replace('.', '/'); //$NON-NLS-1$
         }
@@ -274,9 +274,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                     finder.startChainSearch(entrypoints, maxChains, minDepth, maxDepth);
                     return null;
                 }
-            }, prefStore.getInt(ChainPreferencePage.ID_TIMEOUT), TimeUnit.SECONDS, true);
+            }, prefStore.getInt(ChainsPreferencePage.PREF_TIMEOUT), TimeUnit.SECONDS, true);
         } catch (final Exception e) {
-            setError("Timeout limit hit during call chain computation."); //$NON-NLS-1$
+            setError("Timeout during call chain computation."); //$NON-NLS-1$
         }
         return buildCompletionProposals(finder.getChains());
     }

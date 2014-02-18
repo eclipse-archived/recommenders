@@ -123,7 +123,7 @@ class TableComparator extends ViewerComparator {
             direction = SWT.NONE;
             break;
         default:
-            throw new AssertionError("Sortdicrection contains illegal argument:" + direction);
+            throw new AssertionError("Sort direction illegal: " + direction); //$NON-NLS-1$
         }
     }
 
@@ -142,7 +142,6 @@ class TableComparator extends ViewerComparator {
 
         return (direction == SWT.DOWN) ? -result : result;
     }
-
 }
 
 class SelectionListener extends SelectionAdapter {

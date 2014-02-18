@@ -18,10 +18,6 @@ import org.osgi.framework.BundleContext;
 
 public class RcpPlugin extends AbstractUIPlugin {
 
-    public static final String DIALOG_TITLE = "Help us improve Code Recommenders";
-
-    public static final String P_UUID = "recommenders.uuid"; //$NON-NLS-1$
-
     private static RcpPlugin plugin;
 
     public static RcpPlugin getDefault() {

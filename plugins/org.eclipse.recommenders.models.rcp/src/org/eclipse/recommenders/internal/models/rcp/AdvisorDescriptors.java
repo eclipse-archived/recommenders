@@ -26,13 +26,13 @@ import com.google.common.collect.Lists;
 
 public class AdvisorDescriptors {
 
-    private static final String ENABLED_BY_DEFAULT_ATTRIBUTE = "enabledByDefault";
-    private static final String DEFAULT_PRIORITY_ATTRIBUTE = "defaultPriority";
+    private static final String ENABLED_BY_DEFAULT_ATTRIBUTE = "enabledByDefault"; //$NON-NLS-1$
+    private static final String DEFAULT_PRIORITY_ATTRIBUTE = "defaultPriority"; //$NON-NLS-1$
 
     private static final char DISABLED_FLAG = '!';
     private static final char SEPARATOR = ';';
 
-    private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.models.rcp.advisors";
+    private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.models.rcp.advisors"; //$NON-NLS-1$
 
     public static List<AdvisorDescriptor> getRegisteredAdvisors() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(

@@ -18,7 +18,7 @@
 		</view>
 		<view id="org.eclipse.recommenders.models.rcp.views.dependencyOverview"
 			category="org.eclipse.recommenders.rcp.views.root"
-			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.CoordinatesToModelsView"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.DependencyOverviewView"
 			restorable="true"
 			icon="icons/view16/depinsp.gif"
 			name="%views.dependencyOverview.name">

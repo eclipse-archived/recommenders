@@ -198,7 +198,7 @@ public class RcpModule extends AbstractModule implements Module {
                 task.get(2, TimeUnit.SECONDS);
             }
         } catch (final Exception e) {
-            RcpPlugin.logError(e, "Could not run 'active page finder' that early!"); //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY);
         }
         return finder;
     }
@@ -222,7 +222,7 @@ public class RcpModule extends AbstractModule implements Module {
         return Platform.getExtensionRegistry();
     }
 
-    static class RcpServiceMatcher extends AbstractMatcher {
+    static class RcpServiceMatcher extends AbstractMatcher<Object> {
 
         @Override
         public boolean matches(Object t) {
@@ -278,7 +278,7 @@ public class RcpModule extends AbstractModule implements Module {
                         m.setAccessible(true);
                         m.invoke(i);
                     } catch (Exception e) {
-                        RcpPlugin.logError(e, "Exception Occured in IRcpService hook '%s'.", m); //$NON-NLS-1$
+                        RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK, m);
                     }
                 }
 

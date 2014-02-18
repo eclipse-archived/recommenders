@@ -13,26 +13,36 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
+
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.apidocs.rcp.messages"; //$NON-NLS-1$
-    public static String EXTDOC_DND_FAILED;
-    public static String EXTDOC_OVERRIDES_INTRO;
-    public static String EXTDOC_OVERRIDES_INTRO_PATTERN;
-    public static String EXTDOC_OVERRIDES_PERCENTAGE;
-    public static String EXTDOC_OVERRIDES_PERCENTAGE_PATTERN;
-    public static String EXTDOC_OVERRIDES_OVERRIDE;
-    public static String EXTDOC_OVERRIDES_OVERRIDES;
-    public static String EXTDOC_SELFCALLS_CALLS;
-    public static String EXTDOC_SELFCALLS_INTRO_IMPLEMENTORS;
-    public static String EXTDOC_SELFCALLS_INTRO_SUBCLASSES;
-    public static String EXTDOC_STATICHOCKS_NO_PUBLIC_STATIC_METHOD_FOUND;
-    public static String EXTDOC_JAVADOC_NOT_FOUND;
-    public static String EXTDOC_UPDATE_JOB;
-    public static String EXTDOC_PERCENTAGE_TIMES;
-    public static String EXTDOC_ALWAYS;
-    public static String EXTDOC_USUALLY;
-    public static String EXTDOC_SOMETIMES;
-    public static String EXTDOC_OCCASIONALLY;
-    public static String EXTDOC_RARELY;
+
+    public static String PROVIDER_INTRO_IMPLEMENTOR_SELFCALL_STATISTIC;
+    public static String PROVIDER_INTRO_JAVADOC_NOT_FOUND;
+    public static String PROVIDER_INTRO_NO_STATIC_HOOKS_FOUND;
+    public static String PROVIDER_INTRO_OVERRIDE_PATTERNS;
+    public static String PROVIDER_INTRO_OVERRIDE_STATISTICS;
+    public static String PROVIDER_INTRO_SUBCLASS_SELFCALL_STATISTICS;
+
+    public static String TABLE_HEADER_OVERRIDE_PATTERN;
+
+    public static String TABLE_CELL_FREQUENCY_ALWAYS;
+    public static String TABLE_CELL_FREQUENCY_USUALLY;
+    public static String TABLE_CELL_FREQUENCY_SOMETIMES;
+    public static String TABLE_CELL_FREQUENCY_OCCASIONALLY;
+    public static String TABLE_CELL_FREQUENCY_RARELY;
+    public static String TABLE_CELL_RELATION_CALL;
+    public static String TABLE_CELL_RELATION_OVERRIDE;
+    public static String TABLE_CELL_SUFFIX_FREQUENCIES;
+    public static String TABLE_CELL_SUFFIX_PERCENTAGE;
+
+    public static String JOB_UPDATING_APIDOCS;
+
+    public static String LOG_ERROR_CLEAR_PREFERENCES;
+    public static String LOG_ERROR_READ_PREFERENCES;
+    public static String LOG_ERROR_SAVE_PREFERENCES;
+
+    public static String LOG_WARNING_NO_SUCH_ENTRY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

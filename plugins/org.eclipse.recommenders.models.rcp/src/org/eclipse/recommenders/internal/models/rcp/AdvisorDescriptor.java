@@ -30,15 +30,15 @@ public class AdvisorDescriptor {
     }
 
     public String getId() {
-        return config.getAttribute("id");
+        return config.getAttribute("id"); //$NON-NLS-1$
     }
 
     public String getName() {
-        return config.getAttribute("name");
+        return config.getAttribute("name"); //$NON-NLS-1$
     }
 
     public String getDescription() {
-        return config.getAttribute("description");
+        return config.getAttribute("description"); //$NON-NLS-1$
     }
 
     public boolean isEnabled() {
@@ -51,10 +51,10 @@ public class AdvisorDescriptor {
 
     public IProjectCoordinateAdvisor createAdvisor() throws CoreException {
         try {
-            return (IProjectCoordinateAdvisor) config.createExecutableExtension("class");
+            return (IProjectCoordinateAdvisor) config.createExecutableExtension("class"); //$NON-NLS-1$
         } catch (CoreException e) {
             String pluginId = config.getContributor().getName();
-            RcpPlugin.logError(e, "failed to instantiate advisor %s:%s", //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_ADVISOR_INSTANTIATION,
                     pluginId, config.getAttribute("class")); //$NON-NLS-1$
             throw e;
         }

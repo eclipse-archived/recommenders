@@ -75,6 +75,7 @@ public class JdtUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JdtUtils.class);
 
     private static final Util.BindingsToNodesMap EMPTY_NODE_MAP = new Util.BindingsToNodesMap() {
+
         @Override
         public org.eclipse.jdt.internal.compiler.ast.ASTNode get(final Binding binding) {
             return null;
@@ -162,7 +163,7 @@ public class JdtUtils {
     private static String createMethodKey(final IMethod method) {
         try {
             final String signature = method.getSignature();
-            final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")");
+            final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")"); //$NON-NLS-1$
             final String methodName = method.getElementName();
             return methodName + signatureWithoutReturnType;
         } catch (final Exception e) {
@@ -214,7 +215,7 @@ public class JdtUtils {
             final IJavaProject project = t.getJavaProject();
             final String[] bounds = t.getBoundsSignatures();
             if (ArrayUtils.isEmpty(bounds)) {
-                type = project.findType("java.lang.Object");
+                type = project.findType("java.lang.Object"); //$NON-NLS-1$
             } else {
                 final IMember declaringMember = t.getDeclaringMember();
                 final Optional<String> typename = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
@@ -224,7 +225,7 @@ public class JdtUtils {
                 }
             }
         } catch (final Exception e) {
-            LOG.error("Failed to resolve type parameter " + t.getElementName(), e);
+            LOG.error("Failed to resolve type parameter {}", t.getElementName(), e); //$NON-NLS-1$
         }
         return fromNullable(type);
     }
@@ -327,8 +328,8 @@ public class JdtUtils {
 
     public static ASTNode findClosestMethodOrTypeDeclarationAroundOffset(final CompilationUnit cuNode,
             final ITextSelection selection) {
-        ensureIsNotNull(cuNode, "cuNode");
-        ensureIsNotNull(selection, "selection");
+        ensureIsNotNull(cuNode);
+        ensureIsNotNull(selection);
         ASTNode node = NodeFinder.perform(cuNode, selection.getOffset(), selection.getLength());
         while (node != null) {
             switch (node.getNodeType()) {
@@ -390,7 +391,7 @@ public class JdtUtils {
     public static Optional<ITypeName> resolveUnqualifiedJDTType(String qName, final IJavaElement parent) {
         try {
             qName = Signature.getTypeErasure(qName);
-            qName = StringUtils.removeEnd(qName, ";");
+            qName = StringUtils.removeEnd(qName, ";"); //$NON-NLS-1$
             final int dimensions = Signature.getArrayCount(qName);
             if (dimensions > 0) {
                 qName = Signature.getElementType(qName);
@@ -419,7 +420,7 @@ public class JdtUtils {
                 }
                 final String pkg = resolvedNames[0][0];
                 final String name = resolvedNames[0][1].replace('.', '$');
-                qName = StringUtils.repeat('[', dimensions) + "L" + pkg + "." + name;
+                qName = StringUtils.repeat('[', dimensions) + 'L' + pkg + '.' + name;
             }
             qName = qName.replace('.', '/');
             final ITypeName typeName = VmTypeName.get(qName);
@@ -431,7 +432,7 @@ public class JdtUtils {
     }
 
     private static String toVMTypeDescriptor(final String fqjdtName) {
-        return fqjdtName == null ? "Ljava/lang/Object" : "L" + fqjdtName.replace('.', '/');
+        return fqjdtName == null ? "Ljava/lang/Object" : 'L' + fqjdtName.replace('.', '/'); //$NON-NLS-1$
     }
 
     public static Optional<IType> findSuperclass(final IType type) {
@@ -492,7 +493,7 @@ public class JdtUtils {
 
     public static boolean hasPrimitiveReturnType(final IMethod method) {
         try {
-            return !method.getReturnType().endsWith(";");
+            return !method.getReturnType().endsWith(";"); //$NON-NLS-1$
         } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
@@ -519,7 +520,7 @@ public class JdtUtils {
     }
 
     public static void log(final Exception e) {
-        LOG.error("Exception occurred.", e);
+        LOG.error("Exception occurred.", e); //$NON-NLS-1$
     }
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {
@@ -556,13 +557,13 @@ public class JdtUtils {
             typeSignature = typeSignature.replace('/', '.');
             final IType type = findClosestTypeOrThis(parent);
             if (type == null) {
-                throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent);
+                throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent); //$NON-NLS-1$
             }
             final String resolvedTypeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
             if (resolvedTypeSignature == null) {
                 // return fall-back. This happens for instance when giving <T>
                 // or QT; respectively.
-                return of("java.lang.Object");
+                return of("java.lang.Object"); //$NON-NLS-1$
             }
             return of(resolvedTypeSignature);
         } catch (final Exception e) {
@@ -639,6 +640,6 @@ public class JdtUtils {
     }
 
     public static boolean isInitializer(final IMethod m) {
-        return m.getElementName().equals("<clinit>");
+        return m.getElementName().equals("<clinit>"); //$NON-NLS-1$
     }
 }

@@ -32,9 +32,6 @@ import com.google.inject.multibindings.MapBinder;
 @SuppressWarnings({ "rawtypes" })
 public class CallsRcpModule extends AbstractModule implements Module {
 
-    public CallsRcpModule() {
-    }
-
     @Override
     protected void configure() {
         bind(ICallModelProvider.class).to(RcpCallModelProvider.class).in(Scopes.SINGLETON);
@@ -54,5 +51,4 @@ public class CallsRcpModule extends AbstractModule implements Module {
         CallsRcpPreferences prefs = ContextInjectionFactory.make(CallsRcpPreferences.class, context);
         return prefs;
     }
-
 }

@@ -11,9 +11,15 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static com.google.common.base.Optional.*;
-import static org.eclipse.jdt.ui.JavaElementLabels.*;
-import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.eclipse.jdt.ui.JavaElementLabels.M_APP_RETURNTYPE;
+import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
+import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
+import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.createComposite;
+import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.createLabel;
+import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
 
 import java.util.Comparator;
@@ -73,7 +79,7 @@ public class StaticHooksProvider extends ApidocProvider {
         public void run() {
             final Composite container = createComposite(parent, 1);
             if (index.isEmpty()) {
-                createLabel(container, Messages.EXTDOC_STATICHOCKS_NO_PUBLIC_STATIC_METHOD_FOUND, true);
+                createLabel(container, Messages.PROVIDER_INTRO_NO_STATIC_HOOKS_FOUND, true);
             }
 
             final List<StyleRange> typeRanges = Lists.newLinkedList();

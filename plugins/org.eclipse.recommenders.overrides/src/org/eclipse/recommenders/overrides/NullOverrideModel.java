@@ -21,8 +21,8 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import com.google.common.collect.ImmutableSet;
 
 public class NullOverrideModel implements IOverrideModel {
+
     public static final NullOverrideModel INSTANCE = new NullOverrideModel();
-    public static final NullOverrideModel NULL_MODEL = INSTANCE;
 
     @Override
     public void reset() {

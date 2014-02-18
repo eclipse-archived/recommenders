@@ -33,7 +33,7 @@
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
-			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.PreferencePage"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.CompletionsPreferencePage"
 			name="%preferencePages.completions.name"/>
 	</extension>
 	<extension point="org.eclipse.recommenders.injection.modules">

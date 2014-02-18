@@ -21,8 +21,8 @@ public final class PreferenceInitializer extends AbstractPreferenceInitializer {
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences node = INSTANCE.getNode(BUNDLE_NAME);
-        if (node.getLong(P_SURVEY_FIRST_ACTIVATION_DATE, -1) == -1) {
-            node.putLong(P_SURVEY_FIRST_ACTIVATION_DATE, System.currentTimeMillis());
+        if (node.getLong(PREF_SURVEY_FIRST_ACTIVATION_DATE, -1) == -1) {
+            node.putLong(PREF_SURVEY_FIRST_ACTIVATION_DATE, System.currentTimeMillis());
         }
     }
 }

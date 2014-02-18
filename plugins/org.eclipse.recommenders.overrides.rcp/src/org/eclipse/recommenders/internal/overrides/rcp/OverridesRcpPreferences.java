@@ -21,23 +21,23 @@ import org.eclipse.e4.core.di.extensions.Preference;
 public class OverridesRcpPreferences {
 
     @Inject
-    @Preference(P_MIN_PROPOSAL_PROBABILITY)
+    @Preference(PREF_MIN_PROPOSAL_PROBABILITY)
     public int minProposalProbability;
 
     @Inject
-    @Preference(P_MAX_NUMBER_OF_PROPOSALS)
+    @Preference(PREF_MAX_NUMBER_OF_PROPOSALS)
     public int maxNumberOfProposals;
 
     @Inject
-    @Preference(P_UPDATE_PROPOSAL_RELEVANCE)
+    @Preference(PREF_UPDATE_PROPOSAL_RELEVANCE)
     public boolean changeProposalRelevance;
 
     @Inject
-    @Preference(P_DECORATE_PROPOSAL_ICON)
+    @Preference(PREF_DECORATE_PROPOSAL_ICON)
     public boolean decorateProposalIcon;
 
     @Inject
-    @Preference(P_DECORATE_PROPOSAL_TEXT)
+    @Preference(PREF_DECORATE_PROPOSAL_TEXT)
     public boolean decorateProposalText;
 
     @Inject

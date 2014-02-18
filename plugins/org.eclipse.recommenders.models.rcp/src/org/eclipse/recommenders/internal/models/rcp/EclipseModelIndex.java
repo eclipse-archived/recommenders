@@ -65,7 +65,7 @@ import com.google.common.eventbus.Subscribe;
  */
 public class EclipseModelIndex implements IModelIndex, IRcpService {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(EclipseModelIndex.class);
 
     private final File basedir;
 
@@ -198,7 +198,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
                 }
             });
         } catch (ExecutionException e) {
-            log.error("Exception occured while accessing model coordinates cache", e);
+            LOG.error("Exception occured while accessing model coordinates cache", e); //$NON-NLS-1$
             return absent();
         }
     }

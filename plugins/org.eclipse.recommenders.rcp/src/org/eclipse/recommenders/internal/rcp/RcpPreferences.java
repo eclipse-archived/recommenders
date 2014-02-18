@@ -24,35 +24,35 @@ public class RcpPreferences {
     protected IEclipsePreferences prefs;
 
     @Inject
-    @Preference(P_SURVEY_TAKEN)
+    @Preference(PREF_SURVEY_TAKEN)
     public boolean surveyTaken;
 
     @Inject
-    @Preference(P_SURVEY_FIRST_ACTIVATION_DATE)
+    @Preference(PREF_SURVEY_FIRST_ACTIVATION_DATE)
     public long firstActivationDate;
 
     @Inject
-    @Preference(P_SURVEY_OPT_OUT)
+    @Preference(PREF_SURVEY_OPT_OUT)
     public boolean surveyOptOut;
 
     @Inject
-    @Preference(P_SURVEY_NUMBER_OF_ACTIVATIONS)
+    @Preference(PREF_SURVEY_NUMBER_OF_ACTIVATIONS)
     public int numberOfActivations;
 
     public void setSurveyOptOut(boolean value) {
-        prefs.putBoolean(P_SURVEY_OPT_OUT, value);
+        prefs.putBoolean(PREF_SURVEY_OPT_OUT, value);
     }
 
     public void setNumberOfActivations(int value) {
-        prefs.putInt(P_SURVEY_NUMBER_OF_ACTIVATIONS, value);
+        prefs.putInt(PREF_SURVEY_NUMBER_OF_ACTIVATIONS, value);
     }
 
     public void setSurveyTaken(boolean value) {
-        prefs.putBoolean(P_SURVEY_TAKEN, value);
+        prefs.putBoolean(PREF_SURVEY_TAKEN, value);
     }
 
     public void setFirstActivationDate(long date) {
-        prefs.putLong(P_SURVEY_FIRST_ACTIVATION_DATE, date);
+        prefs.putLong(PREF_SURVEY_FIRST_ACTIVATION_DATE, date);
     }
 
 }

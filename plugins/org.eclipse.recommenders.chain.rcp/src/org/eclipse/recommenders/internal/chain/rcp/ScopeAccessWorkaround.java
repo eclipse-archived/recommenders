@@ -60,5 +60,4 @@ public final class ScopeAccessWorkaround {
             throw new IllegalStateException(e);
         }
     }
-
 }

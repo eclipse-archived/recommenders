@@ -18,10 +18,12 @@ import org.slf4j.LoggerFactory;
 
 public final class DnDProviderTransfer extends ByteArrayTransfer {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(DnDProviderTransfer.class);
+
     private static final String TYPE_NAME = "extdoc-provider-transfer-format"; //$NON-NLS-1$
     private static final int TYPEID = registerType(TYPE_NAME);
     private static final DnDProviderTransfer INSTANCE = new DnDProviderTransfer();
+
     private ApidocProvider extDocProvider;
 
     private DnDProviderTransfer() {
@@ -51,7 +53,7 @@ public final class DnDProviderTransfer extends ByteArrayTransfer {
     public Object nativeToJava(final TransferData transferData) {
         final Object convert = super.nativeToJava(transferData);
         if (isInvalidNativeType(convert)) {
-            log.error(Messages.EXTDOC_DND_FAILED);
+            LOG.error("Drag & Drop failed."); //$NON-NLS-1$
         }
         return getExtdocProvider();
     }

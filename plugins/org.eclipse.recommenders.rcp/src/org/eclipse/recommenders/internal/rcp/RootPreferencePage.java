@@ -11,8 +11,6 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.eclipse.recommenders.internal.rcp.Messages.PREFPAGE_OVERVIEW_INTRO;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,7 +21,7 @@ public class RootPreferencePage extends org.eclipse.jface.preference.PreferenceP
 
     @Override
     public void init(final IWorkbench workbench) {
-        setDescription(PREFPAGE_OVERVIEW_INTRO);
+        setDescription(Messages.PREFPAGE_DESCRIPTION_EMPTY);
     }
 
     @Override

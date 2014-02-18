@@ -19,10 +19,8 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.eclipse.recommenders.tests.RecommendationMatchers;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;

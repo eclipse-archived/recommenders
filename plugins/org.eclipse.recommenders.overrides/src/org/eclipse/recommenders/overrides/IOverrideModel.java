@@ -31,5 +31,4 @@ public interface IOverrideModel {
     ImmutableSet<String> getKnownPatterns();
 
     List<Recommendation<IMethodName>> recommendOverrides();
-
 }

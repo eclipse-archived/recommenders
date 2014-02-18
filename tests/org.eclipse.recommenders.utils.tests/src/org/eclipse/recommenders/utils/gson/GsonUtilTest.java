@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.utils.gson;
 
+import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -29,7 +30,7 @@ public class GsonUtilTest {
     @Test
     public void testEmptyFileDeserialization() throws IOException {
         // setup
-        File f = File.createTempFile("tmp", ".json");
+        File f = File.createTempFile("tmp", DOT_JSON);
         f.deleteOnExit();
 
         // exercise

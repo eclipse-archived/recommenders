@@ -48,7 +48,7 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
             }
         }
 
-        if (prefix.length() > 0 && !"main".equals(prefix) && !hasMethod(methods, prefix)) {
+        if (prefix.length() > 0 && !"main".equals(prefix) && !hasMethod(methods, prefix)) { //$NON-NLS-1$
             if (!JavaConventionsUtil.validateMethodName(prefix, type).matches(IStatus.ERROR)) {
                 return new ProcessableMethodDeclarationCompletionProposal(proposal, type, prefix, Signature.SIG_VOID,
                         offset, length, relevance);

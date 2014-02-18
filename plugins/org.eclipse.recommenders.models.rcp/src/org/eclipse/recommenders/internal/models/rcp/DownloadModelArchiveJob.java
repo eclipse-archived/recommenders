@@ -10,13 +10,10 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static java.lang.String.format;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
-import static org.eclipse.recommenders.internal.models.rcp.Messages.*;
-import static org.eclipse.ui.internal.misc.StatusUtil.newStatus;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,18 +21,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
-import org.eclipse.ui.internal.misc.StatusUtil;
+import org.eclipse.recommenders.rcp.utils.Logs;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
-@SuppressWarnings("restriction")
 public class DownloadModelArchiveJob extends Job {
 
     private final Map<String, IProgressMonitor> downloads = Maps.newHashMap();
@@ -46,7 +41,7 @@ public class DownloadModelArchiveJob extends Job {
     private final EventBus bus;
 
     public DownloadModelArchiveJob(IModelRepository repository, ModelCoordinate mc, boolean forceDownload, EventBus bus) {
-        super(String.format(JOB_RESOLVING_MODEL, mc));
+        super(MessageFormat.format(Messages.JOB_RESOLVING_MODEL, mc));
         this.repository = repository;
         this.mc = mc;
         this.forceDownload = forceDownload;
@@ -56,7 +51,7 @@ public class DownloadModelArchiveJob extends Job {
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
         try {
-            monitor.beginTask(NLS.bind(TASK_RESOLVING, mc), IProgressMonitor.UNKNOWN);
+            monitor.beginTask(MessageFormat.format(Messages.TASK_RESOLVING_MODEL, mc), IProgressMonitor.UNKNOWN);
             ModelArchiveDownloadCallback cb = new ModelArchiveDownloadCallback(monitor);
             File result = repository.resolve(mc, forceDownload, cb).orNull();
             if (cb.downloadedArchive) {
@@ -67,13 +62,14 @@ public class DownloadModelArchiveJob extends Job {
             // Moreover, we can get *cached* null answers, i.e., the same negative result over and over again.
             if (result == null) {
                 // Whatever is the case, we only should log that as informational but do not open a popup.
-                IStatus err = StatusUtil.newStatus(IStatus.INFO,
-                        format("%s could not be resolved from %s.", mc, repository), null);
+                IStatus err = Logs.newStatus(IStatus.INFO, null, Constants.BUNDLE_ID,
+                        Messages.LOG_INFO_NO_MODEL_RESOLVED, mc, repository);
                 StatusManager.getManager().handle(err, StatusManager.LOG);
                 return Status.CANCEL_STATUS;
             }
         } catch (Exception e) {
-            return newStatus(BUNDLE_ID, "Failed to download " + mc, e);
+            return Logs.newStatus(IStatus.ERROR, e, Constants.BUNDLE_ID, Messages.LOG_ERROR_MODEL_RESOLUTION_FAILURE,
+                    mc);
         } finally {
             monitor.done();
         }
@@ -96,7 +92,7 @@ public class DownloadModelArchiveJob extends Job {
         @Override
         public synchronized void downloadProgressed(String path, long transferred, long total) {
             IProgressMonitor submonitor = downloads.get(path);
-            String message = bytesToString(transferred) + "/" + bytesToString(total);
+            String message = bytesToString(transferred) + "/" + bytesToString(total); //$NON-NLS-1$
             submonitor.subTask(message);
             submonitor.worked(1);
         }
@@ -114,12 +110,11 @@ public class DownloadModelArchiveJob extends Job {
 
         private String bytesToString(long bytes) {
             if (bytes < 1024) {
-                return bytes + " B";
+                return bytes + " B"; //$NON-NLS-1$
             }
             int exp = (int) (Math.log(bytes) / Math.log(1024));
-            String pre = "KMGTPE".charAt(exp - 1) + "i";
-            return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre);
+            String pre = "KMGTPE".charAt(exp - 1) + "i"; //$NON-NLS-1$ //$NON-NLS-2$
+            return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre); //$NON-NLS-1$
         }
-
     }
 }

@@ -25,12 +25,12 @@ public class EmptyCompletionProposal extends AbstractJavaCompletionProposal {
     private static final int RELEVANCE = Integer.MAX_VALUE - 9000;
 
     public EmptyCompletionProposal(int invocationOffset) {
-        StyledString text = new StyledString("no proposals", QUALIFIER_STYLER);
+        StyledString text = new StyledString(Messages.PROPOSAL_LABEL_NO_PROPOSALS, QUALIFIER_STYLER);
         setStyledDisplayString(text);
         setRelevance(RELEVANCE);
         setSortString(text.getString());
         setCursorPosition(invocationOffset);
-        setReplacementString("");
+        setReplacementString(""); //$NON-NLS-1$
     }
 
     @Override

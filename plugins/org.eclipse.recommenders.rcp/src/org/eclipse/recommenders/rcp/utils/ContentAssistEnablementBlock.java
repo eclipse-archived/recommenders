@@ -49,7 +49,6 @@ public class ContentAssistEnablementBlock {
                 additionalExcludedCompletionCategoriesUpdates(enablement.getSelection(), cats);
                 PreferenceConstants.setExcludedCompletionProposalCategories(cats.toArray(new String[cats.size()]));
             }
-
         });
     }
 
@@ -71,5 +70,4 @@ public class ContentAssistEnablementBlock {
         }
         return false;
     }
-
 }

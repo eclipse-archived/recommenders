@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
-import org.eclipse.recommenders.internal.completion.rcp.DiscoverCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.DiscoveryCompletionProposal;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
@@ -37,8 +37,8 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TipsSessionProcessor.class);
 
-    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp.tips";
-    private static final String SEEN = "seen";
+    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$
+    private static final String SEEN = "seen"; //$NON-NLS-1$
 
     private final List<ICompletionProposal> unseenTips = Lists.newLinkedList();
 
@@ -47,10 +47,10 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     @Inject
     public TipsSessionProcessor(SharedImages images) {
-        ImmutableList<? extends ICompletionProposal> availableTips = ImmutableList.of(new DiscoverCompletionProposal(
+        ImmutableList<? extends ICompletionProposal> availableTips = ImmutableList.of(new DiscoveryCompletionProposal(
                 images));
 
-        Iterable<String> split = Splitter.on(":").omitEmptyStrings().split(getTipsPreferences().get(SEEN, ""));
+        Iterable<String> split = Splitter.on(":").omitEmptyStrings().split(getTipsPreferences().get(SEEN, "")); //$NON-NLS-1$ //$NON-NLS-2$
         seenTips = Sets.newHashSet(split);
 
         for (ICompletionProposal availableTip : availableTips) {
@@ -105,7 +105,7 @@ public class TipsSessionProcessor extends SessionProcessor {
         try {
             store.flush();
         } catch (BackingStoreException e) {
-            LOG.error("Failed to flush preferences", e);
+            LOG.error("Failed to flush preferences", e); //$NON-NLS-1$
         }
     }
 

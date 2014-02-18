@@ -10,15 +10,17 @@
  */
 package org.eclipse.recommenders.overrides;
 
-import static org.eclipse.recommenders.utils.Zips.*;
+import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
+import static org.eclipse.recommenders.utils.Zips.closeQuietly;
+import static org.eclipse.recommenders.utils.Zips.readFully;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.IUniqueName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.Openable;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -53,7 +55,7 @@ public class SingleZipOverrideModelProvider implements IOverrideModelProvider, O
     }
 
     public Set<ITypeName> acquireableTypes() {
-        return Zips.types(zip, ".json");
+        return Zips.types(zip, DOT_JSON);
     }
 
     @Override

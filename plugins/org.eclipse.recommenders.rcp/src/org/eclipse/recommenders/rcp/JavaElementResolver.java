@@ -10,8 +10,9 @@
  */
 package org.eclipse.recommenders.rcp;
 
-import static com.google.common.base.Optional.*;
-import static java.lang.String.format;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
@@ -58,13 +59,13 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JavaElementResolver.class);
+
     public static JavaElementResolver INSTANCE;
 
     public JavaElementResolver() {
         INSTANCE = this;
     }
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final BiMap<IName, IJavaElement> cache = HashBiMap.create();
     public HashSet<IMethodName> failedRecMethods = Sets.newHashSet();
@@ -101,8 +102,8 @@ public class JavaElementResolver {
         ITypeName recType = (ITypeName) cache.inverse().get(jdtType);
         if (recType == null) {
             String fullyQualifiedName = jdtType.getFullyQualifiedName();
-            fullyQualifiedName = StringUtils.substringBefore(fullyQualifiedName, "<");
-            recType = VmTypeName.get("L" + fullyQualifiedName.replace('.', '/'));
+            fullyQualifiedName = StringUtils.substringBefore(fullyQualifiedName, "<"); //$NON-NLS-1$
+            recType = VmTypeName.get('L' + fullyQualifiedName.replace('.', '/'));
             registerRecJdtElementPair(recType, jdtType);
         }
         return recType;
@@ -115,20 +116,20 @@ public class JavaElementResolver {
         if (recType.isArrayType()) {
             // TODO see https://bugs.eclipse.org/bugs/show_bug.cgi?id=339806
             // should throw an exception? or return an Array type?
-            System.err.println("array type in JavaElementResolver. Decision  bug 339806 pending...?");
+            LOG.error("Array type in JavaElementResolver. Decision Bug 339806 pending...?"); //$NON-NLS-1$
             return absent();
         }
 
         if (recType.isNestedType()) {
             final ITypeName declaringType = recType.getDeclaringType();
-            final String simpleName = StringUtils.substringAfterLast(recType.getIdentifier(), "$");
+            final String simpleName = StringUtils.substringAfterLast(recType.getIdentifier(), "$"); //$NON-NLS-1$
 
             final IType parent = resolveType(declaringType).orNull();
             if (parent != null) {
                 try {
                     for (final IType nested : parent.getTypes()) {
                         final String key = nested.getKey();
-                        if (key.equals(recType.getIdentifier() + ";")) {
+                        if (key.equals(recType.getIdentifier() + ';')) {
                             return fromNullable(nested);
                         }
                     }
@@ -138,7 +139,7 @@ public class JavaElementResolver {
                             if (children instanceof IType) {
                                 final IType nested = (IType) children;
                                 // count++;
-                                if (nested.getKey().endsWith(simpleName + ";")) {
+                                if (nested.getKey().endsWith(simpleName + ';')) {
                                     return of(nested);
                                 }
                                 // if (String.valueOf(count).equals(simpleName)) {
@@ -146,7 +147,7 @@ public class JavaElementResolver {
                                 // }
 
                                 final String key = nested.getKey();
-                                if (key.equals(recType.getIdentifier() + ";")) {
+                                if (key.equals(recType.getIdentifier() + ';')) {
                                     return fromNullable(nested);
                                 }
                             }
@@ -253,8 +254,8 @@ public class JavaElementResolver {
                     final String unresolved = unresolvedParameterTypes[i];
                     final int arrayCount = Signature.getArrayCount(unresolved);
                     String resolved = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolved,
-                            jdtDeclaringType).or("V");
-                    resolved = resolved + StringUtils.repeat("[]", arrayCount);
+                            jdtDeclaringType).or(Signature.SIG_VOID);
+                    resolved = resolved + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
                     resolvedParameterTypes[i] = resolved;
                 }
                 String resolvedReturnType = null;
@@ -266,25 +267,25 @@ public class JavaElementResolver {
                 try {
                     final int returnTypeArrayCount = Signature.getArrayCount(unresolvedReturnType);
                     resolvedReturnType = JavaModelUtil.getResolvedTypeName(unresolvedReturnType, jdtDeclaringType)
-                            + StringUtils.repeat("[]", returnTypeArrayCount);
+                            + StringUtils.repeat("[]", returnTypeArrayCount); //$NON-NLS-1$
 
                 } catch (final JavaModelException e) {
-                    log.error("Exception while converting a method handle to name.", e);
+                    LOG.error("Exception while converting a method handle to name.", e); //$NON-NLS-1$
                 }
                 if (resolvedReturnType == null) {
-                    log.warn("Failed to resolve return type '%s' of method %s.%s%s", unresolvedReturnType,
+                    LOG.warn("Failed to resolve return type '{}' of method {}.{}{}.", unresolvedReturnType, //$NON-NLS-1$
                             jdtDeclaringType.getFullyQualifiedName(), jdtMethod.getElementName(),
                             jdtMethod.getSignature());
                     return absent();
                 }
                 final String methodSignature = Names.src2vmMethod(
-                        jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes,
+                        jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes, //$NON-NLS-1$
                         resolvedReturnType);
                 final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                log.error(format("failed to resolve jdt method '%s': %s", jdtMethod, e.getMessage()), e);
+                LOG.error("Failed to resolve JDT method '{}': {}", jdtMethod, e.getMessage(), e); //$NON-NLS-1$
                 return absent();
             }
         }
@@ -308,7 +309,7 @@ public class JavaElementResolver {
             }
             return absent();
         } catch (final Exception e) {
-            log.warn(format("Failed to resolve method '%s' in workspace: %s", recMethod, e.getMessage()), e);
+            LOG.warn("Failed to resolve method '{}' in workspace: {}", recMethod, e.getMessage(), e); //$NON-NLS-1$
             return absent();
         }
     }
@@ -375,5 +376,4 @@ public class JavaElementResolver {
     private boolean isSuccessfullyResolvedType(final IType jdtType) throws JavaModelException {
         return jdtType != null && jdtType.isStructureKnown();
     }
-
 }

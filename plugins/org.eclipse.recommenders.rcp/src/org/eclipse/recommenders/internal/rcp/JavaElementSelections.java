@@ -10,8 +10,19 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.FIELD_DECLARATION;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.FIELD_DECLARATION_INITIALIZER;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_BODY;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_PARAMETER;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_RETURN;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_THROWS;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION_EXTENDS;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.UNKNOWN;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeRoot;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -37,7 +48,6 @@ import org.eclipse.ui.IEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 /**
@@ -46,8 +56,7 @@ import com.google.common.base.Optional;
 @SuppressWarnings("restriction")
 public class JavaElementSelections {
 
-    @VisibleForTesting
-    static Logger log = LoggerFactory.getLogger(JavaElementSelections.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JavaElementSelections.class);
 
     @SuppressWarnings("serial")
     private static final Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {
@@ -159,7 +168,7 @@ public class JavaElementSelections {
             // actually, these can happen when using snipmatch's in-editor completion.
             // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
             if (!isInvalidSelection(root, offset)) {
-                log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset); //$NON-NLS-1$
+                LOG.error("Failed to resolve selection in '{}' at offset {}", root.getHandleIdentifier(), offset, e); //$NON-NLS-1$
             }
             return absent();
         }
@@ -171,14 +180,9 @@ public class JavaElementSelections {
             range = root.getSourceRange();
             return range == null || offset < 0 || offset > range.getLength();
         } catch (Exception e) {
-            log.debug("exception while checking editor offset", e); //$NON-NLS-1$
+            LOG.debug("Exception while checking editor offset", e); //$NON-NLS-1$
             return false;
         }
-    }
-
-    private static void log(Exception e, String newMessage, Object... args) {
-        String format = String.format(newMessage, args);
-        log.error(format, e);
     }
 
     public static JavaElementSelectionLocation resolveSelectionLocationFromAst(final CompilationUnit astRoot,
