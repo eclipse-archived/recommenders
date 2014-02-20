@@ -39,6 +39,16 @@
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer"/>
 	</extension>
+	<extension point="org.eclipse.ui.preferenceTransfer">
+		<transfer id="org.eclipse.recommenders.models.rcp.transfer.all"
+			icon="icons/view16/depinsp.gif"
+			name="%preferenceTransfer.all.name">
+			<description>%preferenceTransfer.all.description</description>
+			<mapping scope="instance">
+				<entry node="org.eclipse.recommenders.models.rcp"/>
+			</mapping>
+		</transfer>
+	</extension>
 	<extension point="org.eclipse.recommenders.models.rcp.advisors">
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.manual"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ManualProjectCoordinateAdvisor"
