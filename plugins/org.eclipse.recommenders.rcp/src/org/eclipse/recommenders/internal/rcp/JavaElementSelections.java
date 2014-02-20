@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -175,9 +176,14 @@ public class JavaElementSelections {
     }
 
     private static boolean isInvalidSelection(ITypeRoot root, final int offset) {
-        ISourceRange range;
         try {
-            range = root.getSourceRange();
+            // check whether the type root is part of an pacakge fragment root. If not, it's an invalid selection and all
+            // resolutions are likely to fail. Thus, return true (=invalid):
+            IJavaElement ancestor = root.getAncestor(IJavaProject.PACKAGE_FRAGMENT_ROOT);
+            if (!ancestor.exists()) {
+                return true;
+            }
+            ISourceRange range = root.getSourceRange();
             return range == null || offset < 0 || offset > range.getLength();
         } catch (Exception e) {
             LOG.debug("Exception while checking editor offset", e); //$NON-NLS-1$
