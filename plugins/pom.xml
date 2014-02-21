@@ -24,6 +24,7 @@
 		<module>org.eclipse.recommenders.jayes.transformation</module>
 		<module>org.eclipse.recommenders.models</module>
 		<module>org.eclipse.recommenders.models.rcp</module>
+		<module>org.eclipse.recommenders.mylyn.rcp</module>
 		<module>org.eclipse.recommenders.overrides</module>
 		<module>org.eclipse.recommenders.overrides.rcp</module>
 		<module>org.eclipse.recommenders.rcp</module>

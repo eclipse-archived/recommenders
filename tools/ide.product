@@ -36,7 +36,11 @@
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.mylyn.context.sdk"/>
+      <feature id="org.eclipse.mylyn.commons.sdk"/>
+      <feature id="org.eclipse.mylyn.sdk_feature"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
+      <feature id="org.eclipse.recommenders.mylyn.rcp.feature"/>
    </features>
 
 
