@@ -53,5 +53,4 @@ public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdv
     public boolean isApplicable(DependencyType dependencyType) {
         return dependencyType == DependencyType.JRE;
     }
-
 }
