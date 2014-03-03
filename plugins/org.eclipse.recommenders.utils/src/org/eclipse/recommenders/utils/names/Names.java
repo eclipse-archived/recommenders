@@ -29,8 +29,15 @@ import com.google.common.annotations.Beta;
  */
 public class Names {
     public static enum PrimitiveType {
-        BOOLEAN('Z', "boolean"), VOID('V', "void"), CHAR('C', "char"), BYTE('B', "byte"), SHORT('S', "short"), INT('I',
-                "int"), FLOAT('F', "float"), LONG('J', "long"), DOUBLE('D', "double");
+        BOOLEAN('Z', "boolean"),
+        VOID('V', "void"),
+        CHAR('C', "char"),
+        BYTE('B', "byte"),
+        SHORT('S', "short"),
+        INT('I', "int"),
+        FLOAT('F', "float"),
+        LONG('J', "long"),
+        DOUBLE('D', "double");
         public static PrimitiveType fromSrc(final String src) {
             ensureIsNotNull(src, "src");
             //
@@ -257,15 +264,17 @@ public class Names {
     public static String src2vmType(String type) {
         ensureIsNotNull(type, "type");
         //
-        final PrimitiveType p = PrimitiveType.fromSrc(type);
-        if (p != null) {
-            return String.valueOf(p.vm());
-        }
         int dimensions = 0;
         if (type.endsWith("]")) {
             dimensions = StringUtils.countMatches(type, "[]");
             type = StringUtils.substringBefore(type, "[") + ";";
         }
+
+        final PrimitiveType p = PrimitiveType.fromSrc(StringUtils.substringBefore(type, ";"));
+        if (p != null) {
+            return StringUtils.repeat("[", dimensions) + String.valueOf(p.vm());
+        }
+
         return StringUtils.repeat("[", dimensions) + "L" + type.replaceAll("\\.", "/");
     }
 

@@ -13,7 +13,6 @@ package org.eclipse.recommenders.rcp;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
@@ -253,8 +252,7 @@ public class JavaElementResolver {
                 for (int i = resolvedParameterTypes.length; i-- > 0;) {
                     final String unresolved = unresolvedParameterTypes[i];
                     final int arrayCount = Signature.getArrayCount(unresolved);
-                    String resolved = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolved,
-                            jdtDeclaringType).or(Signature.SIG_VOID);
+                    String resolved = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolved, jdtDeclaringType).or(Signature.SIG_VOID);
                     resolved = resolved + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
                     resolvedParameterTypes[i] = resolved;
                 }
