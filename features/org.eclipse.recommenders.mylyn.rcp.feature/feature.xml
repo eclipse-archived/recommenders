@@ -20,7 +20,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.mylyn.context_feature" version="3.8.0"/>
+      <import feature="org.eclipse.mylyn.java_feature" version="3.8.0"/>
       <import feature="org.eclipse.recommenders.rcp.feature" version="2.0.0"/>
    </requires>
 
