@@ -53,10 +53,14 @@ public class SimpleProposalProcessor extends ProposalProcessor {
             return false;
         }
         SimpleProposalProcessor that = (SimpleProposalProcessor) other;
-        if (this.addon == null && that.addon != null || !this.addon.equals(that.addon)) {
+        if (addon == null) {
+            if (that.addon != null) {
+                return false;
+            }
+        } else if (!addon.equals(that.addon)) {
             return false;
         }
-        if (this.increment != that.increment) {
+        if (increment != that.increment) {
             return false;
         }
         return true;
@@ -66,7 +70,7 @@ public class SimpleProposalProcessor extends ProposalProcessor {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((addon == null) ? 0 : addon.hashCode());
+        result = prime * result + (addon == null ? 0 : addon.hashCode());
         result = prime * result + increment;
         return result;
     }
