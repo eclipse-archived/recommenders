@@ -74,6 +74,18 @@ public class NamesTest {
     }
 
     @Test
+    public void testSrc2vmType_PrimitiveArrays() {
+        for (final PrimitiveType primitive : PrimitiveType.values()) {
+            if (primitive != PrimitiveType.VOID) {
+                final String src = primitive.src() + "[]";
+                final String expected = "[" + primitive.vm() + "";
+                final String actual = Names.src2vmType(src);
+                assertEquals(expected, actual);
+            }
+        }
+    }
+
+    @Test
     public void testVm2srcSimpleMethod() {
         assertEquals("wait(int)", Names.vm2srcSimpleMethod(STRING_WAIT));
         assertEquals("hashCode()", Names.vm2srcSimpleMethod(STRING_HASHCODE));

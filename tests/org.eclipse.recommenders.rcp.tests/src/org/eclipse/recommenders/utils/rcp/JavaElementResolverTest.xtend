@@ -11,6 +11,7 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
 import org.eclipse.recommenders.utils.names.VmTypeName
+import org.junit.Ignore
 
 class JavaElementResolverTest {
 
@@ -26,6 +27,30 @@ class JavaElementResolverTest {
     }
 
     @Test
+    def void testPrimitiveParameter() {
+        val code = classbody('''public void $m(int i){return null;}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(I)V", actual.signature)
+    }
+
+    @Test
+    def void testPrimitiveArrayParameter() {
+        val code = classbody('''public void $m(int[] i){return null;}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m([I)V", actual.signature)
+    }
+
+    @Test
+    def void testArrayOfGenericsParameter() {
+        val code = classbody('''public void $m(List<Integer>[] lists){return null;}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m([Ljava/util/List;)V", actual.signature)
+    }
+
+    @Test
     def void testArrays() {
         val code = classbody('''public Iterable[][] $m(String[][] s){return null;}''')
         val method = getMethod(code)
@@ -37,16 +62,25 @@ class JavaElementResolverTest {
     def void testBoundArg() {
         val code = classbody('''public void $m(Iterable<? extends Executor> e){}''')
         val method = getMethod(code)
-        val actual = sut.toRecMethod(method)
-        assertTrue(actual.present)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/lang/Iterable;)V", actual.signature)
     }
 
     @Test
     def void testUnboundArg() {
         val code = classbody('''public <T> void $m(T s){}''')
         val method = getMethod(code)
-        val actual = sut.toRecMethod(method)
-        assertTrue(actual.present)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/lang/Object;)V", actual.signature)
+    }
+
+    @Test
+    @Ignore("See Bug 429979")
+    def void testBoundMethod() {
+        val code = classbody('''public <T extends List> void $m(T s){}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)V", actual.signature)
     }
 
     @Test

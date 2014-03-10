@@ -60,6 +60,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -551,7 +552,7 @@ public class JdtUtils {
         typeSignature = Signature.getTypeErasure(typeSignature);
 
         if (isPrimitiveTypeSignature(typeSignature)) {
-            return of(typeSignature);
+            return of(Names.vm2srcTypeName(typeSignature));
         }
         try {
             typeSignature = typeSignature.replace('/', '.');
