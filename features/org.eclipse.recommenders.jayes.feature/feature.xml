@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.jayes.feature"
       label="%label"
-      version="2.0.6.qualifier"
+      version="2.1.0.qualifier"
       provider-name="%provider-name"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
