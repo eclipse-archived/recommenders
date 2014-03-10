@@ -5,11 +5,11 @@ Bundle-Version: 2.0.6.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.jdt.core,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
  org.eclipse.mylyn.context.core,
  org.eclipse.recommenders.completion.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.injection;bundle-version="2.0.0",
- org.eclipse.osgi
+ org.eclipse.recommenders.injection;bundle-version="2.0.0"
 Export-Package: org.eclipse.recommenders.internal.mylyn.rcp;x-internal:=true
