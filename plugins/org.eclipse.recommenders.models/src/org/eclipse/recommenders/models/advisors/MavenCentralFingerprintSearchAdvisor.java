@@ -11,16 +11,21 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -33,17 +38,19 @@ import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Fingerprints;
+import org.eclipse.recommenders.utils.Urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
 
 public class MavenCentralFingerprintSearchAdvisor extends AbstractProjectCoordinateAdvisor {
 
+    public static final URL SEARCH_MAVEN_ORG = Urls.toUrl("http://search.maven.org/solrsearch");
+
     private static final Logger LOG = LoggerFactory.getLogger(MavenCentralFingerprintSearchAdvisor.class);
 
-    private static final URL SEARCH_MAVEN_ORG;
+    private static final int NETWORK_TIMEOUT = (int) SECONDS.toMillis(3);
 
     private static final List<String> SUPPORTED_PACKAGINGS = Arrays.asList("jar", "war", "bundle");
 
@@ -52,18 +59,22 @@ public class MavenCentralFingerprintSearchAdvisor extends AbstractProjectCoordin
     private static final String FIELD_VERSION = "v";
     private static final String FIELD_PACKAGING = "p";
 
-    static {
-        try {
-            SEARCH_MAVEN_ORG = new URL("http://search.maven.org/solrsearch");
-        } catch (MalformedURLException e) {
-            throw Throwables.propagate(e);
-        }
-    }
-
     private SolrServer server;
 
     public MavenCentralFingerprintSearchAdvisor() {
-        server = createSolrServer();
+        this(null, -1);
+    }
+
+    public MavenCentralFingerprintSearchAdvisor(String proxyHost, int proxyPort) {
+        this(proxyHost, proxyPort, null);
+    }
+
+    public MavenCentralFingerprintSearchAdvisor(String proxyHost, int proxyPort, String proxyUser) {
+        this(proxyHost, proxyPort, proxyUser, null);
+    }
+
+    public MavenCentralFingerprintSearchAdvisor(String proxyHost, int proxyPort, String proxyUser, String proxyPassword) {
+        server = createSolrServer(proxyHost, proxyPort, proxyUser, proxyPassword);
     }
 
     @Override
@@ -99,11 +110,31 @@ public class MavenCentralFingerprintSearchAdvisor extends AbstractProjectCoordin
         }
     }
 
-    private SolrServer createSolrServer() {
-        // Need to create our own HttpClient here rather than let CommonsHttpSolrServer do it, as that fails a with
-        // ClassDefNotFoundError.
-        // Apparently, there's an Import-Package missing for org.apache.commons.httpclient.params(.HttpMethodParams).
-        final HttpClient httpClient = new HttpClient();
+    public void setProxy(String host, int port, String user, String password) {
+        server = createSolrServer(host, port, user, password);
+    }
+
+    private CommonsHttpSolrServer createSolrServer(String proxyHost, int proxyPort, String proxyUser,
+            String proxyPassword) {
+        HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+
+        // Need to set these on the connection manager ourselves rather than using
+        // CommonsHttpSolrServer.setConnectionTimeout and CommonsHttpSolrServer.setSoTimeout, as the bundle
+        // org.apache.solr.client.solrj is missing a necessary import of package org.apache.commons.httpclient.params.
+        // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=413496>.
+        connectionManager.getParams().setConnectionTimeout(NETWORK_TIMEOUT);
+        connectionManager.getParams().setSoTimeout(NETWORK_TIMEOUT);
+
+        final HttpClient httpClient = new HttpClient(connectionManager);
+
+        if (proxyHost != null) {
+            httpClient.getHostConfiguration().setProxy(proxyHost, proxyPort);
+        }
+        if (proxyUser != null) {
+            Credentials credentials = new UsernamePasswordCredentials(proxyUser, proxyPassword);
+            httpClient.getState().setProxyCredentials(AuthScope.ANY, credentials);
+        }
+
         final CommonsHttpSolrServer server = new CommonsHttpSolrServer(SEARCH_MAVEN_ORG, httpClient);
 
         server.setAllowCompression(true);

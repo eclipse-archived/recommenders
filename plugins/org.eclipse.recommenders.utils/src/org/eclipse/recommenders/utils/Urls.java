@@ -13,6 +13,8 @@ package org.eclipse.recommenders.utils;
 import static org.apache.commons.lang3.StringUtils.removeEnd;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.google.common.base.Throwables;
@@ -31,6 +33,14 @@ public final class Urls {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public static URI toUri(URL url) {
+        try {
+            return url.toURI();
+        } catch (URISyntaxException e) {
             throw Throwables.propagate(e);
         }
     }

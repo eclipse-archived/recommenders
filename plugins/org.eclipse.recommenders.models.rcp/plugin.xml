@@ -118,7 +118,7 @@
 			description="%advisors.osgiManifest.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenCentralFingerprintSearch"
-			class="org.eclipse.recommenders.models.advisors.MavenCentralFingerprintSearchAdvisor"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.rcp.advisors.EclipseMavenCentralFingerprintSearchAdvisor"
 			defaultPriority="110"
 			name="%advisors.mavenCentralFingerprintSearch.name"
 			description="%advisors.mavenCentralFingerprintSearch.description">
