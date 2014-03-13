@@ -128,8 +128,9 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Provides
     @Singleton
-    public ModelsRcpPreferences provide(IWorkbench wb) {
+    public ModelsRcpPreferences provide(IWorkbench wb, EventBus bus) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        context.set(EventBus.class, bus);
         ModelsRcpPreferences prefs = ContextInjectionFactory.make(ModelsRcpPreferences.class, context);
         return prefs;
     }

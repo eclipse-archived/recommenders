@@ -88,7 +88,8 @@ public class MultiRepositorySupportTest {
 
     private EclipseModelIndex createSUT(Pair<String, ModelCoordinate[]>... configuration) throws IOException {
         File basedir = temporaryFolder.newFolder();
-        ModelsRcpPreferences prefs = new ModelsRcpPreferences();
+        EventBus bus = mock(EventBus.class);
+        ModelsRcpPreferences prefs = new ModelsRcpPreferences(bus);
 
         final Map<String, IModelIndex> map = Maps.newHashMap();
         String[] remotes = new String[configuration.length];
@@ -101,7 +102,7 @@ public class MultiRepositorySupportTest {
 
         prefs.remotes = remotes;
         IModelRepository repository = mock(IModelRepository.class);
-        EventBus bus = mock(EventBus.class);
+
         EclipseModelIndex sut = spy(new EclipseModelIndex(basedir, prefs, repository, bus));
 
         final ArgumentCaptor<File> captor = ArgumentCaptor.forClass(File.class);

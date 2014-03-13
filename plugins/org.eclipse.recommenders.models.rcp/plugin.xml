@@ -37,7 +37,7 @@
 		</page>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
-		<initializer class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer"/>
+		<initializer class="org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferenceTransfer">
 		<transfer id="org.eclipse.recommenders.models.rcp.transfer.all"

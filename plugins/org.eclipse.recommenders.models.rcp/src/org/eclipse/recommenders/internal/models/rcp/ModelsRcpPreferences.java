@@ -36,12 +36,17 @@ public class ModelsRcpPreferences {
 
     public String advisorConfiguration;
 
-    private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
+    private final EventBus bus;
 
     static final String URL_SEPARATOR = "\t"; //$NON-NLS-1$
 
     @Inject
-    void setRemote(@Preference(Constants.PREF_REPOSITORY_URL_LIST) String newRemote) throws Exception {
+    public ModelsRcpPreferences(EventBus bus) {
+        this.bus = bus;
+    }
+
+    @Inject
+    public void setRemote(@Preference(Constants.PREF_REPOSITORY_URL_LIST) String newRemote) throws Exception {
         String[] old = remotes;
         remotes = splitRemoteRepositoryString(newRemote);
         if (!isEquals(remotes, old)) {
@@ -50,7 +55,7 @@ public class ModelsRcpPreferences {
     }
 
     @Inject
-    void setAdvisorConfiguration(@Preference(Constants.PREF_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
+    public void setAdvisorConfiguration(@Preference(Constants.PREF_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
             throws Exception {
         String old = advisorConfiguration;
         advisorConfiguration = newAdvisorConfiguration;
