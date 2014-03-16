@@ -80,7 +80,7 @@
 						<configuration>
 							<rules>
 								<enforceBytecodeVersion>
-									<maxJdkVersion>${java-version}</maxJdkVersion>
+									<maxJdkVersion>${javaVersion}</maxJdkVersion>
 								</enforceBytecodeVersion>
 							</rules>
 						</configuration>
@@ -90,7 +90,7 @@
 					<dependency>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>extra-enforcer-rules</artifactId>
-						<version>1.0-beta-1</version>
+						<version>1.0-beta-2</version>
 					</dependency>
 				</dependencies>
 			</plugin>
