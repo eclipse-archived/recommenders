@@ -35,7 +35,6 @@ import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jdt.internal.codeassist.impl.AssistSourceMethod;
 import org.eclipse.jdt.internal.codeassist.impl.AssistSourceType;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.SearchUtils;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -232,7 +231,7 @@ public class JavaElementResolver {
      * etc...
      * 
      */
-    // This method should return IMethodNames in all cases but yet it does not work completey as we want it to work
+    // This method should return IMethodNames in all cases but yet it does not work completely as we want it to work
     public Optional<IMethodName> toRecMethod(@Nullable IMethod jdtMethod) {
         if (jdtMethod == null) {
             return absent();
@@ -250,32 +249,11 @@ public class JavaElementResolver {
                 final String[] unresolvedParameterTypes = jdtMethod.getParameterTypes();
                 final String[] resolvedParameterTypes = new String[unresolvedParameterTypes.length];
                 for (int i = resolvedParameterTypes.length; i-- > 0;) {
-                    final String unresolved = unresolvedParameterTypes[i];
-                    final int arrayCount = Signature.getArrayCount(unresolved);
-                    String resolved = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolved, jdtDeclaringType).or(Signature.SIG_VOID);
-                    resolved = resolved + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
-                    resolvedParameterTypes[i] = resolved;
+                    resolvedParameterTypes[i] = resolveType(jdtDeclaringType, unresolvedParameterTypes[i]);
                 }
-                String resolvedReturnType = null;
 
-                // binary synthetic methods (compiler generated methods) do not exist and thus,
-                // jdtMethod.getReturnType() throws an execption...
+                String resolvedReturnType = resolveType(jdtDeclaringType, jdtMethod.getReturnType());
 
-                final String unresolvedReturnType = jdtMethod.getReturnType();
-                try {
-                    final int returnTypeArrayCount = Signature.getArrayCount(unresolvedReturnType);
-                    resolvedReturnType = JavaModelUtil.getResolvedTypeName(unresolvedReturnType, jdtDeclaringType)
-                            + StringUtils.repeat("[]", returnTypeArrayCount); //$NON-NLS-1$
-
-                } catch (final JavaModelException e) {
-                    LOG.error("Exception while converting a method handle to name.", e); //$NON-NLS-1$
-                }
-                if (resolvedReturnType == null) {
-                    LOG.warn("Failed to resolve return type '{}' of method {}.{}{}.", unresolvedReturnType, //$NON-NLS-1$
-                            jdtDeclaringType.getFullyQualifiedName(), jdtMethod.getElementName(),
-                            jdtMethod.getSignature());
-                    return absent();
-                }
                 final String methodSignature = Names.src2vmMethod(
                         jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes, //$NON-NLS-1$
                         resolvedReturnType);
@@ -288,6 +266,14 @@ public class JavaElementResolver {
             }
         }
         return fromNullable(recMethod);
+    }
+
+    private String resolveType(final IType jdtDeclaringType, final String unresolvedType) {
+        final int arrayCount = Signature.getArrayCount(unresolvedType);
+        String resolvedType = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolvedType,
+                jdtDeclaringType).or(Signature.SIG_VOID);
+        resolvedType = resolvedType + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
+        return resolvedType;
     }
 
     private Optional<IMethod> resolveMethod(final IMethodName recMethod) {

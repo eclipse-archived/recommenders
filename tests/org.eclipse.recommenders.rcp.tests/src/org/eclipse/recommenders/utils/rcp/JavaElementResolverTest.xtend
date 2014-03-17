@@ -19,11 +19,60 @@ class JavaElementResolverTest {
     JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(), "test")
 
     @Test
+    def void testGenericReturn() {
+        val code = classbody('''public List<String> $m(){return null;}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m()Ljava/util/List;", actual.signature)
+    }
+
+    @Test
     def void testBoundReturn() {
         val code = classbody('''public Iterable<? extends Executor> $m(){return null;}''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m()Ljava/lang/Iterable;", actual.signature)
+    }
+
+    @Test
+    def void testGenericClassWithGenericReturn() {
+        val code = classDeclaration('''public class Test<E>''', '''public Iterator<E> $m(){return null;}''')
+        val method = getMethod(code);
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m()Ljava/util/Iterator;", actual.signature)
+    }
+
+    @Test
+    def void testGenericReturnOnBinaryMethod() {
+        val code = classbody('''public void m(){ List<String> l; l.$iterator(); }''')
+        val method = getMethod(code);
+        val actual = sut.toRecMethod(method).get
+        assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
+    }
+
+    @Test
+    def void testBoundReturnOnBinaryMethod() {
+        val code = classbody('''public void m(){ List<? extends Number> l; l.$iterator(); }''')
+        val method = getMethod(code);
+        val actual = sut.toRecMethod(method).get
+        assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
+    }
+
+    @Test
+    def void testBoundIntersectionReturnOnBinaryMethod() {
+        val code = classDeclaration('''public class Test<E extends Number & Closable>''',
+            '''public void m(){ List<E> l; l.$iterator(); }''')
+        val method = getMethod(code);
+        val actual = sut.toRecMethod(method).get
+        assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
+    }
+
+    @Test
+    def void testRawReturnOnBinaryMethod() {
+        val code = classbody('''public void m(){ List l; l.$iterator(); }''')
+        val method = getMethod(code);
+        val actual = sut.toRecMethod(method).get
+        assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
     }
 
     @Test
