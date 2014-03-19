@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.models.DependencyType.PROJECT;
 import static org.eclipse.recommenders.utils.IOUtils.closeQuietly;
@@ -20,21 +21,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
 
@@ -47,7 +53,7 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
             if (!pomfile.exists()) {
                 return absent();
             } else {
-                Model model = readModelFromFile(pomfile);
+                Document model = readModelFromFile(pomfile);
                 return extractProjectCoordinateFromModel(model);
             }
         } catch (Exception e) {
@@ -56,63 +62,35 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
         }
     }
 
-    private Model readModelFromFile(File pomfile) throws FileNotFoundException, IOException, XmlPullParserException {
-        InputStreamReader pomInputStream = null;
+    private Document readModelFromFile(File pomfile) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
+        InputStream pomInputStream = null;
         try {
-            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            pomInputStream = new InputStreamReader(new FileInputStream(pomfile), detectFileEncoding(pomfile));
-            return mavenReader.read(pomInputStream);
+            pomInputStream = new FileInputStream(pomfile);
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBldr = docBuilderFactory.newDocumentBuilder();
+            return docBldr.parse(pomInputStream);
         } finally {
             closeQuietly(pomInputStream);
         }
     }
 
-    private Charset detectFileEncoding(File file) throws IOException {
-        FileInputStream input = null;
-        try {
-            input = new FileInputStream(file);
-            int first = input.read();
-            if (first == 0xEF) {
-                // look for the UTF-8 Byte Order Mark (BOM)
-                int second = input.read();
-                int third = input.read();
-                if (second == 0xBB && third == 0xBF) {
-                    return Charsets.UTF_8;
-                }
-            } else if (first == 0xFE) {
-                // look for the UTF-16 BOM
-                if (input.read() == 0xFF) {
-                    return Charsets.UTF_16BE;
-                }
-            } else if (first == 0xFF) {
-                if (input.read() == 0xFE) {
-                    return Charsets.UTF_16LE;
-                }
-            }
-        } finally {
-            closeQuietly(input);
+    private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Document model) throws XPathExpressionException {
+        XPathFactory factory = XPathFactory.newInstance();
+        String groupId = factory.newXPath().evaluate("/project/groupId/text()", model);
+        String artifactId = factory.newXPath().evaluate("/project/artifactId/text()", model);
+        String version = factory.newXPath().evaluate("/project/version/text()", model);
+
+        if (isNullOrEmpty(groupId)) {
+            groupId = factory.newXPath().evaluate("/project/parent/groupId/text()", model);
         }
-        return Charset.defaultCharset();
-    }
-
-    private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Model model) {
-        String groupId = model.getGroupId();
-        String artifactId = model.getArtifactId();
-        String version = model.getVersion();
-
-        Parent parent = model.getParent();
-        if (parent != null) {
-            if (groupId == null) {
-                groupId = parent.getGroupId();
-            }
-            if (version == null) {
-                version = parent.getVersion();
-            }
+        if (isNullOrEmpty(version)) {
+            version = factory.newXPath().evaluate("/project/parent/version/text()", model);
         }
 
-        if (groupId == null || artifactId == null || version == null) {
+        if (isNullOrEmpty(groupId) || isNullOrEmpty(artifactId) || isNullOrEmpty(version)) {
             return absent();
         }
+
         if (containsPropertyReference(groupId) || containsPropertyReference(artifactId)
                 || containsPropertyReference(version)) {
             return absent();

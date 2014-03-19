@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna" sequenceNumber="114">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna" sequenceNumber="116">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
@@ -19,8 +19,26 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.m2e.feature.feature.group" version="1.4.0.20130601-0317"/>
-<repository location="http://download.eclipse.org/technology/m2e/releases/1.4/"/>
+<unit id="org.eclipse.aether.api" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.api.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.connector.basic" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.connector.basic.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.impl" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.impl.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.spi" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.spi.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.impl.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.transport.file" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.transport.file.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.transport.http" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.transport.http.source" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.util" version="0.9.1.v20140329"/>
+<unit id="org.eclipse.aether.util.source" version="0.9.1.v20140329"/>
+<repository location="http://download.eclipse.org/aether/aether-core/releases/0.9/0.9.1.v20140329/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.aether.maven" version="3.1.0.v20140322-2105"/>
+<repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1.0.20140322-2106/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
@@ -49,16 +67,24 @@
 <unit id="javax.inject.source" version="1.0.0.v20091030"/>
 <unit id="javax.servlet" version="3.0.0.v201112011016"/>
 <unit id="javax.servlet.source" version="3.0.0.v201112011016"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
+<unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
 <unit id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
 <unit id="org.apache.commons.lang3" version="3.1.0.v201402241730"/>
 <unit id="org.apache.commons.lang3.source" version="3.1.0.v201402241730"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="org.apache.commons.logging.source" version="1.1.1.v201101211721"/>
 <unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
 <unit id="org.apache.commons.math.source" version="2.1.0.v201105210652"/>
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
-<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
-<unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20120530-0900"/>

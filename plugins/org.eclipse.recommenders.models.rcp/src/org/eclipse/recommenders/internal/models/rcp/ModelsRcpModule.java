@@ -43,7 +43,7 @@ import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
-import com.google.inject.name.Named;
+import javax.inject.Named;
 import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")

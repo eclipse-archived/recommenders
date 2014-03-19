@@ -13,46 +13,40 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.*;
-import static org.sonatype.aether.repository.RepositoryPolicy.*;
+import static org.eclipse.aether.repository.RepositoryPolicy.CHECKSUM_POLICY_FAIL;
+import static org.eclipse.aether.resolution.ArtifactDescriptorPolicy.IGNORE_MISSING;
+import static org.eclipse.aether.resolution.ResolutionErrorPolicy.*;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
-import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
-import org.apache.maven.repository.internal.DefaultVersionResolver;
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
-import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
-import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.providers.file.FileWagon;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.connector.wagon.WagonProvider;
-import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
-import org.sonatype.aether.impl.ArtifactDescriptorReader;
-import org.sonatype.aether.impl.MetadataGeneratorFactory;
-import org.sonatype.aether.impl.VersionRangeResolver;
-import org.sonatype.aether.impl.VersionResolver;
-import org.sonatype.aether.impl.internal.DefaultServiceLocator;
-import org.sonatype.aether.repository.Authentication;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.Proxy;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.repository.RepositoryPolicy;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
-import org.sonatype.aether.transfer.TransferCancelledException;
-import org.sonatype.aether.transfer.TransferEvent;
-import org.sonatype.aether.transfer.TransferListener;
-import org.sonatype.aether.util.DefaultRepositorySystemSession;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.maven.wagon.AhcWagon;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.Authentication;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.Proxy;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transfer.TransferCancelledException;
+import org.eclipse.aether.transfer.TransferEvent;
+import org.eclipse.aether.transfer.TransferListener;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
+import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.eclipse.aether.util.repository.SimpleResolutionErrorPolicy;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
@@ -64,34 +58,30 @@ import com.google.common.collect.Maps;
 public class ModelRepository implements IModelRepository {
 
     private final File basedir;
-    private final RemoteRepository remoteRepo;
+    private final RemoteRepository defaultRemoteRepo;
     private final RepositorySystem system;
     private final RepositorySystemSession defaultSession;
 
+    private Authentication authentication;
+    private Proxy proxy;
+
     public ModelRepository(File basedir, String remoteUrl) throws Exception {
         this.basedir = basedir;
-        remoteRepo = createRemoteRepository(remoteUrl);
+        defaultRemoteRepo = createRemoteRepository(remoteUrl);
         system = createRepositorySystem();
         defaultSession = createDefaultSession();
     }
 
     private RemoteRepository createRemoteRepository(String url) {
-        return new RemoteRepository("models", "default", url);
+        return new RemoteRepository.Builder("models", "default", url).build();
     }
 
     private RepositorySystem createRepositorySystem() throws Exception {
-        DefaultServiceLocator locator = new DefaultServiceLocator();
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 
-        locator.addService(VersionResolver.class, DefaultVersionResolver.class);
-        locator.addService(VersionRangeResolver.class, DefaultVersionRangeResolver.class);
-
-        locator.addService(ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class);
-
-        locator.addService(MetadataGeneratorFactory.class, SnapshotMetadataGeneratorFactory.class);
-        locator.addService(MetadataGeneratorFactory.class, VersionsMetadataGeneratorFactory.class);
-
-        locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
-        locator.setServices(WagonProvider.class, new ManualWagonProvider());
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
 
         return locator.getService(RepositorySystem.class);
     }
@@ -100,20 +90,20 @@ public class ModelRepository implements IModelRepository {
      * Provides a default session that can be further customized.
      */
     private RepositorySystemSession createDefaultSession() {
-        MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
         LocalRepository localRepo = new LocalRepository(basedir);
-        session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
 
         // Do not expect POMs in a model repository.
-        session.setIgnoreMissingArtifactDescriptor(true);
+        session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(IGNORE_MISSING));
         // Do expect checksums.
         session.setChecksumPolicy(CHECKSUM_POLICY_FAIL);
 
         // Use timestamps in snapshot artifacts' names; do not keep (duplicate) artifacts named "SNAPSHOT".
         session.setConfigProperty("aether.artifactResolver.snapshotNormalization", false);
 
-        // Ensure that the update policy set above is honoured.
+        // Ensure that the update policy set above is honored.
         session.setConfigProperty("aether.versionResolver.noCache", true);
 
         return session;
@@ -128,7 +118,7 @@ public class ModelRepository implements IModelRepository {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * Note: This implementation ignores the <code>prefetch</code> parameter.
      */
     @Override
@@ -176,11 +166,13 @@ public class ModelRepository implements IModelRepository {
     private Optional<File> resolveInternal(ModelCoordinate mc, RepositorySystemSession session) {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
+            RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
+                    .setAuthentication(authentication).setProxy(proxy).build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
-            return of(result.getArtifact().getFile());
+            return Optional.of(result.getArtifact().getFile());
         } catch (ArtifactResolutionException e) {
-            return absent();
+            return Optional.absent();
         }
     }
 
@@ -195,15 +187,13 @@ public class ModelRepository implements IModelRepository {
 
         if (forceDownloads) {
             onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
-            onlineSession.setNotFoundCachingEnabled(false);
-            onlineSession.setTransferErrorCachingEnabled(false);
+            onlineSession.setResolutionErrorPolicy(new SimpleResolutionErrorPolicy(CACHE_DISABLED));
         } else {
             // Try to update any models older than 60 minutes.
-            onlineSession.setUpdatePolicy(UPDATE_POLICY_INTERVAL + ":" + 60);
+            onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_INTERVAL + ":" + 60);
             // Do not retry downloading missing models until the update interval has elapsed.
-            onlineSession.setNotFoundCachingEnabled(true);
             // Do not retry downloading models after a failed download.
-            onlineSession.setTransferErrorCachingEnabled(true);
+            onlineSession.setResolutionErrorPolicy(new SimpleResolutionErrorPolicy(CACHE_ALL));
         }
 
         onlineSession.setTransferListener(new TransferListener() {
@@ -244,51 +234,23 @@ public class ModelRepository implements IModelRepository {
 
     @Beta
     public void setProxy(String type, String host, int port, String user, String pass) {
-        Authentication auth = user == null ? null : new Authentication(user, pass);
-        Proxy proxy = type == null ? null : new Proxy(type, host, port, auth);
-        remoteRepo.setProxy(proxy);
+        Authentication proxyAuthentication = new AuthenticationBuilder().addUsername(user).addPassword(pass).build();
+        proxy = type == null ? null : new Proxy(type, host, port, proxyAuthentication);
     }
 
     @Beta
     public void unsetProxy() {
-        // TODO: need an API to reset proxy settings.
-        remoteRepo.setProxy(null);
+        proxy = null;
     }
 
     @Beta
     public void setAuthentication(String user, String pass) {
-        remoteRepo.setAuthentication(new Authentication(user, pass));
+        authentication = new AuthenticationBuilder().addUsername(user).addPassword(pass).build();
     }
 
     @Override
     public String toString() {
         return basedir.getAbsolutePath();
-    }
-
-    /**
-     * A simplistic provider for wagon instances when no Plexus-compatible IoC container is used.
-     */
-    private static class ManualWagonProvider implements org.sonatype.aether.connector.wagon.WagonProvider {
-
-        @Override
-        public Wagon lookup(String roleHint) throws Exception {
-            if ("http".equals(roleHint) || "https".equals(roleHint)) { //$NON-NLS-1$ //$NON-NLS-2$
-                AhcWagon ahcWagon = new AhcWagon();
-                // TODO set timeout to 300s instead of 60s to solve timeouts.
-                // experimental.
-                ahcWagon.setTimeout(300 * 1000);
-                return ahcWagon;
-                // return new WebDavWagon();
-            } else if ("file".equals(roleHint)) {
-                return new FileWagon();
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public void release(Wagon wagon) {
-        }
     }
 
     private Artifact toSnapshotArtifact(ModelCoordinate mc) {

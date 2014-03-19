@@ -30,5 +30,4 @@ public interface IModelProvider<K extends IUniqueName<?>, M> extends Closeable, 
     Optional<M> acquireModel(final K key);
 
     void releaseModel(final M value);
-
 }

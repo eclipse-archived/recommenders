@@ -23,6 +23,5 @@ Require-Bundle: org.eclipse.ui,
  org.mockito,
  org.hamcrest,
  org.objenesis,
- org.jboss.netty;bundle-version="3.0.0",
  org.eclipse.recommenders.jayes
 Import-Package: org.eclipse.recommenders.internal.rcp

@@ -29,11 +29,11 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.util.artifact.SubArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.SubArtifact;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -131,12 +131,12 @@ public class Artifacts {
     }
 
     /**
-     * 
+     *
      * @param reverseDomainName
      *            e.g., org.eclipse.recommenders.rcp
      * @return a best-guess group id that includes the first package under a known public suffix, e.g.,
      *         org.eclipse.recommenders for org.eclipse.recommenders.rcp
-     * 
+     *
      * @see InternetDomainName#isUnderPublicSuffix()
      */
     public static String guessGroupId(String reverseDomainName) {
@@ -238,7 +238,7 @@ public class Artifacts {
      * @param pomFile
      *            the pom file - must exist
      * @return artifact containing "groupid:artifactid:version" read from pom file
-     * 
+     *
      */
     public static Artifact extractCoordinateFromPom(final File pomFile) throws Exception {
         Document doc = parsePom(pomFile);
@@ -308,7 +308,7 @@ public class Artifacts {
      * <p>
      * Note that glob matching on the version segment is unaware of additional semantics like version ranges and the
      * like. It only performs a textual glob matching.
-     * 
+     *
      * @param artifact
      *            the Maven coordinate to match against the second artifact
      * @param glob

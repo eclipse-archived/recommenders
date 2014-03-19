@@ -39,14 +39,14 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.Versions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;

@@ -5,10 +5,10 @@ import static org.eclipse.recommenders.utils.Artifacts.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.Assert;
 import org.junit.Test;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 public class ArtifactsTest {
 
@@ -19,8 +19,8 @@ public class ArtifactsTest {
     private static final Artifact GID_AID_EXT_VER = asArtifact(format("%s:%s:jar:%s", GID, AID, VERSION));
     private static final Artifact GID_AID_EXT_CLS_VER = asArtifact(format("%s:%s:jar:sources:%s", GID, AID, VERSION));
 
-    public static final Artifact SWT_37_CALLS = new DefaultArtifact("org.eclipse.swt", "org.eclipse.swt", "cr-calls", "zip",
-            "3.7.0");
+    public static final Artifact SWT_37_CALLS = new DefaultArtifact("org.eclipse.swt", "org.eclipse.swt", "cr-calls",
+            "zip", "3.7.0");
 
     @Test
     public void testAsCoord() {

@@ -17,12 +17,12 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.recommenders.utils.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.collect.Lists;
 
