@@ -32,7 +32,7 @@ public class PoolingModelProviderTest {
 
     @Test
     public void testAquireRelease() {
-        Optional<String> last = null;
+        Optional<String> last = Optional.absent();
         for (int i = 0; i < 200; i++) {
             last = sut.acquireModel(someName);
             sut.releaseModel(last.get());
@@ -43,7 +43,7 @@ public class PoolingModelProviderTest {
     @Test
     public void testNoReleaseExhaustsPool() {
 
-        Optional<String> last = null;
+        Optional<String> last = Optional.absent();
         for (int i = 0; i < 10; i++) {
             last = sut.acquireModel(someName);
         }

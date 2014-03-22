@@ -1,8 +1,0 @@
-# @title Xtend preferences
-# @description sets the default generation options like output folder (target/generated-sources/xtend), behavior on clean etc.
-# @task_type RECONCILE
-#
-file_export_version=3.0
-/default/org.eclipse.xtend.core.Xtend/preferences_build_requested=1
-/instance/org.eclipse.xtend.core.Xtend/outlet.DEFAULT_OUTPUT.cleanDirectory=true
-/instance/org.eclipse.xtend.core.Xtend/outlet.DEFAULT_OUTPUT.directory=target/generated-sources/xtend

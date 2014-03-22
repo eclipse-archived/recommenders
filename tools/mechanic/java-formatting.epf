@@ -1,7 +1,0 @@
-# @title Java Code Formatter Settings
-# @description Sets the code formatter settings  to code recommenders defaults
-# @task_type RECONCILE
-#
-/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.staticondemandthreshold=2
-/instance/org.eclipse.jdt.ui/formatter_profile=_Recommenders
-file_export_version=3.0
