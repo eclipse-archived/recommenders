@@ -424,7 +424,7 @@
       <p2Repositories url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
     </setupTasks>
   </branches>
-  <branches name="demo-latest">
+  <branches name="demo-master">
     <setupTasks xsi:type="setup:CompoundSetupTask" name="Demo Preferences">
       <setupTasks xsi:type="setup:CompoundSetupTask" name="com.codetrails.connect.calls.rcp">
         <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/com.codetrails.connect.calls.rcp/model.repository" value="http://download.codetrails.com/models/clng"/>
@@ -459,7 +459,6 @@
         <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.enable.user.id" value="true"/>
         <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.user.id" value="marcel.bruch.demo@codetrails.com"/>
       </setupTasks>
-      <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="" checkoutBranch="master"/>
     </setupTasks>
     <setupTasks xsi:type="setup:P2Task">
       <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
@@ -471,18 +470,46 @@
       <installableUnits id="com.codetrails.connect.tweaks.rcp.feature.feature.group"/>
       <installableUnits id="com.codetrails.connect.calls.rcp.feature.feature.group"/>
       <installableUnits id="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.java_feature.feature.group"/>
       <p2Repositories url="http://download.eclipse.org/recommenders/updates/head/"/>
       <p2Repositories url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
       <p2Repositories url="http://download.codetrails.com/updates/connect/"/>
       <p2Repositories url="${train.url}"/>
     </setupTasks>
-    <setupTasks xsi:type="setup:TargletTask" name="examples">
+    <setupTasks xsi:type="setup:TargletTask" name="Examples Targlet">
+      <roots id="org.eclipse.sdk.feature.group"/>
       <roots id="com.example"/>
       <sourceLocators rootFolder="${setup.branch.dir/git/examples}"/>
-      <repositoryLists name="Recommenders">
+      <repositoryLists name="Repositories">
         <p2Repositories url="http://download.eclipse.org/recommenders/updates/head/"/>
         <p2Repositories url="${train.url}"/>
       </repositoryLists>
+    </setupTasks>
+    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="" checkoutBranch="master"/>
+  </branches>
+  <branches name="incubators-master">
+    <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/codesearch}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.codesearch.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/livedoc}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.livedoc.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/snipmatch}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.snipmatch.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/stats}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.stats.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:P2Task">
+      <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.tracker.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.tweaks.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.calls.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.java_feature.feature.group"/>
+      <installableUnits id="org.eclipse.m2e.feature.feature.group"/>
+      <installableUnits id="org.eclipse.m2e.logback.feature.feature.group"/>
+      <installableUnits id="org.eclipse.xtend.sdk.feature.group"/>
+      <installableUnits id="org.eclipse.epp.mpc.feature.group"/>
+      <installableUnits id="org.sonatype.tycho.m2e.feature.feature.group"/>
+      <installableUnits id="org.eclipse.xtext.sdk.feature.group"/>
+      <p2Repositories url="http://download.eclipse.org/recommenders/updates/head/"/>
+      <p2Repositories url="http://download.codetrails.com/updates/connect/"/>
+      <p2Repositories url="${train.url}"/>
+      <p2Repositories url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
     </setupTasks>
   </branches>
 </setup:Project>
