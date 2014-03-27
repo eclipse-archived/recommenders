@@ -455,7 +455,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
     new(T processor) {
         super(
             #{new SessionProcessorDescriptor("", "", "", null, 0, true, "", processor)}.toArray(
-                SessionProcessorDescriptor), new ProcessableProposalFactory(), new CachingAstProvider(), new SharedImages,  CallCompletionContextFunctions.registerDefaults( CompletionContextFunctions.defaultFunctions));
+                SessionProcessorDescriptor), new CachingAstProvider(), new SharedImages,  CallCompletionContextFunctions.registerDefaults( CompletionContextFunctions.defaultFunctions));
         this.processor = processor
     }
 
