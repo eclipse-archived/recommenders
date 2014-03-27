@@ -403,16 +403,19 @@
     <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/org.eclipse.recommenders}" remoteURI="ssh://git.eclipse.org:29418/recommenders/org.eclipse.recommenders.git" pushURI="" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:WorkingSetTask">
       <workingSets name="Tests">
-        <predicates xsi:type="predicates:NamePredicate" pattern=".*\.tests"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/tests/.*"/>
       </workingSets>
       <workingSets name="Features">
-        <predicates xsi:type="predicates:NamePredicate" pattern=".*\.feature"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/features/.*"/>
       </workingSets>
       <workingSets name="Plugins">
-        <predicates xsi:type="predicates:NamePredicate" pattern=".*"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/plugins/.*"/>
+      </workingSets>
+      <workingSets name="Releng">
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/targets/.*"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/repositories/.*"/>
       </workingSets>
     </setupTasks>
-    <setupTasks xsi:type="setup:TargetPlatformTask" name="Target Definition for Eclipse Kepler"/>
     <setupTasks xsi:type="setup:P2Task">
       <installableUnits id="org.eclipse.m2e.feature.feature.group"/>
       <installableUnits id="org.eclipse.m2e.logback.feature.feature.group"/>
@@ -423,6 +426,10 @@
       <p2Repositories url="${train.url}"/>
       <p2Repositories url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
     </setupTasks>
+    <setupTasks xsi:type="setup:MavenImportTask">
+      <sourceLocators rootFolder="/${setup.branch.dir/git/org.eclipse.recommenders}" locateNestedProjects="true"/>
+    </setupTasks>
+    <setupTasks xsi:type="setup:TargetPlatformTask" name="Target Definition for Eclipse Kepler"/>
   </branches>
   <branches name="demo-master">
     <setupTasks xsi:type="setup:CompoundSetupTask" name="Demo Preferences">
@@ -460,6 +467,7 @@
         <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.user.id" value="marcel.bruch.demo@codetrails.com"/>
       </setupTasks>
     </setupTasks>
+    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:P2Task">
       <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
       <installableUnits id="org.eclipse.recommenders.codesearch.feature.feature.group"/>
@@ -485,10 +493,9 @@
         <p2Repositories url="${train.url}"/>
       </repositoryLists>
     </setupTasks>
-    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="" checkoutBranch="master"/>
   </branches>
   <branches name="incubators-master">
-    <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/codesearch}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.codesearch.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/codesearch}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.codesearch.git" pushURI="" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/livedoc}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.livedoc.git" pushURI="" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/snipmatch}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.snipmatch.git" pushURI="" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:GitCloneTask" location="/${setup.branch.dir/git/stats}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.stats.git" pushURI="" checkoutBranch="master"/>
