@@ -42,9 +42,8 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
     private SharedImages images;
 
     @Inject
-    public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors,
-            ProcessableProposalFactory proposalFactory, IAstProvider astProvider, SharedImages images,
-            Map<CompletionContextKey, ICompletionContextFunction> map) {
+    public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors, IAstProvider astProvider,
+            SharedImages images, Map<CompletionContextKey, ICompletionContextFunction> map) {
         super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, map);
         this.descriptors = descriptors;
         this.images = images;

@@ -45,6 +45,86 @@ import com.google.common.base.Throwables;
 public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessableProposalFactory.class);
+    private static Class<JavaMethodCompletionProposal> javaMethodCompletionProposalClass;
+    private static Class<JavaFieldWithCastedReceiverCompletionProposal> javaFieldWithCastedReceiverCompletionProposalClass;
+    private static Class<OverrideCompletionProposal> overrideCompletionProposalClass;
+    private static Class<AnonymousTypeCompletionProposal> anonymousTypeCompletionProposalClass;
+    private static Class<JavaCompletionProposal> javaCompletionProposalClass;
+    private static Class<LazyGenericTypeProposal> lazyGenericTypeProposalClass;
+    private static Class<LazyJavaTypeCompletionProposal> lazyJavaTypeCompletionProposalClass;
+    private static Class<FilledArgumentNamesMethodProposal> filledArgumentNamesMethodProposalClass;
+    private static Class<ParameterGuessingProposal> parameterGuessingProposalClass;
+    private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
+    private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
+    private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
+
+    static {
+        try {
+            javaMethodCompletionProposalClass = JavaMethodCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            javaFieldWithCastedReceiverCompletionProposalClass = JavaFieldWithCastedReceiverCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            overrideCompletionProposalClass = OverrideCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            anonymousTypeCompletionProposalClass = AnonymousTypeCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            javaCompletionProposalClass = JavaCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            lazyGenericTypeProposalClass = LazyGenericTypeProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            lazyJavaTypeCompletionProposalClass = LazyJavaTypeCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            filledArgumentNamesMethodProposalClass = FilledArgumentNamesMethodProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            parameterGuessingProposalClass = ParameterGuessingProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            lazyPackageCompletionProposalClass = LazyPackageCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+        try {
+            getterSetterCompletionProposalClass = GetterSetterCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            LOG.warn("Error while loading completion proposal class", e);
+        }
+    }
 
     public ProcessableProposalFactory() {
     }
@@ -53,36 +133,35 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             JavaContentAssistInvocationContext context, IProcessableProposalFactory factory) {
 
         final Class<? extends IJavaCompletionProposal> c = uiProposal.getClass();
-
         try {
-            if (JavaMethodCompletionProposal.class == c) {
+            if (javaMethodCompletionProposalClass == c) {
                 return factory.newJavaMethodCompletionProposal(coreProposal, context);
-            } else if (JavaFieldWithCastedReceiverCompletionProposal.class == c) {
+            } else if (javaFieldWithCastedReceiverCompletionProposalClass == c) {
                 return factory.newJavaFieldWithCastedReceiverCompletionProposal(coreProposal,
                         (JavaFieldWithCastedReceiverCompletionProposal) uiProposal, context);
-            } else if (OverrideCompletionProposal.class == c) {
+            } else if (overrideCompletionProposalClass == c) {
                 return factory.newOverrideCompletionProposal(coreProposal, (OverrideCompletionProposal) uiProposal,
                         context);
-            } else if (AnonymousTypeCompletionProposal.class == c) {
+            } else if (anonymousTypeCompletionProposalClass == c) {
                 return factory.newAnonymousTypeCompletionProposal(coreProposal,
                         (AnonymousTypeCompletionProposal) uiProposal, context);
-            } else if (JavaCompletionProposal.class == c) {
+            } else if (javaCompletionProposalClass == c) {
                 return factory.newJavaCompletionProposal(coreProposal, (JavaCompletionProposal) uiProposal, context);
-            } else if (LazyGenericTypeProposal.class == c) {
+            } else if (lazyGenericTypeProposalClass == c) {
                 return factory.newLazyGenericTypeProposal(coreProposal, context);
-            } else if (LazyJavaTypeCompletionProposal.class == c) {
+            } else if (lazyJavaTypeCompletionProposalClass == c) {
                 return factory.newLazyJavaTypeCompletionProposal(coreProposal, context);
-            } else if (FilledArgumentNamesMethodProposal.class == c) {
+            } else if (filledArgumentNamesMethodProposalClass == c) {
                 return factory.newFilledArgumentNamesMethodProposal(coreProposal, context);
-            } else if (ParameterGuessingProposal.class == c) {
+            } else if (parameterGuessingProposalClass == c) {
                 return factory.newParameterGuessingProposal(coreProposal, context);
-            } else if (MethodDeclarationCompletionProposal.class == c) {
+            } else if (methodDeclarationCompletionProposalClass == c) {
                 return factory.newMethodDeclarationCompletionProposal(coreProposal,
                         (MethodDeclarationCompletionProposal) uiProposal, context);
-            } else if (LazyPackageCompletionProposal.class == c) {
+            } else if (lazyPackageCompletionProposalClass == c) {
                 return factory.newLazyPackageCompletionProposal(coreProposal,
                         (LazyPackageCompletionProposal) uiProposal, context);
-            } else if (GetterSetterCompletionProposal.class == c) {
+            } else if (getterSetterCompletionProposalClass == c) {
                 return factory.newGetterSetterCompletionProposal(coreProposal,
                         (GetterSetterCompletionProposal) uiProposal, context);
             }
