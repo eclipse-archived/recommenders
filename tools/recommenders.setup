@@ -423,6 +423,12 @@
       <installableUnits id="org.eclipse.epp.mpc.feature.group"/>
       <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
       <installableUnits id="org.sonatype.tycho.m2e.feature.feature.group"/>
+      <installableUnits id="org.eclipse.emf.sdk.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.java_feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.bugzilla_feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.gerrit.feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.hudson.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.git.feature.group"/>
       <p2Repositories url="${train.url}"/>
       <p2Repositories url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
     </setupTasks>
@@ -430,6 +436,23 @@
       <sourceLocators rootFolder="/${setup.branch.dir/git/org.eclipse.recommenders}" locateNestedProjects="true"/>
     </setupTasks>
     <setupTasks xsi:type="setup:TargetPlatformTask" name="Target Definition for Eclipse Kepler"/>
+    <setupTasks xsi:type="setup:MylynQueriesTask" repositoryURL="https://bugs.eclipse.org/bugs" userID="${eclipse.user.id}" password="${eclipse.user.password}">
+      <queries summary="Bugs" url="https://bugs.eclipse.org/bugs/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Recommenders&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;order=Importance"/>
+      <queries summary="Help Wanted" url="https://bugs.eclipse.org/bugs/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Recommenders&amp;product=Recommenders.Incubator&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;keywords_type=allwords&amp;keywords=helpwanted&amp;status_whiteboard_type=allwordssubstr&amp;status_whiteboard=&amp;order=Importance"/>
+    </setupTasks>
+    <setupTasks xsi:type="setup:MylynQueriesTask" connectorKind="org.eclipse.mylyn.gerrit" repositoryURL="https://git.eclipse.org/r" userID="${eclipse.user.id}" password="${eclipse.user.password}">
+      <queries summary="Reviews">
+        <attributes key="gerrit query type" value="custom"/>
+        <attributes key="gerrit query project" value="recommenders/org.eclipse.recommenders"/>
+        <attributes key="gerrit query string" value="project:recommenders/org.eclipse.recommenders status:open branch:master"/>
+      </queries>
+    </setupTasks>
+    <setupTasks xsi:type="setup:MylynBuildsTask" serverURL="https://hudson.eclipse.org/recommenders" userID="${eclipse.user.id}" password="${eclipse.user.password}">
+      <buildPlans name="origin.master.kepler"/>
+      <buildPlans name="origin.master.luna"/>
+      <buildPlans name="gerrit.master.kepler"/>
+      <buildPlans name="gerrit.master.luna"/>
+    </setupTasks>
   </branches>
   <branches name="demo-master">
     <setupTasks xsi:type="setup:CompoundSetupTask" name="Demo Preferences">
