@@ -1,6 +1,8 @@
 Code Recommenders
 =================
 
+![Logo](../plain/readme/recommenders-logo.png)
+
 Eclipse Code Recommenders makes you more productive when working with unfamiliar APIs.
 Its intelligent code completion and automatically-generated API documentation tell you exactly how others have solved your problem in a similar situation before.
 
