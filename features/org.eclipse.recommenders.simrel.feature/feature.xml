@@ -24,4 +24,8 @@
          id="org.eclipse.recommenders.rcp.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.recommenders.mylyn.rcp.feature"
+         version="0.0.0"/>
+
 </feature>
