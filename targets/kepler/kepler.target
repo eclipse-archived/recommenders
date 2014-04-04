@@ -99,7 +99,9 @@
 <unit id="org.objenesis.source" version="1.0.0.v201105211943"/>
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
 <unit id="org.slf4j.api.source" version="1.7.2.v20121108-1250"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20140227085123/repository/"/>
+<!-- This location points to the latest stable build. (Should be latest recommended build, both Guava 15 and Commons Lang3 haven't been in time for Kepler SR2. -->
+<!-- Once Luna is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
+<repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
