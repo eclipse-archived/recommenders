@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<setup:Project setup:toolVersion="8" xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:predicates="http://www.eclipse.org/CDO/releng/predicates/1.0" xmlns:setup="http://www.eclipse.org/CDO/releng/setup/1.0" name="Recommenders" label="Code Recommenders">
+<setup:Project setup:toolVersion="8" xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:predicates="http://www.eclipse.org/CDO/releng/predicates/1.0" xmlns:setup="http://www.eclipse.org/CDO/releng/setup/1.0" name="recommenders" label="Code Recommenders">
   <setupTasks xsi:type="setup:CompoundSetupTask" name="Global Preferences">
     <setupTasks xsi:type="setup:CompoundSetupTask" name="org.eclipse.core.runtime">
       <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/org.eclipse.core.runtime/line.separator" value="&#xA;"/>
@@ -492,7 +492,7 @@
         <setupTasks xsi:type="setup:EclipsePreferenceTask" key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.user.id" value="marcel.bruch.demo@codetrails.com"/>
       </setupTasks>
     </setupTasks>
-    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="${setup.branch.dir/git/examples}" remoteURI="http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" pushURI="ssh://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git" checkoutBranch="master"/>
     <setupTasks xsi:type="setup:P2Task">
       <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
       <installableUnits id="org.eclipse.recommenders.codesearch.feature.feature.group"/>
@@ -506,7 +506,7 @@
       <installableUnits id="org.eclipse.mylyn.java_feature.feature.group"/>
       <p2Repositories url="http://download.eclipse.org/recommenders/updates/head/"/>
       <p2Repositories url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
-      <p2Repositories url="http://download.codetrails.com/updates/connect/"/>
+      <p2Repositories url="http://download.codetrails.com/updates/connect/head/"/>
       <p2Repositories url="${train.url}"/>
     </setupTasks>
     <setupTasks xsi:type="setup:TargletTask" name="Examples Targlet">
