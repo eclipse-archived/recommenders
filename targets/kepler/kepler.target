@@ -42,7 +42,7 @@
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
 </location>
 <!-- List of source bundles needs to be maintained manually; includeSources="true" not supported yet. --> 
-<!-- See http://wiki.eclipse.org/Tycho/Target_Platform#Target_files -->
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=411664 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
 <unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
 <unit id="ch.qos.logback.classic.source" version="1.0.7.v20121108-1250"/>
@@ -52,36 +52,22 @@
 <unit id="ch.qos.logback.slf4j.source" version="1.0.7.v20121108-1250"/>
 <unit id="com.google.gson" version="2.1.0.v201303041604"/>
 <unit id="com.google.gson.source" version="2.1.0.v201303041604"/>
-<unit id="com.google.guava" version="15.0.0.v201402241730"/>
-<unit id="com.google.guava.source" version="15.0.0.v201402241730"/>
-<unit id="com.google.inject" version="3.0.0.v201312141243"/>
-<unit id="com.google.inject.source" version="3.0.0.v201312141243"/>
-<unit id="com.google.inject.assistedinject" version="3.0.0.v201402270930"/>
-<unit id="com.google.inject.assistedinject.source" version="3.0.0.v201402270930"/>
-<unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
-<unit id="com.google.inject.multibindings.source" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject" version="3.0.0.v201203062045"/>
+<unit id="com.google.inject.source" version="3.0.0.v201203062045"/>
 <unit id="javax.inject" version="1.0.0.v20091030"/>
 <unit id="javax.inject.source" version="1.0.0.v20091030"/>
 <unit id="javax.servlet" version="3.0.0.v201112011016"/>
 <unit id="javax.servlet.source" version="3.0.0.v201112011016"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
 <unit id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
-<unit id="org.apache.commons.lang3" version="3.1.0.v201402241730"/>
-<unit id="org.apache.commons.lang3.source" version="3.1.0.v201402241730"/>
 <unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <unit id="org.apache.commons.logging.source" version="1.1.1.v201101211721"/>
 <unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
 <unit id="org.apache.commons.math.source" version="2.1.0.v201105210652"/>
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
-<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20120530-0900"/>
@@ -99,8 +85,26 @@
 <unit id="org.objenesis.source" version="1.0.0.v201105211943"/>
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
 <unit id="org.slf4j.api.source" version="1.7.2.v20121108-1250"/>
-<!-- This location points to the latest stable build. (Should be latest recommended build, both Guava 15 and Commons Lang3 haven't been in time for Kepler SR2. -->
+<!-- This location points to the latest recommenderd build. -->
 <!-- Once Luna is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
+<repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="com.google.inject.assistedinject" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject.assistedinject.source" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject.multibindings.source" version="3.0.0.v201402270930"/>
+<unit id="com.google.guava" version="15.0.0.v201402241730"/>
+<unit id="com.google.guava.source" version="15.0.0.v201402241730"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
+<unit id="org.apache.commons.lang3" version="3.1.0.v201402241730"/>
+<unit id="org.apache.commons.lang3.source" version="3.1.0.v201402241730"/>
+<!-- This location points to the latest stable build, as not all dependencies are part of the recommended build for Kepler SR2. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
 </location>
 </locations>
