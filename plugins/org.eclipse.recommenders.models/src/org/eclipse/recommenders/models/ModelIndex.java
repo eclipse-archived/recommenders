@@ -41,7 +41,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.Versions;
@@ -133,7 +132,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
         }
         Builder<ModelCoordinate> res = ImmutableSet.builder();
         for (String model : queryLuceneIndexForModelCandidates(pc, modelType)) {
-            Artifact tmp = Artifacts.asArtifact(model);
+            Artifact tmp = new DefaultArtifact(model);
             ModelCoordinate mc = toModelCoordinate(tmp);
             res.add(mc);
         }
@@ -185,7 +184,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
             for (ScoreDoc doc : matches.scoreDocs) {
                 String value = reader.document(doc.doc).get(classifier);
                 if (value != null) {
-                    res.add(Artifacts.newArtifact(value));
+                    res.add(new DefaultArtifact(value));
                 }
             }
         } catch (Exception e) {

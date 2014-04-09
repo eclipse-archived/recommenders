@@ -1,6 +1,5 @@
 package org.eclipse.recommenders.models;
 
-import static org.eclipse.recommenders.utils.Artifacts.newArtifact;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -18,6 +17,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.recommenders.utils.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,11 +48,11 @@ public class ModelIndexTest {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
 
         scenarios.add(scenario(EXPECTED, SYMBOLIC_NAME,
-                coordinateWithSymbolicName(newArtifact("org.example:project:1.0.0"), SYMBOLIC_NAME)));
+                coordinateWithSymbolicName(new DefaultArtifact("org.example:project:1.0.0"), SYMBOLIC_NAME)));
         scenarios.add(scenario(EXPECTED, SYMBOLIC_NAME,
-                coordinateWithSymbolicName(newArtifact("org.example:project:1.0"), SYMBOLIC_NAME)));
+                coordinateWithSymbolicName(new DefaultArtifact("org.example:project:1.0"), SYMBOLIC_NAME)));
         scenarios.add(scenario(EXPECTED, SYMBOLIC_NAME,
-                coordinateWithSymbolicName(newArtifact("org.example:project:1.0.0.rc1"), SYMBOLIC_NAME)));
+                coordinateWithSymbolicName(new DefaultArtifact("org.example:project:1.0.0.rc1"), SYMBOLIC_NAME)));
 
         return scenarios;
     }

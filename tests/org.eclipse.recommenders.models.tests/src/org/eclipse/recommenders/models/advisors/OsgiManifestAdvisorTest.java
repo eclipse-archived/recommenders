@@ -8,7 +8,7 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
@@ -23,7 +23,10 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.eclipse.recommenders.models.advisors.OsgiManifestAdvisor;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Zips.IFileToJarFileConverter;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +35,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Optional;
 
-public class OsgiManifestStrategyTest {
+public class OsgiManifestAdvisorTest {
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();
@@ -63,6 +66,7 @@ public class OsgiManifestStrategyTest {
                 return of(jarFileMock);
             }
         };
+
         return fileToJarFileConverter;
     }
 
@@ -91,6 +95,16 @@ public class OsgiManifestStrategyTest {
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
         ProjectCoordinate expected = new ProjectCoordinate("org.example", "org.example", "1.0.0");
+        assertEquals(expected, optionalProjectCoordinate.get());
+    }
+
+    @Test
+    public void testFirstPartOfUnknownTopLevelDomainBecomesGroupId() {
+        IFileToJarFileConverter fileToJarFileConverter = createFileToJarFileConverter("x.example", "1.0.0");
+        IProjectCoordinateAdvisor sut = new OsgiManifestAdvisor(fileToJarFileConverter);
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
+
+        ProjectCoordinate expected = new ProjectCoordinate("x", "x.example", "1.0.0");
         assertEquals(expected, optionalProjectCoordinate.get());
     }
 
