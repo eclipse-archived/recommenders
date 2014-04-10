@@ -14,7 +14,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForJre;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -145,7 +145,7 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         IJavaProject javaProject = root.getJavaProject();
 
         if (isPartOfJRE(root, javaProject)) {
-            return createJREDependencyInfo(javaProject);
+            return createDependencyInfoForJre(javaProject);
         } else {
             DependencyInfo request = new DependencyInfo(location, JAR);
             return of(request);

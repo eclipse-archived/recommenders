@@ -12,12 +12,8 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.jdt.core.IJavaElement.JAVA_PROJECT;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForProject;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.*;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -98,13 +94,12 @@ public class EclipseDependencyListener implements IDependencyListener {
     private void registerDependenciesForJavaProject(final IJavaProject javaProject) {
         DependencyInfo dependencyInfoForProject = createDependencyInfoForProject(javaProject);
 
-        Optional<DependencyInfo> optionalJREDependencyInfo = createJREDependencyInfo(javaProject);
+        Optional<DependencyInfo> optionalJREDependencyInfo = createDependencyInfoForJre(javaProject);
         if (optionalJREDependencyInfo.isPresent()) {
             workspaceDependenciesByProject.put(dependencyInfoForProject, optionalJREDependencyInfo.get());
             jrePackageFragmentRoots.putAll(dependencyInfoForProject, detectJREPackageFragementRoots(javaProject));
         }
 
-        workspaceDependenciesByProject.put(dependencyInfoForProject, dependencyInfoForProject);
         workspaceDependenciesByProject.putAll(dependencyInfoForProject, searchForAllDependenciesOfProject(javaProject));
     }
 
@@ -112,9 +107,14 @@ public class EclipseDependencyListener implements IDependencyListener {
         Set<DependencyInfo> dependencies = Sets.newHashSet();
         Set<IPackageFragmentRoot> jreRoots = jrePackageFragmentRoots.get(createDependencyInfoForProject(javaProject));
         try {
-            for (final IPackageFragmentRoot packageFragmetRoot : javaProject.getAllPackageFragmentRoots()) {
-                if (!jreRoots.contains(packageFragmetRoot) && packageFragmetRoot instanceof JarPackageFragmentRoot) {
-                    DependencyInfo dependencyInfo = createDependencyInfoForJAR((JarPackageFragmentRoot) packageFragmetRoot);
+            for (final IPackageFragmentRoot packageFragmentRoot : javaProject.getAllPackageFragmentRoots()) {
+                if (!jreRoots.contains(packageFragmentRoot) && packageFragmentRoot instanceof JarPackageFragmentRoot) {
+                    DependencyInfo dependencyInfo = createDependencyInfoForJar((JarPackageFragmentRoot) packageFragmentRoot);
+                    dependencies.add(dependencyInfo);
+                } else if (packageFragmentRoot.getKind() == IPackageFragmentRoot.K_SOURCE
+                        && packageFragmentRoot.getJavaProject() != null) {
+                    DependencyInfo dependencyInfo = Dependencies.createDependencyInfoForProject(packageFragmentRoot
+                            .getJavaProject());
                     dependencies.add(dependencyInfo);
                 }
             }
@@ -125,10 +125,8 @@ public class EclipseDependencyListener implements IDependencyListener {
     }
 
     public static Set<IPackageFragmentRoot> detectJREPackageFragementRoots(final IJavaProject javaProject) {
-        // Please notice that this is a heuristic to detect if a Jar is part of
-        // the JRE or not.
-        // All Jars in the JRE_Container which are not located in the ext folder
-        // are defined as part of the JRE
+        // Please note that this is merely a heuristic to detect if a Jar is part of the JRE or not:
+        // All Jars in the JRE_Container which are not located in the ext folder are considered part of the JRE.
         Set<IPackageFragmentRoot> jreRoots = new HashSet<IPackageFragmentRoot>();
         try {
             for (IClasspathEntry entry : javaProject.getRawClasspath()) {
@@ -143,7 +141,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to detect jre for project " + javaProject, e); //$NON-NLS-1$
+            LOG.error("Failed to detect JRE for project " + javaProject, e); //$NON-NLS-1$
         }
         return jreRoots;
     }
@@ -167,7 +165,7 @@ public class EclipseDependencyListener implements IDependencyListener {
             registerDependenciesForJavaProject(javaProject);
         }
         if (!isPartOfTheJRE(root)) {
-            DependencyInfo dependencyInfo = createDependencyInfoForJAR(root);
+            DependencyInfo dependencyInfo = createDependencyInfoForJar(root);
             workspaceDependenciesByProject.put(dependencyInfoForProject, dependencyInfo);
         }
     }
@@ -191,12 +189,6 @@ public class EclipseDependencyListener implements IDependencyListener {
         return false;
     }
 
-    private DependencyInfo createDependencyInfoForJAR(final JarPackageFragmentRoot pfr) {
-        File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr); //$NON-NLS-1$
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
-        return dependencyInfo;
-    }
-
     private void deregisterDependencyForJAR(final JarPackageFragmentRoot pfr) {
         Optional<IJavaProject> optionalJavaProject = getJavaProjectForPackageFragmentRoot(pfr);
         if (!optionalJavaProject.isPresent()) {
@@ -206,7 +198,7 @@ public class EclipseDependencyListener implements IDependencyListener {
         if (isPartOfTheJRE(pfr)) {
             deregisterJREDependenciesForProject(javaProject);
         } else {
-            DependencyInfo dependencyInfo = createDependencyInfoForJAR(pfr);
+            DependencyInfo dependencyInfo = createDependencyInfoForJar(pfr);
             DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
             workspaceDependenciesByProject.remove(projectDependencyInfo, dependencyInfo);
             if (!workspaceDependenciesByProject.containsKey(projectDependencyInfo)) {

@@ -13,33 +13,28 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.launching.JavaRuntime.getVMInstall;
 import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
 import java.util.Map;
 
-import javax.inject.Inject;
-
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 public final class Dependencies {
 
-    @Inject
-    @VisibleForTesting
-    public static IWorkspaceRoot workspace;
-
-    public static Optional<DependencyInfo> createJREDependencyInfo(final IJavaProject javaProject) {
+    public static Optional<DependencyInfo> createDependencyInfoForJre(IJavaProject javaProject) {
         Optional<String> executionEnvironmentId = getExecutionEnvironmentId(javaProject);
 
         try {
@@ -71,8 +66,14 @@ public final class Dependencies {
         }
     }
 
+    public static DependencyInfo createDependencyInfoForJar(IPackageFragmentRoot pfr) {
+        File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr); //$NON-NLS-1$
+        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
+        return dependencyInfo;
+    }
+
     public static DependencyInfo createDependencyInfoForProject(final IJavaProject project) {
-        File file = workspace.findMember(project.getPath()).getLocation().toFile();
+        File file = project.getProject().getLocation().toFile();
         Map<String, String> hints = Maps.newHashMap();
         hints.put(PROJECT_NAME, project.getElementName());
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT, hints);
