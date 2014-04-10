@@ -1,13 +1,45 @@
-Code Recommenders
-=================
+How to contribute to Eclipse Code Recommenders
+==============================================
 
-![Logo](../plain/readme/recommenders-logo.png)
+![Logo](../plain/CONTRIBUTING/recommenders-logo.png)
 
 Eclipse Code Recommenders makes you more productive when working with unfamiliar APIs.
 Its intelligent code completion and automatically-generated API documentation tell you exactly how others have solved your problem in a similar situation before.
 
-Building Code Recommenders from Source
+Find Out More
+-------------
+
+If you are unfamiliar with Eclipse Code Recommenders, we suggest that you visit the project’s website first.
+
+- [Project website](http://www.eclipse.org/recommenders/)
+- [Manual](http://www.eclipse.org/recommenders/manual/)
+- [FAQ](http://www.eclipse.org/recommenders/faq/)
+
+Sign the Contributor License Agreement
 --------------------------------------
+
+Want to contribute to Eclipse Code Recommenders?
+Great!
+But before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
+
+- [Eclipse Foundation Contributor License Agreement](http://www.eclipse.org/legal/CLA.php)
+
+Not sure whether there is a CLA for you on file already?
+You can easily check this yourself using the (Contributor License Agreement Lookup Tool)[https://projects.eclipse.org/user/cla/validate].
+
+Search For and Fix Bugs
+-----------------------
+
+The Eclipse Code Recommenders project uses Bugzilla to track ongoing development and issues.
+
+- [Browse issues](https://bugs.eclipse.org/bugs/buglist.cgi?product=Recommenders)
+- [Create a new issue](https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders)
+
+Be sure to search for existing issue before you create another one.
+Remember that contributions are always welcome!
+
+Build Code Recommenders from Source
+-----------------------------------
 
 Building Code Recommenders from source is straight-forward.
 But if some of the steps below fail – [let us know](https://dev.eclipse.org/mailman/listinfo/recommenders-dev "Developer Mailing List").
