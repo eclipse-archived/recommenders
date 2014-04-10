@@ -65,6 +65,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
@@ -100,7 +101,7 @@ public class ProjectCoordinatesView extends ViewPart {
     private TableViewer tableViewer;
     private ContentProvider contentProvider;
 
-    private final EclipseDependencyListener dependencyListener;
+    private final IDependencyListener dependencyListener;
     private final EclipseProjectCoordinateAdvisorService pcAdvisorsService;
     private final ManualProjectCoordinateAdvisor manualPcAdvisor;
 
@@ -156,7 +157,7 @@ public class ProjectCoordinatesView extends ViewPart {
     };
 
     @Inject
-    public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
+    public ProjectCoordinatesView(IDependencyListener dependencyListener,
             final EclipseProjectCoordinateAdvisorService pcAdvisorService,
             final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus, SharedImages images) {
         this.dependencyListener = dependencyListener;

@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -63,7 +64,7 @@ import com.google.common.eventbus.Subscribe;
 public class DependencyOverviewView extends ViewPart {
 
     private final EventBus bus;
-    private final EclipseDependencyListener dependencyListener;
+    private final IDependencyListener dependencyListener;
     private final IProjectCoordinateProvider pcProvider;
     private final IModelIndex modelIndex;
     private final EclipseModelRepository modelRepository;
@@ -73,7 +74,7 @@ public class DependencyOverviewView extends ViewPart {
 
     @Inject
     public DependencyOverviewView(final EventBus workspaceBus,
-            final EclipseDependencyListener dependencyListener, final IProjectCoordinateProvider pcProvider,
+            final IDependencyListener dependencyListener, final IProjectCoordinateProvider pcProvider,
             final IModelIndex modelIndex, final EclipseModelRepository modelRepository, SharedImages images,
             @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers) {
         bus = workspaceBus;
