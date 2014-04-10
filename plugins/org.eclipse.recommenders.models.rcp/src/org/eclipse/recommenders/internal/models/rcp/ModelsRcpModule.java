@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
@@ -43,7 +44,9 @@ import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+
 import javax.inject.Named;
+
 import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")
@@ -102,7 +105,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    public EclipseDependencyListener provideMappingProvider(EventBus bus) {
+    public IDependencyListener provideDependencyListener(EventBus bus) {
         return new EclipseDependencyListener(bus);
     }
 

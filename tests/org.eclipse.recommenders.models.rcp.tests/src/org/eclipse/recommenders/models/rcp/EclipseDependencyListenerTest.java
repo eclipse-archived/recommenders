@@ -41,6 +41,7 @@ import org.eclipse.recommenders.internal.models.rcp.Dependencies;
 import org.eclipse.recommenders.internal.models.rcp.EclipseDependencyListener;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectClosed;
@@ -63,7 +64,7 @@ public class EclipseDependencyListenerTest {
 
     private File jarFileExample;
     private EventBus eventBus;
-    private EclipseDependencyListener sut;
+    private IDependencyListener sut;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
