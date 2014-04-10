@@ -102,8 +102,8 @@
 <unit id="org.objenesis.source" version="1.0.0.v201105211943"/>
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
 <unit id="org.slf4j.api.source" version="1.7.2.v20121108-1250"/>
-+<!-- As long as Luna has not yet been released, this location points to the latest integration build. -->
-+<!-- Once Luna is released this needs to be set to http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R. -->
+<!-- As long as Luna has not yet been released, this location points to the latest integration build. -->
+<!-- Once Luna is released this needs to be set to http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-I"/>
 </location>
 </locations>
