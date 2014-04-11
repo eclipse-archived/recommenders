@@ -10,222 +10,138 @@
  */
 package org.eclipse.recommenders.models.rcp;
 
+import static com.google.common.collect.ObjectArrays.concat;
 import static org.eclipse.jdt.core.IJavaElement.JAVA_PROJECT;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForProject;
-import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.Dependencies;
 import org.eclipse.recommenders.internal.models.rcp.EclipseDependencyListener;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
-import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectClosed;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectOpened;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public class EclipseDependencyListenerTest {
 
-    private static final String PROJECT_NAME = "TestProject";
-
-    private static int projectNumber = 0;
-
-    private File jarFileExample;
-    private EventBus eventBus;
-    private IDependencyListener sut;
-
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
-    public static void beforeClass() {
-        Dependencies.workspace = InjectionService.getInstance().getInjector().getInstance(IWorkspaceRoot.class);
-    }
-
-    @Before
-    public void before() throws IOException {
-        jarFileExample = temporaryFolder.newFile("example.jar");
-    }
-
-    private static String generateProjectName() {
-        projectNumber++;
-        return PROJECT_NAME + projectNumber;
-    }
-
-    private IJavaProject createProject() throws Exception {
-        return createProject(generateProjectName());
-    }
-
-    private IJavaProject createProject(final String projectName) throws Exception {
-        IWorkspaceRoot workspaceRoot = Dependencies.workspace;
-        IProject project = workspaceRoot.getProject(projectName);
-        project.create(null);
-        project.open(null);
-        IProjectDescription description = project.getDescription();
-        description.setNatureIds(new String[] { JavaCore.NATURE_ID });
-        project.setDescription(description, null);
-        IJavaProject javaProject = JavaCore.create(project);
-
-        List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
-        entries.add(JavaRuntime.getDefaultJREContainerEntry());
-        javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), null);
-        IFolder sourceFolder = project.getFolder("src");
-        sourceFolder.create(false, true, null);
-
-        IPackageFragmentRoot root = javaProject.getPackageFragmentRoot(sourceFolder);
-        IClasspathEntry[] oldEntries = javaProject.getRawClasspath();
-        IClasspathEntry[] newEntries = new IClasspathEntry[oldEntries.length + 1];
-        System.arraycopy(oldEntries, 0, newEntries, 0, oldEntries.length);
-        newEntries[oldEntries.length] = JavaCore.newSourceEntry(root.getPath());
-        javaProject.setRawClasspath(newEntries, null);
-
-        javaProject.open(null);
-        return javaProject;
-    }
-
-    private JarPackageFragmentRoot mockJarPackageFragmentRoot(final IJavaProject javaProject, final File file) {
-        JarPackageFragmentRoot mock = mock(JarPackageFragmentRoot.class, RETURNS_DEEP_STUBS);
-        when(mock.getParent()).thenReturn(javaProject);
-        when(mock.getPath().toFile()).thenReturn(file);
-        when(mock.getAncestor(JAVA_PROJECT)).thenReturn(javaProject);
-        when(mock.isExternal()).thenReturn(true);
-        return mock;
-    }
-
-    @Before
-    public void init() throws IOException {
-        eventBus = new EventBus("org.eclipse.recommenders.tests.models.rcp");
-        sut = new EclipseDependencyListener(eventBus);
-    }
+    public TemporaryFolder tmp = new TemporaryFolder();
 
     @Test
     public void testInitialWorkspaceParsing() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
+        IJavaProject javaProject = createProject("initialWorkspaceParsing");
 
-        EclipseDependencyListener sut = new EclipseDependencyListener(new EventBus(""));
-        DependencyInfo expected = Dependencies.createDependencyInfoForProject(javaProject);
+        EventBus eventBus = mock(EventBus.class);
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
 
-        assertTrue(sut.getDependencies().contains(expected));
+        DependencyInfo project = Dependencies.createDependencyInfoForProject(javaProject);
+        assertThat(sut.getProjects(), hasItem(project));
+        assertThat(sut.getDependencies(), hasItem(project));
+        assertThat(sut.getDependenciesForProject(project), hasItem(project));
     }
 
     @Test
-    public void testProjectIsAddedCorrect() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
+    public void testProjectAddedOnJavaProjectOpened() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("ProjectAddedOnJavaProjectOpened");
+
+        DependencyInfo project = Dependencies.createDependencyInfoForProject(javaProject);
+        assertThat(sut.getDependencies(), not(hasItem(project)));
+        assertThat(sut.getProjects(), not(hasItem(project)));
+        assertThat(sut.getDependenciesForProject(project), not(hasItem(project)));
+
         eventBus.post(new JavaProjectOpened(javaProject));
 
-        DependencyInfo expected = Dependencies.createDependencyInfoForProject(javaProject);
-
-        assertTrue(sut.getDependencies().contains(expected));
+        assertThat(sut.getProjects(), hasItem(project));
+        assertThat(sut.getDependencies(), hasItem(project));
+        assertThat(sut.getDependenciesForProject(project), hasItem(project));
     }
 
     @Test
-    public void testProjectIsRemovedCorrectAfterClosing() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
+    public void testProjectRemovedOnJavaProjectClosed() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("ProjectRemovedOnJavaProjectClosed");
         eventBus.post(new JavaProjectOpened(javaProject));
         eventBus.post(new JavaProjectClosed(javaProject));
 
-        DependencyInfo notExpected = Dependencies.createDependencyInfoForProject(javaProject);
-
-        assertFalse(sut.getDependencies().contains(notExpected));
+        DependencyInfo project = Dependencies.createDependencyInfoForProject(javaProject);
+        assertThat(sut.getDependencies(), not(hasItem(project)));
+        assertThat(sut.getProjects(), not(hasItem(project)));
+        assertThat(sut.getDependenciesForProject(project), not(hasItem(project)));
     }
 
     @Test
-    public void testDependencyForSpecificProjectIsASubsetOfAllDependencies() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
+    public void testJreAddedOnJavaProjectOpened() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("JreAddedOnJavaProjectOpened");
+        appendJreToClasspath(javaProject);
         eventBus.post(new JavaProjectOpened(javaProject));
-        assertTrue(sut.getDependencies().containsAll(
-                sut.getDependenciesForProject(createDependencyInfoForProject(javaProject))));
+
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo jre = createDependencyInfoForJre(javaProject).get();
+        assertThat(sut.getDependencies(), hasItem(jre));
+        assertThat(sut.getProjects(), not(hasItem(jre)));
+        assertThat(sut.getDependenciesForProject(project), hasItem(jre));
     }
 
     @Test
-    public void testProjectDependencyIsAddedCorrect() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
-        eventBus.post(new JavaProjectOpened(javaProject));
+    public void testJrePresentUntilLastJavaProjectClosed() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
 
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
+        IJavaProject javaProject1 = createProject("JrePresentUntilLastJavaProjectClosed_1");
+        appendJreToClasspath(javaProject1);
+        eventBus.post(new JavaProjectOpened(javaProject1));
+        IJavaProject javaProject2 = createProject("JrePresentUntilLastJavaProjectClosed_2");
+        appendJreToClasspath(javaProject2);
+        eventBus.post(new JavaProjectOpened(javaProject2));
 
-        assertTrue(sut.getDependenciesForProject(projectDependencyInfo).contains(projectDependencyInfo));
+        eventBus.post(new JavaProjectClosed(javaProject1));
+
+        DependencyInfo project2 = createDependencyInfoForProject(javaProject2);
+        DependencyInfo jre = createDependencyInfoForJre(javaProject2).get();
+        assertThat(sut.getDependencies(), hasItem(jre));
+        assertThat(sut.getDependenciesForProject(project2), hasItem(jre));
     }
 
     @Test
-    public void testJREDependencyIsAddedCorrect() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
+    public void testJreDependenciesAreDeletedWhenOneJarFromJreIsRemoved() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("JreDependenciesAreDeletedWhenOneJarFromJreIsRemoved");
+        appendJreToClasspath(javaProject);
         eventBus.post(new JavaProjectOpened(javaProject));
-
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
-        Optional<DependencyInfo> jreDependencyInfo = createJREDependencyInfo(javaProject);
-
-        if (jreDependencyInfo.isPresent()) {
-            assertTrue(sut.getDependenciesForProject(projectDependencyInfo).contains(jreDependencyInfo.get()));
-        } else {
-            fail();
-        }
-    }
-
-    @Test
-    public void testDependenciesAreDeletedWhenProjectIsClosed() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
-
-        eventBus.post(new JavaProjectOpened(javaProject));
-        assertFalse(sut.getDependenciesForProject(projectDependencyInfo).isEmpty());
-        eventBus.post(new JavaProjectClosed(javaProject));
-        assertTrue(sut.getDependenciesForProject(projectDependencyInfo).isEmpty());
-    }
-
-    @Test
-    public void testJREDependenciesAreDeletedWhenOneJARFromJREIsRemoved() throws Exception {
-        String projectName = generateProjectName();
-        IJavaProject javaProject = createProject(projectName);
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
-        eventBus.post(new JavaProjectOpened(javaProject));
-
-        Optional<DependencyInfo> optionalExpectedJREDependencyInfo = createJREDependencyInfo(javaProject);
-        if (!optionalExpectedJREDependencyInfo.isPresent()) {
-            fail();
-        }
-
-        DependencyInfo expectedJREDependencyInfo = createJREDependencyInfo(javaProject).get();
-        assertTrue(sut.getDependenciesForProject(projectDependencyInfo).contains(expectedJREDependencyInfo));
 
         Set<IPackageFragmentRoot> detectJREPackageFragementRoots = EclipseDependencyListener
                 .detectJREPackageFragementRoots(javaProject);
@@ -236,30 +152,108 @@ public class EclipseDependencyListenerTest {
             }
         }
 
-        assertFalse(sut.getDependenciesForProject(projectDependencyInfo).contains(expectedJREDependencyInfo));
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo jre = createDependencyInfoForJre(javaProject).get();
+        assertThat(sut.getDependenciesForProject(project), not(hasItem(jre)));
     }
 
     @Test
-    public void testDependencyForJarIsAddedCorrect() throws Exception {
-        IJavaProject javaProject = createProject();
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
+    public void testDependencyForJarIsAddedCorrectly() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
 
-        eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, jarFileExample)));
-        DependencyInfo expected = new DependencyInfo(jarFileExample, DependencyType.JAR);
+        IJavaProject javaProject = createProject("DependencyForJarIsAddedCorrectly");
+        File dependency = tmp.newFile("dependency.jar");
+        eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, dependency)));
 
-        assertTrue(sut.getDependenciesForProject(projectDependencyInfo).contains(expected));
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo jar = new DependencyInfo(dependency, DependencyType.JAR);
+        assertThat(sut.getDependencies(), hasItem(jar));
+        assertThat(sut.getDependenciesForProject(project), hasItem(jar));
     }
 
     @Test
-    public void testDependencyForJarIsRemovedCorrect() throws Exception {
-        IJavaProject javaProject = createProject();
-        DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
+    public void testDependencyForJarIsRemovedCorrectly() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
 
-        eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, jarFileExample)));
-        DependencyInfo expected = new DependencyInfo(jarFileExample, DependencyType.JAR);
-        eventBus.post(new JarPackageFragmentRootRemoved(mockJarPackageFragmentRoot(javaProject, jarFileExample)));
+        IJavaProject javaProject = createProject("DependencyForJarIsRemovedCorrectly");
+        File dependency = tmp.newFile("dependency.jar");
+        eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, dependency)));
+        eventBus.post(new JarPackageFragmentRootRemoved(mockJarPackageFragmentRoot(javaProject, dependency)));
 
-        assertFalse(sut.getDependenciesForProject(projectDependencyInfo).contains(expected));
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo jar = new DependencyInfo(dependency, DependencyType.JAR);
+        assertThat(sut.getDependencies(), not(hasItem(jar)));
+        assertThat(sut.getDependenciesForProject(project), not(hasItem(jar)));
     }
 
+    @Test
+    public void testDependencyForProjectIsAddedCorrectly() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("DependencyForProjectIsAddedCorrectly");
+        IJavaProject javaDependency = createProject("DependencyForProjectIsAddedCorrectly_dependency");
+        appendJavaProjectToClasspath(javaProject, javaDependency);
+        eventBus.post(new JavaProjectOpened(javaProject));
+        eventBus.post(new JavaProjectOpened(javaDependency));
+
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo dependency = createDependencyInfoForProject(javaDependency);
+        assertThat(sut.getProjects(), hasItems(project, dependency));
+        assertThat(sut.getDependencies(), hasItems(project, dependency));
+        assertThat(sut.getDependenciesForProject(project), hasItems(project, dependency));
+        assertThat(sut.getDependenciesForProject(dependency), hasItem(dependency));
+        assertThat(sut.getDependenciesForProject(dependency), not(hasItem(project)));
+    }
+
+    @Test
+    public void testDependencyForProjectIsRemovedCorrectly() throws Exception {
+        EventBus eventBus = new EventBus();
+        EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
+
+        IJavaProject javaProject = createProject("DependencyForProjectIsRemovedCorrectly");
+        IJavaProject javaDependency = createProject("DependencyForProjectIsRemovedCorrectly_dependency");
+        appendJavaProjectToClasspath(javaProject, javaDependency);
+        eventBus.post(new JavaProjectOpened(javaProject));
+        eventBus.post(new JavaProjectOpened(javaDependency));
+        eventBus.post(new JavaProjectClosed(javaDependency));
+
+        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        assertThat(sut.getProjects(), hasItems(project));
+        assertThat(sut.getDependencies(), hasItems(project));
+        assertThat(sut.getDependenciesForProject(project), hasItems(project));
+    }
+
+    private static IJavaProject createProject(String projectName) throws Exception {
+        IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+        IProject project = workspaceRoot.getProject(projectName);
+        project.create(null);
+        project.open(null);
+        IProjectDescription description = project.getDescription();
+        description.setNatureIds(new String[] { JavaCore.NATURE_ID });
+        project.setDescription(description, null);
+        return JavaCore.create(project);
+    }
+
+    private static void appendJreToClasspath(IJavaProject javaProject) throws Exception {
+        IClasspathEntry jreEntry = JavaRuntime.getDefaultJREContainerEntry();
+        javaProject.setRawClasspath(concat(javaProject.getRawClasspath(), jreEntry), new NullProgressMonitor());
+    }
+
+    private static void appendJavaProjectToClasspath(IJavaProject javaProject, IJavaProject dependency)
+            throws Exception {
+        IClasspathEntry sourceEntry = JavaCore.newProjectEntry(dependency.getPath());
+        javaProject.setRawClasspath(concat(javaProject.getRawClasspath(), sourceEntry), new NullProgressMonitor());
+    }
+
+    private JarPackageFragmentRoot mockJarPackageFragmentRoot(final IJavaProject javaProject, final File file) {
+        JarPackageFragmentRoot mock = mock(JarPackageFragmentRoot.class, RETURNS_DEEP_STUBS);
+        when(mock.getParent()).thenReturn(javaProject);
+        when(mock.getPath().toFile()).thenReturn(file);
+        when(mock.getAncestor(JAVA_PROJECT)).thenReturn(javaProject);
+        when(mock.isExternal()).thenReturn(true);
+        return mock;
+    }
 }

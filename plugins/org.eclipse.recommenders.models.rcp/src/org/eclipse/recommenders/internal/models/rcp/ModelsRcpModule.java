@@ -15,6 +15,7 @@ import static com.google.inject.Scopes.SINGLETON;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.core.internal.net.ProxyManager;
@@ -44,9 +45,6 @@ import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
-
-import javax.inject.Named;
-
 import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")
@@ -65,8 +63,6 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Override
     protected void configure() {
-        requestStaticInjection(Dependencies.class);
-        //
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(SINGLETON);
 
         bind(EclipseProjectCoordinateAdvisorService.class).in(SINGLETON);
