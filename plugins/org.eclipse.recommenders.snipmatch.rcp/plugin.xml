@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.ui.editors">
+		<editor
+			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
+			contributorClass="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorActionBarContributor"
+			default="false"
+			icon="icons/eview16/sample.gif"
+			id="org.eclipse.recommenders.snipmatch.MultiPage"
+			name="Snippet Editor"/>
+	</extension>
+	<extension point="org.eclipse.ui.commands">
+		<command id="org.eclipse.recommenders.snipmatch.rpc.commands.search"
+			name="Search"/>
+		<command id="org.eclipse.recommenders.snipeditor.Template.validate"
+			name="Validate"
+			description="Trigger expensive validation"/>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=group.edit">
+			<command commandId="org.eclipse.recommenders.snipeditor.Template.validate"
+				style="push"
+				tooltip="Trigger expensive validation">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.eclipse.recommenders.snipeditor.Template.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page id="org.eclipse.recommenders.snipmatch.rpc.preferences.SnipMatchPreferencePage"
+			category="org.eclipse.recommenders.rcp.preferencePages.root"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchPreferencePage"
+			name="Snipmatch"/>
+	</extension>
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.eclipse.recommenders.internal.snipmatch.rcp.PreferenceInitializer"/>
+		<initializer class="org.eclipse.recommenders.internal.snipmatch.rcp.PreferenceInitializer"/>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler commandId="org.eclipse.recommenders.snipmatch.rpc.commands.search"
+			class="org.eclipse.recommenders.internal.snipmatch.rcp.SearchHandler"/>
+	</extension>
+	<extension point="org.eclipse.ui.bindings">
+		<key commandId="org.eclipse.recommenders.snipmatch.rpc.commands.search"
+			contextId="org.eclipse.jdt.ui.javaEditorScope"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+Enter"/>
+	</extension>
+	<extension point="org.eclipse.ui.themes">
+		<colorDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchboxbackground"
+			label="Search Box Background Color"
+			value="230, 255, 230"/>
+		<colorDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchResultBackgroundColor"
+			value="255, 255, 255"
+			label="Search Result Background Color"/>
+		<fontDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchTextFont"
+			defaultsTo="org.eclipse.jface.textfont"
+			label="Search Text Font"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule"/>
+	</extension>
+	<extension point="org.eclipse.ui.views">
+		<view id="org.eclipse.recommenders.snipmatch.rcp.views.snippets"
+			category="org.eclipse.recommenders.rcp.views.root"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView"
+			icon="icons/eview16/sample.gif"
+			restorable="true"
+			allowMultiple="false"
+			name="Snippets"/>
+	</extension>
+</plugin>

@@ -7,10 +7,13 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-console</programArgs>
+      <programArgs>-console
+      </programArgs>
       <vmArgs>-Xmx512m
--XX:MaxPermSize=256m</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-XX:MaxPermSize=256m
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <launcher>
@@ -32,6 +35,7 @@
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.pde"/>
       <feature id="org.eclipse.jdt"/>
+      <feature id="org.eclipse.jgit"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
@@ -41,6 +45,7 @@
       <feature id="org.eclipse.mylyn.sdk_feature"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
       <feature id="org.eclipse.recommenders.mylyn.rcp.feature"/>
+      <feature id="org.eclipse.recommenders.snipmatch.rcp.feature"/>
    </features>
 
 

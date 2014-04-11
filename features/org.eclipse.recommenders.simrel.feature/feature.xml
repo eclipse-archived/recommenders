@@ -28,4 +28,8 @@
          id="org.eclipse.recommenders.mylyn.rcp.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.recommenders.snipmatch.rcp.feature"
+         version="0.0.0"/>
+
 </feature>
