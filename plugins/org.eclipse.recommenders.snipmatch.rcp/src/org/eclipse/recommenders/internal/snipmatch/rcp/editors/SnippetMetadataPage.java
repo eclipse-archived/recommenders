@@ -24,7 +24,9 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.observable.IChangeListener;
+import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
@@ -194,6 +196,14 @@ public class SnippetMetadataPage extends FormPage {
         // keywords
         ppKeywords = PojoProperties.list(Snippet.class, "keywords", String.class).observe(snippet);
         ViewerSupport.bind(listViewer, ppKeywords, new SelfValueProperty(String.class));
+        ppKeywords.addListChangeListener(new IListChangeListener() {
+
+            @Override
+            public void handleListChange(ListChangeEvent event) {
+                changeDirtyStatus();
+            }
+
+        });
 
         // uuid
         IObservableValue wpUuidText = text(SWT.Modify).observe(txtUuid);
@@ -214,10 +224,14 @@ public class SnippetMetadataPage extends FormPage {
 
                     @Override
                     public void handleChange(org.eclipse.core.databinding.observable.ChangeEvent event) {
-                        ((SnippetEditor) getEditor()).setDirty(true);
+                        changeDirtyStatus();
                     }
                 });
             }
         }
+    }
+
+    private void changeDirtyStatus() {
+        ((SnippetEditor) getEditor()).setDirty(true);
     }
 }
