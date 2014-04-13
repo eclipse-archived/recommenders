@@ -14,6 +14,7 @@ import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -35,7 +36,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryOpenedChangedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
+import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
@@ -62,8 +66,9 @@ import org.eclipse.ui.part.ViewPart;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
-public class SnippetsView extends ViewPart {
+public class SnippetsView extends ViewPart implements IRcpService {
 
     private final Set<ISnippetRepository> repos;
     private Text txtSearch;
@@ -190,6 +195,16 @@ public class SnippetsView extends ViewPart {
         refreshInput();
         selection = ViewersObservables.observeSingleSelection(viewer);
         initDataBindings();
+    }
+
+    @Subscribe
+    public void onEvent(SnippetRepositoryOpenedChangedEvent e) throws IOException {
+        refreshInput();
+    }
+
+    @Subscribe
+    public void onEvent(SnippetRepositoryClosedChangedEvent e) throws IOException {
+        refreshInput();
     }
 
     private void refreshInput() {
