@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.*;
+import static org.apache.commons.lang3.ArrayUtils.*;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.models.DependencyType.*;
 import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
@@ -27,14 +29,15 @@ import java.util.jar.Manifest;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Zips.DefaultJarFileConverter;
 import org.eclipse.recommenders.utils.Zips.IFileToJarFileConverter;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.net.InternetDomainName;
 
 public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
+
     public static final Name BUNDLE_NAME = new Attributes.Name("Bundle-SymbolicName");
     public static final Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
     private IFileToJarFileConverter jarFileConverter;
@@ -103,7 +106,7 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
         }
         int indexOf = bundleName.indexOf(';');
         String artifactId = bundleName.substring(0, indexOf == -1 ? bundleName.length() : indexOf);
-        String groupId = Artifacts.guessGroupId(artifactId);
+        String groupId = guessGroupId(artifactId);
         Optional<String> version = OsgiVersionParser.parse(bundleVersion);
 
         if (version.isPresent()) {
@@ -115,5 +118,32 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
     @Override
     public boolean isApplicable(DependencyType type) {
         return JAR == type || PROJECT == type;
+    }
+
+    private static String guessGroupId(String reverseDomainName) {
+        String[] segments = split(reverseDomainName, ".");
+        removeSlashes(segments);
+        String[] reverse = copyAndReverse(segments);
+        InternetDomainName name = InternetDomainName.from(join(reverse, "."));
+        if (!name.isUnderPublicSuffix()) {
+            return segments[0];
+        } else {
+            InternetDomainName topPrivateDomain = name.topPrivateDomain();
+            int size = topPrivateDomain.parts().size();
+            int end = Math.min(segments.length, size + 1);
+            return join(subarray(segments, 0, end), ".");
+        }
+    }
+
+    private static String[] copyAndReverse(String[] segments) {
+        String[] reverse = segments.clone();
+        reverse(reverse);
+        return reverse;
+    }
+
+    private static void removeSlashes(String[] segments) {
+        for (int i = segments.length; i-- > 0;) {
+            segments[i] = replace(segments[i], "/", "");
+        }
     }
 }
