@@ -8,7 +8,7 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static org.eclipse.recommenders.models.DependencyType.PROJECT;
 import static org.junit.Assert.assertEquals;
@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
-import org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -9,7 +9,7 @@
  *     Andreas Sewe - initial API and implementation
  *     Olav Lenz - made tests run on Windows
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static org.eclipse.recommenders.tests.models.utils.FolderUtils.dir;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -20,7 +20,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor;
+import org.eclipse.recommenders.models.Coordinates;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

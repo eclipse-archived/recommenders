@@ -8,7 +8,7 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +29,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
-public class JREIDEVersionStrategyTest {
+public class JREExecutionEnvironmentAdvisorTest {
 
     @Rule
     public final TemporaryFolder folder = new TemporaryFolder();

@@ -8,7 +8,7 @@
  * Contributors:
  *     Andreas Sewe - initial API and implementation
  */
-package org.eclipse.recommenders.models.advisors;
+package org.eclipse.recommenders.models;
 
 import static org.eclipse.recommenders.models.advisors.PathUtils.matchesSuffixPattern;
 import static org.hamcrest.CoreMatchers.is;

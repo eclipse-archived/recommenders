@@ -8,14 +8,18 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models;
+package org.eclipse.recommenders.models.advisors;
 
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.models.IModelIndex;
+import org.eclipse.recommenders.models.ModelIndex;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Fingerprints;
 import org.junit.Assert;
 import org.junit.Before;
