@@ -34,6 +34,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
     private static Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
     private boolean dirty;
+    private SnippetMetadataPage metadataEditorPage;
 
     public SnippetEditor() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
@@ -49,7 +50,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
     @Override
     protected void addPages() {
         try {
-            addPage(new SnippetMetadataPage(this, "meta", "Metadata"));
+            metadataEditorPage = new SnippetMetadataPage(this, "meta", "Metadata");
+            addPage(metadataEditorPage);
             addPage(new SnippetSourcePage(this, "source", "Snippet Source"));
         } catch (PartInitException e) {
             LOG.error("Exception while adding editor pages.", e);
@@ -90,6 +92,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         if (!snippet.getCode().equals(oldSnippet.getCode())) {
             snippet.setUUID(nameUUIDFromBytes(snippet.getCode().getBytes()));
             snippet.setLocation(null);
+            metadataEditorPage.update();
         }
 
         try {
