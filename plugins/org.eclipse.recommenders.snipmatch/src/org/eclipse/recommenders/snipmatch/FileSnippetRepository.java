@@ -341,9 +341,12 @@ public class FileSnippetRepository implements ISnippetRepository {
             Preconditions.checkState(isOpen());
             Snippet importSnippet = checkTypeAndConvertSnippet(snippet);
 
-            File file = importSnippet.getLocation();
-            if (file == null) {
+            File file;
+            List<File> files = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid());
+            if (files.isEmpty()) {
                 file = createFileForSnippet(importSnippet);
+            } else {
+                file = Iterables.getOnlyElement(files);
             }
 
             FileWriter writer = new FileWriter(file);

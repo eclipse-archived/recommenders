@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryContentChangedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryOpenedChangedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
 import org.eclipse.recommenders.rcp.IRcpService;
@@ -204,6 +205,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
     @Subscribe
     public void onEvent(SnippetRepositoryClosedChangedEvent e) throws IOException {
+        refreshInput();
+    }
+
+    @Subscribe
+    public void onEvent(SnippetRepositoryContentChangedEvent e) throws IOException {
         refreshInput();
     }
 
