@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,9 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 
 public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
 
@@ -62,7 +59,8 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
         }
     }
 
-    private Document readModelFromFile(File pomfile) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
+    private Document readModelFromFile(File pomfile) throws FileNotFoundException, IOException,
+            ParserConfigurationException, SAXException {
         InputStream pomInputStream = null;
         try {
             pomInputStream = new FileInputStream(pomfile);
@@ -74,7 +72,8 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
         }
     }
 
-    private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Document model) throws XPathExpressionException {
+    private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Document model)
+            throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         String groupId = factory.newXPath().evaluate("/project/groupId/text()", model);
         String artifactId = factory.newXPath().evaluate("/project/artifactId/text()", model);

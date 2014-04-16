@@ -16,7 +16,6 @@ import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSI
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 
