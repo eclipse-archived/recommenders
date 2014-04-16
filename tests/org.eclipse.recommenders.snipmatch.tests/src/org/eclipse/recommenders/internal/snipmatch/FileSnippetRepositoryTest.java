@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.internal.snipmatch;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.UUID.nameUUIDFromBytes;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static com.google.common.collect.Iterables.getOnlyElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,7 +56,7 @@ public class FileSnippetRepositoryTest {
     @Test
     public void testDeleteSnippet() throws Exception {
         Snippet snippet = new Snippet(nameUUIDFromBytes("SnippetToDelete".getBytes()), SNIPPET_NAME, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         File snippetFile = storeSnippet(snippet, SNIPPET_NAME);
 
         sut.open();
@@ -73,7 +72,7 @@ public class FileSnippetRepositoryTest {
     @Test
     public void testDontDeleteSnippet() throws Exception {
         Snippet snippet = new Snippet(nameUUIDFromBytes("SnippetToKeep".getBytes()), SNIPPET_NAME, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         File snippetFile = storeSnippet(snippet, SNIPPET_NAME);
 
         sut.open();
@@ -90,9 +89,9 @@ public class FileSnippetRepositoryTest {
     @Test
     public void testDeleteOneKeepOneSnippet() throws Exception {
         Snippet snippetToDelete = new Snippet(nameUUIDFromBytes("SnippetToDelete".getBytes()), SNIPPET_NAME, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         Snippet snippetToKeep = new Snippet(nameUUIDFromBytes("SnippetToKeep".getBytes()), SNIPPET_NAME, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
 
         File snippetFileToDelete = storeSnippet(snippetToDelete, "snippetToDelete");
         File snippetFileToKeep = storeSnippet(snippetToKeep, "snippetToKeep");
@@ -112,8 +111,8 @@ public class FileSnippetRepositoryTest {
     @Test
     public void testHasSnippetCallForExistingUUID() throws Exception {
         UUID uuid = nameUUIDFromBytes("SnippetToKeep".getBytes());
-        Snippet snippet = new Snippet(uuid, SNIPPET_NAME, "", Collections.<String>emptyList(), "",
-                Collections.<ITypeName>emptySet());
+        Snippet snippet = new Snippet(uuid, SNIPPET_NAME, "", Collections.<String>emptyList(),
+                Collections.<String>emptyList(), "");
         storeSnippet(snippet, SNIPPET_NAME);
 
         sut.open();
@@ -193,7 +192,7 @@ public class FileSnippetRepositoryTest {
 
         String snippetName = "New Snippet";
         ISnippet snippet = new Snippet(nameUUIDFromBytes(snippetName.getBytes()), snippetName, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         sut.importSnippet(snippet);
 
         assertThat(getOnlyElement(sut.getSnippets()).getProposal(), is(snippet));
@@ -203,12 +202,12 @@ public class FileSnippetRepositoryTest {
     public void testImportOfNewSnippetIfSnippetWithSameNameAlreadyExists() throws Exception {
         String snippetName = "New Snippet";
         Snippet originalSnippet = new Snippet(nameUUIDFromBytes(snippetName.getBytes()), snippetName, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         storeSnippet(originalSnippet, snippetName);
         sut.open();
 
         Snippet otherSnippet = new Snippet(nameUUIDFromBytes("Other Snippet".getBytes()), snippetName, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
 
         sut.importSnippet(otherSnippet);
 
@@ -219,7 +218,7 @@ public class FileSnippetRepositoryTest {
     public void testImportSnippetWithModifiedMetaData() throws Exception {
         String snippetName = "New Snippet";
         Snippet originalSnippet1 = new Snippet(nameUUIDFromBytes(snippetName.getBytes()), snippetName, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         storeSnippet(originalSnippet1, snippetName);
         Snippet originalSnippet = originalSnippet1;
 
@@ -237,7 +236,7 @@ public class FileSnippetRepositoryTest {
     public void testImportSnippetWithModifiedCode() throws Exception {
         String snippetName = "New Snippet";
         Snippet originalSnippet1 = new Snippet(nameUUIDFromBytes(snippetName.getBytes()), snippetName, "",
-                Collections.<String>emptyList(), "", Collections.<ITypeName>emptySet());
+                Collections.<String>emptyList(), Collections.<String>emptyList(), "");
         storeSnippet(originalSnippet1, snippetName);
         Snippet originalSnippet = originalSnippet1;
 
@@ -246,7 +245,6 @@ public class FileSnippetRepositoryTest {
         Snippet copiedSnippet = Snippet.copy(originalSnippet);
         copiedSnippet.setCode("Modified Code");
         copiedSnippet.setUUID(nameUUIDFromBytes("ModifiedCodeSnippet".getBytes()));
-        copiedSnippet.setLocation(null);
 
         sut.importSnippet(copiedSnippet);
 
@@ -255,7 +253,6 @@ public class FileSnippetRepositoryTest {
 
     private File storeSnippet(Snippet snippet, String name) throws Exception {
         File jsonFile = new File(snippetsDir, name + DOT_JSON);
-        snippet.setLocation(jsonFile);
         GsonUtil.serialize(snippet, jsonFile);
         return jsonFile;
     }

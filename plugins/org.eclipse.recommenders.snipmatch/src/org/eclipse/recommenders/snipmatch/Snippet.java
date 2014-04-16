@@ -7,25 +7,20 @@
  *
  * Contributors:
  *    Madhuranga Lakjeewa - initial API and implementation.
+ *    Olav Lenz - change data structure of snippet
  */
 package org.eclipse.recommenders.snipmatch;
 
-import static java.util.Collections.singletonList;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
-import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -39,29 +34,26 @@ public class Snippet implements ISnippet {
     private String name;
     @SerializedName("description")
     private String description;
-    @SerializedName("aliases")
-    private List<String> keywords;
-    @SerializedName("types")
-    private Set<ITypeName> affectedTypes;
+    @SerializedName("keywords")
+    private List<String> keywords = Lists.newArrayList();
+    @SerializedName("tags")
+    private List<String> tags = Lists.newArrayList();
     @SerializedName("code")
     private String code;
 
-    private transient File location;
-
-    public Snippet(UUID uuid, String name, String description, List<String> keywords, String code,
-            Set<ITypeName> affectedTypes) {
+    public Snippet(UUID uuid, String name, String description, List<String> keywords, List<String> tags, String code) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
         ensureIsNotNull(keywords);
+        ensureIsNotNull(tags);
         ensureIsNotNull(code);
-        ensureIsNotNull(affectedTypes);
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.keywords = keywords;
+        this.tags = tags;
         this.code = code;
-        this.affectedTypes = affectedTypes;
     }
 
     protected Snippet() {
@@ -83,6 +75,11 @@ public class Snippet implements ISnippet {
     }
 
     @Override
+    public List<String> getTags() {
+        return ImmutableList.copyOf(tags);
+    }
+
+    @Override
     public String getCode() {
         return code;
     }
@@ -90,14 +87,6 @@ public class Snippet implements ISnippet {
     @Override
     public String getDescription() {
         return description;
-    }
-
-    public File getLocation() {
-        return location;
-    }
-
-    public void setLocation(File f) {
-        location = f;
     }
 
     public void setCode(String code) {
@@ -117,17 +106,13 @@ public class Snippet implements ISnippet {
         this.keywords.addAll(keywords);
     }
 
+    public void setTags(List<String> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
     public void setUUID(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public Set<ITypeName> getAffectedTypes() {
-        return affectedTypes != null ? ImmutableSet.copyOf(affectedTypes) : ImmutableSet.<ITypeName>of();
-    }
-
-    @Override
-    public List<String> getTags() {
-        return singletonList(getLocation().getParentFile().getName());
     }
 
     @Override
@@ -141,15 +126,8 @@ public class Snippet implements ISnippet {
     }
 
     public static Snippet copy(ISnippet snippet) {
-        if (snippet instanceof Snippet) {
-            Snippet master = (Snippet) snippet;
-            Snippet copy = new Snippet(master.getUuid(), master.getName(), master.getDescription(), Lists.newArrayList(master
-                    .getKeywords()), master.getCode(), master.getAffectedTypes());
-            copy.setLocation(master.getLocation());
-            return copy;
-        } else {
-            return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(),
-                    Lists.newArrayList(snippet.getKeywords()), snippet.getCode(), Sets.<ITypeName>newHashSet());
-        }
+        return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
+                .getKeywords()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
     }
 }
+
