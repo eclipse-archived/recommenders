@@ -41,6 +41,18 @@
 		<!-- http://checkstyle.sourceforge.net/config_imports.html#RedundantImport -->
 		<module name="RedundantImport"/>
 
+		<!-- http://checkstyle.sourceforge.net/config_metrics.html#CyclomaticComplexity -->
+		<module name="CyclomaticComplexity">
+			<property name="max" value="7"/>
+			<property name="severity" value="warning"/>
+		</module>
+
+		<!-- http://checkstyle.sourceforge.net/config_metrics.html#NPathComplexity -->
+		<module name="NPathComplexity">
+			<property name="max" value="200"/>
+			<property name="severity" value="warning"/>
+		</module>
+
 		<!-- http://checkstyle.sourceforge.net/config_misc.html#UpperEll -->
 		<module name="UpperEll"/>
 
