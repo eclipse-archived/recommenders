@@ -13,6 +13,7 @@
  */
 package org.eclipse.recommenders.models;
 
+import static org.eclipse.aether.ConfigurationProperties.PERSISTED_CHECKSUMS;
 import static org.eclipse.aether.repository.RepositoryPolicy.CHECKSUM_POLICY_FAIL;
 import static org.eclipse.aether.resolution.ArtifactDescriptorPolicy.IGNORE_MISSING;
 import static org.eclipse.aether.resolution.ResolutionErrorPolicy.*;
@@ -97,8 +98,10 @@ public class ModelRepository implements IModelRepository {
 
         // Do not expect POMs in a model repository.
         session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(IGNORE_MISSING));
-        // Do expect checksums.
+        // Do expect checksums...
         session.setChecksumPolicy(CHECKSUM_POLICY_FAIL);
+        // ...but do not store them.
+        session.setConfigProperty(PERSISTED_CHECKSUMS, false);
 
         // Use timestamps in snapshot artifacts' names; do not keep (duplicate) artifacts named "SNAPSHOT".
         session.setConfigProperty("aether.artifactResolver.snapshotNormalization", false);
