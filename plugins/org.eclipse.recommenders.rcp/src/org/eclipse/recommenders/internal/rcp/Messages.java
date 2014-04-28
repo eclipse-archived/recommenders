@@ -18,16 +18,6 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_DESCRIPTION_EMPTY;
 
-    public static String DIALOG_TITLE_SURVEY;
-
-    public static String DIALOG_MESSAGE_SURVEY;
-
-    public static String LINK_LABEL_TAKE_SURVEY_LATER;
-    public static String LINK_LABEL_TAKE_SURVEY;
-
-    public static String BUTTON_LABEL_YES;
-    public static String BUTTON_LABEL_NO;
-
     public static String JOB_INITIALIZE_PROJECTS;
 
     public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;

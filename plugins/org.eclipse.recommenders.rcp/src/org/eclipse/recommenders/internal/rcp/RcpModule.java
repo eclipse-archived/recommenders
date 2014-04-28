@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp;
 import static com.google.inject.Scopes.SINGLETON;
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
-import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_SHOW_DIALOG_JOB_DELAY_MILLIS;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.lang.reflect.Method;
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.core.resources.IWorkspace;
@@ -35,8 +33,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
@@ -80,7 +76,6 @@ public class RcpModule extends AbstractModule implements Module {
         requestStaticInjection(ASTStringUtils.class);
         requestStaticInjection(ASTNodeUtils.class);
         requestStaticInjection(AstBindings.class);
-        bind(Helper.class).asEagerSingleton();
         bind(SharedImages.class).in(SINGLETON);
         configureAstProvider();
         bindRcpServiceListener();
@@ -112,14 +107,6 @@ public class RcpModule extends AbstractModule implements Module {
                 "Recommenders-Bus-Thread-", //$NON-NLS-1$
                 1L, TimeUnit.MINUTES);
         return new AsyncEventBus("Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
-    }
-
-    @Provides
-    @Singleton
-    public RcpPreferences providePreferences(IWorkbench wb) {
-        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        RcpPreferences prefs = ContextInjectionFactory.make(RcpPreferences.class, context);
-        return prefs;
     }
 
     @Provides
@@ -193,7 +180,7 @@ public class RcpModule extends AbstractModule implements Module {
             if (isRunningInUiThread()) {
                 finder.call();
             } else {
-                final FutureTask<IWorkbenchPage> task = new FutureTask(finder);
+                final FutureTask<IWorkbenchPage> task = new FutureTask<IWorkbenchPage>(finder);
                 Display.getDefault().asyncExec(task);
                 task.get(2, TimeUnit.SECONDS);
             }
@@ -233,20 +220,6 @@ public class RcpModule extends AbstractModule implements Module {
                 return contains;
             }
             return false;
-        }
-    }
-
-    static class Helper {
-
-        @Inject
-        JavaElementSelectionService provider;
-
-        @Inject
-        JavaModelEventsService JavaModelEventsService;
-
-        @Inject
-        public Helper(ShowSurveyDialogJob job) {
-            job.schedule(SURVEY_SHOW_DIALOG_JOB_DELAY_MILLIS);
         }
     }
 
