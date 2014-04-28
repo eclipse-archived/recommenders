@@ -47,7 +47,7 @@
 		<!-- http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle -->
 		<module name="ArrayTypeStyle">
 			<!-- Disallow C-style array type declarations like "String args[]". -->
-			<property name="javaStyle" value="true" />
+			<property name="javaStyle" value="true"/>
 		</module>
 
 		<!-- http://checkstyle.sourceforge.net/config_modifier.html#ModifierOrder -->
@@ -95,6 +95,23 @@
 
 		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#GenericWhitespace -->
 		<module name="GenericWhitespace"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceAfter -->
+		<module name="NoWhitespaceAfter">
+			<!-- All tokens except ARRAY_INIT. -->
+			<property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+			<property name="allowLineBreaks" value="false"/>
+		</module>
+
+		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceBefore -->
+		<module name="NoWhitespaceBefore">
+			<property name="tokens" value="SEMI, POST_DEC, POST_INC"/>
+			<property name="allowLineBreaks" value="false"/>
+		</module>
+		<module name="NoWhitespaceBefore">
+			<property name="tokens" value="DOT"/>
+			<property name="allowLineBreaks" value="true"/>
+		</module>
 
 		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#TypecastParenPad -->
 		<module name="TypecastParenPad"/>
@@ -152,6 +169,7 @@
 				STAR,
 				STAR_ASSIGN,
 				TYPE_EXTENSION_AND"/>
+			<property name="ignoreEnhancedForColon" value="false"/>
 		</module>
 	</module>
 </module>
