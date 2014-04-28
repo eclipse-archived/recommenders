@@ -94,16 +94,16 @@
 <unit id="com.google.inject.assistedinject.source" version="3.0.0.v201402270930"/>
 <unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
 <unit id="com.google.inject.multibindings.source" version="3.0.0.v201402270930"/>
-<unit id="com.google.guava" version="15.0.0.v201402241730"/>
-<unit id="com.google.guava.source" version="15.0.0.v201402241730"/>
+<unit id="com.google.guava" version="15.0.0.v201403281430"/>
+<unit id="com.google.guava.source" version="15.0.0.v201403281430"/>
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
 <unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
 <unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
-<unit id="org.apache.commons.lang3" version="3.1.0.v201402241730"/>
-<unit id="org.apache.commons.lang3.source" version="3.1.0.v201402241730"/>
+<unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
+<unit id="org.apache.commons.lang3.source" version="3.1.0.v201403281430"/>
 <!-- This location points to the latest stable build, as not all dependencies are part of the recommended build for Kepler SR2. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
 </location>
