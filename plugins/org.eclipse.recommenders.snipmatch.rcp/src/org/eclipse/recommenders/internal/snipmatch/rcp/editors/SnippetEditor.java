@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
@@ -52,12 +53,12 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
     @Override
     protected void addPages() {
         try {
-            metadataEditorPage = new SnippetMetadataPage(this, "meta", "Metadata");
+            metadataEditorPage = new SnippetMetadataPage(this, "meta", Messages.EDITOR_PAGE_NAME_METADATA); //$NON-NLS-1$
             addPage(metadataEditorPage);
-            sourceEditorPage = new SnippetSourcePage(this, "source", "Snippet Source");
+            sourceEditorPage = new SnippetSourcePage(this, "source", Messages.EDITOR_PAGE_NAME_SOURCE); //$NON-NLS-1$
             addPage(sourceEditorPage);
         } catch (PartInitException e) {
-            LOG.error("Exception while adding editor pages.", e);
+            LOG.error("Exception while adding editor pages.", e); //$NON-NLS-1$
         }
     }
 
@@ -86,20 +87,18 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         ISnippetRepository repo = input.getRepository();
 
         if (repo == null) {
-            MessageDialog.openError(getSite().getShell(), "Error while storing snippet.",
-                    "No repository available to store changed snippet.");
+            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET,
+                    Messages.DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE);
             return;
         }
 
         ISnippet oldSnippet = input.getOldSnippet();
 
         if (!snippet.getCode().equals(oldSnippet.getCode())) {
-            int status = new MessageDialog(
-                    getSite().getShell(),
-                    "Save snippet.",
-                    null,
-                    "You changed the snippet’s source. Do you want to overwrite the original snippet or store your changes as a new snippet?",
-                    MessageDialog.QUESTION, new String[] { "Overwrite", "Store as New", "Cancel" }, 0).open();
+            int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
+                    Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
+                            Messages.DIALOG_OPTION_OVERWRITE, Messages.DIALOG_OPTION_STORE_AS_NEW,
+                            Messages.DIALOG_OPTION_CANCEL }, 0).open();
 
             if (status == 1) {
                 // Store as new
@@ -119,7 +118,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             setPartName(getEditorInput().getName());
             setDirty(false);
         } catch (IOException e) {
-            LOG.error("Exception while storing snippet.", e);
+            LOG.error("Exception while storing snippet.", e); //$NON-NLS-1$
         }
     }
 

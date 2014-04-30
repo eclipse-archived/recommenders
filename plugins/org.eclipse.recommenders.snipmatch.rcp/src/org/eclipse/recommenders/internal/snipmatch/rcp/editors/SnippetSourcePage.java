@@ -52,7 +52,7 @@ public class SnippetSourcePage extends FormPage {
         managedForm.getForm().getBody().setLayout(new FillLayout(SWT.HORIZONTAL));
 
         txtCode = managedForm.getToolkit()
-                .createText(managedForm.getForm().getBody(), "New Text", SWT.WRAP | SWT.MULTI);
+                .createText(managedForm.getForm().getBody(), "New Text", SWT.WRAP | SWT.MULTI); //$NON-NLS-1$
         txtCode.setEditable(true);
 
         initDataBindings();
@@ -63,7 +63,7 @@ public class SnippetSourcePage extends FormPage {
 
         // code
         IObservableValue wpTxtCode = text(SWT.Modify).observe(txtCode);
-        IObservableValue ppCode = value(Snippet.class, "code", String.class).observe(snippet);
+        IObservableValue ppCode = value(Snippet.class, "code", String.class).observe(snippet); //$NON-NLS-1$
         ctx.bindValue(wpTxtCode, ppCode, null, null);
 
         for (Object o : ctx.getValidationStatusProviders()) {

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 
@@ -62,14 +63,14 @@ public class SnippetProposal extends TemplateProposal {
     public String getAdditionalProposalInfo() {
         StringBuilder additionalProposalInfo = new StringBuilder();
         if (!valid) {
-            additionalProposalInfo.append("// XXX Cannot apply snippet at cursor position");
+            additionalProposalInfo.append(format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); //$NON-NLS-2$
             additionalProposalInfo.append(LINE_SEPARATOR);
-            additionalProposalInfo.append("// FIXME Reposition cursor");
+            additionalProposalInfo.append(format(Messages.WARNING_REPOSITION_CURSOR, "// FIXME")); //$NON-NLS-2$
             additionalProposalInfo.append(LINE_SEPARATOR);
             additionalProposalInfo.append(LINE_SEPARATOR);
         }
         if (!isEmpty(snippet.getDescription())) {
-            additionalProposalInfo.append("// ");
+            additionalProposalInfo.append("// "); //$NON-NLS-1$
             additionalProposalInfo.append(snippet.getDescription());
             additionalProposalInfo.append(LINE_SEPARATOR);
             return additionalProposalInfo + super.getAdditionalProposalInfo();
