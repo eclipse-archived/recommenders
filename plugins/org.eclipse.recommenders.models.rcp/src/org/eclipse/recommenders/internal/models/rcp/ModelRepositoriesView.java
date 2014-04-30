@@ -12,19 +12,11 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.text.MessageFormat.format;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_URL_LIST;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_ADD_REPOSITORY;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_COLLAPSE_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_DELETE;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_EXPAND_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REMOVE_REPOSITORY;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_BULLET_BLUE;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CHECK_GREEN;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_CROSS_RED;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_REPOSITORY;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,8 +55,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ILazyTreeContentProvider;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -97,6 +89,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
@@ -104,16 +97,13 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -141,7 +131,8 @@ public class ModelRepositoriesView extends ViewPart {
     private final EventBus bus;
 
     private TreeViewer treeViewer;
-    private List<KnownCoordinate> values = Lists.newArrayList();
+
+    private Multimap<String, KnownCoordinate> coordinatesGroupedByRepo = LinkedListMultimap.create();
 
     private Text txtSearch;
 
@@ -196,7 +187,7 @@ public class ModelRepositoriesView extends ViewPart {
         composite.setLayout(treeLayout);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+        treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(treeViewer);
         tree = treeViewer.getTree();
         tree.setHeaderVisible(true);
@@ -216,7 +207,8 @@ public class ModelRepositoriesView extends ViewPart {
                     String url = (String) element;
                     text.append(url);
                     text.append(" "); //$NON-NLS-1$
-                    text.append(format(Messages.TABLE_CELL_SUFFIX_KNOWN_COORDINATES, fetchNumberOfModels(url)), StyledString.COUNTER_STYLER);
+                    text.append(format(Messages.TABLE_CELL_SUFFIX_KNOWN_COORDINATES, fetchNumberOfModels(url)),
+                            StyledString.COUNTER_STYLER);
                     cell.setImage(images.getImage(OBJ_REPOSITORY));
                 }
                 if (element instanceof KnownCoordinate) {
@@ -233,8 +225,8 @@ public class ModelRepositoriesView extends ViewPart {
         for (String classifier : modelClassifiers) {
             newColumn(treeLayout, classifier, minWidth);
         }
-
-        treeViewer.setContentProvider(new ITreeContentProvider() {
+        treeViewer.setUseHashlookup(true);
+        treeViewer.setContentProvider(new ILazyTreeContentProvider() {
 
             @Override
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -245,11 +237,38 @@ public class ModelRepositoriesView extends ViewPart {
             }
 
             @Override
-            public boolean hasChildren(Object element) {
-                if (element instanceof String) {
-                    return true;
+            public void updateElement(Object parent, int index) {
+                if (parent instanceof IViewSite) {
+                    String element = prefs.remotes[index];
+                    treeViewer.replace(parent, index, element);
+                    treeViewer.setChildCount(element, getChildren(element).length);
+                } else if (parent instanceof String) {
+                    treeViewer.replace(parent, index, getChildren(parent)[index]);
                 }
-                return false;
+            }
+
+            private Object[] getChildren(Object element) {
+                if (element instanceof String) {
+                    return coordinatesGroupedByRepo.get((String) element).toArray();
+                }
+                return new Object[0];
+            }
+
+            @Override
+            public void updateChildCount(Object element, int currentChildCount) {
+                int count = 0;
+
+                if (element instanceof IViewSite) {
+                    count = prefs.remotes.length;
+                }
+
+                if (contains(prefs.remotes, element)) {
+                    count = getChildren(element).length;
+                }
+
+                if (count != currentChildCount) {
+                    treeViewer.setChildCount(element, count);
+                }
             }
 
             @Override
@@ -259,21 +278,6 @@ public class ModelRepositoriesView extends ViewPart {
                     return v.url;
                 }
                 return null;
-            }
-
-            @Override
-            public Object[] getElements(Object inputElement) {
-                return prefs.remotes;
-            }
-
-            @Override
-            public Object[] getChildren(Object parentElement) {
-                if (parentElement instanceof String) {
-                    String url = (String) parentElement;
-                    ImmutableListMultimap<String, KnownCoordinate> multimap = groupByUrl(values);
-                    return multimap.get(url).toArray();
-                }
-                return new Object[0];
             }
         });
 
@@ -304,7 +308,8 @@ public class ModelRepositoriesView extends ViewPart {
             }
         });
 
-        initializeContent();
+        treeViewer.setInput(getViewSite());
+        refreshData();
 
         addRemoteRepositoryAction = new Action() {
             @Override
@@ -314,7 +319,8 @@ public class ModelRepositoriesView extends ViewPart {
         };
 
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-        addAction(Messages.TOOLBAR_TOOLTIP_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, toolBarManager, addRemoteRepositoryAction);
+        addAction(Messages.TOOLBAR_TOOLTIP_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, toolBarManager,
+                addRemoteRepositoryAction);
 
         addAction(Messages.TOOLBAR_TOOLTIP_REFRESH, ELCL_REFRESH, toolBarManager, new Action() {
             @Override
@@ -362,18 +368,69 @@ public class ModelRepositoriesView extends ViewPart {
         return maxLength;
     }
 
-    private ImmutableListMultimap<String, KnownCoordinate> groupByUrl(List<KnownCoordinate> values) {
-        return Multimaps.index(values, new Function<KnownCoordinate, String>() {
+    private void refreshData() {
+        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
+            {
+                schedule();
+            }
 
             @Override
-            public String apply(KnownCoordinate arg0) {
-                return arg0.url;
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                Multimap<String, ModelCoordinate> fetchedCoordinates = fetchCoordinatesGroupedByRepo();
+
+                coordinatesGroupedByRepo.clear();
+                for (Entry<String, Collection<ModelCoordinate>> entry : fetchedCoordinates.asMap().entrySet()) {
+                    coordinatesGroupedByRepo
+                            .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
+                }
+
+                treeViewer.setInput(getViewSite());
+                return Status.OK_STATUS;
             }
-        });
+        };
+    }
+
+    private Multimap<String, ModelCoordinate> fetchCoordinatesGroupedByRepo() {
+        Multimap<String, ModelCoordinate> coordinatesGroupedByRepo = LinkedListMultimap.create();
+
+        for (String classifier : modelClassifiers) {
+            addCoordinateToIndex(coordinatesGroupedByRepo, classifier);
+        }
+
+        return coordinatesGroupedByRepo;
+    }
+
+    private void addCoordinateToIndex(Multimap<String, ModelCoordinate> coordinatesGroupedByRepo, String classifier) {
+        for (ModelCoordinate mc : index.getKnownModels(classifier)) {
+            Optional<String> hint = mc.getHint(ModelCoordinate.HINT_REPOSITORY_URL);
+            if (hint.isPresent()) {
+                coordinatesGroupedByRepo.put(hint.get(), mc);
+            }
+        }
+    }
+
+    private List<KnownCoordinate> createCoordiantes(String url, Collection<ModelCoordinate> modelCoordinates) {
+        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = groupByProjectCoordinate(modelCoordinates);
+
+        List<KnownCoordinate> coordinates = Lists.newArrayList();
+        for (ProjectCoordinate pc : coordinatesGroupedByProjectCoordinate.keySet()) {
+            coordinates.add(new KnownCoordinate(url, pc, coordinatesGroupedByProjectCoordinate.get(pc)));
+        }
+
+        return coordinates;
+    }
+
+    private Multimap<ProjectCoordinate, ModelCoordinate> groupByProjectCoordinate(Collection<ModelCoordinate> modelCoordinates) {
+        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = LinkedListMultimap.create();
+
+        for (ModelCoordinate modelCoordinate : modelCoordinates) {
+            coordinatesGroupedByProjectCoordinate.put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+        }
+        return coordinatesGroupedByProjectCoordinate;
     }
 
     protected int fetchNumberOfModels(String url) {
-        return groupByUrl(values).get(url).size();
+        return coordinatesGroupedByRepo.get(url).size();
     }
 
     public class KnownCoordinate {
@@ -452,17 +509,19 @@ public class ModelRepositoriesView extends ViewPart {
                 }
 
                 if (isValidType(treeViewer.getSelection(), String.class)) {
-                    addAction(Messages.MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, menuManager, addRemoteRepositoryAction);
+                    addAction(Messages.MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, menuManager,
+                            addRemoteRepositoryAction);
 
                     final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
                     if (url.isPresent() && prefs.remotes.length > 1) {
-                        addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager, new Action() {
-                            @Override
-                            public void run() {
-                                deleteRepository(url.get());
-                                refreshData();
-                            }
-                        });
+                        addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
+                                new Action() {
+                                    @Override
+                                    public void run() {
+                                        deleteRepository(url.get());
+                                        refreshData();
+                                    }
+                                });
                     }
                 }
             }
@@ -520,57 +579,6 @@ public class ModelRepositoriesView extends ViewPart {
         });
     }
 
-    private void initializeContent() {
-        Multimap<String, ModelCoordinate> groupedByRepository = fetchDataGroupedByRepository();
-
-        values = Lists.newArrayList();
-        for (Entry<String, Collection<ModelCoordinate>> entry : groupedByRepository.asMap().entrySet()) {
-            values.addAll(createValues(entry.getKey(), entry.getValue()));
-        }
-
-        treeViewer.setInput(values);
-    }
-
-    private List<KnownCoordinate> createValues(String url, Collection<ModelCoordinate> collection) {
-        Multimap<ProjectCoordinate, ModelCoordinate> map = groupDataByProjectCoordinate(collection);
-
-        List<KnownCoordinate> values = Lists.newArrayList();
-        for (ProjectCoordinate rep : map.keySet()) {
-            values.add(new KnownCoordinate(url, rep, map.get(rep)));
-        }
-
-        return values;
-    }
-
-    private Multimap<String, ModelCoordinate> fetchDataGroupedByRepository() {
-        Multimap<String, ModelCoordinate> temp = LinkedListMultimap.create();
-
-        for (String classifier : modelClassifiers) {
-            addModelCoordinateToIndex(temp, classifier);
-        }
-
-        return temp;
-    }
-
-    private void addModelCoordinateToIndex(Multimap<String, ModelCoordinate> temp, String classifier) {
-        for (ModelCoordinate mc : index.getKnownModels(classifier)) {
-            Optional<String> hint = mc.getHint(ModelCoordinate.HINT_REPOSITORY_URL);
-            if (hint.isPresent()) {
-                temp.put(hint.get(), mc);
-            }
-        }
-    }
-
-    private Multimap<ProjectCoordinate, ModelCoordinate> groupDataByProjectCoordinate(
-            Collection<ModelCoordinate> collection) {
-        Multimap<ProjectCoordinate, ModelCoordinate> map = LinkedListMultimap.create();
-
-        for (ModelCoordinate modelCoordinate : collection) {
-            map.put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
-        }
-        return map;
-    }
-
     @Override
     public void setFocus() {
         tree.setFocus();
@@ -583,7 +591,9 @@ public class ModelRepositoriesView extends ViewPart {
         patternFilter.setPattern("*" + filter); //$NON-NLS-1$
         treeViewer.setFilters(new ViewerFilter[] { patternFilter });
         treeViewer.getTree().setRedraw(true);
-        treeViewer.expandAll();
+        if (!isNullOrEmpty(filter)) {
+            treeViewer.expandAll();
+        }
     }
 
     @Override
@@ -610,7 +620,8 @@ public class ModelRepositoriesView extends ViewPart {
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 KnownCoordinate key = createKey(e.model);
-                KnownCoordinate element = Iterables.tryFind(values, Predicates.equalTo(key)).orNull();
+                KnownCoordinate element = Iterables.tryFind(coordinatesGroupedByRepo.get(key.url),
+                        Predicates.equalTo(key)).orNull();
                 if (element != null) {
                     treeViewer.update(element, null);
                 }
@@ -626,20 +637,6 @@ public class ModelRepositoriesView extends ViewPart {
                 return null;
             }
         }.schedule();
-    }
-
-    private void refreshData() {
-        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
-            {
-                schedule();
-            }
-
-            @Override
-            public IStatus runInUIThread(IProgressMonitor monitor) {
-                initializeContent();
-                return Status.OK_STATUS;
-            }
-        };
     }
 
     private void addRemoteRepository() {
