@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryUrlChangedEvent;
 
 import com.google.common.eventbus.EventBus;
 
@@ -29,7 +29,7 @@ public class SnipmatchRcpPreferences {
         String old = location;
         location = newValue;
         if (old != null) {
-            bus.post(new SnippetRepositoryChangedEvent());
+            bus.post(new SnippetRepositoryUrlChangedEvent());
         }
     }
 
