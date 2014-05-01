@@ -13,7 +13,8 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static org.eclipse.core.databinding.beans.PojoProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 
 import java.util.UUID;
@@ -27,6 +28,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -113,13 +116,7 @@ public class SnippetMetadataPage extends FormPage {
         btnAddKeyword.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                new InputDialog(btnContainer.getShell(), "Enter new keyword", "Enter a new keyword", "", null) {
-                    @Override
-                    protected void okPressed() {
-                        ppKeywords.add(getValue());
-                        super.okPressed();
-                    }
-                }.open();
+                createKeywordInputDialog(btnContainer.getShell()).open();
             }
         });
         btnAddKeyword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -143,6 +140,26 @@ public class SnippetMetadataPage extends FormPage {
         txtUuid.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         initDataBindings();
+    }
+
+    private InputDialog createKeywordInputDialog(Shell shell) {
+        IInputValidator validator = new IInputValidator() {
+
+            @Override
+            public String isValid(String newText) {
+                if (snippet.getKeywords().contains(newText)) {
+                    return "Keyword already added.";
+                }
+                return null;
+            }
+        };
+        return new InputDialog(shell, "Enter new keyword", "Enter a new keyword", "", validator) {
+            @Override
+            protected void okPressed() {
+                ppKeywords.add(getValue());
+                super.okPressed();
+            }
+        };
     }
 
     @Override
