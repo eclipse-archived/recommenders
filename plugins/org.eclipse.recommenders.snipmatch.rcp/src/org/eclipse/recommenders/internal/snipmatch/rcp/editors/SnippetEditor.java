@@ -34,7 +34,9 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
     private static Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
     private boolean dirty;
+
     private SnippetMetadataPage metadataEditorPage;
+    private SnippetSourcePage sourceEditorPage;
 
     public SnippetEditor() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
@@ -52,7 +54,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         try {
             metadataEditorPage = new SnippetMetadataPage(this, "meta", "Metadata");
             addPage(metadataEditorPage);
-            addPage(new SnippetSourcePage(this, "source", "Snippet Source"));
+            sourceEditorPage = new SnippetSourcePage(this, "source", "Snippet Source");
+            addPage(sourceEditorPage);
         } catch (PartInitException e) {
             LOG.error("Exception while adding editor pages.", e);
         }
@@ -89,18 +92,42 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         }
 
         ISnippet oldSnippet = input.getOldSnippet();
+
         if (!snippet.getCode().equals(oldSnippet.getCode())) {
-            snippet.setUUID(nameUUIDFromBytes(snippet.getCode().getBytes()));
-            snippet.setLocation(null);
-            metadataEditorPage.update();
+            int status = new MessageDialog(
+                    getSite().getShell(),
+                    "Save snippet.",
+                    null,
+                    "You changed the snippet’s source. Do you want to overwrite the original snippet or store your changes as a new snippet?",
+                    MessageDialog.QUESTION, new String[] { "Overwrite", "Store as New", "Cancel" }, 0).open();
+
+            if (status == 1) {
+                // Store as new
+                snippet.setUUID(nameUUIDFromBytes(snippet.getCode().getBytes()));
+                setInput(new SnippetEditorInput(snippet, input.getRepository()));
+                updateEditorPages();
+            }
+
+            if (status == 2) {
+                // Cancel
+                return;
+            }
         }
 
         try {
             repo.importSnippet(snippet);
+            setPartName(getEditorInput().getName());
             setDirty(false);
         } catch (IOException e) {
             LOG.error("Exception while storing snippet.", e);
         }
+    }
+
+    private void updateEditorPages() {
+        metadataEditorPage.init(getEditorSite(), getEditorInput());
+        sourceEditorPage.init(getEditorSite(), getEditorInput());
+        metadataEditorPage.update();
+        sourceEditorPage.update();
     }
 
     @Override

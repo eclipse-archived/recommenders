@@ -195,6 +195,12 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public static class SnippetRepositoryOpenedChangedEvent {
     }
 
+    /**
+     * Triggered when a snippet was imported.
+     */
+    public static class SnippetRepositoryContentChangedEvent {
+    }
+
     @Override
     public String getRepositoryLocation() {
         readLock.lock();
@@ -258,6 +264,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         try {
             Preconditions.checkState(isOpen());
             delegate.importSnippet(snippet);
+            bus.post(new SnippetRepositoryContentChangedEvent());
         } finally {
             writeLock.unlock();
         }

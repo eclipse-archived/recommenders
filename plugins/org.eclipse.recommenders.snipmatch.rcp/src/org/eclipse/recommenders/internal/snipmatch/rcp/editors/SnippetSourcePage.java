@@ -55,10 +55,10 @@ public class SnippetSourcePage extends FormPage {
                 .createText(managedForm.getForm().getBody(), "New Text", SWT.WRAP | SWT.MULTI);
         txtCode.setEditable(true);
 
-        initDatabinding();
+        initDataBindings();
     }
 
-    private void initDatabinding() {
+    private void initDataBindings() {
         ctx = new DataBindingContext();
 
         // code
@@ -86,6 +86,11 @@ public class SnippetSourcePage extends FormPage {
         super.init(site, input);
     }
 
+    public void update() {
+        ctx.dispose();
+        initDataBindings();
+    }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -95,4 +100,5 @@ public class SnippetSourcePage extends FormPage {
             ctx.dispose();
         }
     }
+
 }

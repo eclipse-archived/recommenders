@@ -164,27 +164,6 @@ public class SnippetMetadataPage extends FormPage {
         };
     }
 
-    @Override
-    public void init(IEditorSite site, IEditorInput input) {
-        snippet = ((SnippetEditorInput) input).getSnippet();
-        super.init(site, input);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        // TODO: ctx is sometimes null. this is a workaround, see that ctx is
-        // always initialized.
-        if (ctx != null) {
-            ctx.dispose();
-        }
-    }
-
-    public void update() {
-        ctx.dispose();
-        initDataBindings();
-    }
-
     protected void initDataBindings() {
         ctx = new DataBindingContext();
 
@@ -233,6 +212,27 @@ public class SnippetMetadataPage extends FormPage {
                     }
                 });
             }
+        }
+    }
+
+    @Override
+    public void init(IEditorSite site, IEditorInput input) {
+        snippet = ((SnippetEditorInput) input).getSnippet();
+        super.init(site, input);
+    }
+
+    public void update() {
+        ctx.dispose();
+        initDataBindings();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        // TODO: ctx is sometimes null. this is a workaround, see that ctx is
+        // always initialized.
+        if (ctx != null) {
+            ctx.dispose();
         }
     }
 
