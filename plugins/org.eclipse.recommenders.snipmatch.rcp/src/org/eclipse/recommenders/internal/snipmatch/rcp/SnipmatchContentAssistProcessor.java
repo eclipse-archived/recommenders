@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static org.eclipse.recommenders.internal.rcp.RcpPlugin.logError;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -47,8 +49,6 @@ import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -56,8 +56,6 @@ import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
-
-    private static Logger LOG = LoggerFactory.getLogger(SnipmatchContentAssistProcessor.class);
 
     private static final String CONTEXT_ID = "SnipMatch-Java-Context";
 
@@ -142,7 +140,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(snippet, template, ctx, region, image));
             } catch (Exception e) {
-                LOG.error("Error while creating snippet proposal", e);
+                logError(e, Constants.BUNDLE_ID, "Error while creating snippet proposal");
             }
         }
         return Iterables.toArray(proposals, ICompletionProposal.class);
