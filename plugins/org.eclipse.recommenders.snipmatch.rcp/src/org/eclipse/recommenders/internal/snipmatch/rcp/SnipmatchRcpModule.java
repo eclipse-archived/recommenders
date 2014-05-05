@@ -34,9 +34,9 @@ import com.google.inject.name.Named;
 
 public class SnipmatchRcpModule extends AbstractModule {
 
-    private static final String PROJECT_NAME = ".snipmatch";
+    private static final String PROJECT_NAME = ".snipmatch"; //$NON-NLS-1$
 
-    public static final String SNIPMATCH_BASEDIR = "SNIPMATCH_BASEDIR";
+    public static final String SNIPMATCH_BASEDIR = "SNIPMATCH_BASEDIR"; //$NON-NLS-1$
 
     @Override
     protected void configure() {

@@ -84,7 +84,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                 return;
             }
             if (openJob == null && !delegateOpen) {
-                openJob = new Job("Opening snippets repository") {
+                openJob = new Job(Messages.JOB_OPENING_SNIPPET_REPOSITORY) {
 
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
@@ -95,7 +95,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                             bus.post(new SnippetRepositoryOpenedChangedEvent());
                             return Status.OK_STATUS;
                         } catch (IOException e) {
-                            LOG.error("Exception while opening repository.", e);
+                            LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
                             return Status.CANCEL_STATUS;
                         }
                     }
@@ -123,7 +123,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                     try {
                         openJob.join();
                     } catch (InterruptedException e) {
-                        LOG.error("Failed to join open job", e);
+                        LOG.error("Failed to join open job", e); //$NON-NLS-1$
                     }
                     delegate.close();
                     bus.post(new SnippetRepositoryClosedChangedEvent());
@@ -207,7 +207,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         try {
             Preconditions.checkState(isOpen());
             if (!delegateOpen) {
-                return "";
+                return ""; //$NON-NLS-1$
             }
             return delegate.getRepositoryLocation();
         } finally {

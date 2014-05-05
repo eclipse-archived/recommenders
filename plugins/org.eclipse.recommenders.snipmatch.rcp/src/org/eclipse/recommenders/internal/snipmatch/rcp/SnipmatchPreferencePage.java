@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.P_SNIPPETS_REPO;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.PREF_SNIPPETS_REPO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,19 +31,19 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
     public SnipmatchPreferencePage() {
         super(GRID);
-        setDescription("Set Snipmatch preferences.");
+        setDescription(Messages.PREFPAGE_DESCRIPTION);
     }
 
     @Override
     public void createFieldEditors() {
-        snippetsRepoField = new StringButtonFieldEditor(P_SNIPPETS_REPO, "&Remote Snippets Repository:",
+        snippetsRepoField = new StringButtonFieldEditor(PREF_SNIPPETS_REPO, Messages.PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY,
                 getFieldEditorParent()) {
 
             @Override
             protected String changePressed() {
-                String url = getPreferenceStore().getDefaultString(P_SNIPPETS_REPO);
+                String url = getPreferenceStore().getDefaultString(PREF_SNIPPETS_REPO);
 
-                InputDialog d = new InputDialog(getShell(), "New Snippet Repository", "Enter snippet repository URL:",
+                InputDialog d = new InputDialog(getShell(), Messages.DIALOG_TITLE_NEW_SNIPPET_REPOSITORY, Messages.DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY,
                         url, new UriInputValidator());
                 if (d.open() == Window.OK) {
                     return d.getValue();

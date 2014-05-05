@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.jface.text.IDocument.DEFAULT_CONTENT_TYPE;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.P_SEARCH_BOX_BACKGROUND;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.PREF_SEARCH_BOX_BACKGROUND;
 
 import javax.inject.Inject;
 
@@ -110,7 +110,7 @@ public class SnipmatchCompletionEngine {
         assistant.enablePrefixCompletion(true);
         assistant.setContentAssistProcessor(processor, DEFAULT_CONTENT_TYPE);
         assistant.setInformationControlCreator(new TemplateInformationControlCreator(SWT.LEFT_TO_RIGHT));
-        assistant.setEmptyMessage("No snippets found.");
+        assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
         assistant.setRepeatedInvocationMode(true);
         assistant.setStatusLineVisible(true);
 
@@ -127,8 +127,8 @@ public class SnipmatchCompletionEngine {
     private void createSearchPopup() {
         Shell parentShell = ctx.getViewer().getTextWidget().getShell();
         searchShell = new Shell(parentShell, SWT.ON_TOP);
-        searchBg = colorRegistry.get(P_SEARCH_BOX_BACKGROUND);
-        searchFont = fontRegistry.get("org.eclipse.recommenders.snipmatch.rcp.searchTextFont");
+        searchBg = colorRegistry.get(PREF_SEARCH_BOX_BACKGROUND);
+        searchFont = fontRegistry.get("org.eclipse.recommenders.snipmatch.rcp.searchTextFont"); //$NON-NLS-1$
         searchShell.setLayout(new FillLayout());
         searchShell.addListener(SWT.Traverse, new Listener() {
 

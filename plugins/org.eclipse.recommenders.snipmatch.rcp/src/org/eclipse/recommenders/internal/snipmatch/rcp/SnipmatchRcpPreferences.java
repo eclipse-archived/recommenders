@@ -25,7 +25,7 @@ public class SnipmatchRcpPreferences {
     private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
 
     @Inject
-    public void setLocation(@Preference(Constants.P_SNIPPETS_REPO) String newValue) {
+    public void setLocation(@Preference(Constants.PREF_SNIPPETS_REPO) String newValue) {
         String old = location;
         location = newValue;
         if (old != null) {

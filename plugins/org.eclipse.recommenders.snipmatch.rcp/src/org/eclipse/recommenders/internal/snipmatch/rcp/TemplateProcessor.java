@@ -42,7 +42,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 public class TemplateProcessor {
 
     private TemplateContextType javaContextType;
-    private String contextId = "SnipMatch-Java-Context";
+    private String contextId = "SnipMatch-Java-Context"; //$NON-NLS-1$
 
     protected TemplateProcessor() {
         javaContextType = createContextType();
@@ -54,7 +54,7 @@ public class TemplateProcessor {
         activeEditor.setFocus();
         ISourceViewer sourceViewer = (ISourceViewer) activeEditor.getAdapter(ITextOperationTarget.class);
         Point range = sourceViewer.getSelectedRange();
-        Template template = new Template("", "", contextId, snippet.getCode(), true);
+        Template template = new Template("", "", contextId, snippet.getCode(), true); //$NON-NLS-1$ //$NON-NLS-2$
         IRegion region = new Region(range.x, range.y);
         ICompilationUnit cu = (ICompilationUnit) EditorUtility.getEditorInputJavaElement(activeEditor, false);
         Position p = new Position(range.x, range.y);
@@ -69,27 +69,27 @@ public class TemplateProcessor {
         contextType.initializeContextTypeResolvers();
 
         TemplateVariableResolver importsResolver = new ImportsResolver();
-        importsResolver.setType("import");
+        importsResolver.setType("import"); //$NON-NLS-1$
         contextType.addResolver(importsResolver);
 
         TemplateVariableResolver varResolver = new VarResolver();
-        varResolver.setType("var");
+        varResolver.setType("var"); //$NON-NLS-1$
         contextType.addResolver(varResolver);
 
         TemplateVariableResolver typeResolver = new TypeResolver();
-        typeResolver.setType("newType");
+        typeResolver.setType("newType"); //$NON-NLS-1$
         contextType.addResolver(typeResolver);
 
         TemplateVariableResolver linkResolver = new LinkResolver();
-        linkResolver.setType("link");
+        linkResolver.setType("link"); //$NON-NLS-1$
         contextType.addResolver(linkResolver);
 
         TemplateVariableResolver nameResolver = new NameResolver();
-        nameResolver.setType("newName");
+        nameResolver.setType("newName"); //$NON-NLS-1$
         contextType.addResolver(nameResolver);
 
         TemplateVariableResolver elementTypeResolver = new ElementTypeResolver();
-        elementTypeResolver.setType("elemType");
+        elementTypeResolver.setType("elemType"); //$NON-NLS-1$
         contextType.addResolver(elementTypeResolver);
 
         return contextType;

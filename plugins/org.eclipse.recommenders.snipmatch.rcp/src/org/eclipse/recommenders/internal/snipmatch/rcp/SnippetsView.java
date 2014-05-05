@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static java.text.MessageFormat.format;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -95,7 +96,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         composite.setLayout(new GridLayout(2, false));
 
         txtSearch = new Text(composite, SWT.BORDER | SWT.ICON_SEARCH | SWT.SEARCH | SWT.CANCEL);
-        txtSearch.setMessage("type filter text");
+        txtSearch.setMessage(Messages.SEARCH_PLACEHOLDER_FILTER_TEXT);
         txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSearch.addModifyListener(new ModifyListener() {
 
@@ -126,7 +127,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         btnAdd = new Button(composite, SWT.NONE);
         btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnAdd.setText("Add");
+        btnAdd.setText(Messages.SNIPPETS_VIEW_BUTTON_ADD);
         // TODO delete this line to reenable Add button
         btnAdd.setEnabled(false);
         btnAdd.addSelectionListener(new SelectionAdapter() {
@@ -139,7 +140,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         btnEdit = new Button(composite, SWT.NONE);
         btnEdit.setEnabled(false);
         btnEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnEdit.setText("Edit...");
+        btnEdit.setText(Messages.SNIPPETS_VIEW_BUTTON_EDIT);
         btnEdit.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -150,7 +151,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         btnRemove = new Button(composite, SWT.NONE);
         btnRemove.setEnabled(false);
         btnRemove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-        btnRemove.setText("Remove");
+        btnRemove.setText(Messages.SNIPPETS_VIEW_BUTTON_REMOVE);
         btnRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -168,7 +169,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         btnReIndex = new Button(composite, SWT.NONE);
         btnReIndex.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-        btnReIndex.setText("Refresh");
+        btnReIndex.setText(Messages.SNIPPETS_VIEW_BUTTON_REFRESH);
         btnReIndex.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -181,7 +182,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             public String getText(Object element) {
                 Recommendation<ISnippet> recommendation = cast(element);
                 ISnippet snippet = recommendation.getProposal();
-                return snippet.getName() + " - " + snippet.getDescription();
+                return format("{0} \u2013 {1}", snippet.getName(), snippet.getDescription()); //$NON-NLS-1$
             }
         });
         viewer.addOpenListener(new IOpenListener() {
@@ -214,7 +215,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void refreshInput() {
-        Job refreshJob = new Job("Refreshing Snippets View") {
+        Job refreshJob = new Job(Messages.JOB_REFRESHING_SNIPPETS_VIEW) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -243,7 +244,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             ISnippetRepository repository = findRepoForOriginalSnippet(snippet);
 
             final SnippetEditorInput input = new SnippetEditorInput(snippet, repository);
-            page.openEditor(input, "org.eclipse.recommenders.snipmatch.MultiPage");
+            page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"); //$NON-NLS-1$
         } catch (Exception e) {
             Throwables.propagate(e);
         }

@@ -19,11 +19,11 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String REPO_URL = "http://git.eclipse.org/gitroot/recommenders.incubator/org.eclipse.recommenders.snipmatch.snippets.git";
+    private static final String REPO_URL = "http://git.eclipse.org/gitroot/recommenders.incubator/org.eclipse.recommenders.snipmatch.snippets.git"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = new ScopedPreferenceStore(DefaultScope.INSTANCE, Constants.BUNDLE_ID);
-        store.setDefault(Constants.P_SNIPPETS_REPO, REPO_URL);
+        store.setDefault(Constants.PREF_SNIPPETS_REPO, REPO_URL);
     }
 }
