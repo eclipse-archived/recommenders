@@ -10,44 +10,32 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-import static org.eclipse.jface.databinding.viewers.ViewerProperties.checkedElements;
-import static org.eclipse.jface.layout.GridDataFactory.fillDefaults;
-import static org.eclipse.jface.layout.GridDataFactory.swtDefaults;
-import static org.eclipse.recommenders.internal.completion.rcp.Constants.RECOMMENDERS_ALL_CATEGORY_ID;
+import static org.eclipse.recommenders.internal.completion.rcp.Constants.PREF_SESSIONPROCESSORS;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.observable.set.IObservableSet;
-import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.ui.PreferenceConstants;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.IViewerObservableSet;
-import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
-import org.eclipse.jface.databinding.viewers.ObservableSetContentProvider;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
-import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor.EnabledSessionProcessorPredicate;
+import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptors;
 import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
-import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -55,161 +43,258 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
-public class CompletionsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class CompletionsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    Set<SessionProcessorDescriptor> processors;
-    Set<SessionProcessorDescriptor> enabled;
-    private CheckboxTableViewer viewer;
-    private DataBindingContext ctx;
-    private IViewerObservableSet checked;
-    private Button configureBtn;
-    private IViewerObservableValue selected;
-
-    @Inject
-    public CompletionsPreferencePage(SessionProcessorDescriptor[] pr) {
-        processors = ImmutableSet.copyOf(pr);
-        enabled = Sets.filter(processors, new EnabledSessionProcessorPredicate());
+    public CompletionsPreferencePage() {
+        super(GRID);
     }
 
     @Override
     public void init(IWorkbench workbench) {
+        setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_NAME));
         setMessage(Messages.PREFPAGE_TITLE_COMPLETIONS);
         setDescription(Messages.PREFPAGE_DESCRIPTION_COMPLETIONS);
     }
 
     @Override
-    protected Control createContents(Composite parent) {
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setLayoutData(fillDefaults().grab(true, true).create());
-        container.setLayout(new GridLayout(2, false));
+    protected void createFieldEditors() {
+        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, "label", getFieldEditorParent()));
+        addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement",
+                getFieldEditorParent()));
+    }
 
-        viewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER);
-        viewer.setSorter(new ViewerSorter());
-        viewer.getTable().setLayoutData(fillDefaults().hint(300, 150).grab(true, false).create());
-        ColumnViewerToolTipSupport.enableFor(viewer);
+    private final class SessionProcessorEditor extends FieldEditor {
 
-        configureBtn = new Button(container, SWT.PUSH);
-        configureBtn.setText(Messages.BUTTON_LABEL_CONFIGURE);
-        configureBtn.setLayoutData(swtDefaults().align(SWT.BEGINNING, SWT.BEGINNING).create());
-        configureBtn.setEnabled(false);
-        configureBtn.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                SessionProcessorDescriptor value = cast(selected.getValue());
-                String id = value.getPreferencePage().orNull();
-                PreferencesUtil.createPreferenceDialogOn(getShell(), id, null, null);
+        private CheckboxTableViewer tableViewer;
+        private Composite buttonBox;
+        private Button configureBtn;
+
+        private SessionProcessorEditor(String name, String labelText, Composite parent) {
+            super(name, labelText, parent);
+        }
+
+        @Override
+        protected void adjustForNumColumns(int numColumns) {
+        }
+
+        @Override
+        protected void doFillIntoGrid(Composite parent, int numColumns) {
+            Control control = getLabelControl(parent);
+            GridDataFactory.swtDefaults().span(numColumns, 1).applyTo(control);
+
+            tableViewer = getTableControl(parent);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
+            .applyTo(tableViewer.getTable());
+            tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    updateButtonStatus();
+                }
+            });
+
+            buttonBox = getButtonControl(parent);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonBox);
+        }
+
+        private CheckboxTableViewer getTableControl(Composite parent) {
+            CheckboxTableViewer tableViewer = CheckboxTableViewer.newCheckList(parent, SWT.BORDER | SWT.FULL_SELECTION);
+            tableViewer.setLabelProvider(new ColumnLabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    SessionProcessorDescriptor descriptor = cast(element);
+                    return descriptor.getName();
+                }
+
+                @Override
+                public String getToolTipText(Object element) {
+                    SessionProcessorDescriptor descriptor = cast(element);
+                    return descriptor.getDescription();
+                }
+
+                @Override
+                public Image getImage(Object element) {
+                    SessionProcessorDescriptor descriptor = cast(element);
+                    return descriptor.getIcon();
+                }
+            });
+            ColumnViewerToolTipSupport.enableFor(tableViewer);
+            tableViewer.setContentProvider(new ArrayContentProvider());
+            return tableViewer;
+        }
+
+        private Composite getButtonControl(Composite parent) {
+            Composite box = new Composite(parent, SWT.NONE);
+            GridLayoutFactory.fillDefaults().applyTo(box);
+
+            configureBtn = createButton(box, Messages.BUTTON_LABEL_CONFIGURE);
+
+            return box;
+        }
+
+        private Button createButton(Composite box, String text) {
+            Button button = new Button(box, SWT.PUSH);
+            button.setText(text);
+            button.setEnabled(false);
+            button.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
+                    SessionProcessorDescriptor descriptor = cast(selected.getFirstElement());
+                    String id = descriptor.getPreferencePage().orNull();
+                    PreferencesUtil.createPreferenceDialogOn(getShell(), id, null, null);
+                }
+            });
+
+            int widthHint = Math.max(convertHorizontalDLUsToPixels(button, IDialogConstants.BUTTON_WIDTH),
+                    button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+
+            GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).hint(widthHint, SWT.DEFAULT).applyTo(button);
+
+            return button;
+        }
+
+        private void updateButtonStatus() {
+            int selectionIndex = tableViewer.getTable().getSelectionIndex();
+            if (selectionIndex == -1) {
+                configureBtn.setEnabled(false);
+                return;
             }
-        });
+            IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
+            SessionProcessorDescriptor descriptor = cast(selected.getFirstElement());
+            configureBtn.setEnabled(descriptor.getPreferencePage().isPresent());
+        }
 
-        ContentAssistEnablementBlock enable = new ContentAssistEnablementBlock(container,
-                Messages.FIELD_LABEL_ENABLE_COMPLETION, RECOMMENDERS_ALL_CATEGORY_ID) {
+        @Override
+        protected void doLoad() {
+            String value = getPreferenceStore().getString(getPreferenceName());
+            load(value);
+        }
 
-            @Override
-            protected void additionalExcludedCompletionCategoriesUpdates(final boolean isEnabled, final Set<String> cats) {
-                if (isEnabled) {
-                    // enable subwords - disable mylyn and jdt
-                    cats.add(JDT_ALL_CATEGORY);
-                    cats.add(MYLYN_ALL_CATEGORY);
-                } else {
-                    // disable subwords - enable jdt -- or mylyn if installed.
-                    if (isMylynInstalled()) {
-                        cats.remove(MYLYN_ALL_CATEGORY);
-                    } else {
-                        cats.remove(JDT_ALL_CATEGORY);
-                    }
+        private void load(String value) {
+            List<SessionProcessorDescriptor> input = SessionProcessorDescriptors.fromString(value,
+                    SessionProcessorDescriptors.getRegisteredProcessors());
+            List<SessionProcessorDescriptor> checkedElements = Lists.newArrayList();
+            for (SessionProcessorDescriptor descriptor : input) {
+                if (descriptor.isEnabled()) {
+                    checkedElements.add(descriptor);
                 }
             }
 
-            @Override
-            public void loadSelection() {
-                String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
-                boolean deactivated = ArrayUtils.contains(excluded, RECOMMENDERS_ALL_CATEGORY_ID);
-                boolean mylynActive = isMylynInstalled() && !ArrayUtils.contains(excluded, MYLYN_ALL_CATEGORY);
-                boolean jdtActive = !ArrayUtils.contains(excluded, JDT_ALL_CATEGORY);
-                enablement.setSelection(!(deactivated || mylynActive || jdtActive));
-                enablement.setToolTipText(Messages.FIELD_TOOLTIP_ENABLE_COMPLETION);
-            }
-        };
-        enable.loadSelection();
-        Link contentAssistLink = new Link(container, SWT.NONE | SWT.WRAP);
-        contentAssistLink
-                .setLayoutData(GridDataFactory.swtDefaults().span(2, 1).align(SWT.FILL, SWT.BEGINNING).grab(true, false)
-                        .hint(convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT)
-                        .create());
-        contentAssistLink.setText(Messages.PREFPAGE_FOOTER_COMPLETIONS);
-        contentAssistLink.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                PreferencesUtil.createPreferenceDialogOn(getShell(), "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced", null, null); //$NON-NLS-1$
-            }
-        });
-
-        initDataBindings();
-        return container;
-    }
-
-    protected void initDataBindings() {
-        ctx = new DataBindingContext();
-        ObservableSetContentProvider cp = new ObservableSetContentProvider();
-        viewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object o) {
-                return s(o).getName();
-            }
-
-            @Override
-            public Image getImage(Object o) {
-                return s(o).getIcon();
-            }
-
-            @Override
-            public String getToolTipText(Object o) {
-                return s(o).getDescription();
-            }
-
-            private SessionProcessorDescriptor s(Object element) {
-                return cast(element);
-            }
-        });
-        viewer.setContentProvider(cp);
-        IObservableSet processors = Properties.selfSet(this.processors).observe(this.processors);
-        viewer.setInput(processors);
-        checked = checkedElements(SessionProcessorDescriptor.class).observe(viewer);
-        viewer.setCheckedElements(enabled.toArray());
-        selected = ViewersObservables.observeSinglePostSelection(viewer);
-        ISWTObservableValue configure = WidgetProperties.enabled().observe(configureBtn);
-        UpdateValueStrategy strategy = new UpdateValueStrategy();
-        strategy.setConverter(new ObjectToBooleanConverter() {
-            @Override
-            public Boolean convert(Object fromObject) {
-                Boolean convert = super.convert(fromObject);
-                SessionProcessorDescriptor value = cast(selected.getValue());
-                return convert && value.getPreferencePage().isPresent();
-            }
-
-        });
-        ctx.bindValue(selected, configure, strategy, null);
-    }
-
-    @Override
-    public boolean performOk() {
-        for (SessionProcessorDescriptor d : (Set<SessionProcessorDescriptor>) checked) {
-            d.setEnabled(true);
+            tableViewer.setInput(input);
+            tableViewer.setCheckedElements(checkedElements.toArray());
         }
-        for (SessionProcessorDescriptor d : Sets.difference(processors, checked)) {
-            d.setEnabled(false);
+
+        @Override
+        protected void doLoadDefault() {
+            String value = getPreferenceStore().getDefaultString(getPreferenceName());
+            load(value);
+            updateButtonStatus();
         }
-        return super.performOk();
+
+        @Override
+        protected void doStore() {
+            List<SessionProcessorDescriptor> descriptors = cast(tableViewer.getInput());
+            for (SessionProcessorDescriptor descriptor : descriptors) {
+                descriptor.setEnabled(tableViewer.getChecked(descriptor));
+            }
+            String newValue = SessionProcessorDescriptors.toString(descriptors);
+            getPreferenceStore().setValue(getPreferenceName(), newValue);
+            updateButtonStatus();
+        }
+
+        @Override
+        public int getNumberOfControls() {
+            return 2;
+        }
     }
 
-    @Override
-    public void dispose() {
-        ctx.dispose();
+    private final class ContentAssistEnablementEditor extends FieldEditor {
+
+        public ContentAssistEnablementEditor(String recommendersAllCategoryId, String string,
+                Composite fieldEditorParent) {
+            super(recommendersAllCategoryId, string, fieldEditorParent);
+        }
+
+        @Override
+        protected void adjustForNumColumns(int numColumns) {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        protected void doFillIntoGrid(Composite parent, int numColumns) {
+            ContentAssistEnablementBlock enable = new ContentAssistEnablementBlock(parent,
+                    Messages.FIELD_LABEL_ENABLE_COMPLETION, Constants.RECOMMENDERS_ALL_CATEGORY_ID) {
+
+                @Override
+                protected void additionalExcludedCompletionCategoriesUpdates(final boolean isEnabled,
+                        final Set<String> cats) {
+                    if (isEnabled) {
+                        // enable subwords - disable mylyn and jdt
+                        cats.add(JDT_ALL_CATEGORY);
+                        cats.add(MYLYN_ALL_CATEGORY);
+                    } else {
+                        // disable subwords - enable jdt -- or mylyn if installed.
+                        if (isMylynInstalled()) {
+                            cats.remove(MYLYN_ALL_CATEGORY);
+                        } else {
+                            cats.remove(JDT_ALL_CATEGORY);
+                        }
+                    }
+                }
+
+                @Override
+                public void loadSelection() {
+                    String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
+                    boolean deactivated = ArrayUtils.contains(excluded, Constants.RECOMMENDERS_ALL_CATEGORY_ID);
+                    boolean mylynActive = isMylynInstalled() && !ArrayUtils.contains(excluded, MYLYN_ALL_CATEGORY);
+                    boolean jdtActive = !ArrayUtils.contains(excluded, JDT_ALL_CATEGORY);
+                    enablement.setSelection(!(deactivated || mylynActive || jdtActive));
+                    enablement.setToolTipText(Messages.FIELD_TOOLTIP_ENABLE_COMPLETION);
+                }
+            };
+            enable.loadSelection();
+            Link contentAssistLink = new Link(parent, SWT.NONE | SWT.WRAP);
+            contentAssistLink.setLayoutData(GridDataFactory
+                    .swtDefaults()
+                    .span(2, 1)
+                    .align(SWT.FILL, SWT.BEGINNING)
+                    .grab(true, false)
+                    .hint(super.convertHorizontalDLUsToPixels(contentAssistLink,
+                            IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT).create());
+            contentAssistLink.setText(Messages.PREFPAGE_FOOTER_COMPLETIONS);
+            contentAssistLink.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    PreferencesUtil.createPreferenceDialogOn(getShell(),
+                            "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced", null, null); //$NON-NLS-1$
+                }
+            });
+        }
+
+        @Override
+        protected void doLoad() {
+            // No-op - functionality provided by ContentAssistEnablementBlock
+        }
+
+        @Override
+        protected void doLoadDefault() {
+            // No-op
+        }
+
+        @Override
+        protected void doStore() {
+            // No-op - functionality provided by ContentAssistEnablementBlock
+        }
+
+        @Override
+        public int getNumberOfControls() {
+            return 0;
+        }
     }
 }

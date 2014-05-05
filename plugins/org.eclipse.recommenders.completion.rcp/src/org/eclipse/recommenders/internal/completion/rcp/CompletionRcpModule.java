@@ -10,10 +10,29 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.COMPLETION_PREFIX;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_AST_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_ELEMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPENAMES;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.INTERNAL_COMPLETIONCONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.IS_COMPLETION_ON_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_CONTENTASSIST_CONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.LOOKUP_ENVIRONMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_TYPEBINDING;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_FIELDS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_LOCALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_METHODS;
 
 import javax.inject.Singleton;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CompletionOnTypeContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.CompletionPrefixContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.EnclosingAstMethodContextFunction;
@@ -33,7 +52,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.Visibl
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleMethodsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
-import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
+import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -69,7 +88,9 @@ public class CompletionRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    SessionProcessorDescriptor[] provideSessionProcessorDescriptors() {
-        return SessionProcessorDescriptor.parseExtensions();
+    public CompletionRcpPreferences provideCompletionPreferences(IWorkbench wb) {
+        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        CompletionRcpPreferences prefs = ContextInjectionFactory.make(CompletionRcpPreferences.class, context);
+        return prefs;
     }
 }

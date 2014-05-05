@@ -10,10 +10,12 @@
  *******************************************************************************/
 package org.eclipse.recommenders.calls.rcp.it;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Set;
@@ -23,8 +25,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.it.MockedIntelligentCompletionProposalComputer;
+import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor;
 import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences;
+import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -171,6 +175,10 @@ public class Stubs {
         when(mp.acquireModel((UniqueTypeName) anyObject())).thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, mp,
                 new CallsRcpPreferences(), new SharedImages());
-        return new MockedIntelligentCompletionProposalComputer(sut);
+
+        CompletionRcpPreferences preferences = mock(CompletionRcpPreferences.class);
+        SessionProcessorDescriptor sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "", sut);
+    when(preferences.getSessionProcessors()).thenReturn(ImmutableList.of(sessionProcessor));
+        return new MockedIntelligentCompletionProposalComputer(sut, preferences);
     }
 }

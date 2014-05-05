@@ -63,9 +63,9 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    private final ProjectCoordinateAdvisorService delgate;
+    private final ProjectCoordinateAdvisorService delegate;
     private final ModelsRcpPreferences prefs;
-    private final LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> projectCoordianteCache;
+    private final LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> projectCoordinateCache;
 
     private final File persistenceFile;
     private final Gson cacheGson;
@@ -81,14 +81,14 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
             EventBus bus, ModelsRcpPreferences prefs) {
         bus.register(this);
         this.prefs = prefs;
-        this.delgate = new ProjectCoordinateAdvisorService();
+        this.delegate = new ProjectCoordinateAdvisorService();
         this.persistenceFile = persistenceFile;
         this.cacheGson = new GsonBuilder()
                 .registerTypeAdapter(ProjectCoordinate.class, new ProjectCoordinateJsonTypeAdapter())
                 .registerTypeAdapter(DependencyInfo.class, new DependencyInfoJsonTypeAdapter())
                 .registerTypeAdapter(Optional.class, new OptionalJsonTypeAdapter<ProjectCoordinate>())
                 .enableComplexMapKeySerialization().serializeNulls().create();
-        projectCoordianteCache = createCache();
+        projectCoordinateCache = createCache();
         configureAdvisorList(prefs.advisorConfiguration);
     }
 
@@ -98,7 +98,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
 
                     @Override
                     public Optional<ProjectCoordinate> load(DependencyInfo info) {
-                        return delgate.suggest(info);
+                        return delegate.suggest(info);
                     }
                 });
     }
@@ -134,7 +134,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     @Override
     public Optional<ProjectCoordinate> suggest(DependencyInfo dependencyInfo) {
         try {
-            return projectCoordianteCache.get(dependencyInfo);
+            return projectCoordinateCache.get(dependencyInfo);
         } catch (ExecutionException e) {
             LOG.error("Exception occured while accessing project coordinates cache.", e); //$NON-NLS-1$
             return absent();
@@ -143,17 +143,17 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
 
     @Override
     public ImmutableList<IProjectCoordinateAdvisor> getAdvisors() {
-        return delgate.getAdvisors();
+        return delegate.getAdvisors();
     }
 
     @Override
     public void addAdvisor(IProjectCoordinateAdvisor advisor) {
-        delgate.addAdvisor(advisor);
+        delegate.addAdvisor(advisor);
     }
 
     @Override
     public void setAdvisors(List<IProjectCoordinateAdvisor> advisors) {
-        delgate.setAdvisors(advisors);
+        delegate.setAdvisors(advisors);
     }
 
     @PostConstruct
@@ -165,24 +165,24 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
 
         for (Entry<DependencyInfo, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
-            projectCoordianteCache.put(entry.getKey(), entry.getValue());
+            projectCoordinateCache.put(entry.getKey(), entry.getValue());
         }
     }
 
     @PreDestroy
     public void close() throws IOException {
-        String json = cacheGson.toJson(projectCoordianteCache.asMap(), cacheType);
+        String json = cacheGson.toJson(projectCoordinateCache.asMap(), cacheType);
         Files.write(json, persistenceFile, Charsets.UTF_8);
     }
 
     @Subscribe
     public void onEvent(ProjectCoordinateChangeEvent e) {
-        projectCoordianteCache.invalidate(e.dependencyInfo);
+        projectCoordinateCache.invalidate(e.dependencyInfo);
     }
 
     @Subscribe
     public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
-        projectCoordianteCache.invalidateAll();
+        projectCoordinateCache.invalidateAll();
         configureAdvisorList(prefs.advisorConfiguration);
     }
 
@@ -201,12 +201,12 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
 
         @Override
         protected IStatus run(IProgressMonitor monitor) {
-            Set<DependencyInfo> dependencyInfos = projectCoordianteCache.asMap().keySet();
+            Set<DependencyInfo> dependencyInfos = projectCoordinateCache.asMap().keySet();
             try {
                 monitor.beginTask(Messages.TASK_REFRESHING, dependencyInfos.size());
                 for (DependencyInfo di : dependencyInfos) {
                     monitor.subTask(di.toString());
-                    projectCoordianteCache.refresh(di);
+                    projectCoordinateCache.refresh(di);
                     monitor.worked(1);
                 }
             } finally {
@@ -217,6 +217,6 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     }
 
     public void clearCache() {
-        projectCoordianteCache.invalidateAll();
+        projectCoordinateCache.invalidateAll();
     }
 }

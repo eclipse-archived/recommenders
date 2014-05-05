@@ -13,8 +13,13 @@ package org.eclipse.recommenders.internal.completion.rcp;
 public class Constants {
 
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
+
+    public static final String EXT_POINT_SESSION_PROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors"; //$NON-NLS-1$
+
     public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$
     public static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory"; //$NON-NLS-1$
     public static final String RECOMMENDERS_ALL_CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"; //$NON-NLS-1$
     public static final String COMPLETION_PREFERENCE_PAGE_ID = "org.eclipse.recommenders.completion.rcp.preferencePages.completions"; //$NON-NLS-1$
+
+    public static final String PREF_SESSIONPROCESSORS = "sessionprocessors"; //$NON-NLS-1$
 }
