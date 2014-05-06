@@ -43,12 +43,11 @@ import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
 
 @SuppressWarnings("restriction")
-public class ModelsRcpModule extends AbstractModule implements Module {
+public class ModelsRcpModule extends AbstractModule {
 
     private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models"; //$NON-NLS-1$
     private static final String MODEL_CLASSIFIER_ATTRIBUTE = "classifier"; //$NON-NLS-1$

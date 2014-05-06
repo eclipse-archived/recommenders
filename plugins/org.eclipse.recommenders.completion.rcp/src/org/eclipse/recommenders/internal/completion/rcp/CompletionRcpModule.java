@@ -72,5 +72,4 @@ public class CompletionRcpModule extends AbstractModule {
     SessionProcessorDescriptor[] provideSessionProcessorDescriptors() {
         return SessionProcessorDescriptor.parseExtensions();
     }
-
 }
