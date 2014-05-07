@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler" sequenceNumber="119">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler" sequenceNumber="120">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
@@ -18,26 +18,26 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.api" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.api.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.connector.basic" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.connector.basic.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.impl" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.impl.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.spi" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.spi.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.impl.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.transport.file" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.transport.file.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.transport.http" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.transport.http.source" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.util" version="0.9.1.v20140329"/>
-<unit id="org.eclipse.aether.util.source" version="0.9.1.v20140329"/>
-<repository location="http://download.eclipse.org/aether/aether-core/releases/0.9/0.9.1.v20140329/"/>
+<unit id="org.eclipse.aether.api" version="0.0.0"/>
+<unit id="org.eclipse.aether.api.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.connector.basic" version="0.0.0"/>
+<unit id="org.eclipse.aether.connector.basic.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.impl" version="0.0.0"/>
+<unit id="org.eclipse.aether.impl.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.spi" version="0.0.0"/>
+<unit id="org.eclipse.aether.spi.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.impl.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.file" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.file.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.http" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.http.source" version="0.0.0"/>
+<unit id="org.eclipse.aether.util" version="0.0.0"/>
+<unit id="org.eclipse.aether.util.source" version="0.0.0"/>
+<repository location="http://download.eclipse.org/aether/aether-core/nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.maven" version="3.1.0.v20140322-2105"/>
-<repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1.0.20140322-2106/"/>
+<unit id="org.eclipse.aether.maven" version="0.0.0"/>
+<repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1.0.20140506-1957/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
