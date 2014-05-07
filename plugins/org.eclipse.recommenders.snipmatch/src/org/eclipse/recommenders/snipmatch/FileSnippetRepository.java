@@ -335,7 +335,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             File file;
             List<File> files = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid());
             if (files.isEmpty()) {
-                file = createFileForSnippet(importSnippet);
+                file = new File(snippetsdir, importSnippet.getUuid() + DOT_JSON);
             } else {
                 file = Iterables.getOnlyElement(files);
             }
@@ -349,16 +349,6 @@ public class FileSnippetRepository implements ISnippetRepository {
         } finally {
             writeLock.unlock();
         }
-    }
-
-    private File createFileForSnippet(Snippet snippet) {
-        File file = new File(snippetsdir, mangle(snippet.getName()) + DOT_JSON);
-        int number = 0;
-        while (file.exists()) {
-            number++;
-            file = new File(snippetsdir, mangle(snippet.getName() + number) + DOT_JSON);
-        }
-        return file;
     }
 
     private Snippet checkTypeAndConvertSnippet(ISnippet snippet) {
