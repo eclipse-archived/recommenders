@@ -59,13 +59,6 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  name of the completion engine display in preferences
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
@@ -74,6 +67,30 @@
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.recommenders.completion.rcp.processable.SessionProcessor:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="preferencePage" type="string">
+            <annotation>
+               <documentation>
+                  Id of the preference page that configures this session processor
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.ui.preferencePages/page/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="enabledByDefault" type="boolean" use="default" value="true">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  integer value used for determing the order in which the processors are executed. The lower the earlier a processor is executed.
+               </documentation>
             </annotation>
          </attribute>
          <attribute name="icon" type="string" use="required">
@@ -86,10 +103,10 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="priority" type="string">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  integer value used for determing the order in which the processors are executed. The lower the earlier a processor is executed.
+                  name of the completion engine display in preferences
                </documentation>
             </annotation>
          </attribute>
@@ -100,16 +117,6 @@
                </documentation>
                <appinfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="preferencePage" type="string">
-            <annotation>
-               <documentation>
-                  Id of the preference page that configures this session processor
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.eclipse.ui.preferencePages/page/@id"/>
                </appinfo>
             </annotation>
          </attribute>

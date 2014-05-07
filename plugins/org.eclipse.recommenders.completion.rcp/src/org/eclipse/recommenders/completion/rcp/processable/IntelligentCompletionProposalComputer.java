@@ -27,6 +27,7 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
+import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
@@ -38,21 +39,22 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class IntelligentCompletionProposalComputer extends ProcessableCompletionProposalComputer {
 
-    private SessionProcessorDescriptor[] descriptors;
-    private SharedImages images;
+    private final SharedImages images;
+    private final CompletionRcpPreferences preferences;
 
     @Inject
-    public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors, IAstProvider astProvider,
+    public IntelligentCompletionProposalComputer(CompletionRcpPreferences preferences, IAstProvider astProvider,
             SharedImages images, Map<CompletionContextKey, ICompletionContextFunction> map) {
         super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, map);
-        this.descriptors = descriptors;
+        this.preferences = preferences;
         this.images = images;
+
     }
 
     @Override
     public void sessionStarted() {
         processors.clear();
-        for (SessionProcessorDescriptor d : descriptors) {
+        for (SessionProcessorDescriptor d : preferences.getSessionProcessors()) {
             if (d.isEnabled()) {
                 processors.add(d.getProcessor());
             }
