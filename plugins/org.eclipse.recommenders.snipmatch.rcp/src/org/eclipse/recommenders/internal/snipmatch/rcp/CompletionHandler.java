@@ -21,7 +21,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 @SuppressWarnings("restriction")
-public class SearchHandler extends AbstractHandler {
+public class CompletionHandler extends AbstractHandler {
 
     private SnipmatchCompletionEngine engine;
 

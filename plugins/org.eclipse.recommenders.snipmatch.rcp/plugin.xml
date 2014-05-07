@@ -6,15 +6,20 @@
 			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
 			contributorClass="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorActionBarContributor"
 			default="false"
-			icon="icons/eview16/snippets.png"
+			icon="icons/obj16/editor.png"
 			id="org.eclipse.recommenders.snipmatch.rcp.editors.snippet"
 			name="%editors.snippet.name"/>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
-		<command id="org.eclipse.recommenders.snipmatch.rcp.commands.search"
+		<command id="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
 			categoryId="org.eclipse.jdt.ui.category.source"
-			name="%commands.search.name"
-			description="%commands.search.description"/>
+			name="%commands.completion.name"
+			description="%commands.completion.description"/>
+	</extension>
+	<extension point="org.eclipse.ui.commandImages">
+		<image
+			commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
+			icon="icons/ecl16/completion.png" />
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.snipmatch.rpc.preferences.SnipmatchPreferencePage"
@@ -26,11 +31,11 @@
 		<initializer class="org.eclipse.recommenders.internal.snipmatch.rcp.PreferenceInitializer"/>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
-		<handler commandId="org.eclipse.recommenders.snipmatch.rcp.commands.search"
-			class="org.eclipse.recommenders.internal.snipmatch.rcp.SearchHandler"/>
+		<handler commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
+			class="org.eclipse.recommenders.internal.snipmatch.rcp.CompletionHandler"/>
 	</extension>
 	<extension point="org.eclipse.ui.bindings">
-		<key commandId="org.eclipse.recommenders.snipmatch.rcp.commands.search"
+		<key commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
 			contextId="org.eclipse.jdt.ui.javaEditorScope"
 			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
 			sequence="M3+Space"/>
@@ -53,7 +58,7 @@
 		<view id="org.eclipse.recommenders.snipmatch.rcp.views.snippets"
 			category="org.eclipse.recommenders.rcp.views.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView"
-			icon="icons/eview16/snippets.png"
+			icon="icons/view16/snippets.png"
 			restorable="true"
 			allowMultiple="false"
 			name="%views.snippets.name"/>
