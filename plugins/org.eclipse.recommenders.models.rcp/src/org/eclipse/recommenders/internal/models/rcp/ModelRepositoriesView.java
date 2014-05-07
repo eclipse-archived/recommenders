@@ -11,12 +11,12 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.text.MessageFormat.format;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.apache.commons.lang3.ArrayUtils.contains;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +63,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.models.Coordinates;
@@ -97,13 +96,16 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -132,7 +134,15 @@ public class ModelRepositoriesView extends ViewPart {
 
     private TreeViewer treeViewer;
 
-    private Multimap<String, KnownCoordinate> coordinatesGroupedByRepo = LinkedListMultimap.create();
+    private ListMultimap<String, KnownCoordinate> coordinatesGroupedByRepo = LinkedListMultimap.create();
+
+    private final Function<ModelRepositoriesView.KnownCoordinate, String> toStringRepresentation = new Function<ModelRepositoriesView.KnownCoordinate, String>() {
+
+        @Override
+        public String apply(KnownCoordinate input) {
+            return input.pc.toString();
+        }
+    };
 
     private Text txtSearch;
 
@@ -281,33 +291,6 @@ public class ModelRepositoriesView extends ViewPart {
             }
         });
 
-        treeViewer.setComparator(new ViewerComparator() {
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-                if (e1 instanceof String && e2 instanceof String) {
-                    String s1 = (String) e1;
-                    String s2 = (String) e2;
-                    return position(s1).compareTo(position(s2));
-                }
-                if (e1 instanceof KnownCoordinate && e2 instanceof KnownCoordinate) {
-                    KnownCoordinate v1 = (KnownCoordinate) e1;
-                    KnownCoordinate v2 = (KnownCoordinate) e2;
-                    return v1.pc.toString().compareTo(v2.pc.toString());
-                }
-                return super.compare(viewer, e1, e2);
-            }
-
-            public Integer position(String string) {
-                String[] remotes = prefs.remotes;
-                for (int i = 0; i < remotes.length; i++) {
-                    if (remotes[i].equals(string)) {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-        });
-
         treeViewer.setInput(getViewSite());
         refreshData();
 
@@ -416,15 +399,17 @@ public class ModelRepositoriesView extends ViewPart {
         for (ProjectCoordinate pc : coordinatesGroupedByProjectCoordinate.keySet()) {
             coordinates.add(new KnownCoordinate(url, pc, coordinatesGroupedByProjectCoordinate.get(pc)));
         }
-
-        return coordinates;
+        return Ordering.natural().onResultOf(toStringRepresentation).sortedCopy(coordinates);
     }
 
-    private Multimap<ProjectCoordinate, ModelCoordinate> groupByProjectCoordinate(Collection<ModelCoordinate> modelCoordinates) {
-        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = LinkedListMultimap.create();
+    private Multimap<ProjectCoordinate, ModelCoordinate> groupByProjectCoordinate(
+            Collection<ModelCoordinate> modelCoordinates) {
+        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = LinkedListMultimap
+                .create();
 
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
-            coordinatesGroupedByProjectCoordinate.put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+            coordinatesGroupedByProjectCoordinate
+                    .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
         }
         return coordinatesGroupedByProjectCoordinate;
     }
