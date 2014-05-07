@@ -48,7 +48,7 @@ public class MylynSessionProcessor extends SessionProcessor {
         IInteractionElement interactionElement = mgr.getElement(handle);
         float interest = interactionElement.getInterest().getValue();
         if (interest > ContextCore.getCommonContextScaling().getInteresting()) {
-            String label = format(Messages.PROPOSAL_LABEL_PERCENTAGE, interest / 100.0);
+            String label = format(Messages.PROPOSAL_LABEL_MYLYN_INTEREST, interest);
             ProposalProcessorManager proposalMgr = p.getProposalProcessorManager();
             SimpleProposalProcessor processor = new SimpleProposalProcessor(round(interest), label);
             proposalMgr.addProcessor(processor);
