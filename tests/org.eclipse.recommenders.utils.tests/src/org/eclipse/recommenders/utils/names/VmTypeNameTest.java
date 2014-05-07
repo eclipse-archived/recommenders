@@ -222,7 +222,20 @@ public class VmTypeNameTest {
     }
 
     @Test
-    public void testNameWithGenerics() {
-        VmTypeName.get("Lm/M<Lpackage/N>");
+    public void testNameWithSimpleGenerics() {
+        VmTypeName actual = VmTypeName.get("Ljava/util/List<Ljava/lang/Integer;>");
+        assertEquals("Ljava/util/List", actual.getIdentifier());
+    }
+
+    @Test
+    public void testNameWithNestedGenerics() {
+        VmTypeName actual = VmTypeName.get("Ljava/util/List<Ljava/util/Set<Ljava/lang/Integer;>>");
+        assertEquals("Ljava/util/List", actual.getIdentifier());
+    }
+
+    @Test
+    public void testNestedNameWithGenerics() {
+        VmTypeName actual = VmTypeName.get("Ljava/util/Map$Entry<Ljava/lang/Integer;Ljava/lang/String;>");
+        assertEquals("Ljava/util/Map$Entry", actual.getIdentifier());
     }
 }

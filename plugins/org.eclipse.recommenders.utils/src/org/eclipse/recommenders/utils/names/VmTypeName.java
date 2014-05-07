@@ -14,14 +14,17 @@ import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.*;
 
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 
 public class VmTypeName implements ITypeName {
+
+    // These private fields need to be intialized before the public ones below.
     private static Map<String /* vmTypeName */, VmTypeName> index = new MapMaker().weakValues().makeMap();
+    private static final Pattern GENERICS_PATTERN = Pattern.compile("<[^<>]*>");
 
     public static final VmTypeName OBJECT = VmTypeName.get("Ljava/lang/Object");
 
@@ -37,21 +40,13 @@ public class VmTypeName implements ITypeName {
     public static final VmTypeName NULL = get("Lnull");
 
     public static final VmTypeName BYTE = get("B");
-
     public static final VmTypeName BOOLEAN = get("Z");
-
     public static final VmTypeName CHAR = get("C");
-
     public static final VmTypeName DOUBLE = get("D");
-
     public static final VmTypeName FLOAT = get("F");
-
     public static final VmTypeName INT = get("I");
-
     public static final VmTypeName LONG = get("J");
-
     public static final VmTypeName SHORT = get("S");
-
     public static final VmTypeName VOID = get("V");
 
     public static synchronized VmTypeName get(String typeName) {
@@ -64,8 +59,16 @@ public class VmTypeName implements ITypeName {
         return res;
     }
 
-    private static String removeGenerics(final String typeName) {
-        return StringUtils.substringBefore(typeName, "<");
+    private static String removeGenerics(String typeName) {
+        int oldLength;
+
+        do {
+            oldLength = typeName.length();
+            Matcher matcher = GENERICS_PATTERN.matcher(typeName);
+            typeName = matcher.replaceAll("");
+        } while (typeName.length() < oldLength);
+
+        return typeName;
     }
 
     private String identifier;
@@ -105,8 +108,8 @@ public class VmTypeName implements ITypeName {
         int off = 0;
         while (off < vmTypeName.length()) {
             final char c = vmTypeName.charAt(off);
-            if (c == '[' || c == '/' || c == '-' /* as in 'package-info.class' */ || c == '<' || c == '>'
-                    || Character.isJavaIdentifierPart(c)) {
+            // '-' as in package-info.class
+            if (c == '-' || c == '[' || c == '/' || c == '<' || c == '>' || Character.isJavaIdentifierPart(c)) {
                 off++;
                 continue;
             }
