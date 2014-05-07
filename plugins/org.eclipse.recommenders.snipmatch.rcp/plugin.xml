@@ -6,7 +6,7 @@
 			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
 			contributorClass="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorActionBarContributor"
 			default="false"
-			icon="icons/eview16/sample.gif"
+			icon="icons/eview16/snippets.png"
 			id="org.eclipse.recommenders.snipmatch.rcp.editors.snippet"
 			name="%editors.snippet.name"/>
 	</extension>
@@ -51,7 +51,7 @@
 		<view id="org.eclipse.recommenders.snipmatch.rcp.views.snippets"
 			category="org.eclipse.recommenders.rcp.views.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView"
-			icon="icons/eview16/sample.gif"
+			icon="icons/eview16/snippets.png"
 			restorable="true"
 			allowMultiple="false"
 			name="%views.snippets.name"/>
