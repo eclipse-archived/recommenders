@@ -605,10 +605,12 @@ public class ModelRepositoriesView extends ViewPart {
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 KnownCoordinate key = createKey(e.model);
-                KnownCoordinate element = Iterables.tryFind(coordinatesGroupedByRepo.get(key.url),
-                        Predicates.equalTo(key)).orNull();
-                if (element != null) {
-                    treeViewer.update(element, null);
+                if (key != null) {
+                    KnownCoordinate element = Iterables.tryFind(coordinatesGroupedByRepo.get(key.url),
+                            Predicates.equalTo(key)).orNull();
+                    if (element != null) {
+                        treeViewer.update(element, null);
+                    }
                 }
                 return Status.OK_STATUS;
             }
