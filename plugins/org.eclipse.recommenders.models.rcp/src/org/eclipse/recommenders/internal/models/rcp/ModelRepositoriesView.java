@@ -11,7 +11,6 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
@@ -25,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,7 +64,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.models.Coordinates;
 import org.eclipse.recommenders.models.IModelIndex;
@@ -89,7 +89,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 import org.osgi.service.prefs.BackingStoreException;
@@ -98,7 +97,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
@@ -134,7 +135,12 @@ public class ModelRepositoriesView extends ViewPart {
 
     private TreeViewer treeViewer;
 
+    private Text txtSearch;
+
+    private boolean initializeFilter = true;
+
     private ListMultimap<String, KnownCoordinate> coordinatesGroupedByRepo = LinkedListMultimap.create();
+    private ListMultimap<String, KnownCoordinate> filteredCoordinatesGroupedByRepo = LinkedListMultimap.create();
 
     private final Function<ModelRepositoriesView.KnownCoordinate, String> toStringRepresentation = new Function<ModelRepositoriesView.KnownCoordinate, String>() {
 
@@ -143,8 +149,6 @@ public class ModelRepositoriesView extends ViewPart {
             return input.pc.toString();
         }
     };
-
-    private Text txtSearch;
 
     @Inject
     public ModelRepositoriesView(IModelIndex index, SharedImages images, EclipseModelRepository repo,
@@ -157,20 +161,6 @@ public class ModelRepositoriesView extends ViewPart {
         Collections.sort(this.modelClassifiers);
         this.bus = bus;
     }
-
-    final PatternFilter patternFilter = new PatternFilter() {
-        @Override
-        protected boolean isLeafMatch(final Viewer viewer, final Object element) {
-            if (element instanceof KnownCoordinate) {
-                final KnownCoordinate coor = (KnownCoordinate) element;
-                return wordMatches(coor.pc.toString());
-            }
-            if (element instanceof String) {
-                return true;
-            }
-            return super.isLeafMatch(viewer, element);
-        }
-    };
 
     @Override
     public void createPartControl(Composite parent) {
@@ -240,6 +230,7 @@ public class ModelRepositoriesView extends ViewPart {
 
             @Override
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+                filteredCoordinatesGroupedByRepo = ArrayListMultimap.create(coordinatesGroupedByRepo);
             }
 
             @Override
@@ -259,7 +250,7 @@ public class ModelRepositoriesView extends ViewPart {
 
             private Object[] getChildren(Object element) {
                 if (element instanceof String) {
-                    return coordinatesGroupedByRepo.get((String) element).toArray();
+                    return filteredCoordinatesGroupedByRepo.get((String) element).toArray();
                 }
                 return new Object[0];
             }
@@ -315,7 +306,9 @@ public class ModelRepositoriesView extends ViewPart {
         addAction(Messages.TOOLBAR_TOOLTIP_EXPAND_ALL, ELCL_EXPAND_ALL, toolBarManager, new Action() {
             @Override
             public void run() {
-                treeViewer.expandAll();
+                for (int i = 0; i < treeViewer.getTree().getItemCount(); i++) {
+                    treeViewer.getTree().getItem(i).setExpanded(true);
+                }
             }
         });
 
@@ -364,7 +357,7 @@ public class ModelRepositoriesView extends ViewPart {
                 coordinatesGroupedByRepo.clear();
                 for (Entry<String, Collection<ModelCoordinate>> entry : fetchedCoordinates.asMap().entrySet()) {
                     coordinatesGroupedByRepo
-                            .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
+                    .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
                 }
 
                 treeViewer.setInput(getViewSite());
@@ -409,7 +402,7 @@ public class ModelRepositoriesView extends ViewPart {
 
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
             coordinatesGroupedByProjectCoordinate
-                    .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+            .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
         }
         return coordinatesGroupedByProjectCoordinate;
     }
@@ -501,12 +494,12 @@ public class ModelRepositoriesView extends ViewPart {
                     if (url.isPresent() && prefs.remotes.length > 1) {
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                                    @Override
-                                    public void run() {
-                                        deleteRepository(url.get());
-                                        refreshData();
-                                    }
-                                });
+                            @Override
+                            public void run() {
+                                deleteRepository(url.get());
+                                refreshData();
+                            }
+                        });
                     }
                 }
             }
@@ -572,13 +565,54 @@ public class ModelRepositoriesView extends ViewPart {
 
     // needs to be public to work with PojoProperties
     public void setFilter(final String filter) {
-        treeViewer.getTree().setRedraw(false);
-        PatternFilter patternFilter = new KnownCoordinatePatternFilter();
-        patternFilter.setPattern("*" + filter); //$NON-NLS-1$
-        treeViewer.setFilters(new ViewerFilter[] { patternFilter });
-        treeViewer.getTree().setRedraw(true);
-        if (!isNullOrEmpty(filter)) {
-            treeViewer.expandAll();
+        if (initializeFilter && filter.isEmpty()) {
+            initializeFilter = false;
+            return;
+        }
+        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
+
+            @Override
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                if (!filter.isEmpty()) {
+                    filteredCoordinatesGroupedByRepo.clear();
+                    for (String key : coordinatesGroupedByRepo.keySet()) {
+                        List<KnownCoordinate> unfiltered = coordinatesGroupedByRepo.get(key);
+
+                        Iterable<KnownCoordinate> filtered = Iterables.filter(unfiltered,
+                                new Predicate<KnownCoordinate>() {
+
+                            @Override
+                            public boolean apply(KnownCoordinate kc) {
+                                Pattern pattern = Pattern.compile(".*" + filter + ".*"); // NON-NLS-$2
+                                                                                                 // //NON-NLS-$1
+                                Matcher matcher = pattern.matcher(kc.pc.toString());
+                                return matcher.matches();
+                            }
+                        });
+                        filteredCoordinatesGroupedByRepo.putAll(key, filtered);
+                    }
+                } else {
+                    filteredCoordinatesGroupedByRepo = ArrayListMultimap.create(coordinatesGroupedByRepo);
+                }
+                refreshUI();
+                return Status.OK_STATUS;
+            }
+        }.schedule();
+    }
+
+    private void refreshUI() {
+        int numberOfVisibleElements = treeViewer.getTree().getSize().y / treeViewer.getTree().getItemHeight() + 1;
+        treeViewer.refresh();
+        int replacedElementsCount = 0;
+        for (int i = 0; i < prefs.remotes.length; i++) {
+            String url = prefs.remotes[i];
+            List<KnownCoordinate> elements = filteredCoordinatesGroupedByRepo.get(url);
+            treeViewer.setChildCount(url, elements.size());
+            for (int j = 0; j < elements.size() && replacedElementsCount < numberOfVisibleElements; j++) {
+                treeViewer.replace(url, j, elements.get(j));
+                replacedElementsCount++;
+            }
+            treeViewer.getTree().getItem(i).setExpanded(true);
         }
     }
 
@@ -601,7 +635,7 @@ public class ModelRepositoriesView extends ViewPart {
 
     @Subscribe
     public void onModelArchiveDownloaded(final ModelArchiveDownloadedEvent e) {
-        new UIJob("") { //$NON-NLS-1$
+        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
