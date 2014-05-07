@@ -56,7 +56,6 @@ import org.apache.lucene.util.Version;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,6 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_DESCRIPTION = "description";
     private static final String F_PATH = "path";
     private static final String F_TAG = "tag";
-    private static final String F_USED_TYPE = "usedType";
     private static final String F_UUID = "uuid";
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -106,7 +104,6 @@ public class FileSnippetRepository implements ISnippetRepository {
                 public Snippet load(File file) throws Exception {
                     Snippet snippet;
                     snippet = GsonUtil.deserialize(file, Snippet.class);
-                    snippet.setLocation(file);
                     return snippet;
                 }
             });
@@ -177,12 +174,6 @@ public class FileSnippetRepository implements ISnippetRepository {
                     String description = snippet.getDescription();
                     doc.add(new Field(F_DESCRIPTION, description, Store.YES, Index.ANALYZED));
                     doc.add(new Field(F_DEFAULT_SEARCH_FIELD, description, Store.YES, Index.ANALYZED));
-
-                    if (snippet.getAffectedTypes() != null) {
-                        for (ITypeName type : snippet.getAffectedTypes()) {
-                            doc.add(new Field(F_USED_TYPE, type.getIdentifier(), Store.NO, Index.ANALYZED));
-                        }
-                    }
 
                     if (!fSnippet.getParentFile().equals(snippetsdir)) {
                         String parentName = fSnippet.getParentFile().getName();

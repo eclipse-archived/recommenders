@@ -16,6 +16,7 @@ import static org.eclipse.core.databinding.beans.PojoProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 import java.util.UUID;
 
@@ -68,12 +69,19 @@ public class SnippetMetadataPage extends FormPage {
     private Text txtDescription;
     private Text txtUuid;
 
-    private ListViewer listViewer;
-    private Composite btnContainer;
+    private ListViewer listViewerKeywords;
+    private ListViewer listViewerTags;
+
+    private Composite btnContainerKeywords;
+    private Composite btnContainerTags;
+
     private Button btnAddKeyword;
+    private Button btnAddTag;
     private Button btnRemoveKeyword;
+    private Button btnRemoveTag;
 
     private IObservableList ppKeywords;
+    private IObservableList ppTags;
     private DataBindingContext ctx;
 
     public SnippetMetadataPage(FormEditor editor, String id, String title) {
@@ -90,53 +98,93 @@ public class SnippetMetadataPage extends FormPage {
         toolkit.paintBordersFor(body);
         managedForm.getForm().getBody().setLayout(new GridLayout(3, false));
 
-        Label lblName = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(), Messages.EDITOR_LABEL_SNIPPET_NAME, SWT.NONE);
+        Label lblName = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPET_NAME, SWT.NONE);
         lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
         txtName = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.NONE);
         txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-        Label lblDescription = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(), Messages.EDITOR_LABEL_SNIPPET_DESCRIPTION,
-                SWT.NONE);
+        Label lblDescription = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPET_DESCRIPTION, SWT.NONE);
         lblDescription.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         txtDescription = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.NONE);
         txtDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-        Label lblKeyword = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(), Messages.EDITOR_LABEL_SNIPPETS_KEYWORD, SWT.NONE);
+        Label lblKeyword = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPETS_KEYWORD, SWT.NONE);
         lblKeyword.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
-        listViewer = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
-        List lstAliases = listViewer.getList();
-        lstAliases.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        listViewerKeywords = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
+        List lstKeywords = listViewerKeywords.getList();
+        lstKeywords.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        btnContainer = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
-        btnContainer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-        managedForm.getToolkit().paintBordersFor(btnContainer);
-        btnContainer.setLayout(new GridLayout(1, false));
+        btnContainerKeywords = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
+        btnContainerKeywords.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        managedForm.getToolkit().paintBordersFor(btnContainerKeywords);
+        btnContainerKeywords.setLayout(new GridLayout(1, false));
 
-        btnAddKeyword = managedForm.getToolkit().createButton(btnContainer, Messages.EDITOR_BUTTON_ADD_KEYWORDS, SWT.NONE);
+        btnAddKeyword = managedForm.getToolkit().createButton(btnContainerKeywords,
+                Messages.EDITOR_BUTTON_ADD_KEYWORDS, SWT.NONE);
         btnAddKeyword.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                createKeywordInputDialog(btnContainer.getShell()).open();
+                createKeywordInputDialog(btnContainerKeywords.getShell()).open();
             }
         });
         btnAddKeyword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnRemoveKeyword = managedForm.getToolkit().createButton(btnContainer, Messages.EDITOR_BUTTON_REMOVE_KEYWORDS, SWT.NONE);
+        btnRemoveKeyword = managedForm.getToolkit().createButton(btnContainerKeywords,
+                Messages.EDITOR_BUTTON_REMOVE_KEYWORDS, SWT.NONE);
         btnRemoveKeyword.setEnabled(false);
         btnRemoveKeyword.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Optional<String> o = Selections.getFirstSelected(listViewer);
+                Optional<String> o = Selections.getFirstSelected(listViewerKeywords);
                 if (o.isPresent()) {
-                    listViewer.remove(o.get());
+                    ppKeywords.remove(o.get());
                 }
             }
         });
         btnRemoveKeyword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
-        Label lblUuid = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(), Messages.EDITOR_LABEL_SNIPPET_UUID, SWT.NONE);
+        Label lblTag = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPETS_TAG, SWT.NONE);
+        lblTag.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+
+        listViewerTags = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
+        List lstTags = listViewerTags.getList();
+        lstTags.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        btnContainerTags = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
+        btnContainerTags.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        managedForm.getToolkit().paintBordersFor(btnContainerKeywords);
+        btnContainerTags.setLayout(new GridLayout(1, false));
+
+        btnAddTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_ADD_TAGS, SWT.NONE);
+        btnAddTag.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                createTagInputDialog(btnContainerTags.getShell()).open();
+            }
+        });
+        btnAddTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnRemoveTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_REMOVE_TAGS,
+                SWT.NONE);
+        btnRemoveTag.setEnabled(false);
+        btnRemoveTag.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Optional<String> o = Selections.getFirstSelected(listViewerTags);
+                if (o.isPresent()) {
+                    ppTags.remove(o.get());
+                }
+            }
+        });
+        btnRemoveTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+        Label lblUuid = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPET_UUID, SWT.NONE);
         lblUuid.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
         txtUuid = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.READ_ONLY);
@@ -150,16 +198,44 @@ public class SnippetMetadataPage extends FormPage {
 
             @Override
             public String isValid(String newText) {
+                if (isNullOrEmpty(newText)) {
+                    return ""; //$NON-NLS-1$
+                }
                 if (snippet.getKeywords().contains(newText)) {
                     return Messages.DIALOG_VALIDATOR_KEYWORD_ALREADY_ADDED;
                 }
                 return null;
             }
         };
-        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_KEYWORD, Messages.DIALOG_MESSAGE_ENTER_NEW_KEYWORD, "", validator) { //$NON-NLS-3$ //$NON-NLS-1$
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_KEYWORD,
+                Messages.DIALOG_MESSAGE_ENTER_NEW_KEYWORD, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
                 ppKeywords.add(getValue());
+                super.okPressed();
+            }
+        };
+    }
+
+    private InputDialog createTagInputDialog(Shell shell) {
+        IInputValidator validator = new IInputValidator() {
+
+            @Override
+            public String isValid(String newText) {
+                if (isNullOrEmpty(newText)) {
+                    return ""; //$NON-NLS-1$
+                }
+                if (snippet.getTags().contains(newText)) {
+                    return Messages.DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
+                }
+                return null;
+            }
+        };
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_TAG, Messages.DIALOG_MESSAGE_ENTER_NEW_TAG,
+                "", validator) { //$NON-NLS-1$
+            @Override
+            protected void okPressed() {
+                ppTags.add(getValue());
                 super.okPressed();
             }
         };
@@ -180,8 +256,20 @@ public class SnippetMetadataPage extends FormPage {
 
         // keywords
         ppKeywords = PojoProperties.list(Snippet.class, "keywords", String.class).observe(snippet); //$NON-NLS-1$
-        ViewerSupport.bind(listViewer, ppKeywords, new SelfValueProperty(String.class));
+        ViewerSupport.bind(listViewerKeywords, ppKeywords, new SelfValueProperty(String.class));
         ppKeywords.addListChangeListener(new IListChangeListener() {
+
+            @Override
+            public void handleListChange(ListChangeEvent event) {
+                changeDirtyStatus();
+            }
+
+        });
+
+        // tags
+        ppTags = PojoProperties.list(Snippet.class, "tags", String.class).observe(snippet); //$NON-NLS-1$
+        ViewerSupport.bind(listViewerTags, ppTags, new SelfValueProperty(String.class));
+        ppTags.addListChangeListener(new IListChangeListener() {
 
             @Override
             public void handleListChange(ListChangeEvent event) {
@@ -196,12 +284,16 @@ public class SnippetMetadataPage extends FormPage {
         ctx.bindValue(wpUuidText, ppUuid, null, null);
 
         // button enablement
-        IObservableValue vpKeywordSelection = singleSelection().observe(listViewer);
+        IObservableValue vpKeywordSelection = singleSelection().observe(listViewerKeywords);
         IObservableValue wpBtnRemoveKeywordsEnable = enabled().observe(btnRemoveKeyword);
 
         UpdateValueStrategy strategy = new UpdateValueStrategy();
         strategy.setConverter(new ObjectToBooleanConverter());
         ctx.bindValue(vpKeywordSelection, wpBtnRemoveKeywordsEnable, strategy, null);
+
+        IObservableValue vpTagSelection = singleSelection().observe(listViewerTags);
+        IObservableValue wpBtnRemoveTagsEnable = enabled().observe(btnRemoveTag);
+        ctx.bindValue(vpTagSelection, wpBtnRemoveTagsEnable, strategy, null);
 
         for (Object o : ctx.getValidationStatusProviders()) {
             if (o instanceof Binding) {
