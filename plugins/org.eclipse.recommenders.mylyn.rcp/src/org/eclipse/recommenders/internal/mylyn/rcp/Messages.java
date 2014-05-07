@@ -16,7 +16,7 @@ public class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.mylyn.rcp.messages"; //$NON-NLS-1$
 
-    public static String PROPOSAL_LABEL_PERCENTAGE;
+    public static String PROPOSAL_LABEL_MYLYN_INTEREST;
 
     static {
         // initialize resource bundle
