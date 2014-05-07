@@ -47,6 +47,7 @@ import static org.mockito.Mockito.*
 
 import static extension com.google.common.collect.Iterables.*
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions
+import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -471,7 +472,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
 class MockSubwordsSessionProcessor extends SubwordsSessionProcessor {
 
     new(IAstProvider astProvider) {
-        super(astProvider)
+        super(astProvider, new SubwordsRcpPreferences())
     }
 
     override IEditorPart lookupEditor(ICompilationUnit cu) {

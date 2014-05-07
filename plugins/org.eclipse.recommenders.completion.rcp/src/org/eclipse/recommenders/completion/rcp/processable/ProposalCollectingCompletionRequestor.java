@@ -45,26 +45,31 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     private InternalCompletionContext compilerContext;
 
     public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx) {
+        this(ctx, false, false);
+    }
+
+    public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx,
+            boolean ignoreConstructors, boolean ignoreTypes) {
         super(false);
         checkNotNull(ctx);
         jdtuiContext = ctx;
-        initalizeCollector();
+        initalizeCollector(ignoreConstructors, ignoreTypes);
     }
 
-    private void initalizeCollector() {
+    private void initalizeCollector(boolean ignoreConstructors, boolean ignoreTypes) {
         if (shouldFillArgumentNames()) {
             collector = new FillArgumentNamesCompletionProposalCollector(jdtuiContext);
         } else {
             collector = new CompletionProposalCollector(jdtuiContext.getCompilationUnit(), false);
         }
-        configureInterestedProposalTypes();
+        configureInterestedProposalTypes(ignoreConstructors, ignoreTypes);
         adjustProposalReplacementLength();
     }
 
-    private void configureInterestedProposalTypes() {
+    private void configureInterestedProposalTypes(boolean ignoreConstructors, boolean ignoreTypes) {
         collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
-        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
-        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
+        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, ignoreTypes);
+        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, ignoreConstructors);
         collector.setIgnored(FIELD_REF, false);
         collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, false);
         collector.setIgnored(KEYWORD, false);
@@ -73,12 +78,12 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.setIgnored(METHOD_DECLARATION, false);
         collector.setIgnored(METHOD_NAME_REFERENCE, false);
         collector.setIgnored(METHOD_REF, false);
-        collector.setIgnored(CONSTRUCTOR_INVOCATION, false);
+        collector.setIgnored(CONSTRUCTOR_INVOCATION, ignoreConstructors);
         collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, false);
         collector.setIgnored(PACKAGE_REF, false);
         collector.setIgnored(POTENTIAL_METHOD_DECLARATION, false);
         collector.setIgnored(VARIABLE_DECLARATION, false);
-        collector.setIgnored(TYPE_REF, false);
+        collector.setIgnored(TYPE_REF, ignoreTypes);
         collector.setIgnored(JAVADOC_BLOCK_TAG, false);
         collector.setIgnored(JAVADOC_FIELD_REF, false);
         collector.setIgnored(JAVADOC_INLINE_TAG, false);

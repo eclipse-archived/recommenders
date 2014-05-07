@@ -37,22 +37,29 @@ import org.eclipse.recommenders.completion.rcp.CompletionContexts;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
+import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
+import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class SubwordsSessionProcessor extends SessionProcessor {
 
-    private IAstProvider astProvider;
+    private final IAstProvider astProvider;
+    private final SubwordsRcpPreferences prefs;
 
     @Inject
-    public SubwordsSessionProcessor(IAstProvider astProvider) {
+    public SubwordsSessionProcessor(IAstProvider astProvider, SubwordsRcpPreferences prefs) {
         this.astProvider = astProvider;
+        this.prefs = prefs;
     }
 
     @Override
@@ -69,25 +76,24 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
         int offset = crContext.getInvocationOffset();
 
-        // List l = new list$
+        // List l = new List$ --> L$
         if (completionNode instanceof CompletionOnSingleTypeReference
                 && completionNodeParent instanceof LocalDeclaration && length > 1) {
             triggerlocations.add(offset - length + 1);
         }
 
-        // getPath(pat$) --> getPath(p$):'pat'
+        // getPath(pat$) --> p$
         if (completionNode instanceof CompletionOnSingleNameReference && completionNodeParent instanceof MessageSend
                 && length > 1) {
             triggerlocations.add(offset - length + 1);
         }
         if (completionNode instanceof CompletionOnSingleNameReference && completionNodeParent == null && length > 1) {
-            // pat$ --> $pat
-            triggerlocations.add(offset - length);
             // pat$ --> p$at
             triggerlocations.add(offset - length + 1);
-        } else {
-            triggerlocations.add(offset - length);
         }
+
+        // pat$ --> $pat
+        triggerlocations.add(offset - length);
 
         JavaContentAssistInvocationContext javaContext = crContext.getJavaContext();
         ICompilationUnit cu = crContext.getCompilationUnit();
@@ -100,11 +106,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         }
 
         for (int trigger : triggerlocations) {
-            JavaContentAssistInvocationContext newJavaContext = new JavaContentAssistInvocationContext(viewer, trigger,
-                    editor);
-            IRecommendersCompletionContext newCrContext = new RecommendersCompletionContext(newJavaContext, astProvider);
-
-            Map<IJavaCompletionProposal, CompletionProposal> newProposals = newCrContext.getProposals();
+            final Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(viewer, editor,
+                    trigger);
 
             for (IJavaCompletionProposal p : newProposals.keySet()) {
                 String displayString = p.getDisplayString();
@@ -116,6 +119,30 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             }
         }
         return true;
+    }
+
+    private Map<IJavaCompletionProposal, CompletionProposal> getNewProposals(ITextViewer viewer, IEditorPart editor,
+            int trigger) {
+        JavaContentAssistInvocationContext newJavaContext = new JavaContentAssistInvocationContext(viewer, trigger,
+                editor);
+        IRecommendersCompletionContext newCrContext = new RecommendersCompletionContext(newJavaContext, astProvider);
+
+        JavaContentAssistInvocationContext coreContext = newCrContext.getJavaContext();
+
+        int offset = newCrContext.getInvocationOffset();
+        if (offset == -1) {
+            return Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
+        }
+        ICompilationUnit cu = newCrContext.getCompilationUnit();
+        ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext,
+                prefs.restrictInitialConstructorProposals, prefs.restrictInitialTypeProposals);
+        try {
+            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
+        } catch (final Exception e) {
+            RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+        }
+        Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
+        return proposals != null ? proposals : Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
     }
 
     @VisibleForTesting
