@@ -18,6 +18,7 @@ public class Messages extends NLS {
 
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
+    public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
     public static String DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
@@ -27,6 +28,7 @@ public class Messages extends NLS {
     public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
+    public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
     public static String DIALOG_TITLE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
     public static String DIALOG_VALIDATOR_KEYWORD_ALREADY_ADDED;
@@ -46,6 +48,7 @@ public class Messages extends NLS {
     public static String EDITOR_PAGE_NAME_SOURCE;
 
     public static String ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
+    public static String ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY;
 
     public static String JOB_OPENING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
