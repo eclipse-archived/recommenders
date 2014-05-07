@@ -33,7 +33,7 @@
 		<key commandId="org.eclipse.recommenders.snipmatch.rcp.commands.search"
 			contextId="org.eclipse.jdt.ui.javaEditorScope"
 			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-			sequence="M1+Enter"/>
+			sequence="M3+Space"/>
 	</extension>
 	<extension point="org.eclipse.ui.themes">
 		<colorDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchboxbackground"
