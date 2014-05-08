@@ -274,12 +274,12 @@ public class RcpModule extends AbstractModule implements Module {
 
                         @Override
                         public boolean preShutdown(IWorkbench workbench, boolean forced) {
-                            executeMethod(i, m);
                             return true;
                         }
 
                         @Override
                         public void postShutdown(IWorkbench workbench) {
+                            executeMethod(i, m);
                         }
                     });
                 }
