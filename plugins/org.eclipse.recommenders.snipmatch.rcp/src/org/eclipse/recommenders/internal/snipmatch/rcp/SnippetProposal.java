@@ -10,16 +10,19 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
+import org.eclipse.jdt.internal.ui.javaeditor.IndentUtil;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.LineRange;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
@@ -48,7 +51,6 @@ public class SnippetProposal extends TemplateProposal {
 
     private SnippetProposal(ISnippet snippet, Template template, TemplateContext context, IRegion region, Image image,
             boolean valid) {
-
         super(template, context, region, image);
         this.snippet = snippet;
         this.valid = valid;
@@ -61,22 +63,33 @@ public class SnippetProposal extends TemplateProposal {
 
     @Override
     public String getAdditionalProposalInfo() {
-        StringBuilder additionalProposalInfo = new StringBuilder();
+        StringBuilder header = new StringBuilder();
+
         if (!valid) {
-            additionalProposalInfo.append(format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); //$NON-NLS-2$
-            additionalProposalInfo.append(LINE_SEPARATOR);
-            additionalProposalInfo.append(format(Messages.WARNING_REPOSITION_CURSOR, "// FIXME")); //$NON-NLS-2$
-            additionalProposalInfo.append(LINE_SEPARATOR);
-            additionalProposalInfo.append(LINE_SEPARATOR);
+            header.append(MessageFormat.format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); // NON-NLS-1$
+            header.append(LINE_SEPARATOR);
+            header.append(MessageFormat.format(Messages.WARNING_REPOSITION_CURSOR, "// FIXME")); // NON-NLS-1$
+            header.append(LINE_SEPARATOR);
+            header.append(LINE_SEPARATOR);
         }
+
         if (!isEmpty(snippet.getDescription())) {
-            additionalProposalInfo.append("// "); //$NON-NLS-1$
-            additionalProposalInfo.append(snippet.getDescription());
-            additionalProposalInfo.append(LINE_SEPARATOR);
-            return additionalProposalInfo + super.getAdditionalProposalInfo();
+            header.append("// "); //$NON-NLS-1$
+            header.append(snippet.getDescription());
+            header.append(LINE_SEPARATOR);
         }
-        additionalProposalInfo.append(super.getAdditionalProposalInfo());
-        return additionalProposalInfo.toString();
+
+        try {
+            return fixIndentation(header + super.getAdditionalProposalInfo());
+        } catch (BadLocationException e) {
+            return null;
+        }
+    }
+
+    private String fixIndentation(String additionalProposalInfo) throws BadLocationException {
+        IDocument document = new Document(additionalProposalInfo);
+        IndentUtil.indentLines(document, new LineRange(0, document.getNumberOfLines()), null, null);
+        return document.get();
     }
 
     public ISnippet getSnippet() {
