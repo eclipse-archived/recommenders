@@ -219,6 +219,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
+
                 final Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
                 for (ISnippetRepository repo : repos) {
                     snippets.addAll(repo.getSnippets());
@@ -226,7 +227,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
                     public void run() {
-                        viewer.setInput(snippets);
+                        if (!viewer.getControl().isDisposed()) {
+                            viewer.setInput(snippets);
+                        }
                     }
                 });
                 return Status.OK_STATUS;
