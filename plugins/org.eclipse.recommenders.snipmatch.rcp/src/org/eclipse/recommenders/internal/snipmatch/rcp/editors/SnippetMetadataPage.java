@@ -12,11 +12,10 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
-import static org.eclipse.core.databinding.beans.PojoProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
-import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.eclipse.core.databinding.beans.PojoProperties.value;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
+import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 
 import java.util.UUID;
 
@@ -33,6 +32,9 @@ import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
@@ -40,8 +42,11 @@ import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -84,6 +89,9 @@ public class SnippetMetadataPage extends FormPage {
     private IObservableList ppTags;
     private DataBindingContext ctx;
 
+    private final Image decorationImage = FieldDecorationRegistry.getDefault()
+            .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage();
+
     public SnippetMetadataPage(FormEditor editor, String id, String title) {
         super(editor, id, title);
     }
@@ -102,15 +110,35 @@ public class SnippetMetadataPage extends FormPage {
                 Messages.EDITOR_LABEL_SNIPPET_NAME, SWT.NONE);
         lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
+        int horizontalIndent = decorationImage.getBounds().width + 2;
+
         txtName = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.NONE);
-        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        txtName.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
+                .indent(horizontalIndent, 0).create());
+
+        final ControlDecoration decor = new ControlDecoration(txtName, SWT.LEFT);
+        decor.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY);
+        decor.setImage(decorationImage);
+        decor.setMarginWidth(1);
+
+        txtName.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent arg0) {
+                if (isNullOrEmpty(txtName.getText())) {
+                    decor.show();
+                } else {
+                    decor.hide();
+                }
+            }
+        });
 
         Label lblDescription = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                 Messages.EDITOR_LABEL_SNIPPET_DESCRIPTION, SWT.NONE);
         lblDescription.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         txtDescription = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.NONE);
-        txtDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
+                .span(2, 1).indent(horizontalIndent, 0).create());
 
         Label lblKeyword = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                 Messages.EDITOR_LABEL_SNIPPETS_KEYWORD, SWT.NONE);
@@ -118,7 +146,8 @@ public class SnippetMetadataPage extends FormPage {
 
         listViewerKeywords = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
         List lstKeywords = listViewerKeywords.getList();
-        lstKeywords.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        lstKeywords
+                .setLayoutData(GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0).create());
 
         btnContainerKeywords = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
         btnContainerKeywords.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -154,7 +183,7 @@ public class SnippetMetadataPage extends FormPage {
 
         listViewerTags = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
         List lstTags = listViewerTags.getList();
-        lstTags.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        lstTags.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0).create());
 
         btnContainerTags = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
         btnContainerTags.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -188,7 +217,7 @@ public class SnippetMetadataPage extends FormPage {
         lblUuid.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
         txtUuid = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.READ_ONLY);
-        txtUuid.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        txtUuid.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0).create());
 
         initDataBindings();
     }

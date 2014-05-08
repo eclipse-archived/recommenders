@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static java.util.UUID.nameUUIDFromBytes;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 import java.io.IOException;
 
@@ -89,6 +90,12 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         if (repo == null) {
             MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET,
                     Messages.DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE);
+            return;
+        }
+
+        if (isNullOrEmpty(snippet.getName())) {
+            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_INAVLID_SNIPPET_NAME,
+                    Messages.DIALOG_MESSAGE_INVALID_SNIPPET_NAME);
             return;
         }
 
