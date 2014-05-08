@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.rcp.IRcpService;
@@ -96,6 +97,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                             return Status.OK_STATUS;
                         } catch (IOException e) {
                             LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
+                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, e.getMessage(), e);
+                            Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.CANCEL_STATUS;
                         }
                     }

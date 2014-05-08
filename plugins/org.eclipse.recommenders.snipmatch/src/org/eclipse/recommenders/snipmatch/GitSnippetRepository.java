@@ -52,12 +52,18 @@ public class GitSnippetRepository extends FileSnippetRepository {
                 }
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
+                throw new IOException(String.format("Invalid remote repository '%s'. Check the repository's URL.",
+                        repoUrl), e);
             } catch (TransportException e) {
                 LOG.error("Transport operation failed.", e);
+                throw new IOException("Could not connect to remote repository. Your internet connection may be down.",
+                        e);
             } catch (GitAPIException e) {
                 LOG.error("Exception while update/clone repository.", e);
+                throw new IOException("Exception while update/clone repository.", e);
             } catch (CoreException e) {
                 LOG.error("Exception while opening repository.", e);
+                throw new IOException("Exception while opening repository", e);
             }
         }
         super.open();
