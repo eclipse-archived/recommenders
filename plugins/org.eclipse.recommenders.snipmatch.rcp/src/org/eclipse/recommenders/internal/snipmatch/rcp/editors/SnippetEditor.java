@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
-import static java.util.UUID.nameUUIDFromBytes;
-import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.UUID.randomUUID;
+import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 
 import java.io.IOException;
 
@@ -101,15 +101,15 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
         ISnippet oldSnippet = input.getOldSnippet();
 
-        if (!snippet.getCode().equals(oldSnippet.getCode())) {
+        if (!oldSnippet.getCode().isEmpty() && !snippet.getCode().equals(oldSnippet.getCode())) {
             int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
                     Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
-                            Messages.DIALOG_OPTION_OVERWRITE, Messages.DIALOG_OPTION_STORE_AS_NEW,
+                            Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
                             Messages.DIALOG_OPTION_CANCEL }, 0).open();
 
             if (status == 1) {
                 // Store as new
-                snippet.setUUID(nameUUIDFromBytes(snippet.getCode().getBytes()));
+                snippet.setUUID(randomUUID());
                 setInput(new SnippetEditorInput(snippet, input.getRepository()));
                 updateEditorPages();
             }

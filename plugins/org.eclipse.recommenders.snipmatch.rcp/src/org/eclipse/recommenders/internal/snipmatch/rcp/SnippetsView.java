@@ -17,7 +17,9 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -37,14 +39,15 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryContentChangedEvent;
-import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryOpenedChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
+import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -128,12 +131,18 @@ public class SnippetsView extends ViewPart implements IRcpService {
         btnAdd = new Button(composite, SWT.NONE);
         btnAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnAdd.setText(Messages.SNIPPETS_VIEW_BUTTON_ADD);
-        // TODO delete this line to reenable Add button
-        btnAdd.setEnabled(false);
+        btnAdd.setEnabled(isImportSupported());
         btnAdd.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // Must be rewritten and adapted to the new fileless approach.
+                for (ISnippetRepository repo : repos) {
+                    if (repo.isImportSupported()) {
+                        // TODO Make the repo selectable
+                        // don't just store in the first that can import
+                        doAdd(repo);
+                        break;
+                    }
+                }
             }
         });
 
@@ -159,7 +168,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 try {
                     for (ISnippetRepository repo : repos) {
                         repo.delete(recommendation.getProposal().getUuid());
-                        refreshInput();
                     }
                 } catch (Exception e) {
                     Throwables.propagate(e);
@@ -200,13 +208,31 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     @Subscribe
-    public void onEvent(SnippetRepositoryOpenedChangedEvent e) throws IOException {
+    public void onEvent(SnippetRepositoryOpenedEvent e) throws IOException {
         refreshInput();
+        if (e.getRepository().isImportSupported()) {
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    btnAdd.setEnabled(true);
+                }
+            });
+        }
     }
 
     @Subscribe
-    public void onEvent(SnippetRepositoryClosedChangedEvent e) throws IOException {
+    public void onEvent(SnippetRepositoryClosedEvent e) throws IOException {
         refreshInput();
+        btnAdd.setEnabled(isImportSupported());
+    }
+
+    private boolean isImportSupported() {
+        for (ISnippetRepository repo : repos) {
+            if (repo.isImportSupported()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Subscribe
@@ -236,6 +262,20 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         };
         refreshJob.schedule();
+    }
+
+    private void doAdd(ISnippetRepository repo) {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+        try {
+            ISnippet snippet = new Snippet(UUID.randomUUID(), "", "", Collections.<String>emptyList(),
+                    Collections.<String>emptyList(), "");
+
+            final SnippetEditorInput input = new SnippetEditorInput(snippet, repo);
+            page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"); //$NON-NLS-1$
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
     }
 
     private void doOpen() {

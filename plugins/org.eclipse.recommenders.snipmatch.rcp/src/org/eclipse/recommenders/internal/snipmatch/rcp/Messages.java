@@ -23,8 +23,8 @@ public class Messages extends NLS {
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
     public static String DIALOG_OPTION_CANCEL;
-    public static String DIALOG_OPTION_OVERWRITE;
-    public static String DIALOG_OPTION_STORE_AS_NEW;
+    public static String DIALOG_OPTION_SAVE;
+    public static String DIALOG_OPTION_SAVE_AS_NEW;
     public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
