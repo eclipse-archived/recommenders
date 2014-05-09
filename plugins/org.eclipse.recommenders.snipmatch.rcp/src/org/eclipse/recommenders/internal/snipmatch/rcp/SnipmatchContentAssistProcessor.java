@@ -30,6 +30,8 @@ import org.eclipse.jdt.internal.corext.template.java.TypeResolver;
 import org.eclipse.jdt.internal.corext.template.java.VarResolver;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
@@ -127,16 +129,27 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
         }
         ICompilationUnit cu = ctx.getCompilationUnit();
         IEditorPart editor = EditorUtility.isOpenInEditor(cu);
+
+        ISourceViewer sourceViewer = (ISourceViewer) editor.getAdapter(ITextOperationTarget.class);
+        Point selection = sourceViewer.getSelectedRange();
+        IRegion region = new Region(selection.x, selection.y);
+        Position p = new Position(selection.x, selection.y);
+        IDocument document = sourceViewer.getDocument();
+
+        String selectedText = null;
+        if (selection.y != 0) {
+            try {
+                selectedText = document.get(selection.x, selection.y);
+            } catch (BadLocationException e) {
+            }
+        }
+        JavaContext ctx = new JavaContext(contextType, document, p, cu);
+        ctx.setVariable("selection", selectedText); // $NON-NLS-1$
+
         for (Recommendation<ISnippet> recommendation : recommendations) {
             ISnippet snippet = recommendation.getProposal();
-            ISourceViewer sourceViewer = (ISourceViewer) editor.getAdapter(ITextOperationTarget.class);
-            Point range = sourceViewer.getSelectedRange();
             Template template = new Template(snippet.getName(), Joiner.on(", ").join(snippet.getTags()), CONTEXT_ID, //$NON-NLS-1$
                     snippet.getCode(), true);
-            IRegion region = new Region(range.x, range.y);
-            Position p = new Position(range.x, range.y);
-            JavaContext ctx = new JavaContext(contextType, sourceViewer.getDocument(), p, cu);
-
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(snippet, template, ctx, region, image));
             } catch (Exception e) {
