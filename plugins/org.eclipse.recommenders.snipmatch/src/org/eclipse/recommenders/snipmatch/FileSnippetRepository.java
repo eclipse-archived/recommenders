@@ -12,6 +12,7 @@
 package org.eclipse.recommenders.snipmatch;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
+import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
@@ -72,6 +73,7 @@ import com.google.common.collect.Sets;
 
 public class FileSnippetRepository implements ISnippetRepository {
 
+    private static final Set<String> EMPTY_STOPWORDS = emptySet();
     private static final IOFileFilter SNIPPETS_FILENAME_FILTER = new RegexFileFilter("^.+?\\.json");
     private static final String F_DEFAULT_SEARCH_FIELD = "default";
     private static final String F_NAME = "name";
@@ -114,7 +116,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         indexdir = new File(basedir, "index");
         this.repoUrl = mangle(basedir.getAbsolutePath());
 
-        StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35);
+        StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35, EMPTY_STOPWORDS);
         Map<String, Analyzer> analyzers = Maps.newHashMap();
         analyzers.put(F_DEFAULT_SEARCH_FIELD, standardAnalyzer);
         analyzers.put(F_TAG, standardAnalyzer);
