@@ -208,7 +208,7 @@ class CallCompletionAstAnalyzerTest {
 
     @Test
     def void testOther_3() {
-        code = CodeBuilder::method('''String[] args=new String[0]; args.; List l=null; l.$''')
+        code = CodeBuilder::method('''String[] args=new String[0]; List l = null; l.$''')
         exercise()
         verifyDefinition(NULL_LITERAL)
     }
