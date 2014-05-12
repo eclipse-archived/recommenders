@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.completion.rcp;
 
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.PREF_SESSIONPROCESSORS;
+import static org.eclipse.recommenders.internal.completion.rcp.Messages.FIELD_LABEL_SESSION_PROCESSORS;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.List;
@@ -62,7 +63,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
     @Override
     protected void createFieldEditors() {
-        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, "label", getFieldEditorParent()));
+        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, FIELD_LABEL_SESSION_PROCESSORS, getFieldEditorParent()));
         addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement",
                 getFieldEditorParent()));
     }
