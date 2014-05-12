@@ -37,6 +37,8 @@ public class Messages extends NLS {
 
     public static String BUTTON_LABEL_CONFIGURE;
 
+    public static String FIELD_LABEL_SESSION_PROCESSORS;
+
     public static String FIELD_LABEL_ENABLE_COMPLETION;
 
     public static String FIELD_TOOLTIP_ENABLE_COMPLETION;
