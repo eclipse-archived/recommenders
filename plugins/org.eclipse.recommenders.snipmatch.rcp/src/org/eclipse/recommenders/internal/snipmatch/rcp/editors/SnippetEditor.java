@@ -121,6 +121,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         }
 
         try {
+            input.setOldSnippet(Snippet.copy(snippet));
             repo.importSnippet(snippet);
             setPartName(getEditorInput().getName());
             setDirty(false);
