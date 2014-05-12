@@ -55,14 +55,14 @@ public class SnippetEditorInput implements IEditorInput {
         }
         if (obj instanceof SnippetEditorInput) {
             SnippetEditorInput other = (SnippetEditorInput) obj;
-            return getSnippet().equals(other.getSnippet());
+            return getOldSnippet().equals(other.getOldSnippet());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return getSnippet().hashCode();
+        return getOldSnippet().hashCode();
     }
 
     @Override
@@ -88,5 +88,9 @@ public class SnippetEditorInput implements IEditorInput {
     @Override
     public String getToolTipText() {
         return snippet.getName() + " - " + snippet.getDescription(); //$NON-NLS-1$
+    }
+
+    public void setOldSnippet(Snippet oldSnippet) {
+        this.oldSnippet = oldSnippet;
     }
 }
