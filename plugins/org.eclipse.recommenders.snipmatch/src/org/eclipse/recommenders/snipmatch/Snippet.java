@@ -130,4 +130,3 @@ public class Snippet implements ISnippet {
                 .getKeywords()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
     }
 }
-

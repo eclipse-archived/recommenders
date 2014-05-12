@@ -93,7 +93,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                             delegate.open();
                             delegateOpen = true;
                             openJob = null;
-                            bus.post(new SnippetRepositoryOpenedChangedEvent());
+                            bus.post(new SnippetRepositoryOpenedEvent(EclipseGitSnippetRepository.this));
                             return Status.OK_STATUS;
                         } catch (IOException e) {
                             LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
@@ -129,7 +129,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                         LOG.error("Failed to join open job", e); //$NON-NLS-1$
                     }
                     delegate.close();
-                    bus.post(new SnippetRepositoryClosedChangedEvent());
+                    bus.post(new SnippetRepositoryClosedEvent(this));
                 }
             }
         } finally {
@@ -175,9 +175,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
      * Triggered when a snippet repository URL was changed (most likely in the a preference page).
      * <p>
      * Clients of this event should be an instance of {@link ISnippetRepository}. Other clients should have a look at
-     * {@link SnippetRepositoryClosedChangedEvent} and {@link SnippetRepositoryClosedChangedEvent}. Clients of this
-     * event may consider refreshing themselves whenever they receive this event. Clients get notified in a background
-     * process.
+     * {@link SnippetRepositoryClosedEvent} and {@link SnippetRepositoryClosedEvent}. Clients of this event may consider
+     * refreshing themselves whenever they receive this event. Clients get notified in a background process.
      */
     public static class SnippetRepositoryUrlChangedEvent {
     }
@@ -186,7 +185,16 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
      * Triggered when the snippet repository was closed to inform clients that the snippet repository is currently not
      * available.
      */
-    public static class SnippetRepositoryClosedChangedEvent {
+    public static class SnippetRepositoryClosedEvent {
+        private final ISnippetRepository repo;
+
+        public SnippetRepositoryClosedEvent(ISnippetRepository repo) {
+            this.repo = repo;
+        }
+
+        public ISnippetRepository getRepository() {
+            return repo;
+        }
     }
 
     /**
@@ -195,13 +203,32 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
      * Clients of this event may consider refreshing themselves whenever they receive this event. Clients get notified
      * in a background process.
      */
-    public static class SnippetRepositoryOpenedChangedEvent {
+    public static class SnippetRepositoryOpenedEvent {
+
+        private final ISnippetRepository repo;
+
+        public SnippetRepositoryOpenedEvent(ISnippetRepository repo) {
+            this.repo = repo;
+        }
+
+        public ISnippetRepository getRepository() {
+            return repo;
+        }
     }
 
     /**
      * Triggered when a snippet was imported.
      */
     public static class SnippetRepositoryContentChangedEvent {
+        private final ISnippetRepository repo;
+
+        public SnippetRepositoryContentChangedEvent(ISnippetRepository repo) {
+            this.repo = repo;
+        }
+
+        public ISnippetRepository getRepository() {
+            return repo;
+        }
     }
 
     @Override
@@ -240,7 +267,11 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
             if (!delegateOpen) {
                 return false;
             }
-            return delegate.delete(uuid);
+            boolean deleted = delegate.delete(uuid);
+            if (deleted) {
+                bus.post(new SnippetRepositoryContentChangedEvent(this));
+            }
+            return deleted;
         } finally {
             readLock.unlock();
         }
@@ -251,7 +282,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            return delegate.isDeleteSupported();
+            return delegateOpen && delegate.isDeleteSupported();
         } finally {
             readLock.unlock();
         }
@@ -267,9 +298,20 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         try {
             Preconditions.checkState(isOpen());
             delegate.importSnippet(snippet);
-            bus.post(new SnippetRepositoryContentChangedEvent());
+            bus.post(new SnippetRepositoryContentChangedEvent(this));
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean isImportSupported() {
+        readLock.lock();
+        try {
+            Preconditions.checkState(isOpen());
+            return delegateOpen && delegate.isImportSupported();
+        } finally {
+            readLock.unlock();
         }
     }
 }
