@@ -87,6 +87,6 @@ public class SnippetEditorInput implements IEditorInput {
 
     @Override
     public String getToolTipText() {
-        return null;
+        return snippet.getName() + " - " + snippet.getDescription(); //$NON-NLS-1$
     }
 }
