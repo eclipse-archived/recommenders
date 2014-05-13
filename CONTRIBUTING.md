@@ -25,7 +25,7 @@ But before your contribution can be accepted by the project, you need to create 
 - [Eclipse Foundation Contributor License Agreement](http://www.eclipse.org/legal/CLA.php)
 
 Not sure whether there is a CLA for you on file already?
-You can easily check this yourself using the (Contributor License Agreement Lookup Tool)[https://projects.eclipse.org/user/cla/validate].
+You can easily check this yourself using the [Contributor License Agreement Lookup Tool](https://projects.eclipse.org/user/cla/validate).
 
 Search For and Fix Bugs
 -----------------------
@@ -64,43 +64,30 @@ Please make sure that your Git configuration has `core.autocrlf` set to `false` 
 
 If you want to contribute to Code Recommenders yourself, we suggest that you use Eclipse.
 
-We recommend the latest [Eclipse IDE for Java and DSL Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/keplersr1).
-This package already contains all the required and most of the recommended features for building Code Recommenders.
+We recommend setting up Eclipse using [Eclipse Oomph](http://www.eclipse.org/oomph/).
+Oomph will setup an up-to-date Eclipse IDE, install required and useful plugins, and import Code Recommenders’ source ready to build.
 
-The following features are **required** for building Code Recommenders:
+![Setting up Eclipse for work on the Code Recommenders master branch with Oomph](../plain/CONTRIBUTING/oomph.png)
 
-* [Eclipse Java Development Tools](http://www.eclipse.org/jdt/)
-* [Eclipse Plug-in Development Environment](http://www.eclipse.org/pde/)
-* [Xtend SDK](http://www.eclipse.org/xtend/),
-* [Maven Integration for Eclipse](http://www.eclipse.org/m2e/)
-
-The following features are **recommended** for building Code Recommenders:
-
-* [Eclipse Git Team Provider](http://www.eclipse.org/egit/)
-* [Workspace Mechanic](https://code.google.com/a/eclipselabs.org/p/workspacemechanic/)
-* [Code Recommenders Developer Tools](http://www.eclipse.org/recommenders/)
-
-After you have installed all necessary features, you can import the source into your Eclipse IDE.
-But first you need to clone the Git repository and _once_ build Code Recommenders on the command line.
-(See above for how to do this.)
-
-After the command-line build has been successful, import all projects into your Eclipse workspace using the _Existing Maven Projects_ wizard.
-Here, select the `org.eclipse.recommenders` as _root directory_.
-Upon clicking _Next_, the wizard should prompt you with a list of _Maven plugin connectors_ to set up.
-Simply click _Finish_ to install all necessary connectors.
-(Depending on which connectors still need to be installed, you may have to restart Eclipse.)
-
-Once the projects have been imported, many of them still contain errors.
-This is to be expected, as Eclipse cannot yet find all their required dependencies.
-To fix this, you need to set a target platform which points Eclipse to these dependencies.
-Open either the `kepler.target` or `luna.target` file residing in the `kepler` or `luna` project, respectively, with the _Target Editor_.
-Wait until Eclipse _completely_ resolved the target definition.
-Only then click on _Set as target platform_ in the upper right corner of the editor.
-This causes Eclipse to build all projects again.
-Once this re-build is done, there should be no erroneous projects.
-
-If you followed our recommendation and installed Workspace Mechanic, you should now open the _Workspace Mechanic_ preferences and configure your `org.eclipse.recommenders/tools/mechanic` directory as a _Task Source_.
-In case Workspace Mechanic finds any of your settings amiss, just let it fix them for you.
+To get started with Oomph, [download the installer](https://wiki.eclipse.org/Eclipse_Oomph_Installer#Installation) and execute it.
+From the list of preconfigured development environments select `Code Recommenders/master` and click on install.
+Follow the instructions that ask you for your login data to Eclipse servers.
+The installation may take several minutes.
+The freshly installed Eclipse will open during installation and automatically configure itself to let you work on Code Recommenders.
 
 You are now set up to contribute code of your own to Eclipse Code Recommenders.
 To test your contributions, just start an Eclipse runtime via the `tools/ide.product` product configuration file residing in the `org.eclipse.recommenders` project.
+
+Once you have done some changes to the code, you can submit your changes to Gerrit, where Code Recommenders committers can review your change.
+To do so, right click on the `org.eclipse.recommenders` project and select `Team/Commit…`.
+For the commit comment, provide the ID of the [Bugzilla](https://bugs.eclipse.org/bugs/buglist.cgi?product=Recommenders) issue you are working on in the format `Bug XXXXXX: Change description`.
+(If you are not working on an Bugzilla issue, please consider opening a new issue first.)
+Also, please click the second (Add Signed-off-by) and third (Compute Change-Id for Gerrit Code Review) button above the commit message field; this will automatically generate the necessary `Signed-off-by` and `Change-Id` headers.
+(Do not be alarmed if the generated ID shows as a all zeros; a proper ID will be generated once you submit the change.)
+When you have composed your commit message, click on `Commit`.
+Next, right click on the `org.eclipse.recommenders` project again and select `Team/Remote/Push to Gerrit…`.
+Select `refs/for/master` Gerrit branch, then click on `Finish`.
+Congratulations, you have contributed your first change to Code Recommenders!
+
+Other committers will look at your code and provide feedback.
+Do not be alarmed if your change is not immediately merged; most changes require a bit of back-and-forth between contributors and committers.
