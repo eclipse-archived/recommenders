@@ -19,9 +19,9 @@ import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +30,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -74,7 +71,7 @@ import com.google.common.collect.Sets;
 public class FileSnippetRepository implements ISnippetRepository {
 
     private static final Set<String> EMPTY_STOPWORDS = emptySet();
-    private static final IOFileFilter SNIPPETS_FILENAME_FILTER = new RegexFileFilter("^.+?\\.json");
+
     private static final String F_DEFAULT_SEARCH_FIELD = "default";
     private static final String F_NAME = "name";
     private static final String F_DESCRIPTION = "description";
@@ -153,15 +150,13 @@ public class FileSnippetRepository implements ISnippetRepository {
     public void index() throws IOException {
         writeLock.lock();
         try {
-            Collection<File> snippets = FileUtils.listFiles(snippetsdir, SNIPPETS_FILENAME_FILTER,
-                    TrueFileFilter.INSTANCE);
             Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_35);
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_35, analyzer);
             config.setOpenMode(OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(directory, config);
             snippetCache.invalidateAll();
 
-            for (File fSnippet : snippets) {
+            for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
                 try {
                     Snippet snippet = snippetCache.get(fSnippet);
                     Document doc = new Document();
@@ -213,7 +208,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             Preconditions.checkState(isOpen());
             // TODO MB: this is a costly operation that works only well with small repos.
             Set<Recommendation<ISnippet>> res = Sets.newHashSet();
-            for (File fSnippet : FileUtils.listFiles(snippetsdir, SNIPPETS_FILENAME_FILTER, TrueFileFilter.INSTANCE)) {
+            for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
                 try {
                     ISnippet snippet = snippetCache.get(fSnippet);
                     res.add(Recommendation.newRecommendation(snippet, 0));
@@ -334,6 +329,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
+    @Override
     public void importSnippet(ISnippet snippet) throws IOException {
         writeLock.lock();
         try {
