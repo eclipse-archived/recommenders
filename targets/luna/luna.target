@@ -109,7 +109,7 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8216 -->
 <unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6557 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7436 -->

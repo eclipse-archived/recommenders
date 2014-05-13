@@ -55,7 +55,7 @@
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8272 -->
 <unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
 <unit id="ch.qos.logback.slf4j.source" version="1.0.7.v20121108-1250"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7760 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5923 -->
 <unit id="com.google.gson" version="2.1.0.v201303041604"/>
 <unit id="com.google.gson.source" version="2.1.0.v201303041604"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
@@ -82,7 +82,7 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6557 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7436 -->
