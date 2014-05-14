@@ -342,7 +342,7 @@ public class ModelRepositoriesView extends ViewPart {
         GC gc = new GC(tree);
         int maxLength = 0;
         for (String classifier : modelClassifiers) {
-            int extent = gc.textExtent(classifier).x;
+            int extent = gc.textExtent(classifier.toUpperCase()).x;
             if (extent > maxLength) {
                 maxLength = extent;
             }
@@ -524,6 +524,7 @@ public class ModelRepositoriesView extends ViewPart {
         classifierColumn.setResizable(false);
         treeLayout.setColumnData(classifierColumn, new ColumnPixelData(minWidth, false, true));
         classifierColumn.setText(classifier.toUpperCase());
+        classifierColumn.pack();
         classifierViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
