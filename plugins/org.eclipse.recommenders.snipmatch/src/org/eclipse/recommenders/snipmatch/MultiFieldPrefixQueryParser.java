@@ -10,22 +10,24 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
 import com.google.common.collect.Sets;
 
-public class PrefixQueryParser extends QueryParser {
+public class MultiFieldPrefixQueryParser extends MultiFieldQueryParser {
 
     private final Set<String> prefixFields;
 
-    public PrefixQueryParser(Version matchVersion, String f, Analyzer a, String... prefixFields) {
-        super(matchVersion, f, a);
+    public MultiFieldPrefixQueryParser(Version matchVersion, String[] fields, Analyzer a, Map<String, Float> boosts,
+            String... prefixFields) {
+        super(matchVersion, fields, a, boosts);
         this.prefixFields = Sets.newHashSet(prefixFields);
     }
 

@@ -62,6 +62,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -72,13 +73,17 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     private static final Set<String> EMPTY_STOPWORDS = emptySet();
 
-    private static final String F_DEFAULT_SEARCH_FIELD = "default";
     private static final String F_NAME = "name";
     private static final String F_DESCRIPTION = "description";
-    private static final String F_PATH = "path";
-    private static final String F_TAG = "tag";
     private static final String F_KEYWORD = "keyword";
+    private static final String F_TAG = "tag";
+    private static final String F_PATH = "path";
     private static final String F_UUID = "uuid";
+
+    private static final float NAME_BOOST = 1.2f;
+    private static final float DESCRIPTION_BOOST = 1.1f;
+    private static final float KEYWORD_BOOST = DESCRIPTION_BOOST;
+    private static final float TAG_BOOST = 1.0f;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -113,20 +118,33 @@ public class FileSnippetRepository implements ISnippetRepository {
         indexdir = new File(basedir, "index");
         this.repoUrl = mangle(basedir.getAbsolutePath());
 
-        StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35, EMPTY_STOPWORDS);
-        Map<String, Analyzer> analyzers = Maps.newHashMap();
-        analyzers.put(F_DEFAULT_SEARCH_FIELD, standardAnalyzer);
-        analyzers.put(F_TAG, standardAnalyzer);
-        analyzers.put(F_NAME, standardAnalyzer);
-        analyzers.put(F_UUID, new KeywordAnalyzer());
-        analyzers.put(F_DESCRIPTION, standardAnalyzer);
-        analyzer = new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzers);
-        parser = new PrefixQueryParser(Version.LUCENE_35, F_DEFAULT_SEARCH_FIELD, analyzer, F_DEFAULT_SEARCH_FIELD);
-        parser.setDefaultOperator(AND);
+        analyzer = createAnalyzer();
+        parser = createParser();
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
         writeLock = readWriteLock.writeLock();
+    }
+
+    private Analyzer createAnalyzer() {
+        StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35, EMPTY_STOPWORDS);
+        Map<String, Analyzer> analyzers = Maps.newHashMap();
+        analyzers.put(F_NAME, standardAnalyzer);
+        analyzers.put(F_DESCRIPTION, standardAnalyzer);
+        analyzers.put(F_KEYWORD, standardAnalyzer);
+        analyzers.put(F_TAG, standardAnalyzer);
+        analyzers.put(F_UUID, new KeywordAnalyzer());
+        return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzers);
+    }
+
+    private QueryParser createParser() {
+        String[] searchFields = new String[] { F_NAME, F_DESCRIPTION, F_KEYWORD, F_TAG };
+        Map<String, Float> boosts = ImmutableMap.of(F_NAME, NAME_BOOST, F_DESCRIPTION, DESCRIPTION_BOOST, F_KEYWORD,
+                KEYWORD_BOOST, F_TAG, TAG_BOOST);
+        QueryParser parser = new MultiFieldPrefixQueryParser(Version.LUCENE_35, searchFields, analyzer, boosts, F_NAME,
+                F_DESCRIPTION, F_KEYWORD, F_TAG);
+        parser.setDefaultOperator(AND);
+        return parser;
     }
 
     @Override
@@ -167,20 +185,16 @@ public class FileSnippetRepository implements ISnippetRepository {
 
                     String name = snippet.getName();
                     doc.add(new Field(F_NAME, name, Store.YES, Index.ANALYZED));
-                    doc.add(new Field(F_DEFAULT_SEARCH_FIELD, name, Store.YES, Index.ANALYZED));
 
                     String description = snippet.getDescription();
                     doc.add(new Field(F_DESCRIPTION, description, Store.YES, Index.ANALYZED));
-                    doc.add(new Field(F_DEFAULT_SEARCH_FIELD, description, Store.YES, Index.ANALYZED));
 
                     for (String tag : snippet.getTags()) {
                         doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED));
-                        doc.add(new Field(F_DEFAULT_SEARCH_FIELD, tag, Store.NO, Index.ANALYZED));
                     }
 
                     for (String keyword : snippet.getKeywords()) {
                         doc.add(new Field(F_KEYWORD, keyword, Store.YES, Index.ANALYZED));
-                        doc.add(new Field(F_DEFAULT_SEARCH_FIELD, keyword, Store.NO, Index.ANALYZED));
                     }
 
                     writer.addDocument(doc);
