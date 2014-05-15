@@ -43,7 +43,6 @@ public class SnipmatchRcpModule extends AbstractModule {
         Multibinder<ISnippetRepository> uriBinder = Multibinder.newSetBinder(binder(), ISnippetRepository.class);
         uriBinder.addBinding().to(EclipseGitSnippetRepository.class);
         bind(EclipseGitSnippetRepository.class).in(SINGLETON);
-        bind(TemplateProcessor.class).in(SINGLETON);
     }
 
     @Provides
