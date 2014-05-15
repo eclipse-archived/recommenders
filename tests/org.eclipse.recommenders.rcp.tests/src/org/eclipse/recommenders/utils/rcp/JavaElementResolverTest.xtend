@@ -2,16 +2,15 @@ package org.eclipse.recommenders.utils.rcp
 
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.IMethod
+import org.eclipse.recommenders.rcp.JavaElementResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.Checks
 import org.eclipse.recommenders.utils.names.VmMethodName
-import org.eclipse.recommenders.rcp.JavaElementResolver
+import org.eclipse.recommenders.utils.names.VmTypeName
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
-import org.eclipse.recommenders.utils.names.VmTypeName
-import org.junit.Ignore
 
 class JavaElementResolverTest {
 
@@ -20,7 +19,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testGenericReturn() {
-        val code = classbody('''public List<String> $m(){return null;}''')
+        val code = classbody('''public List<String> $m() { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m()Ljava/util/List;", actual.signature)
@@ -28,7 +27,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testBoundReturn() {
-        val code = classbody('''public Iterable<? extends Executor> $m(){return null;}''')
+        val code = classbody('''public Iterable<? extends Executor> $m() { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m()Ljava/lang/Iterable;", actual.signature)
@@ -36,7 +35,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testGenericClassWithGenericReturn() {
-        val code = classDeclaration('''public class Test<E>''', '''public Iterator<E> $m(){return null;}''')
+        val code = classDeclaration('''public class Test<E>''', '''public Iterator<E> $m() { return null; }''')
         val method = getMethod(code);
         val actual = sut.toRecMethod(method).get
         assertEquals("m()Ljava/util/Iterator;", actual.signature)
@@ -44,7 +43,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testGenericReturnOnBinaryMethod() {
-        val code = classbody('''public void m(){ List<String> l; l.$iterator(); }''')
+        val code = classbody('''public void m() { List<String> l; l.$iterator(); }''')
         val method = getMethod(code);
         val actual = sut.toRecMethod(method).get
         assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
@@ -52,7 +51,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testBoundReturnOnBinaryMethod() {
-        val code = classbody('''public void m(){ List<? extends Number> l; l.$iterator(); }''')
+        val code = classbody('''public void m() { List<? extends Number> l; l.$iterator(); }''')
         val method = getMethod(code);
         val actual = sut.toRecMethod(method).get
         assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
@@ -61,7 +60,7 @@ class JavaElementResolverTest {
     @Test
     def void testBoundIntersectionReturnOnBinaryMethod() {
         val code = classDeclaration('''public class Test<E extends Number & Closable>''',
-            '''public void m(){ List<E> l; l.$iterator(); }''')
+            '''public void m() { List<E> l; l.$iterator(); }''')
         val method = getMethod(code);
         val actual = sut.toRecMethod(method).get
         assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
@@ -69,7 +68,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testRawReturnOnBinaryMethod() {
-        val code = classbody('''public void m(){ List l; l.$iterator(); }''')
+        val code = classbody('''public void m() { List l; l.$iterator(); }''')
         val method = getMethod(code);
         val actual = sut.toRecMethod(method).get
         assertEquals("iterator()Ljava/util/Iterator;", actual.signature)
@@ -77,7 +76,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testPrimitiveParameter() {
-        val code = classbody('''public void $m(int i){return null;}''')
+        val code = classbody('''public void $m(int i) { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m(I)V", actual.signature)
@@ -85,7 +84,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testPrimitiveArrayParameter() {
-        val code = classbody('''public void $m(int[] i){return null;}''')
+        val code = classbody('''public void $m(int[] i) { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m([I)V", actual.signature)
@@ -93,7 +92,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testArrayOfGenericsParameter() {
-        val code = classbody('''public void $m(List<Integer>[] lists){return null;}''')
+        val code = classbody('''public void $m(List<Integer>[] lists) { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m([Ljava/util/List;)V", actual.signature)
@@ -101,7 +100,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testArrays() {
-        val code = classbody('''public Iterable[][] $m(String[][] s){return null;}''')
+        val code = classbody('''public Iterable[][] $m(String[][] s) { return null; }''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", actual.signature)
@@ -109,7 +108,7 @@ class JavaElementResolverTest {
 
     @Test
     def void testBoundArg() {
-        val code = classbody('''public void $m(Iterable<? extends Executor> e){}''')
+        val code = classbody('''public void $m(Iterable<? extends Executor> e) {}''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m(Ljava/lang/Iterable;)V", actual.signature)
@@ -117,16 +116,71 @@ class JavaElementResolverTest {
 
     @Test
     def void testUnboundArg() {
-        val code = classbody('''public <T> void $m(T s){}''')
+        val code = classbody('''public <T> void $m(T s) {}''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m(Ljava/lang/Object;)V", actual.signature)
     }
 
     @Test
-    @Ignore("See Bug 429979")
     def void testBoundMethod() {
-        val code = classbody('''public <T extends List> void $m(T s){}''')
+        val code = classbody('''public <T extends List> void $m(T s) {}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)V", actual.signature)
+    }
+
+    @Test
+    def void testBoundWithNestedGenericMethod() {
+        val code = classbody('''public <T extends List<String>> void $m(T s) {}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)V", actual.signature)
+    }
+
+    @Test
+    def void testTwoBoundsMethod() {
+        val code = classbody('''public <L extends List, M extends Map> void $m(L l, M m) {}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;Ljava/util/Map;)V", actual.signature)
+    }
+
+    @Test
+    def void testBoundReturnType() {
+        val code = classbody('''public <T extends List> T $m(T s) { return null; }''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)Ljava/util/List;", actual.signature)
+    }
+
+    @Test
+    def void testBoundReturnTypeArray() {
+        val code = classbody('''public <T extends List> T[] $m(T s) { return null; }''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)[Ljava/util/List;", actual.signature)
+    }
+
+    @Test
+    def void testMultiBoundMethod() {
+        val code = classbody('''public <T extends List & Comparable> void $m(T s) {}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/util/List;)V", actual.signature)
+    }
+
+    @Test
+    def void testReverseMultiBoundMethod() {
+        val code = classbody('''public <T extends Comparable & List> void $m(T s) {}''')
+        val method = getMethod(code)
+        val actual = sut.toRecMethod(method).get
+        assertEquals("m(Ljava/lang/Comparable;)V", actual.signature)
+    }
+
+    @Test
+    def void testTwoNestedBoundsMethod() {
+        val code = classbody('''public <C extends Comparable , L extends List<C>> void $m(L s) {}''')
         val method = getMethod(code)
         val actual = sut.toRecMethod(method).get
         assertEquals("m(Ljava/util/List;)V", actual.signature)

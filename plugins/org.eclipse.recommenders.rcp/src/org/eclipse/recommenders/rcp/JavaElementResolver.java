@@ -10,9 +10,7 @@
  */
 package org.eclipse.recommenders.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
@@ -25,6 +23,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
@@ -229,7 +228,7 @@ public class JavaElementResolver {
     /**
      * Returns null if we fail to resolve all types used in the method signature, for instance generic return types
      * etc...
-     * 
+     *
      */
     // This method should return IMethodNames in all cases but yet it does not work completely as we want it to work
     public Optional<IMethodName> toRecMethod(@Nullable IMethod jdtMethod) {
@@ -245,18 +244,20 @@ public class JavaElementResolver {
         if (recMethod == null) {
             try {
                 final IType jdtDeclaringType = jdtMethod.getDeclaringType();
+                ITypeParameter[] typeParameters = jdtMethod.getTypeParameters();
                 //
                 final String[] unresolvedParameterTypes = jdtMethod.getParameterTypes();
                 final String[] resolvedParameterTypes = new String[unresolvedParameterTypes.length];
                 for (int i = resolvedParameterTypes.length; i-- > 0;) {
-                    resolvedParameterTypes[i] = resolveType(jdtDeclaringType, unresolvedParameterTypes[i]);
+                    resolvedParameterTypes[i] = resolveType(jdtDeclaringType, unresolvedParameterTypes[i],
+                            typeParameters);
                 }
 
-                String resolvedReturnType = resolveType(jdtDeclaringType, jdtMethod.getReturnType());
+                String resolvedReturnType = resolveType(jdtDeclaringType, jdtMethod.getReturnType(), typeParameters);
 
                 final String methodSignature = Names.src2vmMethod(
                         jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes, //$NON-NLS-1$
-                        resolvedReturnType);
+                                resolvedReturnType);
                 final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
@@ -268,9 +269,25 @@ public class JavaElementResolver {
         return fromNullable(recMethod);
     }
 
-    private String resolveType(final IType jdtDeclaringType, final String unresolvedType) {
+    private String resolveType(final IType jdtDeclaringType, final String unresolvedType,
+            final ITypeParameter[] typeParameters) throws JavaModelException {
         final int arrayCount = Signature.getArrayCount(unresolvedType);
-        String resolvedType = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolvedType,
+        String toResolve = unresolvedType.substring(arrayCount);
+        if (typeParameters != null && toResolve.startsWith("Q")) {
+            String typeName = toResolve.substring(1, toResolve.length() - 1);
+            for (ITypeParameter typeParameter : typeParameters) {
+                if (!typeParameter.getElementName().equals(typeName)) {
+                    continue;
+                }
+                String[] boundsSignatures = typeParameter.getBoundsSignatures();
+                if (boundsSignatures.length > 0) {
+                    toResolve = boundsSignatures[0];
+                    break;
+                }
+            }
+        }
+
+        String resolvedType = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(toResolve,
                 jdtDeclaringType).or(Signature.SIG_VOID);
         resolvedType = resolvedType + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
         return resolvedType;
