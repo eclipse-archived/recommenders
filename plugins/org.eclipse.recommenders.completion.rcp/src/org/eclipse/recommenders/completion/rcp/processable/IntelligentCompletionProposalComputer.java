@@ -48,7 +48,6 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
         super(new ProcessableProposalFactory(), Sets.<SessionProcessor>newLinkedHashSet(), astProvider, map);
         this.preferences = preferences;
         this.images = images;
-
     }
 
     @Override
