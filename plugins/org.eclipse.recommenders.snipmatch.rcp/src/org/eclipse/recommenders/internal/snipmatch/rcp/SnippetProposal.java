@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 
@@ -90,6 +91,19 @@ public class SnippetProposal extends TemplateProposal {
         IDocument document = new Document(additionalProposalInfo);
         IndentUtil.indentLines(document, new LineRange(0, document.getNumberOfLines()), null, null);
         return document.get();
+    }
+
+    @Override
+    public String getDisplayString() {
+        return createDisplayString(snippet);
+    }
+
+    public static String createDisplayString(ISnippet snippet) {
+        if (isNullOrEmpty(snippet.getDescription())) {
+            return snippet.getName();
+        } else {
+            return MessageFormat.format("{0} \u2013 {1}", snippet.getName(), snippet.getDescription()); // NON-NLS-1$
+        }
     }
 
     public ISnippet getSnippet() {

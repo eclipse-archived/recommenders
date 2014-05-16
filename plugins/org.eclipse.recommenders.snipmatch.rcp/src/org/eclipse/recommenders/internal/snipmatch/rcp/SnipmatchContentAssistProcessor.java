@@ -52,7 +52,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -148,7 +147,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
         for (Recommendation<ISnippet> recommendation : recommendations) {
             ISnippet snippet = recommendation.getProposal();
-            Template template = new Template(snippet.getName(), Joiner.on(", ").join(snippet.getTags()), CONTEXT_ID, //$NON-NLS-1$
+            Template template = new Template(snippet.getName(), snippet.getDescription(), CONTEXT_ID, //$NON-NLS-1$
                     snippet.getCode(), true);
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(snippet, template, ctx, region, image));

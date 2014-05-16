@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static java.text.MessageFormat.format;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.SnippetProposal.createDisplayString;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -190,7 +190,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             public String getText(Object element) {
                 Recommendation<ISnippet> recommendation = cast(element);
                 ISnippet snippet = recommendation.getProposal();
-                return format("{0} \u2013 {1}", snippet.getName(), snippet.getDescription()); //$NON-NLS-1$
+                return createDisplayString(snippet);
             }
         });
         viewer.addOpenListener(new IOpenListener() {
