@@ -12,11 +12,10 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
-import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnippetProposal.createDisplayString;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -69,7 +68,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
@@ -105,11 +103,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                Collection<Recommendation<ISnippet>> matches = Lists.newArrayList();
-                for (ISnippetRepository repo : repos) {
-                    matches.addAll(repo.search(txtSearch.getText()));
-                }
-                viewer.setInput(matches);
+                refreshInput();
             }
         });
 
@@ -246,14 +240,14 @@ public class SnippetsView extends ViewPart implements IRcpService {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
 
-                final Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
-                for (ISnippetRepository repo : repos) {
-                    snippets.addAll(repo.getSnippets());
-                }
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
                     public void run() {
                         if (!viewer.getControl().isDisposed()) {
+                            final Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
+                            for (ISnippetRepository repo : repos) {
+                                snippets.addAll(repo.search(txtSearch.getText()));
+                            }
                             viewer.setInput(snippets);
                         }
                     }
