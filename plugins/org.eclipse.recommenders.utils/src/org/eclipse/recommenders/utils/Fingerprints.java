@@ -18,13 +18,74 @@ import java.io.InputStream;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 
 public final class Fingerprints {
+
+    private Fingerprints() {
+        // this is a utility class - no instances of this class can be created.
+    }
+
+    public static String sha1(final File file) {
+        return hashFile(file, Hashing.sha1());
+    }
+
+    public static String md5(final File file) {
+        return hashFile(file, Hashing.md5());
+    }
+
+    public static String sha1(final String message) {
+        return hashString(message, Hashing.sha1());
+    }
+
+    public static String md5(final String message) {
+        return hashString(message, Hashing.md5());
+    }
+
+    public static String sha1(final InputStream stream) {
+        return hashStream(stream, Hashing.sha1());
+    }
+
+    public static String md5(final InputStream stream) {
+        return hashStream(stream, Hashing.md5());
+    }
+
+    private static String hashFile(final File file, final HashFunction hashFunction) {
+        ensureIsNotNull(file);
+        ensureExists(file);
+        ensureIsFile(file);
+        try {
+            return Files.hash(file, hashFunction).toString();
+        } catch (final Exception e) {
+            throw Throws.throwUnhandledException(e);
+        }
+    }
+
+    private static String hashString(final String message, final HashFunction hashFunction) {
+        ensureIsNotNull(message);
+        HashCode hash = hashFunction.hashString(message, Charsets.UTF_8);
+        return hash.toString();
+    }
+
+    private static String hashStream(final InputStream stream, final HashFunction hashFunction) {
+        ensureIsNotNull(stream);
+        try {
+            final StreamInputSupplier supplier = new StreamInputSupplier(stream);
+            HashCode hash = ByteStreams.hash(supplier, hashFunction);
+            return hash.toString();
+        } catch (final Exception e) {
+            throw Throws.throwUnhandledException(e);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+    }
+
     private static final class StreamInputSupplier implements InputSupplier<InputStream> {
+
         private final InputStream stream;
 
         private StreamInputSupplier(final InputStream stream) {
@@ -35,40 +96,5 @@ public final class Fingerprints {
         public InputStream getInput() throws IOException {
             return stream;
         }
-    }
-
-    public static String sha1(final File file) {
-        ensureIsNotNull(file);
-        ensureExists(file);
-        ensureIsFile(file);
-        //
-        try {
-            return Files.hash(file, Hashing.sha1()).toString();
-        } catch (final Exception e) {
-            throw Throws.throwUnhandledException(e);
-        }
-    }
-
-    public static String sha1(final String message) {
-        ensureIsNotNull(message);
-        HashCode hash = Hashing.sha1().hashString(message, Charsets.UTF_8);
-        return hash.toString();
-    }
-
-    public static String sha1(final InputStream stream) {
-        ensureIsNotNull(stream);
-        try {
-            final StreamInputSupplier supplier = new StreamInputSupplier(stream);
-            HashCode hash = ByteStreams.hash(supplier, Hashing.sha1());
-            return hash.toString();
-        } catch (final Exception e) {
-            throw Throws.throwUnhandledException(e);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-    }
-
-    private Fingerprints() {
-        // this is a utility class - no instances of this class can be created.
     }
 }

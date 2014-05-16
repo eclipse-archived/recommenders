@@ -50,6 +50,7 @@ import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
 import org.eclipse.aether.util.repository.SimpleResolutionErrorPolicy;
 
 import com.google.common.annotations.Beta;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
@@ -58,26 +59,25 @@ import com.google.common.collect.Maps;
  */
 public class ModelRepository implements IModelRepository {
 
-    private final File basedir;
-    private final RemoteRepository defaultRemoteRepo;
     private final RepositorySystem system;
     private final RepositorySystemSession defaultSession;
+    private final RemoteRepository defaultRemoteRepo;
 
     private Authentication authentication;
     private Proxy proxy;
 
-    public ModelRepository(File basedir, String remoteUrl) throws Exception {
-        this.basedir = basedir;
-        defaultRemoteRepo = createRemoteRepository(remoteUrl);
-        system = createRepositorySystem();
-        defaultSession = createDefaultSession();
+    public ModelRepository(File basedir, String remoteUrl) {
+        this(createRepositorySystem(), basedir, remoteUrl);
     }
 
-    private RemoteRepository createRemoteRepository(String url) {
-        return new RemoteRepository.Builder("models", "default", url).build();
+    @VisibleForTesting
+    public ModelRepository(RepositorySystem system, File basedir, String remoteUrl) {
+        this.system = system;
+        this.defaultSession = createDefaultSession(basedir);
+        this.defaultRemoteRepo = createRemoteRepository(remoteUrl);
     }
 
-    private RepositorySystem createRepositorySystem() throws Exception {
+    private static RepositorySystem createRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 
         locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
@@ -90,7 +90,7 @@ public class ModelRepository implements IModelRepository {
     /**
      * Provides a default session that can be further customized.
      */
-    private RepositorySystemSession createDefaultSession() {
+    private RepositorySystemSession createDefaultSession(File basedir) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
         LocalRepository localRepo = new LocalRepository(basedir);
@@ -106,10 +106,15 @@ public class ModelRepository implements IModelRepository {
         // Use timestamps in snapshot artifacts' names; do not keep (duplicate) artifacts named "SNAPSHOT".
         session.setConfigProperty("aether.artifactResolver.snapshotNormalization", false);
 
-        // Ensure that the update policy set above is honored.
+        // Ensure that the update policy set is honored.
         session.setConfigProperty("aether.versionResolver.noCache", true);
+        session.setConfigProperty("aether.updateCheckManager.sessionState", "bypass");
 
         return session;
+    }
+
+    private RemoteRepository createRemoteRepository(String url) {
+        return new RemoteRepository.Builder("models", "default", url).build();
     }
 
     /**
@@ -170,7 +175,7 @@ public class ModelRepository implements IModelRepository {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
             RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
-                    .setAuthentication(authentication).setProxy(proxy).build();
+            .setAuthentication(authentication).setProxy(proxy).build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
             return Optional.of(result.getArtifact().getFile());
@@ -253,7 +258,7 @@ public class ModelRepository implements IModelRepository {
 
     @Override
     public String toString() {
-        return basedir.getAbsolutePath();
+        return defaultSession.getLocalRepository().getBasedir().toString();
     }
 
     private Artifact toSnapshotArtifact(ModelCoordinate mc) {

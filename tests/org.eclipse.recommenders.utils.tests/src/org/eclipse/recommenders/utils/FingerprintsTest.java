@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.eclipse.recommenders.utils.Fingerprints.sha1;
+import static org.eclipse.recommenders.utils.Fingerprints.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +30,7 @@ public class FingerprintsTest {
 
     // expected value computed using http://www.sha1.cz/
     private static String[][] data = new String[][] { { "this is a simple test",
-            "2acdddb97c144820e5741b4218fc77c2bca8efa5" }, };
+            "2acdddb97c144820e5741b4218fc77c2bca8efa5", "5c7318cf2435793698963c0e64f36ab1" }, };
 
     private static final File PATH_TO_RT_JAR = new File(SystemUtils.getJavaHome(), "/lib/rt.jar");
 
@@ -43,12 +43,29 @@ public class FingerprintsTest {
     }
 
     @Test
+    public void testSimpleMd5Message() {
+        final String message = data[0][0];
+        final String expectedMd5 = data[0][2];
+        final String actualMd5 = md5(message);
+        assertEquals(expectedMd5, actualMd5);
+    }
+
+    @Test
     public void testSha1InputStream() {
         final byte[] input = data[0][0].getBytes();
         final String expectedSha1 = data[0][1];
         final ByteArrayInputStream stream = new ByteArrayInputStream(input);
         final String actualSha1 = sha1(stream);
         assertEquals(expectedSha1, actualSha1);
+    }
+
+    @Test
+    public void testMd5InputStream() {
+        final byte[] input = data[0][0].getBytes();
+        final String expectedMd5 = data[0][2];
+        final ByteArrayInputStream stream = new ByteArrayInputStream(input);
+        final String actualMd5 = md5(stream);
+        assertEquals(expectedMd5, actualMd5);
     }
 
     @Test(expected = Exception.class)
@@ -66,6 +83,15 @@ public class FingerprintsTest {
         final File file = createTempoaryFile(message);
         final String actualSha1 = sha1(file);
         assertEquals(expectedSha1, actualSha1);
+    }
+
+    @Test
+    public void testSimpleMd5FromFile() throws IOException {
+        final String message = data[0][0];
+        final String expectedMd5 = data[0][2];
+        final File file = createTempoaryFile(message);
+        final String actualMd5 = md5(file);
+        assertEquals(expectedMd5, actualMd5);
     }
 
     @Test(timeout = 3000)
