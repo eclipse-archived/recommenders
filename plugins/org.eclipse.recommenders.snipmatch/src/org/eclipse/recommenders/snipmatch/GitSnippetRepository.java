@@ -12,6 +12,7 @@ package org.eclipse.recommenders.snipmatch;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -44,29 +45,49 @@ public class GitSnippetRepository extends FileSnippetRepository {
     @Override
     public void open() throws IOException {
         synchronized (this) {
+            boolean gitFileExists = gitFile.exists();
             try {
-                if (gitFile.exists()) {
+                if (gitFileExists) {
                     updateSnippetsRepo();
                 } else {
                     cloneSnippetsRepo();
                 }
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
-                throw new IOException(String.format("Invalid remote repository '%s'. Check the repository's URL.",
-                        repoUrl), e);
+                throw createException(gitFileExists, MessageFormat.format(
+                        "Invalid remote repository \u0027{1}\u0027. Check the repository's URL.", repoUrl), e);
             } catch (TransportException e) {
                 LOG.error("Transport operation failed.", e);
-                throw new IOException("Could not connect to remote repository. Your internet connection may be down.",
-                        e);
+                throw createException(gitFileExists,
+                        "Could not connect to remote repository. Your internet connection may be down.", e);
             } catch (GitAPIException e) {
                 LOG.error("Exception while update/clone repository.", e);
-                throw new IOException("Exception while update/clone repository.", e);
+                throw createException(gitFileExists, "Exception while updating/cloning repository.", e);
             } catch (CoreException e) {
                 LOG.error("Exception while opening repository.", e);
-                throw new IOException("Exception while opening repository", e);
+                throw createException(gitFileExists, "Exception while opening repository.", e);
+            } finally {
+                if (gitFileExists) {
+                    super.open();
+                }
             }
         }
         super.open();
+    }
+
+    @SuppressWarnings("serial")
+    public class GitUpdateException extends IOException {
+        public GitUpdateException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    private IOException createException(boolean gitFileExists, String message, Throwable e) {
+        if (gitFileExists) {
+            return new GitUpdateException(message, e);
+        } else {
+            return new IOException(message, e);
+        }
     }
 
     private void cloneSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException, IOException {
