@@ -24,6 +24,12 @@
 	<feature id="org.eclipse.recommenders.rcp.tests.feature.source" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
 	</feature>
+	<feature id="org.eclipse.recommenders.3rd.feature" version="0.0.0">
+		<category name="org.eclipse.recommenders.repositories.categories.deps"/>
+	</feature>
+	<feature id="org.eclipse.recommenders.3rd.feature.source" version="0.0.0">
+		<category name="org.eclipse.recommenders.repositories.categories.deps"/>
+	</feature>
 	<feature id="org.eclipse.recommenders.feature.rcp" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.migration"/>
 	</feature>
