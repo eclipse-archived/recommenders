@@ -64,9 +64,6 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5969 -->
 <unit id="javax.inject" version="1.0.0.v20091030"/>
 <unit id="javax.inject.source" version="1.0.0.v20091030"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5968 -->
-<unit id="javax.servlet" version="3.0.0.v201112011016"/>
-<unit id="javax.servlet.source" version="3.0.0.v201112011016"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7437 -->
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
@@ -113,9 +110,6 @@
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5059 -->
-<unit id="com.google.inject.assistedinject" version="3.0.0.v201402270930"/>
-<unit id="com.google.inject.assistedinject.source" version="3.0.0.v201402270930"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
 <unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
 <unit id="com.google.inject.multibindings.source" version="3.0.0.v201402270930"/>
