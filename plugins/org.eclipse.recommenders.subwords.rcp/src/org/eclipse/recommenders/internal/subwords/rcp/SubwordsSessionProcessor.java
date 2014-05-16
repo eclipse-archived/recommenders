@@ -135,7 +135,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         }
         ICompilationUnit cu = newCrContext.getCompilationUnit();
         ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext,
-                prefs.restrictInitialConstructorProposals, prefs.restrictInitialTypeProposals);
+                !prefs.computeAdditionalConstructorProposals, !prefs.computeAdditionalTypeProposals);
         try {
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
         } catch (final Exception e) {
