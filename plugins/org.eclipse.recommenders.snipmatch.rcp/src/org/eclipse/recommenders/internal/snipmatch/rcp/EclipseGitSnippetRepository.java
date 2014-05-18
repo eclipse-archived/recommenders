@@ -70,7 +70,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         this.bus = bus;
         String remoteUri = prefs.getLocation();
         this.basedir = new File(basedir, Urls.mangle(remoteUri));
-        this.delegate = new GitSnippetRepository(this.basedir, remoteUri);
+        delegate = new GitSnippetRepository(this.basedir, remoteUri);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
@@ -170,8 +170,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public ImmutableSet<Recommendation<ISnippet>> getSnippets() {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            if (!delegateOpen) {
+            if (!isOpen() || !delegateOpen) {
                 return ImmutableSet.of();
             }
             return delegate.getSnippets();
@@ -264,8 +263,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public boolean hasSnippet(UUID uuid) {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            if (!delegateOpen) {
+            if (!isOpen() || !delegateOpen) {
                 return false;
             }
             return delegate.hasSnippet(uuid);
@@ -278,8 +276,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public boolean delete(UUID uuid) throws IOException {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            if (!delegateOpen) {
+            if (!isOpen() || !delegateOpen) {
                 return false;
             }
             boolean deleted = delegate.delete(uuid);
@@ -296,8 +293,10 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public boolean isDeleteSupported() {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            return delegateOpen && delegate.isDeleteSupported();
+            if (!isOpen() || !delegateOpen) {
+                return false;
+            }
+            return delegate.isDeleteSupported();
         } finally {
             readLock.unlock();
         }
@@ -323,8 +322,10 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public boolean isImportSupported() {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            return delegateOpen && delegate.isImportSupported();
+            if (!isOpen() || !delegateOpen) {
+                return false;
+            }
+            return delegate.isImportSupported();
         } finally {
             readLock.unlock();
         }

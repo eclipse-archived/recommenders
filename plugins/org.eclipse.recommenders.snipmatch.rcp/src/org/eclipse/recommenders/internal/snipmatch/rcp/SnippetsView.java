@@ -204,20 +204,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
     @Subscribe
     public void onEvent(SnippetRepositoryOpenedEvent e) throws IOException {
         refreshInput();
-        if (e.getRepository().isImportSupported()) {
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    btnAdd.setEnabled(true);
-                }
-            });
-        }
     }
 
     @Subscribe
     public void onEvent(SnippetRepositoryClosedEvent e) throws IOException {
         refreshInput();
-        btnAdd.setEnabled(isImportSupported());
     }
 
     private boolean isImportSupported() {
@@ -249,6 +240,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
                                 snippets.addAll(repo.search(txtSearch.getText()));
                             }
                             viewer.setInput(snippets);
+                        }
+                        if (!btnAdd.isDisposed()) {
+                            btnAdd.setEnabled(isImportSupported());
+                        }
+                        if (!btnEdit.isDisposed()) {
+                            btnEdit.setEnabled(false);
+                        }
+                        if (!btnRemove.isDisposed()) {
+                            btnRemove.setEnabled(false);
                         }
                     }
                 });

@@ -24,10 +24,6 @@ public interface ISnippetRepository extends Openable, Closeable {
 
     ImmutableSet<Recommendation<ISnippet>> getSnippets();
 
-    void close() throws IOException;
-
-    void open() throws IOException;
-
     List<Recommendation<ISnippet>> search(String query);
 
     String getRepositoryLocation();

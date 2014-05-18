@@ -100,7 +100,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     private void updateSnippetsRepo() throws IOException, InvalidRemoteException, TransportException, GitAPIException,
-            CoreException {
+    CoreException {
         FileRepository localRepo = new FileRepository(gitFile);
         FileBasedConfig config = localRepo.getConfig();
         Set<String> subsections = config.getSubsections("remote");

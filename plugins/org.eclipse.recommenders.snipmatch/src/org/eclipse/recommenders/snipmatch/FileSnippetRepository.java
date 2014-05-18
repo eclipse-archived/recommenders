@@ -57,6 +57,7 @@ import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -116,7 +117,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     public FileSnippetRepository(File basedir) {
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
-        this.repoUrl = mangle(basedir.getAbsolutePath());
+        repoUrl = mangle(basedir.getAbsolutePath());
 
         analyzer = createAnalyzer();
         parser = createParser();
@@ -211,6 +212,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
+    @VisibleForTesting
     public boolean isOpen() {
         return timesOpened > 0;
     }
