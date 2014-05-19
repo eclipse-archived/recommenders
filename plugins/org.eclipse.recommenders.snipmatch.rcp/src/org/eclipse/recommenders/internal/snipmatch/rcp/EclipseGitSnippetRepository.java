@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
+import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitUpdateException;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -91,16 +93,29 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                     protected IStatus run(IProgressMonitor monitor) {
                         try {
                             delegate.open();
-                            delegateOpen = true;
-                            openJob = null;
-                            bus.post(new SnippetRepositoryOpenedEvent(EclipseGitSnippetRepository.this));
+                            changeStateToOpen();
+                            return Status.OK_STATUS;
+                        } catch (GitUpdateException e) {
+                            changeStateToOpen();
+                            Status status = new Status(IStatus.WARNING, Constants.BUNDLE_ID, MessageFormat.format(
+                                    Messages.WARNING_FAILURE_TO_UPDATE_REPOSITORY, delegate.getRepositoryLocation(),
+                                    e.getMessage()), e);
+                            Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.OK_STATUS;
                         } catch (IOException e) {
                             LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
-                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, e.getMessage(), e);
+                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat.format(
+                                    Messages.ERROR_FAILURE_TO_CLONE_REPOSITORY, delegate.getRepositoryLocation(),
+                                    e.getMessage()), e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.CANCEL_STATUS;
                         }
+                    }
+
+                    private void changeStateToOpen() {
+                        delegateOpen = true;
+                        openJob = null;
+                        bus.post(new SnippetRepositoryOpenedEvent(EclipseGitSnippetRepository.this));
                     }
                 };
                 openJob.schedule();
