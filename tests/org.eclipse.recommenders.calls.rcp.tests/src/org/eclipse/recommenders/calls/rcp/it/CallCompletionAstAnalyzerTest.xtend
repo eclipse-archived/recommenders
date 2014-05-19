@@ -4,12 +4,6 @@ import com.google.common.collect.Sets
 import java.util.HashSet
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.NullProgressMonitor
-import org.eclipse.jdt.core.ICompilationUnit
-import org.eclipse.jdt.core.JavaCore
-import org.eclipse.jdt.core.dom.AST
-import org.eclipse.jdt.core.dom.ASTNode
-import org.eclipse.jdt.core.dom.ASTParser
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions
 import org.eclipse.jdt.ui.SharedASTProvider
 import org.eclipse.recommenders.calls.ICallModel
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind
@@ -19,10 +13,10 @@ import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcesso
 import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*
-import org.junit.Ignore
 
 class CallCompletionAstAnalyzerTest {
 
@@ -41,8 +35,11 @@ class CallCompletionAstAnalyzerTest {
             '''
             List l = Collections.emptyList();
             l.get(0).$''')
+
         exercise()
+
         verifyDefinition(RETURN)
+        verifyCalls(newHashSet())
     }
 
     @Test
@@ -52,9 +49,11 @@ class CallCompletionAstAnalyzerTest {
             List l;
             Object o = l.get(0);
             o.$''')
+
         exercise()
 
         verifyDefinition(RETURN)
+        verifyCalls(newHashSet())
     }
 
     @Test
@@ -65,9 +64,11 @@ class CallCompletionAstAnalyzerTest {
             void __test(){
             	l.$;
             }''')
+
         exercise()
 
         verifyDefinition(FIELD)
+        verifyCalls(newHashSet())
     }
 
     @Test
@@ -84,6 +85,7 @@ class CallCompletionAstAnalyzerTest {
                 o.$
                 }
             ''')
+
         exercise()
 
         verifyDefinition(NULL_LITERAL)
@@ -101,7 +103,9 @@ class CallCompletionAstAnalyzerTest {
                 o.$
                 }
             ''')
+
         exercise()
+
         verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("equals"))
     }
@@ -116,7 +120,10 @@ class CallCompletionAstAnalyzerTest {
                 w$
                 }
             ''')
+
         exercise()
+
+        verifyDefinition(THIS);
         verifyCalls(newHashSet("equals", "hashCode", "wait"))
     }
 
@@ -129,7 +136,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode"))
     }
 
@@ -143,7 +153,10 @@ class CallCompletionAstAnalyzerTest {
                 o.$
                 }
             ''')
+
         exercise()
+
+        verifyDefinition(NEW)
         verifyCalls(newHashSet("hashCode"))
     }
 
@@ -157,7 +170,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode"))
     }
 
@@ -172,7 +188,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode"))
     }
 
@@ -188,7 +207,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("equals", "hashCode"))
     }
 
@@ -205,7 +227,10 @@ class CallCompletionAstAnalyzerTest {
                     o.$
                 }
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("equals", "wait", "hashCode"))
     }
 
@@ -220,7 +245,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$;
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode", "equals", "wait"))
     }
 
@@ -235,7 +263,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$;
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode", "equals", "wait"))
     }
 
@@ -250,7 +281,10 @@ class CallCompletionAstAnalyzerTest {
                     o.$
                 }
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("equals", "hashCode"))
     }
 
@@ -264,7 +298,10 @@ class CallCompletionAstAnalyzerTest {
                 } while (o.equals());
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode", "equals"))
     }
 
@@ -278,7 +315,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode"))
     }
 
@@ -292,7 +332,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 o.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("hashCode", "equals"))
     }
 
@@ -307,7 +350,10 @@ class CallCompletionAstAnalyzerTest {
                 }
                 l.$
             ''')
+
         exercise()
+
+        verifyDefinition(NULL_LITERAL)
         verifyCalls(newHashSet("size"))
     }
 
@@ -320,16 +366,21 @@ class CallCompletionAstAnalyzerTest {
     @Test
     def void testDefThis01() {
         code = CodeBuilder::method('''$''')
+
         exercise()
 
         verifyDefinition(THIS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testDefThis02() {
         code = CodeBuilder::method('''w$''')
+
         exercise()
+
         verifyDefinition(THIS)
+        verifyCalls(newHashSet())
     }
 
     @Test
@@ -338,22 +389,27 @@ class CallCompletionAstAnalyzerTest {
         exercise()
 
         verifyDefinition(THIS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testDefThis03a() {
         code = CodeBuilder::method('''this.w$''')
+
         exercise()
 
         verifyDefinition(THIS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testDefThis04() {
         code = CodeBuilder::method('''super.$''')
+
         exercise()
 
         verifyDefinition(THIS)
+        verifyCalls(newHashSet())
     }
 
     @Test
@@ -364,51 +420,235 @@ class CallCompletionAstAnalyzerTest {
             	boolean res = super.equals(o);
             	this.hash$
             }''')
+
         exercise()
 
         verifyDefinition(THIS)
+        verifyCalls(newHashSet("equals"))
     }
 
     @Test
     def void testOnStringConstant_1() {
         code = CodeBuilder::method('''"".$''')
+
         exercise()
+
         verifyDefinition(STRING_LITERAL)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testOnStringConstant_2() {
         code = CodeBuilder::method('''"some".$''')
+
         exercise()
+
         verifyDefinition(STRING_LITERAL)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testArrayAccess_1() {
         code = CodeBuilder::method('''String[] args=null; args[0].$''')
+
         exercise()
+
         verifyDefinition(ARRAY_ACCESS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testArrayAccess_2() {
         code = CodeBuilder::method('''String[] args=null; args[0].w$''')
+
         exercise()
+
         verifyDefinition(ARRAY_ACCESS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testArrayAccess_3() {
         code = CodeBuilder::method('''String[] args=null; String arg = args[0]; arg.w$''')
+
         exercise()
+
         verifyDefinition(ARRAY_ACCESS)
+        verifyCalls(newHashSet())
     }
 
     @Test
     def void testOther_3() {
         code = CodeBuilder::method('''String[] args=new String[0]; List l = null; l.$''')
+
         exercise()
+
         verifyDefinition(NULL_LITERAL)
+        verifyCalls(newHashSet())
+    }
+
+    /**
+     * documentation purpose: we simply match on variable names.
+     * We do no control flow or variable scope analysis!
+     */
+    @Test
+    def void testCallsOnReusedVar() {
+        code = CodeBuilder::method(
+            '''
+                Object o = new Object();
+                o.hashCode();
+                o = new Object();
+                o.equals(null);
+                o.$
+            ''')
+
+        exercise()
+
+        verifyDefinition(NEW)
+        verifyCalls(newHashSet("hashCode", "equals"))
+    }
+
+    @Test
+    def void testCallsOnThisAndSuper() {
+        code = CodeBuilder::method(
+            '''
+                hashCode();
+                super.wait();
+                this.equals(null);
+                $
+            ''')
+
+        exercise()
+
+        verifyDefinition(THIS)
+        verifyCalls(newHashSet("hashCode", "wait", "equals"))
+    }
+
+    @Test
+    def void testCallsSuperConstructor() {
+        val className = "TestCallsSuperConstructor"
+        code = CodeBuilder::classbody(className,
+            className + '''
+                () {
+                    super();
+                    $
+                }
+            ''')
+
+        exercise()
+
+        verifyDefinition(THIS)
+        verifyCalls(newHashSet("<init>"))
+    }
+
+    @Test
+    def void testCallThisConstructor() {
+        val className = "TestCallThisConstructor"
+        code = CodeBuilder::classbody(className,
+            className + '''
+                () {
+                }
+            ''' + className + '''
+                (String s) {
+                    this();
+                    $
+                }
+            ''')
+
+        exercise()
+
+        verifyDefinition(THIS)
+        verifyCalls(newHashSet("<init>"))
+    }
+
+    @Test
+    def void testDefConstructor() {
+        code = CodeBuilder::method(
+            '''
+                Object o = new Object();
+                o.$
+            ''')
+
+        exercise()
+
+        verifyDefinition(NEW)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
+    def void testDefSuperMethodReturn() {
+        code = CodeBuilder::method(
+            '''
+                Integer hash = super.hashCode();
+                hash.$
+            ''')
+
+        exercise()
+
+        verifyDefinition(RETURN)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
+    def void testDefOnCallChain() {
+        code = CodeBuilder::method(
+            '''
+                Integer i = Executors.newCachedThreadPool().hashCode();
+                i.$
+            ''')
+
+        exercise()
+
+        verifyDefinition(RETURN)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
+    def void testDefOnAlias() {
+        code = CodeBuilder::method(
+            '''
+                Object a = new Object();
+                Object b = a;
+                b.$
+            ''')
+
+        exercise()
+
+        // Field is really just an unknown definition
+        verifyDefinition(FIELD)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
+    def void testDefAssignment() {
+        code = CodeBuilder::method(
+            '''
+                Object a = new Object();
+                Object b = new Object();
+                b = a;
+                b.$
+            ''')
+
+        exercise()
+
+        verifyDefinition(NEW)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
+    def void testDefFor() {
+        code = CodeBuilder.method(
+            '''
+                List<String> l;
+                for(Iterator<String> it = l.iterator(); it.$) {
+                    
+                }
+            ''')
+
+        exercise()
+
+        verifyDefinition(RETURN);
+        verifyCalls(newHashSet())
     }
 
     def verifyDefinition(DefinitionKind expected) {
