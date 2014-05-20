@@ -23,9 +23,12 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class GitSnippetRepository extends FileSnippetRepository {
 
@@ -96,11 +99,13 @@ public class GitSnippetRepository extends FileSnippetRepository {
         clone.setBranch("master");
         clone.setCloneAllBranches(false);
         clone.setDirectory(basedir).setURI(getRepositoryLocation());
-        clone.call();
+        Git git = clone.call();
+        setPushBranch(git);
+
     }
 
     private void updateSnippetsRepo() throws IOException, InvalidRemoteException, TransportException, GitAPIException,
-    CoreException {
+            CoreException {
         FileRepository localRepo = new FileRepository(gitFile);
         FileBasedConfig config = localRepo.getConfig();
         Set<String> subsections = config.getSubsections("remote");
@@ -114,6 +119,16 @@ public class GitSnippetRepository extends FileSnippetRepository {
         Git git = new Git(localRepo);
         PullCommand pull = git.pull();
         pull.call();
+        setPushBranch(git);
+    }
+
+    private void setPushBranch(Git git) throws IOException {
+        StoredConfig config = git.getRepository().getConfig();
+        String push = config.getString("remote", "origin", "push");
+        if (Strings.isNullOrEmpty(push)) {
+            config.setString("remote", "origin", "push", "HEAD:refs/for/master");
+            config.save();
+        }
     }
 
     @Override
