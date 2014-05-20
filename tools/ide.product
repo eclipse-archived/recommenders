@@ -43,6 +43,7 @@
       <feature id="org.eclipse.mylyn.context.sdk"/>
       <feature id="org.eclipse.mylyn.commons.sdk"/>
       <feature id="org.eclipse.mylyn.sdk_feature"/>
+      <feature id="org.eclipse.recommenders.3rd.feature"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
       <feature id="org.eclipse.recommenders.mylyn.rcp.feature"/>
       <feature id="org.eclipse.recommenders.snipmatch.rcp.feature"/>
