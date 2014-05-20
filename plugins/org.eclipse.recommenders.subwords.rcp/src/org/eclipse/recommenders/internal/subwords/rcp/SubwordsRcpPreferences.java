@@ -20,15 +20,15 @@ import org.eclipse.e4.core.di.extensions.Preference;
 public class SubwordsRcpPreferences {
 
     @Inject
-    @Preference(PREF_RESTRICT_INITIAL_TYPE_PROPOSALS)
-    public boolean restrictInitialTypeProposals;
+    @Preference(PREF_COMPUTE_ADDITIONAL_TYPE_PROPOSALS)
+    public boolean computeAdditionalTypeProposals;
 
     @Inject
-    @Preference(PREF_RESTRICT_INITIAL_CONSTRUCTOR_PROPOSALS)
-    public boolean restrictInitialConstructorProposals;
+    @Preference(PREF_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS)
+    public boolean computeAdditionalConstructorProposals;
 
     public SubwordsRcpPreferences() {
-        restrictInitialTypeProposals = false;
-        restrictInitialTypeProposals = false;
+        computeAdditionalTypeProposals = true;
+        computeAdditionalConstructorProposals = true;
     }
 }
