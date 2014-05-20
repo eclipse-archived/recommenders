@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import static com.google.inject.Scopes.SINGLETON;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Singleton;
 
@@ -26,7 +27,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
@@ -34,9 +38,9 @@ import com.google.inject.name.Named;
 
 public class SnipmatchRcpModule extends AbstractModule {
 
-    private static final String PROJECT_NAME = ".snipmatch"; //$NON-NLS-1$
+    public static final String SNIPPET_REPOSITORY_BASEDIR = "SNIPPET_REPOSITORY_BASEDIR"; //$NON-NLS-1$
 
-    public static final String SNIPMATCH_BASEDIR = "SNIPMATCH_BASEDIR"; //$NON-NLS-1$
+    private static final Logger LOG = LoggerFactory.getLogger(SnipmatchRcpModule.class);
 
     @Override
     protected void configure() {
@@ -55,9 +59,17 @@ public class SnipmatchRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    @Named(SNIPMATCH_BASEDIR)
+    @Named(SNIPPET_REPOSITORY_BASEDIR)
     public File provideBasedir(IWorkspaceRoot root) {
-        return new File(root.getLocation().toFile(), PROJECT_NAME);
+        File recommendersRoot = new File(root.getLocation().toFile(), ".recommenders"); //$NON-NLS-1$
+        File snipmatchRoot = new File(recommendersRoot, "snipmatch"); //$NON-NLS-1$
+        File snippetRepositoryBasedir = new File(snipmatchRoot, "repositories"); //$NON-NLS-1$
+        try {
+            Files.createParentDirs(snippetRepositoryBasedir);
+        } catch (IOException e) {
+            LOG.error("Failed to bind file name {}.", snippetRepositoryBasedir, e); //$NON-NLS-1$
+        }
+        return snippetRepositoryBasedir;
     }
 
     @Provides

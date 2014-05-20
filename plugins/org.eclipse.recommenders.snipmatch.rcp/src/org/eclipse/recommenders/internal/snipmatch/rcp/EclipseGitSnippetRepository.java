@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.SNIPMATCH_BASEDIR;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +65,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     private File basedir;
 
     @Inject
-    public EclipseGitSnippetRepository(@Named(SNIPMATCH_BASEDIR) File basedir, SnipmatchRcpPreferences prefs,
+    public EclipseGitSnippetRepository(@Named(SNIPPET_REPOSITORY_BASEDIR) File basedir, SnipmatchRcpPreferences prefs,
             EventBus bus) {
         this.bus = bus;
         String remoteUri = prefs.getLocation();
