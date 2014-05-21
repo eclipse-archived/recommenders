@@ -51,7 +51,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     private static Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
 
-    private EventBus bus;
+    private final EventBus bus;
+    private final SnipmatchRcpPreferences prefs;
+    private final File basedir;
 
     private volatile int timesOpened;
     private ISnippetRepository delegate;
@@ -62,19 +64,23 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     private volatile Job openJob = null;
 
-    private File basedir;
-
     @Inject
     public EclipseGitSnippetRepository(@Named(SNIPPET_REPOSITORY_BASEDIR) File basedir, SnipmatchRcpPreferences prefs,
             EventBus bus) {
         this.bus = bus;
-        String remoteUri = prefs.getLocation();
-        this.basedir = new File(basedir, Urls.mangle(remoteUri));
-        delegate = new GitSnippetRepository(this.basedir, remoteUri);
+        this.prefs = prefs;
+        this.basedir = basedir;
+
+        setupDelegate();
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
         writeLock = readWriteLock.writeLock();
+    }
+
+    private void setupDelegate() {
+        String remoteUri = prefs.getLocation();
+        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri);
     }
 
     @Override
@@ -141,6 +147,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                 if (openJob != null) {
                     try {
                         openJob.join();
+                        openJob = null;
                     } catch (InterruptedException e) {
                         LOG.error("Failed to join open job", e); //$NON-NLS-1$
                     }
@@ -183,6 +190,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     @Subscribe
     public void onEvent(SnippetRepositoryUrlChangedEvent e) throws IOException {
         close();
+        setupDelegate();
         open();
     }
 
