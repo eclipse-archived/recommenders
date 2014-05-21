@@ -66,12 +66,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 public class SnippetsView extends ViewPart implements IRcpService {
+
+    private static Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
     private final Set<ISnippetRepository> repos;
     private Text txtSearch;
@@ -80,10 +84,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Button btnEdit;
     private Button btnRemove;
     private Button btnAdd;
-    private Button btnReIndex;
+    private Button btnReconnect;
 
     private DataBindingContext ctx;
     private IViewerObservableList selection;
+    private Job reconnectJob;
 
     @Inject
     public SnippetsView(Set<ISnippetRepository> repos) {
@@ -171,13 +176,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         });
 
-        btnReIndex = new Button(composite, SWT.NONE);
-        btnReIndex.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-        btnReIndex.setText(Messages.SNIPPETS_VIEW_BUTTON_REFRESH);
-        btnReIndex.addSelectionListener(new SelectionAdapter() {
+        btnReconnect = new Button(composite, SWT.NONE);
+        btnReconnect.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        btnReconnect.setText(Messages.SNIPPETS_VIEW_BUTTON_RECONNECT);
+        btnReconnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                refreshInput();
+                reconnect();
             }
         });
 
@@ -201,6 +206,45 @@ public class SnippetsView extends ViewPart implements IRcpService {
         refreshInput();
         selection = ViewersObservables.observeMultiSelection(viewer);
         initDataBindings();
+    }
+
+    private void reconnect() {
+        reconnectJob = new Job("Reconnecting") {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                Display.getDefault().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnReconnect.setEnabled(false);
+                    }
+                });
+                for (ISnippetRepository repo : repos) {
+                    try {
+                        repo.close();
+                    } catch (IOException e) {
+                        // Snipmatch's default repositories cannot throw an IOException here
+                        LOG.error(e.getMessage(), e);
+                    }
+                }
+                for (ISnippetRepository repo : repos) {
+                    try {
+                        repo.open();
+                    } catch (IOException e) {
+                        // Snipmatch's default repositories cannot throw an IOException here
+                        LOG.error(e.getMessage(), e);
+                    }
+                }
+                Display.getDefault().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnReconnect.setEnabled(true);
+                    }
+                });
+                return Status.OK_STATUS;
+            }
+        };
+        reconnectJob.schedule();
     }
 
     @Subscribe

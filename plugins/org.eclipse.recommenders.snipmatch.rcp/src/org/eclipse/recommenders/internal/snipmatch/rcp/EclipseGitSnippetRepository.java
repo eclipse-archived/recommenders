@@ -79,7 +79,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     @Override
     @PostConstruct
-    public void open() throws IOException {
+    public void open() {
         writeLock.lock();
         try {
             timesOpened++;
@@ -109,12 +109,13 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                                     e.getMessage()), e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.CANCEL_STATUS;
+                        } finally {
+                            openJob = null;
                         }
                     }
 
                     private void changeStateToOpen() {
                         delegateOpen = true;
-                        openJob = null;
                         bus.post(new SnippetRepositoryOpenedEvent(EclipseGitSnippetRepository.this));
                     }
                 };
@@ -143,9 +144,10 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                     } catch (InterruptedException e) {
                         LOG.error("Failed to join open job", e); //$NON-NLS-1$
                     }
-                    delegate.close();
-                    bus.post(new SnippetRepositoryClosedEvent(this));
                 }
+                delegate.close();
+                delegateOpen = false;
+                bus.post(new SnippetRepositoryClosedEvent(this));
             }
         } finally {
             writeLock.unlock();
@@ -156,8 +158,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public List<Recommendation<ISnippet>> search(String query) {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            if (!delegateOpen) {
+            if (!isOpen() || !delegateOpen) {
                 return Collections.emptyList();
             }
             return delegate.search(query);
