@@ -169,7 +169,6 @@ public class FileSnippetRepository implements ISnippetRepository {
     public void index() throws IOException {
         writeLock.lock();
         try {
-            Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_35);
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_35, analyzer);
             config.setOpenMode(OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(directory, config);
