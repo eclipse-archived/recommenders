@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.PREF_SEA
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jdt.internal.ui.text.java.RelevanceSorter;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateInformationControlCreator;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -71,7 +72,8 @@ public class SnipmatchCompletionEngine {
     private Font searchFont;
 
     @Inject
-    public SnipmatchCompletionEngine(SnipmatchContentAssistProcessor processor, EventBus bus, ColorRegistry colorRegistry, FontRegistry fontRegistry) {
+    public SnipmatchCompletionEngine(SnipmatchContentAssistProcessor processor, EventBus bus,
+            ColorRegistry colorRegistry, FontRegistry fontRegistry) {
         this.processor = processor;
         this.bus = bus;
         this.colorRegistry = colorRegistry;
@@ -113,6 +115,7 @@ public class SnipmatchCompletionEngine {
         assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
         assistant.setRepeatedInvocationMode(true);
         assistant.setStatusLineVisible(true);
+        assistant.setSorter(new RelevanceSorter());
 
         return assistant;
     }
