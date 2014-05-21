@@ -12,6 +12,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.text.MessageFormat.format;
+import static org.apache.commons.io.IOCase.INSENSITIVE;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
@@ -24,12 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -97,6 +97,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
@@ -359,7 +360,7 @@ public class ModelRepositoriesView extends ViewPart {
                 coordinatesGroupedByRepo.clear();
                 for (Entry<String, Collection<ModelCoordinate>> entry : fetchedCoordinates.asMap().entrySet()) {
                     coordinatesGroupedByRepo
-                    .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
+                            .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
                 }
 
                 treeViewer.setInput(getViewSite());
@@ -404,7 +405,7 @@ public class ModelRepositoriesView extends ViewPart {
 
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
             coordinatesGroupedByProjectCoordinate
-            .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+                    .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
         }
         return coordinatesGroupedByProjectCoordinate;
     }
@@ -457,6 +458,20 @@ public class ModelRepositoriesView extends ViewPart {
 
     }
 
+    private static final class GlobMatcher implements Predicate<KnownCoordinate> {
+
+        private final String glob;
+
+        private GlobMatcher(String glob) {
+            this.glob = "*" + Preconditions.checkNotNull(glob) + "*";
+        }
+
+        @Override
+        public boolean apply(KnownCoordinate kc) {
+            return FilenameUtils.wildcardMatch(kc.pc.toString(), glob, INSENSITIVE);
+        }
+    }
+
     private void addAction(String text, ImageResource imageResource, IContributionManager contributionManager,
             IAction action) {
         action.setImageDescriptor(images.getDescriptor(imageResource));
@@ -496,12 +511,12 @@ public class ModelRepositoriesView extends ViewPart {
                     if (url.isPresent() && prefs.remotes.length > 1) {
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                            @Override
-                            public void run() {
-                                deleteRepository(url.get());
-                                refreshData();
-                            }
-                        });
+                                    @Override
+                                    public void run() {
+                                        deleteRepository(url.get());
+                                        refreshData();
+                                    }
+                                });
                     }
                 }
             }
@@ -580,17 +595,7 @@ public class ModelRepositoriesView extends ViewPart {
                     for (String key : coordinatesGroupedByRepo.keySet()) {
                         List<KnownCoordinate> unfiltered = coordinatesGroupedByRepo.get(key);
 
-                        Iterable<KnownCoordinate> filtered = Iterables.filter(unfiltered,
-                                new Predicate<KnownCoordinate>() {
-
-                            @Override
-                            public boolean apply(KnownCoordinate kc) {
-                                Pattern pattern = Pattern.compile(".*" + filter + ".*"); // NON-NLS-$2
-                                                                                                 // //NON-NLS-$1
-                                Matcher matcher = pattern.matcher(kc.pc.toString());
-                                return matcher.matches();
-                            }
-                        });
+                        Iterable<KnownCoordinate> filtered = Iterables.filter(unfiltered, new GlobMatcher(filter));
                         filteredCoordinatesGroupedByRepo.putAll(key, filtered);
                     }
                 } else {
