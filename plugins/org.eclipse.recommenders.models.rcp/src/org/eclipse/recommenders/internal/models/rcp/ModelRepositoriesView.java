@@ -315,7 +315,9 @@ public class ModelRepositoriesView extends ViewPart {
         addAction(Messages.TOOLBAR_TOOLTIP_COLLAPSE_ALL, ELCL_COLLAPSE_ALL, toolBarManager, new Action() {
             @Override
             public void run() {
-                treeViewer.collapseAll();
+                for (int i = 0; i < treeViewer.getTree().getItemCount(); i++) {
+                    treeViewer.getTree().getItem(i).setExpanded(false);
+                }
             }
         });
 
