@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
+import org.eclipse.jface.databinding.viewers.IViewerObservableList;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IOpenListener;
@@ -83,7 +83,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Button btnReIndex;
 
     private DataBindingContext ctx;
-    private IViewerObservableValue selection;
+    private IViewerObservableList selection;
 
     @Inject
     public SnippetsView(Set<ISnippetRepository> repos) {
@@ -158,13 +158,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
         btnRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                Recommendation<ISnippet> recommendation = cast(selection.getValue());
-                try {
-                    for (ISnippetRepository repo : repos) {
-                        repo.delete(recommendation.getProposal().getUuid());
+                for (int i = 0; i < selection.size(); i++) {
+                    Recommendation<ISnippet> recommendation = cast(selection.get(i));
+                    try {
+                        for (ISnippetRepository repo : repos) {
+                            repo.delete(recommendation.getProposal().getUuid());
+                        }
+                    } catch (Exception e) {
+                        Throwables.propagate(e);
                     }
-                } catch (Exception e) {
-                    Throwables.propagate(e);
                 }
             }
         });
@@ -197,7 +199,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         viewer.setContentProvider(new ArrayContentProvider());
         viewer.setSorter(new ViewerSorter());
         refreshInput();
-        selection = ViewersObservables.observeSingleSelection(viewer);
+        selection = ViewersObservables.observeMultiSelection(viewer);
         initDataBindings();
     }
 
@@ -273,17 +275,18 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void doOpen() {
-        Recommendation<ISnippet> recommendation = cast(selection.getValue());
-
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        try {
-            ISnippet snippet = recommendation.getProposal();
-            ISnippetRepository repository = findRepoForOriginalSnippet(snippet);
+        for (int i = 0; i < selection.size(); i++) {
+            Recommendation<ISnippet> recommendation = cast(selection.get(i));
+            try {
+                ISnippet snippet = recommendation.getProposal();
+                ISnippetRepository repository = findRepoForOriginalSnippet(snippet);
 
-            final SnippetEditorInput input = new SnippetEditorInput(snippet, repository);
-            page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"); //$NON-NLS-1$
-        } catch (Exception e) {
-            Throwables.propagate(e);
+                final SnippetEditorInput input = new SnippetEditorInput(snippet, repository);
+                page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"); //$NON-NLS-1$
+            } catch (Exception e) {
+                Throwables.propagate(e);
+            }
         }
     }
 
