@@ -10,10 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.BUNDLE_ID;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_ADVISOR_LIST_SORTED;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_URL_LIST;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -21,7 +18,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/luna-m3/"; //$NON-NLS-1$
+    public static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/luna/"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
