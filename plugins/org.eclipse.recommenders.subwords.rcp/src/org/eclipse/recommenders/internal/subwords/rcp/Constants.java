@@ -14,6 +14,6 @@ public class Constants {
 
     public static final String BUNDLE_ID = "org.eclipse.recommenders.subwords.rcp"; //$NON-NLS-1$
 
-    public static final String PREF_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS = "restrict_initial_constructor_proposals"; //$NON-NLS-1$
-    public static final String PREF_COMPUTE_ADDITIONAL_TYPE_PROPOSALS = "restrict_initial_type_proposals"; //$NON-NLS-1$
+    public static final String PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS = "comprehensive_subword_matching_constructors"; //$NON-NLS-1$
+    public static final String PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES = "comprehensive_subword_matching_types"; //$NON-NLS-1$
 }

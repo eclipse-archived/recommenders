@@ -20,8 +20,8 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_DESCRIPTION_SUBWORDS;
 
-    public static String FIELD_LABEL_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS;
-    public static String FIELD_LABEL_COMPUTE_ADDITIONAL_TYPE_PROPOSALS;
+    public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS;
+    public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

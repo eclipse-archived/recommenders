@@ -21,7 +21,7 @@ public class SubwordsRcpPreferenceInitializer extends AbstractPreferenceInitiali
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(BUNDLE_ID);
-        s.putBoolean(PREF_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS, true);
-        s.putBoolean(PREF_COMPUTE_ADDITIONAL_TYPE_PROPOSALS, true);
+        s.putBoolean(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS, true);
+        s.putBoolean(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES, true);
     }
 }

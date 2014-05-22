@@ -32,9 +32,9 @@ public class SubwordsPreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     protected void createFieldEditors() {
-        addField(new BooleanFieldEditor(Constants.PREF_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS,
-                Messages.FIELD_LABEL_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS, getFieldEditorParent()));
-        addField(new BooleanFieldEditor(Constants.PREF_COMPUTE_ADDITIONAL_TYPE_PROPOSALS,
-                Messages.FIELD_LABEL_COMPUTE_ADDITIONAL_TYPE_PROPOSALS, getFieldEditorParent()));
+        addField(new BooleanFieldEditor(Constants.PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS,
+                Messages.FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS, getFieldEditorParent()));
+        addField(new BooleanFieldEditor(Constants.PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES,
+                Messages.FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES, getFieldEditorParent()));
     }
 }

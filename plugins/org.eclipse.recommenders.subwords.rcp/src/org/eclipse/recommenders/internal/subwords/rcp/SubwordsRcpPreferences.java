@@ -20,11 +20,11 @@ import org.eclipse.e4.core.di.extensions.Preference;
 public class SubwordsRcpPreferences {
 
     @Inject
-    @Preference(PREF_COMPUTE_ADDITIONAL_TYPE_PROPOSALS)
+    @Preference(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES)
     public boolean computeAdditionalTypeProposals;
 
     @Inject
-    @Preference(PREF_COMPUTE_ADDITIONAL_CONSTRUCTOR_PROPOSALS)
+    @Preference(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS)
     public boolean computeAdditionalConstructorProposals;
 
     public SubwordsRcpPreferences() {
