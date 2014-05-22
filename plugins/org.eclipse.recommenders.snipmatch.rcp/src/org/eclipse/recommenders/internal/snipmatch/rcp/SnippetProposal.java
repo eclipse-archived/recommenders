@@ -29,6 +29,7 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.recommenders.snipmatch.ISnippet;
+import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.graphics.Image;
 
 public class SnippetProposal extends TemplateProposal {
@@ -37,8 +38,8 @@ public class SnippetProposal extends TemplateProposal {
 
     private final boolean valid;
 
-    public static SnippetProposal newSnippetProposal(ISnippet snippet, Template template, TemplateContext context,
-            IRegion region, Image image) throws BadLocationException, TemplateException {
+    public static SnippetProposal newSnippetProposal(Recommendation<ISnippet> recommendation, Template template,
+            TemplateContext context, IRegion region, Image image) throws BadLocationException, TemplateException {
         boolean valid = false;
         try {
             context.evaluate(template);
@@ -47,12 +48,13 @@ public class SnippetProposal extends TemplateProposal {
             context = new JavaContext(context.getContextType(), new Document(), new Position(0), null);
             context.evaluate(template);
         }
-        return new SnippetProposal(snippet, template, context, region, image, valid);
+        int relevance = (int) (recommendation.getRelevance() * 100);
+        return new SnippetProposal(recommendation.getProposal(), relevance, template, context, region, image, valid);
     }
 
-    private SnippetProposal(ISnippet snippet, Template template, TemplateContext context, IRegion region, Image image,
-            boolean valid) {
-        super(template, context, region, image);
+    private SnippetProposal(ISnippet snippet, int relevance, Template template, TemplateContext context,
+            IRegion region, Image image, boolean valid) {
+        super(template, context, region, image, relevance);
         this.snippet = snippet;
         this.valid = valid;
     }

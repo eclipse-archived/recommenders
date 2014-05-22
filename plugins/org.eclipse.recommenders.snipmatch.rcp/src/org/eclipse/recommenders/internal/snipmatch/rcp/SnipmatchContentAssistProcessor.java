@@ -147,10 +147,10 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
         for (Recommendation<ISnippet> recommendation : recommendations) {
             ISnippet snippet = recommendation.getProposal();
-            Template template = new Template(snippet.getName(), snippet.getDescription(), CONTEXT_ID, //$NON-NLS-1$
+            Template template = new Template(snippet.getName(), snippet.getDescription(), CONTEXT_ID,
                     snippet.getCode(), true);
             try {
-                proposals.add(SnippetProposal.newSnippetProposal(snippet, template, ctx, region, image));
+                proposals.add(SnippetProposal.newSnippetProposal(recommendation, template, ctx, region, image));
             } catch (Exception e) {
                 logError(e, Constants.BUNDLE_ID, Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
             }

@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -39,6 +40,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -58,6 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -169,46 +172,59 @@ public class FileSnippetRepository implements ISnippetRepository {
     public void index() throws IOException {
         writeLock.lock();
         try {
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_35, analyzer);
-            config.setOpenMode(OpenMode.CREATE);
-            IndexWriter writer = new IndexWriter(directory, config);
-            snippetCache.invalidateAll();
-
-            for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
-                try {
-                    Snippet snippet = snippetCache.get(fSnippet);
-                    Document doc = new Document();
-
-                    doc.add(new Field(F_PATH, fSnippet.getPath(), Store.YES, Index.NO));
-
-                    doc.add(new Field(F_UUID, snippet.getUuid().toString(), Store.NO, Index.NOT_ANALYZED));
-
-                    String name = snippet.getName();
-                    doc.add(new Field(F_NAME, name, Store.YES, Index.ANALYZED));
-
-                    String description = snippet.getDescription();
-                    doc.add(new Field(F_DESCRIPTION, description, Store.YES, Index.ANALYZED));
-
-                    for (String tag : snippet.getTags()) {
-                        doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED));
-                    }
-
-                    for (String keyword : snippet.getKeywords()) {
-                        doc.add(new Field(F_KEYWORD, keyword, Store.YES, Index.ANALYZED));
-                    }
-
-                    writer.addDocument(doc);
-                } catch (Exception e) {
-                    log.error("Failed to index snippet in " + fSnippet, e);
-                }
-            }
-            writer.close();
-            if (reader != null) {
-                reader = IndexReader.openIfChanged(reader);
-            }
+            File[] snippetFiles = snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON));
+            doIndex(snippetFiles);
         } finally {
             writeLock.unlock();
         }
+    }
+
+    private void doIndex(File[] snippetFiles) throws IOException {
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_35, analyzer);
+        config.setOpenMode(OpenMode.CREATE);
+        IndexWriter writer = new IndexWriter(directory, config);
+        try {
+            snippetCache.invalidateAll();
+            for (File snippetFile : snippetFiles) {
+                try {
+                    ISnippet snippet = snippetCache.get(snippetFile);
+                    String path = snippetFile.getPath();
+                    indexSnippet(writer, snippet, path);
+                } catch (Exception e) {
+                    log.error("Failed to index snippet in " + snippetFile, e);
+                }
+            }
+        } finally {
+            writer.close();
+        }
+        if (reader != null) {
+            reader = IndexReader.openIfChanged(reader);
+        }
+    }
+
+    private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
+            IOException {
+        Document doc = new Document();
+
+        doc.add(new Field(F_PATH, path, Store.YES, Index.NO));
+
+        doc.add(new Field(F_UUID, snippet.getUuid().toString(), Store.NO, Index.NOT_ANALYZED));
+
+        String name = snippet.getName();
+        doc.add(new Field(F_NAME, name, Store.YES, Index.ANALYZED));
+
+        String description = snippet.getDescription();
+        doc.add(new Field(F_DESCRIPTION, description, Store.YES, Index.ANALYZED));
+
+        for (String tag : snippet.getTags()) {
+            doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED));
+        }
+
+        for (String keyword : snippet.getKeywords()) {
+            doc.add(new Field(F_KEYWORD, keyword, Store.YES, Index.ANALYZED));
+        }
+
+        writer.addDocument(doc);
     }
 
     @VisibleForTesting
@@ -249,11 +265,10 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
 
             try {
-                for (File file : searchSnippetFiles(query)) {
-                    if (file.exists()) {
-                        ISnippet snippet = snippetCache.get(file);
-                        results.add(Recommendation.newRecommendation(snippet, 0));
-                    }
+                Map<File, Float> snippetFiles = searchSnippetFiles(query);
+                for (Entry<File, Float> entry : snippetFiles.entrySet()) {
+                    ISnippet snippet = snippetCache.get(entry.getKey());
+                    results.add(Recommendation.newRecommendation(snippet, entry.getValue()));
                 }
             } catch (Exception e) {
                 log.error("Exception occurred while searching the snippet index.", e);
@@ -264,17 +279,22 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
-    private List<File> searchSnippetFiles(String query) {
-        List<File> results = Lists.newLinkedList();
+    private Map<File, Float> searchSnippetFiles(String query) {
+        Map<File, Float> results = Maps.newLinkedHashMap();
         IndexSearcher searcher = null;
         try {
             Query q = parser.parse(query);
 
             searcher = new IndexSearcher(reader);
+            float maxScore = 0;
             for (ScoreDoc hit : searcher.search(q, null, 100).scoreDocs) {
                 Document doc = searcher.doc(hit.doc);
-                results.add(new File(doc.get(F_PATH)));
+                results.put(new File(doc.get(F_PATH)), hit.score);
+                if (hit.score > maxScore) {
+                    maxScore = hit.score;
+                }
             }
+            return normalizeValues(results, maxScore);
         } catch (ParseException e) {
             log.error("Failed to parse query", e);
         } catch (Exception e) {
@@ -285,13 +305,23 @@ public class FileSnippetRepository implements ISnippetRepository {
         return results;
     }
 
+    private Map<File, Float> normalizeValues(Map<File, Float> results, final float maxScore) {
+        return Maps.transformValues(results, new Function<Float, Float>() {
+
+            @Override
+            public Float apply(Float input) {
+                return input / maxScore;
+            }
+
+        });
+    }
+
     @Override
     public boolean hasSnippet(UUID uuid) {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            List<File> search = searchSnippetFiles(F_UUID + ":" + uuid);
-            return search.size() >= 1;
+            return !searchSnippetFiles(F_UUID + ":" + uuid).isEmpty();
         } finally {
             readLock.unlock();
         }
@@ -302,11 +332,11 @@ public class FileSnippetRepository implements ISnippetRepository {
         writeLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            List<File> files = searchSnippetFiles(F_UUID + ":" + uuid);
-            if (files.isEmpty()) {
+            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + uuid);
+            if (snippetFiles.isEmpty()) {
                 return false;
             }
-            Iterables.getOnlyElement(files).delete();
+            Iterables.getOnlyElement(snippetFiles.keySet()).delete();
             index();
             return true;
         } finally {
@@ -352,11 +382,11 @@ public class FileSnippetRepository implements ISnippetRepository {
             Snippet importSnippet = checkTypeAndConvertSnippet(snippet);
 
             File file;
-            List<File> files = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid());
-            if (files.isEmpty()) {
+            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid());
+            if (snippetFiles.isEmpty()) {
                 file = new File(snippetsdir, importSnippet.getUuid() + DOT_JSON);
             } else {
-                file = Iterables.getOnlyElement(files);
+                file = Iterables.getOnlyElement(snippetFiles.keySet());
             }
 
             FileWriter writer = new FileWriter(file);
