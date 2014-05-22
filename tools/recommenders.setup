@@ -578,4 +578,37 @@
       <buildPlans name="codesearch.origin.master"/>
     </setupTasks>
   </branches>
+  <branches name="incubators-logging">
+    <setupTasks xsi:type="setup:ContextVariableTask" name="git.root.dir" value="${setup.branch.dir/git}"/>
+    <setupTasks xsi:type="setup:GitCloneTask" location="${git.root.dir}" remoteURI="ssh://git.eclipse.org:29418/recommenders.incubator/org.eclipse.recommenders.logging.git" pushURI="" checkoutBranch="master"/>
+    <setupTasks xsi:type="setup:P2Task">
+      <installableUnits id="org.eclipse.m2e.feature.feature.group"/>
+      <installableUnits id="org.eclipse.m2e.logback.feature.feature.group"/>
+      <installableUnits id="org.eclipse.epp.mpc.feature.group"/>
+      <installableUnits id="org.eclipse.recommenders.rcp.feature.feature.group"/>
+      <installableUnits id="org.sonatype.tycho.m2e.feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.bugzilla_feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.gerrit.feature.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.hudson.feature.group"/>
+      <installableUnits id="org.eclipse.mylyn.git.feature.group"/>
+      <p2Repositories url="${train.url}"/>
+      <p2Repositories url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
+    </setupTasks>
+    <setupTasks xsi:type="setup:MavenImportTask">
+      <sourceLocators rootFolder="${git.root.dir}">
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/plugins/.*"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/features/.*"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/tests/.*"/>
+        <predicates xsi:type="predicates:LocationPredicate" pattern=".*/targets/.*"/>
+      </sourceLocators>
+    </setupTasks>
+    <setupTasks xsi:type="setup:TargetPlatformTask" name="Target Definition for Eclipse Luna"/>
+    <setupTasks xsi:type="setup:MylynQueriesTask" repositoryURL="https://bugs.eclipse.org/bugs" userID="${eclipse.user.id}" password="${eclipse.user.password}">
+      <queries summary="Bugs" url="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;component=Logging&amp;list_id=8721722&amp;order=bug_id%20DESC&amp;product=Recommenders.Incubator&amp;query_based_on=&amp;query_format=advanced"/>
+    </setupTasks>
+    <setupTasks xsi:type="setup:MylynBuildsTask" serverURL="https://hudson.eclipse.org/recommenders" userID="${eclipse.user.id}" password="${eclipse.user.password}">
+      <buildPlans name="logging.gerrit.master"/>
+      <buildPlans name="logging.origin.master"/>
+    </setupTasks>
+  </branches>
 </setup:Project>
