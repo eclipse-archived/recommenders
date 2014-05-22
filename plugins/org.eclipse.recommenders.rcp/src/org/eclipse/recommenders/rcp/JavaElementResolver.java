@@ -99,7 +99,6 @@ public class JavaElementResolver {
         ITypeName recType = (ITypeName) cache.inverse().get(jdtType);
         if (recType == null) {
             String fullyQualifiedName = jdtType.getFullyQualifiedName();
-            fullyQualifiedName = StringUtils.substringBefore(fullyQualifiedName, "<"); //$NON-NLS-1$
             recType = VmTypeName.get('L' + fullyQualifiedName.replace('.', '/'));
             registerRecJdtElementPair(recType, jdtType);
         }
@@ -257,7 +256,7 @@ public class JavaElementResolver {
 
                 final String methodSignature = Names.src2vmMethod(
                         jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes, //$NON-NLS-1$
-                                resolvedReturnType);
+                        resolvedReturnType);
                 final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
