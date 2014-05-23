@@ -175,6 +175,19 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Override
+    public List<Recommendation<ISnippet>> search(String query, int maxResults) {
+        readLock.lock();
+        try {
+            if (!isOpen() || !delegateOpen) {
+                return Collections.emptyList();
+            }
+            return delegate.search(query, maxResults);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
     public ImmutableSet<Recommendation<ISnippet>> getSnippets() {
         readLock.lock();
         try {

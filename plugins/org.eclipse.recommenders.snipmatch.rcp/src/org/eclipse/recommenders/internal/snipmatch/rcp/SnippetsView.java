@@ -281,7 +281,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     @Override
                     public void run() {
                         if (!viewer.getControl().isDisposed()) {
-                            final Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
+                            Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
                             for (ISnippetRepository repo : repos) {
                                 snippets.addAll(repo.search(txtSearch.getText()));
                             }

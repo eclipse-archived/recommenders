@@ -75,6 +75,9 @@ import com.google.common.collect.Sets;
 
 public class FileSnippetRepository implements ISnippetRepository {
 
+    private static final int MAX_SEARCH_RESULTS = 100;
+    private static final int CACHE_SIZE = 200;
+
     private static final Set<String> EMPTY_STOPWORDS = emptySet();
 
     private static final String F_NAME = "name";
@@ -106,7 +109,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     private final Analyzer analyzer;
     private final QueryParser parser;
 
-    private LoadingCache<File, Snippet> snippetCache = CacheBuilder.newBuilder().maximumSize(200)
+    private LoadingCache<File, Snippet> snippetCache = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE)
             .build(new CacheLoader<File, Snippet>() {
 
                 @Override
@@ -118,6 +121,8 @@ public class FileSnippetRepository implements ISnippetRepository {
             });
 
     public FileSnippetRepository(File basedir) {
+        Preconditions.checkArgument(CACHE_SIZE > MAX_SEARCH_RESULTS,
+                "The cache size needs to be larger than the maximum number of search results.");
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
         repoUrl = mangle(basedir.getAbsolutePath());
@@ -255,6 +260,15 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     @Override
     public List<Recommendation<ISnippet>> search(String query) {
+        return doSearch(query, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public List<Recommendation<ISnippet>> search(String query, int maxResults) {
+        return doSearch(query, Math.min(maxResults, MAX_SEARCH_RESULTS));
+    }
+
+    private List<Recommendation<ISnippet>> doSearch(String query, int maxResults) {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
@@ -265,7 +279,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
 
             try {
-                Map<File, Float> snippetFiles = searchSnippetFiles(query);
+                Map<File, Float> snippetFiles = searchSnippetFiles(query, maxResults);
                 for (Entry<File, Float> entry : snippetFiles.entrySet()) {
                     ISnippet snippet = snippetCache.get(entry.getKey());
                     results.add(Recommendation.newRecommendation(snippet, entry.getValue()));
@@ -279,7 +293,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
-    private Map<File, Float> searchSnippetFiles(String query) {
+    private Map<File, Float> searchSnippetFiles(String query, int maxResults) {
         Map<File, Float> results = Maps.newLinkedHashMap();
         IndexSearcher searcher = null;
         try {
@@ -287,7 +301,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
             searcher = new IndexSearcher(reader);
             float maxScore = 0;
-            for (ScoreDoc hit : searcher.search(q, null, 100).scoreDocs) {
+            for (ScoreDoc hit : searcher.search(q, null, maxResults).scoreDocs) {
                 Document doc = searcher.doc(hit.doc);
                 results.put(new File(doc.get(F_PATH)), hit.score);
                 if (hit.score > maxScore) {
@@ -321,7 +335,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            return !searchSnippetFiles(F_UUID + ":" + uuid).isEmpty();
+            return !searchSnippetFiles(F_UUID + ":" + uuid, Integer.MAX_VALUE).isEmpty();
         } finally {
             readLock.unlock();
         }
@@ -332,7 +346,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         writeLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + uuid);
+            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + uuid, Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 return false;
             }
@@ -382,7 +396,8 @@ public class FileSnippetRepository implements ISnippetRepository {
             Snippet importSnippet = checkTypeAndConvertSnippet(snippet);
 
             File file;
-            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid());
+            Map<File, Float> snippetFiles = searchSnippetFiles(F_UUID + ":" + importSnippet.getUuid(),
+                    Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 file = new File(snippetsdir, importSnippet.getUuid() + DOT_JSON);
             } else {
