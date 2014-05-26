@@ -11,12 +11,14 @@
 package org.eclipse.recommenders.subwords.rcp.it;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.recommenders.internal.subwords.rcp.LCSS;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
@@ -75,7 +77,6 @@ public class LCSSTest {
         assertEquals(2, s.size());
         assertTrue(Arrays.equals(s.get(0), new int[] { 3, 6 }));
         assertTrue(Arrays.equals(s.get(1), new int[] { 3, 8 }));
-
     }
 
     @Test
@@ -111,4 +112,9 @@ public class LCSSTest {
         assertEquals(1, LCSS.findSequences("createTempFile", "tmp").size());
     }
 
+    @Ignore("Ignore for now as this bug is independent of change <https://git.eclipse.org/r/#/c/27289/>, which it blocks")
+    @Test
+    public void testBug436078() {
+        assertThat(LCSS.containsSubsequence("ZipOutputStream", "Ziu"), is(true));
+    }
 }

@@ -1161,7 +1161,7 @@ class ChainCompletionScenariosTest {
         for (chain : chains) {
             res.add(l(chain))
         }
-        return res as List<List<String>>
+        return res
     }
 
     CharSequence FIELDS = '''
