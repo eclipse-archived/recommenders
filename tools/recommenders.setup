@@ -498,11 +498,15 @@
       <installableUnits id="org.eclipse.recommenders.codesearch.feature.feature.group"/>
       <installableUnits id="org.eclipse.recommenders.snipmatch.rcp.feature.feature.group"/>
       <installableUnits id="org.eclipse.recommenders.stats.rcp.feature.feature.group"/>
+      <installableUnits id="org.eclipse.recommenders.mylyn.rcp.feature.feature.group"/>
+      <installableUnits id="org.eclipse.recommenders.stats.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.calls.rcp.feature.feature.group"/>
       <installableUnits id="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.hippie.superclass.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
       <installableUnits id="com.codetrails.connect.tracker.rcp.feature.feature.group"/>
       <installableUnits id="com.codetrails.connect.tweaks.rcp.feature.feature.group"/>
-      <installableUnits id="com.codetrails.connect.calls.rcp.feature.feature.group"/>
-      <installableUnits id="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
+      <installableUnits id="com.codetrails.vaadin.rcp.feature.feature.group"/>
       <installableUnits id="org.eclipse.mylyn.java_feature.feature.group"/>
       <p2Repositories url="http://download.eclipse.org/recommenders/updates/head/"/>
       <p2Repositories url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
