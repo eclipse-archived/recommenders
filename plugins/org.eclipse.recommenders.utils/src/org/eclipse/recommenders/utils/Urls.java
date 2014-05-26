@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.apache.commons.lang3.StringUtils.removeEnd;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +24,7 @@ public final class Urls {
     }
 
     public static String mangle(String url) {
-        return removeEnd(url.replaceAll("\\W", "_"), "_");
+        return url.replaceAll("\\W", "_");
     }
 
     public static URL toUrl(String url) {
