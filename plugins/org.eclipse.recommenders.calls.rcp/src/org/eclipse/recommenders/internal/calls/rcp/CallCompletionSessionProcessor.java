@@ -14,16 +14,11 @@ import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
-import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_CALLS;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_DEF_BY;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_DEF_TYPE;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_TYPE2;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
-import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
-import static org.eclipse.recommenders.utils.Recommendations.top;
+import static org.eclipse.recommenders.utils.Recommendations.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,6 +55,8 @@ import com.google.common.collect.Lists;
 
 @SuppressWarnings({ "serial", "restriction" })
 public class CallCompletionSessionProcessor extends SessionProcessor {
+
+    private static final CompletionProposal NULL_PROPOSAL = new CompletionProposal();
 
     private final Set<Class<? extends ASTNode>> supportedCompletionRequests = new HashSet<Class<? extends ASTNode>>() {
         {
@@ -187,7 +184,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         for (IMethodName observed : observedCalls) {
             if (matcher.match(observed)) {
                 final int boost = prefs.changeProposalRelevance ? 1 : 0;
-                final String label = prefs.decorateProposalText ? Messages.PROPOSAL_LABEL_USED : ""; //$NON-NLS-2$
+                final String label = prefs.decorateProposalText ? Messages.PROPOSAL_LABEL_USED : ""; //$NON-NLS-1$
 
                 if (prefs.decorateProposalIcon) {
                     overlay(proposal, overlay);
@@ -210,7 +207,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
             final int boost = prefs.changeProposalRelevance ? 200 + asPercentage(call) : 0;
             final String label = prefs.decorateProposalText ? format(Messages.PROPOSAL_LABEL_PERCENTAGE,
-                    call.getRelevance()) : ""; //$NON-NLS-2$
+                    call.getRelevance()) : ""; //$NON-NLS-1$
 
             if (prefs.decorateProposalIcon) {
                 overlay(proposal, overlay);
