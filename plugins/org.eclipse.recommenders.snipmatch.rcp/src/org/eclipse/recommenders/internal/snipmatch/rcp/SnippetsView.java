@@ -102,7 +102,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         composite.setLayout(new GridLayout(2, false));
 
         txtSearch = new Text(composite, SWT.BORDER | SWT.ICON_SEARCH | SWT.SEARCH | SWT.CANCEL);
-        txtSearch.setMessage(Messages.SEARCH_PLACEHOLDER_FILTER_TEXT);
+        txtSearch.setMessage(Messages.SEARCH_PLACEHOLDER_SEARCH_TEXT);
         txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSearch.addModifyListener(new ModifyListener() {
 

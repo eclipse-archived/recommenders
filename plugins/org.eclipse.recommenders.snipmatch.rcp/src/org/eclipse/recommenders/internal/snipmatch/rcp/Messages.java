@@ -57,7 +57,7 @@ public class Messages extends NLS {
     public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
     public static String PREFPAGE_DESCRIPTION;
 
-    public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
+    public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
 
     public static String SNIPPETS_VIEW_BUTTON_ADD;
     public static String SNIPPETS_VIEW_BUTTON_EDIT;
