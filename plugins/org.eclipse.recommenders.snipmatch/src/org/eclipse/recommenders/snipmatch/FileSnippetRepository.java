@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -208,7 +209,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
-            IOException {
+    IOException {
         Document doc = new Document();
 
         doc.add(new Field(F_PATH, path, Store.YES, Index.NO));
@@ -237,8 +238,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         return timesOpened > 0;
     }
 
-    @Override
-    public ImmutableSet<Recommendation<ISnippet>> getSnippets() {
+    private ImmutableSet<Recommendation<ISnippet>> getSnippets() {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
@@ -260,11 +260,17 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     @Override
     public List<Recommendation<ISnippet>> search(String query) {
+        if (isBlank(query)) {
+            return ImmutableList.copyOf(getSnippets());
+        }
         return doSearch(query, Integer.MAX_VALUE);
     }
 
     @Override
     public List<Recommendation<ISnippet>> search(String query, int maxResults) {
+        if (isBlank(query)) {
+            return Collections.emptyList();
+        }
         return doSearch(query, Math.min(maxResults, MAX_SEARCH_RESULTS));
     }
 
@@ -273,10 +279,6 @@ public class FileSnippetRepository implements ISnippetRepository {
         try {
             Preconditions.checkState(isOpen());
             List<Recommendation<ISnippet>> results = Lists.newLinkedList();
-
-            if (isBlank(query)) {
-                return ImmutableList.copyOf(getSnippets());
-            }
 
             try {
                 Map<File, Float> snippetFiles = searchSnippetFiles(query, maxResults);

@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.name.Named;
@@ -182,19 +181,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                 return Collections.emptyList();
             }
             return delegate.search(query, maxResults);
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    @Override
-    public ImmutableSet<Recommendation<ISnippet>> getSnippets() {
-        readLock.lock();
-        try {
-            if (!isOpen() || !delegateOpen) {
-                return ImmutableSet.of();
-            }
-            return delegate.getSnippets();
         } finally {
             readLock.unlock();
         }

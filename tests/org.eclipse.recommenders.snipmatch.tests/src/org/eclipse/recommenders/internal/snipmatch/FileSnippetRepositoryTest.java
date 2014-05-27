@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -197,7 +198,7 @@ public class FileSnippetRepositoryTest {
         ISnippet snippet = new Snippet(FIRST_UUID, snippetName, "", NO_KEYWORDS, NO_TAGS, "");
         sut.importSnippet(snippet);
 
-        assertThat(getOnlyElement(sut.getSnippets()).getProposal(), is(snippet));
+        assertThat(getOnlyElement(sut.search("")).getProposal(), is(snippet));
     }
 
     @Test
@@ -211,7 +212,7 @@ public class FileSnippetRepositoryTest {
 
         sut.importSnippet(otherSnippet);
 
-        assertThat(sut.getSnippets().size(), is(2));
+        assertThat(sut.search("").size(), is(2));
     }
 
     @Test
@@ -228,7 +229,7 @@ public class FileSnippetRepositoryTest {
 
         sut.importSnippet(copiedSnippet);
 
-        assertThat(getOnlyElement(sut.getSnippets()).getProposal(), is((ISnippet) copiedSnippet));
+        assertThat(getOnlyElement(sut.search("")).getProposal(), is((ISnippet) copiedSnippet));
     }
 
     @Test
@@ -246,7 +247,7 @@ public class FileSnippetRepositoryTest {
 
         sut.importSnippet(copiedSnippet);
 
-        assertThat(sut.getSnippets().size(), is(2));
+        assertThat(sut.search("").size(), is(2));
     }
 
     @Test
@@ -353,6 +354,34 @@ public class FileSnippetRepositoryTest {
         Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(FIRST_UUID)).get();
         Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(SECOND_UUID)).get();
         assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
+    }
+
+    @Test
+    public void testEmptyQueryReturnsAllSnippetsOnOneParameterSearch() throws Exception {
+        createAndStoreSnippet(FIRST_UUID, SNIPPET_NAME, "", NO_KEYWORDS, NO_TAGS, "");
+        createAndStoreSnippet(SECOND_UUID, SNIPPET_NAME, "", NO_KEYWORDS, NO_TAGS, "");
+
+        sut.open();
+        List<Recommendation<ISnippet>> result = sut.search("");
+        Optional<Recommendation<ISnippet>> forFirst = Iterables.tryFind(result, new UuidPredicate(FIRST_UUID));
+        Optional<Recommendation<ISnippet>> forSecond = Iterables.tryFind(result, new UuidPredicate(SECOND_UUID));
+
+        assertThat(forFirst.isPresent(), is(true));
+        assertThat(forSecond.isPresent(), is(true));
+    }
+
+    @Test
+    public void testEmptyQueryReturnsAllSnippetsOnTwoParametersSearch() throws Exception {
+        createAndStoreSnippet(FIRST_UUID, SNIPPET_NAME, "", NO_KEYWORDS, NO_TAGS, "");
+        createAndStoreSnippet(SECOND_UUID, SNIPPET_NAME, "", NO_KEYWORDS, NO_TAGS, "");
+
+        sut.open();
+        List<Recommendation<ISnippet>> result = sut.search("", 2);
+        Optional<Recommendation<ISnippet>> forFirst = Iterables.tryFind(result, new UuidPredicate(FIRST_UUID));
+        Optional<Recommendation<ISnippet>> forSecond = Iterables.tryFind(result, new UuidPredicate(SECOND_UUID));
+
+        assertThat(forFirst.isPresent(), is(false));
+        assertThat(forSecond.isPresent(), is(false));
     }
 
     private ISnippet createAndStoreSnippet(UUID uuid, String name, String description, List<String> keywords,
