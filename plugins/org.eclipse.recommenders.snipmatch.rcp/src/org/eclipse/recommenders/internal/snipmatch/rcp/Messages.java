@@ -22,15 +22,18 @@ public class Messages extends NLS {
     public static String DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
+
     public static String DIALOG_OPTION_CANCEL;
     public static String DIALOG_OPTION_SAVE;
     public static String DIALOG_OPTION_SAVE_AS_NEW;
+
     public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
     public static String DIALOG_TITLE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
+
     public static String DIALOG_VALIDATOR_KEYWORD_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
 
@@ -38,12 +41,14 @@ public class Messages extends NLS {
     public static String EDITOR_BUTTON_ADD_TAGS;
     public static String EDITOR_BUTTON_REMOVE_KEYWORDS;
     public static String EDITOR_BUTTON_REMOVE_TAGS;
+
     public static String EDITOR_LABEL_SNIPPET_DESCRIPTION;
     public static String EDITOR_LABEL_SNIPPET_NAME;
     public static String EDITOR_LABEL_SNIPPET_UUID;
     public static String EDITOR_LABEL_SNIPPETS_KEYWORD;
     public static String EDITOR_LABEL_SNIPPETS_TAG;
     public static String EDITOR_LABEL_TITLE_METADATA;
+
     public static String EDITOR_PAGE_NAME_METADATA;
     public static String EDITOR_PAGE_NAME_SOURCE;
 
@@ -51,18 +56,21 @@ public class Messages extends NLS {
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY;
 
-    public static String JOB_OPENING_SNIPPET_REPOSITORY;
-    public static String JOB_REFRESHING_SNIPPETS_VIEW;
-
-    public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
-    public static String PREFPAGE_DESCRIPTION;
-
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
+    public static String SEARCH_DISPLAY_STRING;
 
     public static String SNIPPETS_VIEW_BUTTON_ADD;
     public static String SNIPPETS_VIEW_BUTTON_EDIT;
     public static String SNIPPETS_VIEW_BUTTON_RECONNECT;
     public static String SNIPPETS_VIEW_BUTTON_REMOVE;
+
+    public static String JOB_OPENING_SNIPPET_REPOSITORY;
+    public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
+    public static String JOB_REFRESHING_SNIPPETS_VIEW;
+
+    public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
+    public static String PREFPAGE_DESCRIPTION;
+
     public static String WARNING_CANNOT_APPLY_SNIPPET;
     public static String WARNING_REPOSITION_CURSOR;
     public static String WARNING_FAILURE_TO_UPDATE_REPOSITORY;
