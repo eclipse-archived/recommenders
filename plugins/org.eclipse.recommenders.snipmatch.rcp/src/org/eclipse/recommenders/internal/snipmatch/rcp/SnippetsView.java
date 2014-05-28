@@ -209,7 +209,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void reconnect() {
-        reconnectJob = new Job("Reconnecting") {
+        reconnectJob = new Job(Messages.JOB_RECONNECTING_SNIPPET_REPOSITORY) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -308,8 +308,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
         try {
-            ISnippet snippet = new Snippet(UUID.randomUUID(), "", "", Collections.<String>emptyList(),
-                    Collections.<String>emptyList(), "");
+            ISnippet snippet = new Snippet(UUID.randomUUID(), "", "", Collections.<String>emptyList(), //$NON-NLS-1$ //$NON-NLS-2$
+                    Collections.<String>emptyList(), ""); //$NON-NLS-1$
 
             final SnippetEditorInput input = new SnippetEditorInput(snippet, repo);
             page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"); //$NON-NLS-1$

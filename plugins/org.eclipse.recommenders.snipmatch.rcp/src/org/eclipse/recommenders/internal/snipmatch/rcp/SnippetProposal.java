@@ -11,10 +11,9 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-
-import java.text.MessageFormat;
 
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.ui.javaeditor.IndentUtil;
@@ -69,9 +68,9 @@ public class SnippetProposal extends TemplateProposal {
         StringBuilder header = new StringBuilder();
 
         if (!valid) {
-            header.append(MessageFormat.format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); // NON-NLS-1$
+            header.append(format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); //$NON-NLS-1$
             header.append(LINE_SEPARATOR);
-            header.append(MessageFormat.format(Messages.WARNING_REPOSITION_CURSOR, "// FIXME")); // NON-NLS-1$
+            header.append(format(Messages.WARNING_REPOSITION_CURSOR, "// TODO")); //$NON-NLS-1$
             header.append(LINE_SEPARATOR);
             header.append(LINE_SEPARATOR);
         }
@@ -104,7 +103,7 @@ public class SnippetProposal extends TemplateProposal {
         if (isNullOrEmpty(snippet.getDescription())) {
             return snippet.getName();
         } else {
-            return MessageFormat.format("{0} \u2013 {1}", snippet.getName(), snippet.getDescription()); // NON-NLS-1$
+            return format(Messages.SEARCH_DISPLAY_STRING, snippet.getName(), snippet.getDescription());
         }
     }
 
