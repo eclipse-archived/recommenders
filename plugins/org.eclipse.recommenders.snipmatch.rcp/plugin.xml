@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+	<extension-point id="providers" name="%extension-point.providers.name" schema="schema/providers.exsd"/>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
@@ -26,9 +27,6 @@
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchPreferencePage"
 			name="%preferencePages.snipmatch.name"/>
-	</extension>
-	<extension point="org.eclipse.core.runtime.preferences">
-		<initializer class="org.eclipse.recommenders.internal.snipmatch.rcp.PreferenceInitializer"/>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
@@ -63,4 +61,10 @@
 			allowMultiple="false"
 			name="%views.snippets.name"/>
 	</extension>
+	<extension
+		point="org.eclipse.recommenders.snipmatch.rcp.providers">
+	<provider
+		class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepositoryProvider">
+	</provider>
+ </extension>
 </plugin>

@@ -16,6 +16,7 @@ public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.messages"; //$NON-NLS-1$
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
 
+    public static String DEFAULT_REPO_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;

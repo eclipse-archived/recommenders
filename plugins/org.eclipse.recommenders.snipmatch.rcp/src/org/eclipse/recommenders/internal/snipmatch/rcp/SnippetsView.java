@@ -77,7 +77,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
     private static Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
-    private final Set<ISnippetRepository> repos;
+    private final Repositories repos;
     private Text txtSearch;
     private List list;
     private ListViewer viewer;
@@ -91,7 +91,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Job reconnectJob;
 
     @Inject
-    public SnippetsView(Set<ISnippetRepository> repos) {
+    public SnippetsView(Repositories repos) {
         this.repos = repos;
     }
 
@@ -134,7 +134,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         btnAdd.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                for (ISnippetRepository repo : repos) {
+                for (ISnippetRepository repo : repos.getRepositories()) {
                     if (repo.isImportSupported()) {
                         // TODO Make the repo selectable
                         // don't just store in the first that can import
@@ -166,7 +166,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 for (int i = 0; i < selection.size(); i++) {
                     Recommendation<ISnippet> recommendation = cast(selection.get(i));
                     try {
-                        for (ISnippetRepository repo : repos) {
+                        for (ISnippetRepository repo : repos.getRepositories()) {
                             repo.delete(recommendation.getProposal().getUuid());
                         }
                     } catch (Exception e) {
@@ -219,21 +219,17 @@ public class SnippetsView extends ViewPart implements IRcpService {
                         btnReconnect.setEnabled(false);
                     }
                 });
-                for (ISnippetRepository repo : repos) {
-                    try {
-                        repo.close();
-                    } catch (IOException e) {
-                        // Snipmatch's default repositories cannot throw an IOException here
-                        LOG.error(e.getMessage(), e);
-                    }
+                try {
+                    repos.close();
+                } catch (IOException e) {
+                    // Snipmatch's default repositories cannot throw an IOException here
+                    LOG.error(e.getMessage(), e);
                 }
-                for (ISnippetRepository repo : repos) {
-                    try {
-                        repo.open();
-                    } catch (IOException e) {
-                        // Snipmatch's default repositories cannot throw an IOException here
-                        LOG.error(e.getMessage(), e);
-                    }
+                try {
+                    repos.open();
+                } catch (IOException e) {
+                    // Snipmatch's default repositories cannot throw an IOException here
+                    LOG.error(e.getMessage(), e);
                 }
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
@@ -258,7 +254,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private boolean isImportSupported() {
-        for (ISnippetRepository repo : repos) {
+        for (ISnippetRepository repo : repos.getRepositories()) {
             if (repo.isImportSupported()) {
                 return true;
             }
@@ -282,7 +278,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     public void run() {
                         if (!viewer.getControl().isDisposed()) {
                             Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
-                            for (ISnippetRepository repo : repos) {
+                            for (ISnippetRepository repo : repos.getRepositories()) {
                                 snippets.addAll(repo.search(txtSearch.getText()));
                             }
                             viewer.setInput(snippets);
@@ -335,7 +331,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private ISnippetRepository findRepoForOriginalSnippet(ISnippet snippet) {
-        for (ISnippetRepository repo : repos) {
+        for (ISnippetRepository repo : repos.getRepositories()) {
             if (repo.hasSnippet(snippet.getUuid())) {
                 return repo;
             }
@@ -377,9 +373,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 if (fromObject == null) {
                     return false;
                 }
-                Recommendation<ISnippet> selection = (Recommendation<ISnippet>) fromObject;
+                Recommendation<ISnippet> selection = cast(fromObject);
                 ISnippet snippet = selection.getProposal();
-                for (ISnippetRepository repo : repos) {
+                for (ISnippetRepository repo : repos.getRepositories()) {
                     if (repo.isDeleteSupported()) {
                         if (repo.hasSnippet(snippet.getUuid())) {
                             return true;

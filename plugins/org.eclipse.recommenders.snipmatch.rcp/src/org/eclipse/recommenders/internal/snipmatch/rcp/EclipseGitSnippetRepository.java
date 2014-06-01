@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -22,16 +20,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitUpdateException;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -43,16 +36,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.name.Named;
 
-public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpService {
+public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private static Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
 
     private final EventBus bus;
-    private final SnipmatchRcpPreferences prefs;
-    private final File basedir;
 
     private volatile int timesOpened;
     private ISnippetRepository delegate;
@@ -63,27 +52,17 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     private volatile Job openJob = null;
 
-    @Inject
-    public EclipseGitSnippetRepository(@Named(SNIPPET_REPOSITORY_BASEDIR) File basedir, SnipmatchRcpPreferences prefs,
-            EventBus bus) {
+    public EclipseGitSnippetRepository(File basedir, String remoteUri, EventBus bus) {
         this.bus = bus;
-        this.prefs = prefs;
-        this.basedir = basedir;
 
-        setupDelegate();
+        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
         writeLock = readWriteLock.writeLock();
     }
 
-    private void setupDelegate() {
-        String remoteUri = prefs.getLocation();
-        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri);
-    }
-
     @Override
-    @PostConstruct
     public void open() {
         writeLock.lock();
         try {
@@ -132,7 +111,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Override
-    @PreDestroy
     public void close() throws IOException {
         writeLock.lock();
         try {
@@ -184,23 +162,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
         } finally {
             readLock.unlock();
         }
-    }
-
-    @Subscribe
-    public void onEvent(SnippetRepositoryUrlChangedEvent e) throws IOException {
-        close();
-        setupDelegate();
-        open();
-    }
-
-    /**
-     * Triggered when a snippet repository URL was changed (most likely in the a preference page).
-     * <p>
-     * Clients of this event should be an instance of {@link ISnippetRepository}. Other clients should have a look at
-     * {@link SnippetRepositoryClosedEvent} and {@link SnippetRepositoryClosedEvent}. Clients of this event may consider
-     * refreshing themselves whenever they receive this event. Clients get notified in a background process.
-     */
-    public static class SnippetRepositoryUrlChangedEvent {
     }
 
     /**
