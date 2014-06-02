@@ -152,7 +152,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         Map<String, Float> boosts = ImmutableMap.of(F_NAME, NAME_BOOST, F_DESCRIPTION, DESCRIPTION_BOOST, F_KEYWORD,
                 KEYWORD_BOOST, F_TAG, TAG_BOOST);
         QueryParser parser = new MultiFieldPrefixQueryParser(Version.LUCENE_35, searchFields, analyzer, boosts, F_NAME,
-                F_DESCRIPTION, F_KEYWORD, F_TAG);
+                F_DESCRIPTION, F_KEYWORD);
         parser.setDefaultOperator(AND);
         return parser;
     }
@@ -209,7 +209,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
-    IOException {
+            IOException {
         Document doc = new Document();
 
         doc.add(new Field(F_PATH, path, Store.YES, Index.NO));

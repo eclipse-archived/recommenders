@@ -299,6 +299,7 @@ public class FileSnippetRepositoryTest {
 
         sut.open();
 
+        assertThat(sut.search("tag:" + "f").isEmpty(), is(true));
         assertThat(getOnlyElement(sut.search("tag:" + "foo")).getProposal(), is(snippet));
         assertThat(getOnlyElement(sut.search("tag:" + "bar")).getProposal(), is(snippet));
         assertThat(sut.search("tag:" + "quz").isEmpty(), is(true));
