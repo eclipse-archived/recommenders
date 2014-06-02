@@ -463,7 +463,7 @@ public class ModelRepositoriesView extends ViewPart {
         private final String glob;
 
         private GlobMatcher(String glob) {
-            this.glob = "*" + Preconditions.checkNotNull(glob) + "*";
+            this.glob = "*" + Preconditions.checkNotNull(glob) + "*"; //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         @Override
