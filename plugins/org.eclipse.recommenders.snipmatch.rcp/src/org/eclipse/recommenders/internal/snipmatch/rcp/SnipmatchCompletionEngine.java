@@ -110,6 +110,7 @@ public class SnipmatchCompletionEngine {
 
         assistant.setShowEmptyList(true);
         assistant.enablePrefixCompletion(true);
+        assistant.enableColoredLabels(true);
         assistant.setContentAssistProcessor(processor, DEFAULT_CONTENT_TYPE);
         assistant.setInformationControlCreator(new TemplateInformationControlCreator(SWT.LEFT_TO_RIGHT));
         assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
