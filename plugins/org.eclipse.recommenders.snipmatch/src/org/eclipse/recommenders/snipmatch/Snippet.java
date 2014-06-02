@@ -28,6 +28,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Snippet implements ISnippet {
 
+    public static final String FORMAT_VERSION = "format-2";
+
     @SerializedName("uuid")
     private UUID uuid;
     @SerializedName("name")

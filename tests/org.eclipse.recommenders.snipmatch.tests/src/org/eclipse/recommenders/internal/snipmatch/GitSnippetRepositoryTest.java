@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.internal.snipmatch;
 
+import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 
@@ -36,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class GitSnippetRepositoryTest {
 
     private static final String FIRST_FILE = "first-file";
+    private static final String SECOND_FILE = "second-file";
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -50,18 +51,12 @@ public class GitSnippetRepositoryTest {
     private File remotePath;
 
     private GitSnippetRepository sut;
-    private File firstFile;
     private File basedir;
 
     @Before
     public void init() throws Exception {
         remotePath = tempFolder.newFolder("remote-snipmatch");
         basedir = tempFolder.newFolder("local-snipmatch");
-
-        git = Git.init().setDirectory(remotePath).call();
-        addFileToRemote(FIRST_FILE, remotePath, git);
-
-        firstFile = new File(basedir, FIRST_FILE);
 
         IProjectDescription projectDescription = mock(IProjectDescription.class);
         when(project.getDescription()).thenReturn(projectDescription);
@@ -74,17 +69,44 @@ public class GitSnippetRepositoryTest {
         sut = new GitSnippetRepository(basedir, remotePath.getAbsolutePath());
     }
 
+    @Test
+    public void testinitialClone() throws Exception {
+        git = Git.init().setDirectory(remotePath).call();
+        git.commit().setMessage("initial state").call();
+        git.checkout().setName(FORMAT_VERSION).setCreateBranch(true).call();
+        addFileToRemote(FIRST_FILE, remotePath, git);
+
+        File firstFile = new File(basedir, FIRST_FILE);
+
+        sut.open();
+
+        assertTrue(firstFile.exists());
+    }
+
+    @Test
+    public void testFormatChange() throws Exception {
+        git = Git.init().setDirectory(remotePath).call();
+        git.commit().setMessage("initial state").call();
+        git.checkout().setName("OLD-VERSION").setCreateBranch(true).call();
+        addFileToRemote(FIRST_FILE, remotePath, git);
+
+        git.checkout().setName(FORMAT_VERSION).setCreateBranch(true).call();
+        addFileToRemote(SECOND_FILE, remotePath, git);
+
+        File firstFile = new File(basedir, FIRST_FILE);
+        File secondFile = new File(basedir, SECOND_FILE);
+
+        sut.open();
+
+        assertTrue(firstFile.exists());
+        assertTrue(secondFile.exists());
+    }
+
     private void addFileToRemote(String filename, File remote, Git git) throws Exception {
         File file = new File(remote, filename);
         file.createNewFile();
         git.add().addFilepattern(filename).call();
         git.commit().setMessage("commit message").call();
-    }
-
-    @Test
-    public void testinitialClone() throws Exception {
-        sut.open();
-        assertTrue(firstFile.exists());
     }
 
 }

@@ -10,12 +10,17 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.PullCommand;
@@ -30,7 +35,8 @@ import org.eclipse.jgit.util.FS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 
 public class GitSnippetRepository extends FileSnippetRepository {
 
@@ -105,10 +111,9 @@ public class GitSnippetRepository extends FileSnippetRepository {
         if (RepositoryCache.FileKey.isGitRepository(gitFile, FS.DETECTED)) {
             FileRepository localRepo = new FileRepository(gitFile);
             for (Ref ref : localRepo.getAllRefs().values()) {
-                if (ref.getObjectId() == null) {
-                    continue;
+                if (ref.getObjectId() != null) {
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -125,28 +130,48 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     private void configureGit(Git git) throws IOException {
         StoredConfig config = git.getRepository().getConfig();
-        String remoteUrl = config.getString("remote", "origin", "url");
-        if (Strings.isNullOrEmpty(remoteUrl)) {
-            config.setString("remote", "origin", "url", getRepositoryLocation());
-            config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-            config.setString("remote", "origin", "push", "HEAD:refs/for/master");
+        config.setString("remote", "origin", "url", getRepositoryLocation());
+        config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
+        String pushBranch = "HEAD:refs/for/" + FORMAT_VERSION;
+        config.setString("remote", "origin", "push", pushBranch);
 
-            // prevents trust anchor errors when pulling from eclipse.org
-            config.setBoolean("http", null, "sslVerify", false);
+        // prevents trust anchor errors when pulling from eclipse.org
+        config.setBoolean("http", null, "sslVerify", false);
 
-            config.setString("branch", "master", "remote", "origin");
-            config.setString("branch", "master", "merge", "refs/heads/master");
-            config.save();
-        }
+        config.setString("branch", FORMAT_VERSION, "remote", "origin");
+        String branch = "refs/heads/" + FORMAT_VERSION;
+        config.setString("branch", FORMAT_VERSION, "merge", branch);
+        config.save();
     }
 
     private void pullSnippets() throws IOException, InvalidRemoteException, TransportException, GitAPIException,
     CoreException {
+        String remoteBranch = "origin/" + FORMAT_VERSION;
         FileRepository localRepo = new FileRepository(gitFile);
         Git git = new Git(localRepo);
 
+        git.fetch().call();
+        CheckoutCommand checkout = git.checkout();
+        checkout.setName(FORMAT_VERSION);
+        checkout.setStartPoint(remoteBranch);
+        checkout.setCreateBranch(!branchExistsLocally(git, "refs/heads/" + FORMAT_VERSION));
+        checkout.call();
+
         PullCommand pull = git.pull();
         pull.call();
+    }
+
+    private boolean branchExistsLocally(Git git, String remoteBranch) throws GitAPIException {
+        List<Ref> branches = git.branchList().call();
+        Collection<String> branchNames = Collections2.transform(branches, new Function<Ref, String>() {
+
+            @Override
+            public String apply(Ref input) {
+                return input.getName();
+            }
+
+        });
+        return branchNames.contains(remoteBranch);
     }
 
     @Override
