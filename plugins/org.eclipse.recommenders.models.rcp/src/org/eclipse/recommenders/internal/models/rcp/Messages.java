@@ -48,10 +48,15 @@ public final class Messages extends NLS {
 
     public static String DIALOG_TITLE_ADD_MODEL_REPOSITORY;
     public static String DIALOG_TITLE_INVALID_COORDINATE_FORMAT;
+    public static String DIALOG_TITLE_INDEX_DOWNLOAD_FAILURE;
 
     public static String DIALOG_MESSAGE_URI_ALREADY_ADDED;
     public static String DIALOG_MESSAGE_INVALID_COORDINATE_FORMAT;
     public static String DIALOG_MESSAGE_INVALID_REPOSITORY_URI;
+    public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE;
+    public static String DIALOG_MESSAGE_FILE_A_BUG;
+
+    public static String DIALOG_TOGGLE_IGNORE_DOWNLOAD_FAILURES;
 
     public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
 
@@ -89,6 +94,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_ADVISOR_INSTANTIATION;
     public static String LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE;
     public static String LOG_ERROR_MODEL_RESOLUTION_FAILURE;
+    public static String LOG_ERROR_SAVE_PREFERENCES;
 
     public static String LOG_INFO_NO_MODEL_RESOLVED;
 
