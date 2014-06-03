@@ -22,16 +22,21 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.text.source.LineRange;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.graphics.Image;
 
-public class SnippetProposal extends TemplateProposal {
+import com.google.common.base.Joiner;
+import com.google.common.collect.Ordering;
+
+public class SnippetProposal extends TemplateProposal implements ICompletionProposalExtension6 {
 
     private final ISnippet snippet;
 
@@ -95,8 +100,20 @@ public class SnippetProposal extends TemplateProposal {
     }
 
     @Override
+    public StyledString getStyledDisplayString() {
+        StyledString styledString = new StyledString();
+        styledString.append(createDisplayString(snippet));
+        if (!snippet.getTags().isEmpty()) {
+            styledString.append(" - ", StyledString.QUALIFIER_STYLER);
+            styledString.append(Joiner.on(", ").join(Ordering.natural().sortedCopy(snippet.getTags())),
+                    StyledString.COUNTER_STYLER);
+        }
+        return styledString;
+    }
+
+    @Override
     public String getDisplayString() {
-        return createDisplayString(snippet);
+        return getStyledDisplayString().getString();
     }
 
     public static String createDisplayString(ISnippet snippet) {
