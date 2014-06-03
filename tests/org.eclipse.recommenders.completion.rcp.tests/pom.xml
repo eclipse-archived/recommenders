@@ -30,6 +30,10 @@
 							<artifactId>org.eclipse.jdt.launching</artifactId>
 							<type>eclipse-plugin</type>
 						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.e4.rcp</artifactId>
+							<type>eclipse-feature</type>
+						</dependency>
 					</dependencies>
 				</configuration>
 			</plugin>

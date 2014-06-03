@@ -16,6 +16,8 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 
+import com.google.common.annotations.VisibleForTesting;
+
 @SuppressWarnings("restriction")
 public class SubwordsRcpPreferences {
 
@@ -28,7 +30,12 @@ public class SubwordsRcpPreferences {
     public boolean computeAdditionalConstructorProposals;
 
     public SubwordsRcpPreferences() {
-        computeAdditionalTypeProposals = true;
-        computeAdditionalConstructorProposals = true;
+        this(true, true);
+    }
+
+    @VisibleForTesting
+    public SubwordsRcpPreferences(boolean computeAdditionalTypeProposals, boolean computeAdditionalConstructorProposals) {
+        this.computeAdditionalTypeProposals = computeAdditionalTypeProposals;
+        this.computeAdditionalConstructorProposals = computeAdditionalConstructorProposals;
     }
 }
