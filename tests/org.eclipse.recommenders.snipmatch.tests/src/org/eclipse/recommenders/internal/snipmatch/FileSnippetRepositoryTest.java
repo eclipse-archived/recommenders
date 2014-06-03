@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.snipmatch;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -46,6 +45,7 @@ public class FileSnippetRepositoryTest {
 
     private static final UUID FIRST_UUID = UUID.randomUUID();
     private static final UUID SECOND_UUID = UUID.randomUUID();
+    private static final UUID THIRD_UUID = UUID.randomUUID();
 
     private static final String SNIPPET_NAME = "snippet";
 
@@ -333,15 +333,21 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testPreferDescriptionMatchesOverTags() throws Exception {
-        createAndStoreSnippet(FIRST_UUID, "first", "searchword", NO_KEYWORDS, NO_TAGS, "");
-        createAndStoreSnippet(SECOND_UUID, "second", "", NO_KEYWORDS, ImmutableList.of("searchword"), "");
+        createAndStoreSnippet(FIRST_UUID, "addlistener", "add a listener to a Widget", NO_KEYWORDS,
+                ImmutableList.of("eclipse", "swt", "ui"), "");
+        createAndStoreSnippet(SECOND_UUID, "Browser", "new Browser", NO_KEYWORDS,
+                ImmutableList.of("eclipse", "swt", "widget"), "");
+        createAndStoreSnippet(THIRD_UUID, "Third", "something", NO_KEYWORDS,
+                ImmutableList.of("eclipse", "swt", "widget"), "");
 
         sut.open();
-        List<Recommendation<ISnippet>> result = sut.search("searchword");
+        List<Recommendation<ISnippet>> result = sut.search("widget");
 
         Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(FIRST_UUID)).get();
         Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(SECOND_UUID)).get();
+        Recommendation<ISnippet> forThird = Iterables.tryFind(result, new UuidPredicate(THIRD_UUID)).get();
         assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
+        assertThat(forFirst.getRelevance(), is(greaterThan(forThird.getRelevance())));
     }
 
     @Test
@@ -383,6 +389,19 @@ public class FileSnippetRepositoryTest {
 
         assertThat(forFirst.isPresent(), is(false));
         assertThat(forSecond.isPresent(), is(false));
+    }
+
+    @Test
+    public void testNumberOfTagsDoesntAffectRelevance() throws Exception {
+        createAndStoreSnippet(FIRST_UUID, "first", "", NO_KEYWORDS, ImmutableList.of("tag1"), "");
+        createAndStoreSnippet(SECOND_UUID, "second", "", NO_KEYWORDS, ImmutableList.of("tag1", "tag2"), "");
+
+        sut.open();
+        List<Recommendation<ISnippet>> result = sut.search("tag:tag1");
+
+        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(FIRST_UUID)).get();
+        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(SECOND_UUID)).get();
+        assertThat(forFirst.getRelevance(), is(closeTo(forSecond.getRelevance(), 0.01)));
     }
 
     private ISnippet createAndStoreSnippet(UUID uuid, String name, String description, List<String> keywords,

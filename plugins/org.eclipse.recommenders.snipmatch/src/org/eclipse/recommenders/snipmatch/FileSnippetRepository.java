@@ -48,9 +48,11 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -88,8 +90,8 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_PATH = "path";
     private static final String F_UUID = "uuid";
 
-    private static final float NAME_BOOST = 1.2f;
-    private static final float DESCRIPTION_BOOST = 1.1f;
+    private static final float NAME_BOOST = 4.0f;
+    private static final float DESCRIPTION_BOOST = 2.0f;
     private static final float KEYWORD_BOOST = DESCRIPTION_BOOST;
     private static final float TAG_BOOST = 1.0f;
 
@@ -109,8 +111,9 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     private final Analyzer analyzer;
     private final QueryParser parser;
+    private final Similarity similarity;
 
-    private LoadingCache<File, Snippet> snippetCache = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE)
+    private final LoadingCache<File, Snippet> snippetCache = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE)
             .build(new CacheLoader<File, Snippet>() {
 
                 @Override
@@ -130,6 +133,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
         analyzer = createAnalyzer();
         parser = createParser();
+        similarity = new IgnoreDocFrequencySimilarity();
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
@@ -223,7 +227,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         doc.add(new Field(F_DESCRIPTION, description, Store.YES, Index.ANALYZED));
 
         for (String tag : snippet.getTags()) {
-            doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED));
+            doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED_NO_NORMS));
         }
 
         for (String keyword : snippet.getKeywords()) {
@@ -302,6 +306,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             Query q = parser.parse(query);
 
             searcher = new IndexSearcher(reader);
+            searcher.setSimilarity(similarity);
             float maxScore = 0;
             for (ScoreDoc hit : searcher.search(q, null, maxResults).scoreDocs) {
                 Document doc = searcher.doc(hit.doc);
@@ -427,6 +432,21 @@ public class FileSnippetRepository implements ISnippetRepository {
             return (Snippet) snippet;
         } else {
             return Snippet.copy(snippet);
+        }
+    }
+
+    private static class IgnoreDocFrequencySimilarity extends DefaultSimilarity {
+
+        private static final long serialVersionUID = 6048878092975074153L;
+
+        @Override
+        public float tf(float freq) {
+            return 1.0f;
+        }
+
+        @Override
+        public float idf(int docFreq, int numDocs) {
+            return 1.0f;
         }
     }
 }
