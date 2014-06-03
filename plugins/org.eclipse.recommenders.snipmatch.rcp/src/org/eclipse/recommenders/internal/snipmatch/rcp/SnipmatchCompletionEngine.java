@@ -162,13 +162,13 @@ public class SnipmatchCompletionEngine {
                 case SWT.CR:
                     e.doit = false;
                     if (selectedProposal != null) {
+                        assistant.uninstall();
                         if (selectedProposal.isValidFor(ctx.getDocument(), ctx.getInvocationOffset())) {
                             if (selectedProposal instanceof SnippetProposal) {
                                 snippetApplied((SnippetProposal) selectedProposal);
                             }
                             selectedProposal.apply(ctx.getViewer(), (char) 0, SWT.NONE, ctx.getInvocationOffset());
                         }
-                        assistant.uninstall();
                     }
                     return;
                 case SWT.TAB:
