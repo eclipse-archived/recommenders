@@ -87,7 +87,8 @@ public class SnippetProposal extends TemplateProposal implements ICompletionProp
         }
 
         try {
-            return fixIndentation(header + super.getAdditionalProposalInfo());
+            // Header comments *must* not be included in fixIndentation due to Bug 436490.
+            return header + fixIndentation(super.getAdditionalProposalInfo());
         } catch (BadLocationException e) {
             return null;
         }
