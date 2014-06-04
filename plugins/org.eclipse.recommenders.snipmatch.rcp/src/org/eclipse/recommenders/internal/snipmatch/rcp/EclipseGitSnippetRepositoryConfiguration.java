@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import java.util.Map;
+
 import org.eclipse.recommenders.snipmatch.ISnippetRepositoryConfiguration;
+
+import com.google.common.collect.Maps;
 
 public class EclipseGitSnippetRepositoryConfiguration implements ISnippetRepositoryConfiguration {
 
@@ -38,8 +42,21 @@ public class EclipseGitSnippetRepositoryConfiguration implements ISnippetReposit
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public String getDescription() {
+        return Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION;
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        Map<String, String> attributes = Maps.newHashMap();
+        attributes.put(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_ATTRIBUTE_NAME_URL, getRepositoryUrl());
+        return attributes;
     }
 
     @Override

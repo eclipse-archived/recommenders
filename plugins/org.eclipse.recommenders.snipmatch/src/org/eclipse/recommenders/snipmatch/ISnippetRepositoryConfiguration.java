@@ -10,10 +10,18 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import java.util.Map;
+
 public interface ISnippetRepositoryConfiguration {
 
     boolean isEnabled();
 
+    void setEnabled(boolean enabled);
+
     String getName();
+
+    String getDescription();
+
+    Map<String, String> getAttributes();
 
 }

@@ -15,31 +15,38 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.messages"; //$NON-NLS-1$
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
+    public static String CONFIGURATION_DISPLAY_STRING;
 
     public static String DEFAULT_REPO_NAME;
+    public static String DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
-    public static String DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
+    public static String DIALOG_MESSAGE_SET_SNIPPET_REPOSITORY_URL;
 
     public static String DIALOG_OPTION_CANCEL;
     public static String DIALOG_OPTION_SAVE;
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
     public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
+    public static String DIALOG_TITLE_CHANGE_CONFIGURATION_NAME;
+    public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
-    public static String DIALOG_TITLE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
+    public static String DIALOG_TITLE_SET_SNIPPET_REPOSITORY_URL;
 
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
 
     public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
+    public static String ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_ATTRIBUTE_NAME_URL;
+    public static String ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION;
+    public static String EDITOR_BUTTON_ADD_KEYWORDS;
     public static String EDITOR_BUTTON_ADD_TAGS;
     public static String EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM;
     public static String EDITOR_BUTTON_REMOVE_TAGS;
@@ -73,6 +80,9 @@ public class Messages extends NLS {
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
 
+    public static String PREFPAGE_BUTTON_EDIT;
+    public static String PREFPAGE_BUTTON_NEW;
+    public static String PREFPAGE_BUTTON_REMOVE;
     public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
     public static String PREFPAGE_DESCRIPTION;
 

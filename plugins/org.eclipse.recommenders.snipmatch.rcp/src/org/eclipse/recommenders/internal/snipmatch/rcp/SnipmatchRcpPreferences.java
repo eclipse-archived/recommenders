@@ -29,7 +29,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.name.Named;
 
 @SuppressWarnings("restriction")
 public class SnipmatchRcpPreferences {
@@ -38,8 +37,7 @@ public class SnipmatchRcpPreferences {
     private ImmutableSet<ISnippetRepositoryProvider> providers;
     private EventBus bus;
 
-    public SnipmatchRcpPreferences(EventBus bus,
-            @Named(SnipmatchRcpModule.SNIPPET_REPOSITORY_PROVIDERS) ImmutableSet<ISnippetRepositoryProvider> providers) {
+    public SnipmatchRcpPreferences(EventBus bus, ImmutableSet<ISnippetRepositoryProvider> providers) {
         this.bus = bus;
         this.providers = providers;
     }
