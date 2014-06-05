@@ -17,6 +17,8 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.ui.PreferenceConstants;
@@ -30,9 +32,11 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
-import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptors;
 import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,12 +50,18 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class CompletionsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    public CompletionsPreferencePage() {
+    private final CompletionRcpPreferences preferences;
+
+    @Inject
+    public CompletionsPreferencePage(CompletionRcpPreferences preferences) {
         super(GRID);
+        this.preferences = preferences;
     }
 
     @Override
@@ -63,8 +73,9 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
     @Override
     protected void createFieldEditors() {
-        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, FIELD_LABEL_SESSION_PROCESSORS, getFieldEditorParent()));
-        addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement",
+        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, FIELD_LABEL_SESSION_PROCESSORS,
+                getFieldEditorParent()));
+        addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement", //$NON-NLS-1$
                 getFieldEditorParent()));
     }
 
@@ -95,6 +106,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     updateButtonStatus();
+                    setPresentsDefaultValue(false);
                 }
             });
 
@@ -172,40 +184,61 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
         @Override
         protected void doLoad() {
-            String value = getPreferenceStore().getString(getPreferenceName());
-            load(value);
-        }
-
-        private void load(String value) {
-            List<SessionProcessorDescriptor> input = SessionProcessorDescriptors.fromString(value,
-                    SessionProcessorDescriptors.getRegisteredProcessors());
+            Set<SessionProcessorDescriptor> input = preferences.getAvailableSessionProcessors();
             List<SessionProcessorDescriptor> checkedElements = Lists.newArrayList();
             for (SessionProcessorDescriptor descriptor : input) {
-                if (descriptor.isEnabled()) {
+                if (preferences.isEnabled(descriptor)) {
+                    checkedElements.add(descriptor);
+                }
+            }
+
+            tableViewer.setInput(input);
+            tableViewer.setSorter(new ViewerSorter() {
+                @Override
+                public int compare(Viewer viewer, Object e1, Object e2) {
+                    SessionProcessorDescriptor lhs = Checks.cast(e1);
+                    SessionProcessorDescriptor rhs = Checks.cast(e2);
+                    return lhs.getName().compareTo(rhs.getName());
+                }
+            });
+            tableViewer.setCheckedElements(checkedElements.toArray());
+        }
+
+        @Override
+        protected void doLoadDefault() {
+            Set<SessionProcessorDescriptor> input = preferences.getAvailableSessionProcessors();
+            List<SessionProcessorDescriptor> checkedElements = Lists.newArrayList();
+            for (SessionProcessorDescriptor descriptor : input) {
+                if (descriptor.isEnabledByDefault()) {
                     checkedElements.add(descriptor);
                 }
             }
 
             tableViewer.setInput(input);
             tableViewer.setCheckedElements(checkedElements.toArray());
-        }
-
-        @Override
-        protected void doLoadDefault() {
-            String value = getPreferenceStore().getDefaultString(getPreferenceName());
-            load(value);
             updateButtonStatus();
         }
 
         @Override
         protected void doStore() {
-            List<SessionProcessorDescriptor> descriptors = cast(tableViewer.getInput());
-            for (SessionProcessorDescriptor descriptor : descriptors) {
-                descriptor.setEnabled(tableViewer.getChecked(descriptor));
-            }
-            String newValue = SessionProcessorDescriptors.toString(descriptors);
-            getPreferenceStore().setValue(getPreferenceName(), newValue);
+            Set<SessionProcessorDescriptor> descriptors = cast(tableViewer.getInput());
+            preferences.setSessionProcessorEnabled(Collections2.filter(descriptors, new EnabledPredicate(true)),
+                    Collections2.filter(descriptors, new EnabledPredicate(false)));
             updateButtonStatus();
+        }
+
+        private final class EnabledPredicate implements Predicate<SessionProcessorDescriptor> {
+
+            private final boolean enabled;
+
+            public EnabledPredicate(boolean enabled) {
+                this.enabled = enabled;
+            }
+
+            @Override
+            public boolean apply(SessionProcessorDescriptor descriptor) {
+                return !(enabled ^ tableViewer.getChecked(descriptor));
+            }
         }
 
         @Override

@@ -47,6 +47,7 @@ import static org.eclipse.recommenders.tests.CodeBuilder.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
+import com.google.common.collect.ImmutableSet
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -400,7 +401,7 @@ class CompletionSmokeTest {
         val sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "", sut)
 
         val preferences = mock(CompletionRcpPreferences)
-        when(preferences.getSessionProcessors).thenReturn(ImmutableList.of(sessionProcessor))
+        when(preferences.getEnabledSessionProcessors).thenReturn(ImmutableSet.of(sessionProcessor))
 
         val struct = fixture.createFileAndParseWithMarkers(scenario)
         val cu = struct.first;

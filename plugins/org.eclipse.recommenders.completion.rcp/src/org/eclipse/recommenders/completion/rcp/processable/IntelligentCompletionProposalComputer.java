@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
@@ -51,6 +52,8 @@ import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -58,7 +61,9 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer implements
-        ICompletionListener, ICompletionListenerExtension2 {
+ICompletionListener, ICompletionListenerExtension2 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IntelligentCompletionProposalComputer.class);
 
     private final CompletionRcpPreferences preferences;
     private final IAstProvider astProvider;
@@ -87,9 +92,11 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
     @Override
     public void sessionStarted() {
         processors.clear();
-        for (SessionProcessorDescriptor d : preferences.getSessionProcessors()) {
-            if (d.isEnabled()) {
+        for (SessionProcessorDescriptor d : preferences.getEnabledSessionProcessors()) {
+            try {
                 processors.add(d.getProcessor());
+            } catch (CoreException e) {
+                LOG.error("Failed to create session processor", e); //$NON-NLS-1$
             }
         }
         activeProcessors.clear();
@@ -127,6 +134,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
                         proposalFactory);
+
                 res.add(jdtProposal);
                 if (jdtProposal instanceof IProcessableProposal) {
                     IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;

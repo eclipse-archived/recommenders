@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.recommenders.completion.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.recommenders.completion.rcp" id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="Completion Session Processors"/>
+         <meta.schema plugin="org.eclipse.recommenders.completion.rcp" id="org.eclipse.recommenders.completion.rcp.tips" name="Completion Tips"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -17,8 +17,8 @@
          </appinfo>
       </annotation>
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="processor"/>
+         <sequence>
+            <element ref="proposal" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,77 +47,23 @@
       </complexType>
    </element>
 
-   <element name="processor">
+   <element name="proposal">
       <complexType>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="identifier"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.recommenders.internal.completion.rcp.tips.ICompletionTipProposal"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal:"/>
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="preferencePage" type="string">
-            <annotation>
-               <documentation>
-                  Id of the preference page that configures this session processor
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.eclipse.ui.preferencePages/page/@id"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="enabledByDefault" type="boolean" use="default" value="true">
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="priority" type="string">
-            <annotation>
-               <documentation>
-                  integer value used for determing the order in which the processors are executed. The lower the earlier a processor is executed.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="icon" type="string" use="required">
-            <annotation>
-               <documentation>
-                  16x16px icon
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="resource"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  name of the completion engine display in preferences
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="description" type="string">
-            <annotation>
-               <documentation>
-                  A description text displayed, e.g, in the preference page.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
             </annotation>
          </attribute>
       </complexType>

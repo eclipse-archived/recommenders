@@ -10,12 +10,10 @@
  *******************************************************************************/
 package org.eclipse.recommenders.calls.rcp.it;
 
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Set;
@@ -178,7 +176,7 @@ public class Stubs {
 
         CompletionRcpPreferences preferences = mock(CompletionRcpPreferences.class);
         SessionProcessorDescriptor sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "", sut);
-    when(preferences.getSessionProcessors()).thenReturn(ImmutableList.of(sessionProcessor));
+        when(preferences.getEnabledSessionProcessors()).thenReturn(ImmutableSet.of(sessionProcessor));
         return new MockedIntelligentCompletionProposalComputer(sut, preferences);
     }
 }

@@ -23,6 +23,12 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS;
     public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES;
 
+    public static String PROPOSAL_LABEL_ENABLE_SUBWORDS_COMPLETION;
+    public static String PROPOSAL_TOOLTIP_ENABLE_SUBWORDS_COMPLETION;
+
+    public static String BROWSER_LABEL_PROJECT_WEBSITE;
+    public static String BROWSER_TOOLTIP_PROJECT_WEBSITE;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }

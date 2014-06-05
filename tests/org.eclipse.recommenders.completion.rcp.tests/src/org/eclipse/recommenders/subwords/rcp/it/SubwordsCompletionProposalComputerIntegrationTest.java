@@ -1,7 +1,6 @@
 package org.eclipse.recommenders.subwords.rcp.it;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.eclipse.recommenders.tests.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.hamcrest.Matchers.*;
@@ -38,6 +37,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -133,10 +133,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         JavaContentAssistContextMock ctx = new JavaContentAssistContextMock(cu, completionIndex);
         SessionProcessor processor = new SubwordsSessionProcessor(new CachingAstProvider(), preferences);
         CompletionRcpPreferences prefs = Mockito.mock(CompletionRcpPreferences.class);
-        Mockito.when(prefs.getSessionProcessors())
-                .thenReturn(
-                        singletonList(new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "",
-                                processor)));
+        Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
+                ImmutableSet
+                        .of(new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "", processor)));
 
         IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
         sut.sessionStarted();
