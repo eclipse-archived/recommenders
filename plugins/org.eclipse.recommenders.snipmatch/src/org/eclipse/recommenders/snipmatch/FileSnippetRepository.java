@@ -173,7 +173,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             indexdir.mkdirs();
             directory = FSDirectory.open(indexdir);
             index();
-            reader = IndexReader.open(FSDirectory.open(indexdir));
+            reader = IndexReader.open(directory);
         } finally {
             writeLock.unlock();
         }
@@ -213,7 +213,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
-            IOException {
+    IOException {
         Document doc = new Document();
 
         doc.add(new Field(F_PATH, path, Store.YES, Index.NO));

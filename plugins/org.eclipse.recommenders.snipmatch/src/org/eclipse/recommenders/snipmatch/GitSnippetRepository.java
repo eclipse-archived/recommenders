@@ -84,12 +84,9 @@ public class GitSnippetRepository extends FileSnippetRepository {
                 LOG.error("Exception while opening repository.", e);
                 throw createException(updatePossible, "Exception while opening repository.", e);
             } finally {
-                if (updatePossible) {
-                    super.open();
-                }
+                super.open();
             }
         }
-        super.open();
     }
 
     @SuppressWarnings("serial")
