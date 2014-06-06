@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.io;
 
 import static org.hamcrest.number.IsCloseTo.closeTo;
 

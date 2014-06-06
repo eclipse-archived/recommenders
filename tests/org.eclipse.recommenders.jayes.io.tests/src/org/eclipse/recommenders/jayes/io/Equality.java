@@ -4,11 +4,11 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.io;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
@@ -38,16 +38,13 @@ public class Equality {
                 }
                 for (int i = 0; i < net1.getNodes().size(); i++) {
                     if (!Equality.equalTo(net1.getNode(i)).matches(net2.getNode(i))) {
-                        Equality.equalTo(net1.getNode(i)).describeMismatch(net2.getNode(i),
-                                mismatchDescription);
+                        Equality.equalTo(net1.getNode(i)).describeMismatch(net2.getNode(i), mismatchDescription);
                         return false;
                     }
                 }
                 return true;
             }
-
         };
-
     }
 
     public static Matcher<BayesNode> equalTo(final BayesNode node1) {
@@ -82,7 +79,5 @@ public class Equality {
                 return true;
             }
         };
-
     }
-
 }
