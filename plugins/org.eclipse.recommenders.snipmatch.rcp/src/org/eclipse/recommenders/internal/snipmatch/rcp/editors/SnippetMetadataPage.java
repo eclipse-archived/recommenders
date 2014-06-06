@@ -74,18 +74,18 @@ public class SnippetMetadataPage extends FormPage {
     private Text txtDescription;
     private Text txtUuid;
 
-    private ListViewer listViewerKeywords;
+    private ListViewer listViewerExtraSearchTerms;
     private ListViewer listViewerTags;
 
-    private Composite btnContainerKeywords;
+    private Composite btnContainerExtraSearchTerms;
     private Composite btnContainerTags;
 
-    private Button btnAddKeyword;
+    private Button btnAddExtraSearchTerm;
     private Button btnAddTag;
-    private Button btnRemoveKeyword;
+    private Button btnRemoveExtraSearchTerm;
     private Button btnRemoveTag;
 
-    private IObservableList ppKeywords;
+    private IObservableList ppExtraSearchTerms;
     private IObservableList ppTags;
     private DataBindingContext ctx;
 
@@ -140,42 +140,43 @@ public class SnippetMetadataPage extends FormPage {
         txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
                 .span(2, 1).indent(horizontalIndent, 0).create());
 
-        Label lblKeyword = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
-                Messages.EDITOR_LABEL_SNIPPETS_KEYWORD, SWT.NONE);
-        lblKeyword.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+        Label lblExtraSearchTerms = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                Messages.EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS, SWT.NONE);
+        lblExtraSearchTerms.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 
-        listViewerKeywords = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
-        List lstKeywords = listViewerKeywords.getList();
-        lstKeywords
-                .setLayoutData(GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0).create());
+        listViewerExtraSearchTerms = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
+        List lstExtraSearchTerm = listViewerExtraSearchTerms.getList();
+        lstExtraSearchTerm.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0)
+                .create());
 
-        btnContainerKeywords = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
-        btnContainerKeywords.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-        managedForm.getToolkit().paintBordersFor(btnContainerKeywords);
-        btnContainerKeywords.setLayout(new GridLayout(1, false));
+        btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(),
+                SWT.NONE);
+        btnContainerExtraSearchTerms.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
+        btnContainerExtraSearchTerms.setLayout(new GridLayout(1, false));
 
-        btnAddKeyword = managedForm.getToolkit().createButton(btnContainerKeywords,
-                Messages.EDITOR_BUTTON_ADD_KEYWORDS, SWT.NONE);
-        btnAddKeyword.addSelectionListener(new SelectionAdapter() {
+        btnAddExtraSearchTerm = managedForm.getToolkit().createButton(btnContainerExtraSearchTerms,
+                Messages.EDITOR_BUTTON_ADD_EXTRASEARCH_TERM, SWT.NONE);
+        btnAddExtraSearchTerm.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                createKeywordInputDialog(btnContainerKeywords.getShell()).open();
+                createExtraSearchTermInputDialog(btnContainerExtraSearchTerms.getShell()).open();
             }
         });
-        btnAddKeyword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnRemoveKeyword = managedForm.getToolkit().createButton(btnContainerKeywords,
-                Messages.EDITOR_BUTTON_REMOVE_KEYWORDS, SWT.NONE);
-        btnRemoveKeyword.setEnabled(false);
-        btnRemoveKeyword.addSelectionListener(new SelectionAdapter() {
+        btnAddExtraSearchTerm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnRemoveExtraSearchTerm = managedForm.getToolkit().createButton(btnContainerExtraSearchTerms,
+                Messages.EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM, SWT.NONE);
+        btnRemoveExtraSearchTerm.setEnabled(false);
+        btnRemoveExtraSearchTerm.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Optional<String> o = Selections.getFirstSelected(listViewerKeywords);
+                Optional<String> o = Selections.getFirstSelected(listViewerExtraSearchTerms);
                 if (o.isPresent()) {
-                    ppKeywords.remove(o.get());
+                    ppExtraSearchTerms.remove(o.get());
                 }
             }
         });
-        btnRemoveKeyword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        btnRemoveExtraSearchTerm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
         Label lblTag = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                 Messages.EDITOR_LABEL_SNIPPETS_TAG, SWT.NONE);
@@ -187,7 +188,7 @@ public class SnippetMetadataPage extends FormPage {
 
         btnContainerTags = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
         btnContainerTags.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-        managedForm.getToolkit().paintBordersFor(btnContainerKeywords);
+        managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
         btnContainerTags.setLayout(new GridLayout(1, false));
 
         btnAddTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_ADD_TAGS, SWT.NONE);
@@ -222,7 +223,7 @@ public class SnippetMetadataPage extends FormPage {
         initDataBindings();
     }
 
-    private InputDialog createKeywordInputDialog(Shell shell) {
+    private InputDialog createExtraSearchTermInputDialog(Shell shell) {
         IInputValidator validator = new IInputValidator() {
 
             @Override
@@ -230,17 +231,17 @@ public class SnippetMetadataPage extends FormPage {
                 if (isNullOrEmpty(newText)) {
                     return ""; //$NON-NLS-1$
                 }
-                if (snippet.getKeywords().contains(newText)) {
-                    return Messages.DIALOG_VALIDATOR_KEYWORD_ALREADY_ADDED;
+                if (snippet.getExtraSearchTerms().contains(newText)) {
+                    return Messages.DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
                 }
                 return null;
             }
         };
-        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_KEYWORD,
-                Messages.DIALOG_MESSAGE_ENTER_NEW_KEYWORD, "", validator) { //$NON-NLS-1$
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM,
+                Messages.DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
-                ppKeywords.add(getValue());
+                ppExtraSearchTerms.add(getValue());
                 super.okPressed();
             }
         };
@@ -285,10 +286,10 @@ public class SnippetMetadataPage extends FormPage {
         ctx.bindValue(wpTxtDescriptionText, ppDescription, null, null);
         wpTxtDescriptionText.addChangeListener(new ChangeListener());
 
-        // keywords
-        ppKeywords = PojoProperties.list(Snippet.class, "keywords", String.class).observe(snippet); //$NON-NLS-1$
-        ViewerSupport.bind(listViewerKeywords, ppKeywords, new SelfValueProperty(String.class));
-        ppKeywords.addListChangeListener(new IListChangeListener() {
+        // extra search terms
+        ppExtraSearchTerms = PojoProperties.list(Snippet.class, "extraSearchTerms", String.class).observe(snippet); //$NON-NLS-1$
+        ViewerSupport.bind(listViewerExtraSearchTerms, ppExtraSearchTerms, new SelfValueProperty(String.class));
+        ppExtraSearchTerms.addListChangeListener(new IListChangeListener() {
 
             @Override
             public void handleListChange(ListChangeEvent event) {
@@ -315,12 +316,12 @@ public class SnippetMetadataPage extends FormPage {
         ctx.bindValue(wpUuidText, ppUuid, null, null);
 
         // button enablement
-        IObservableValue vpKeywordSelection = singleSelection().observe(listViewerKeywords);
-        IObservableValue wpBtnRemoveKeywordsEnable = enabled().observe(btnRemoveKeyword);
+        IObservableValue vpExtraSearchTermsSelection = singleSelection().observe(listViewerExtraSearchTerms);
+        IObservableValue wpBtnRemoveExtraSearchTermEnable = enabled().observe(btnRemoveExtraSearchTerm);
 
         UpdateValueStrategy strategy = new UpdateValueStrategy();
         strategy.setConverter(new ObjectToBooleanConverter());
-        ctx.bindValue(vpKeywordSelection, wpBtnRemoveKeywordsEnable, strategy, null);
+        ctx.bindValue(vpExtraSearchTermsSelection, wpBtnRemoveExtraSearchTermEnable, strategy, null);
 
         IObservableValue vpTagSelection = singleSelection().observe(listViewerTags);
         IObservableValue wpBtnRemoveTagsEnable = enabled().observe(btnRemoveTag);

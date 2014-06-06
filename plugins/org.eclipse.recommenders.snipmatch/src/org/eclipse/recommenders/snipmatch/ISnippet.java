@@ -43,5 +43,5 @@ public interface ISnippet extends Uuidable {
     /**
      * @return a list of keywords describing the snippet. Typically keywords are synonyms of common search terms.
      */
-    List<String> getKeywords();
+    List<String> getExtraSearchTerms();
 }
