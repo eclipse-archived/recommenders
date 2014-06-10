@@ -40,8 +40,8 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TipsSessionProcessor.class);
 
-    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$
-    private static final String SEEN = "seen"; //$NON-NLS-1$
+    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
+    private static final String SEEN = "completion_tips_seen"; //$NON-NLS-1$
 
     private static final String COMPLETION_TIP_ID = "id"; //$NON-NLS-1$
     private static final String COMPLETION_TIP_CLASS = "class"; //$NON-NLS-1$
@@ -82,6 +82,10 @@ public class TipsSessionProcessor extends SessionProcessor {
             return false;
         }
 
+        for (ICompletionTipProposal tip : unseenTips.keySet()) {
+            tip.setCursorPosition(context.getInvocationOffset());
+        }
+
         return true;
     }
 
@@ -97,7 +101,6 @@ public class TipsSessionProcessor extends SessionProcessor {
             public boolean apply(ICompletionTipProposal input) {
                 return input.isApplicable();
             }
-
         }));
         tipsSeen = false;
     }
