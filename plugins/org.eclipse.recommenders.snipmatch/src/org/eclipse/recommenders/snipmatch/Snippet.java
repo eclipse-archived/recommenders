@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Snippet implements ISnippet {
 
-    public static final String FORMAT_VERSION = "format-2";
+    public static final String FORMAT_VERSION = "format-3";
 
     @SerializedName("uuid")
     private UUID uuid;
@@ -36,24 +36,24 @@ public class Snippet implements ISnippet {
     private String name;
     @SerializedName("description")
     private String description;
-    @SerializedName("keywords")
-    private List<String> keywords = Lists.newArrayList();
+    @SerializedName("extraSearchTerms")
+    private List<String> extraSearchTerms = Lists.newArrayList();
     @SerializedName("tags")
     private List<String> tags = Lists.newArrayList();
     @SerializedName("code")
     private String code;
 
-    public Snippet(UUID uuid, String name, String description, List<String> keywords, List<String> tags, String code) {
+    public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags, String code) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
-        ensureIsNotNull(keywords);
+        ensureIsNotNull(extraSearchTerms);
         ensureIsNotNull(tags);
         ensureIsNotNull(code);
         this.uuid = uuid;
         this.name = name;
         this.description = description;
-        this.keywords = keywords;
+        this.extraSearchTerms = extraSearchTerms;
         this.tags = tags;
         this.code = code;
     }
@@ -72,8 +72,8 @@ public class Snippet implements ISnippet {
     }
 
     @Override
-    public List<String> getKeywords() {
-        return ImmutableList.copyOf(keywords);
+    public List<String> getExtraSearchTerms() {
+        return ImmutableList.copyOf(extraSearchTerms);
     }
 
     @Override
@@ -103,9 +103,9 @@ public class Snippet implements ISnippet {
         this.description = description;
     }
 
-    public void setKeywords(List<String> keywords) {
-        this.keywords.clear();
-        this.keywords.addAll(keywords);
+    public void setExtraSearchTerms(List<String> extraSearchTerms) {
+        this.extraSearchTerms.clear();
+        this.extraSearchTerms.addAll(extraSearchTerms);
     }
 
     public void setTags(List<String> tags) {
@@ -129,6 +129,6 @@ public class Snippet implements ISnippet {
 
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
-                .getKeywords()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
+                .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
     }
 }
