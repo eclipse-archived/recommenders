@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="%extension-point.sessionprocessors.name" schema="schema/org.eclipse.recommenders.completion.rcp.sessionprocessors.exsd"/>
-	<extension-point id="org.eclipse.recommenders.completion.rcp.tips" name="%extension-point.completiontips.name" schema="schema/org.eclipse.recommenders.completion.rcp.tips.exsd"/>
+	<extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="%extension-point.sessionprocessors.name" schema="schema/sessionprocessors.exsd"/>
+	<extension-point id="org.eclipse.recommenders.completion.rcp.tips" name="%extension-point.completiontips.name" schema="schema/tips.exsd"/>
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
 		id="org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"
 		name="%proposalCategory.intelligent.name">

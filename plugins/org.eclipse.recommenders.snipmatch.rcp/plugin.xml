@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+	<extension-point id="pageFactories" name="Snippet Editor Page Factory" schema="schema/pageFactories.exsd"/>
 	<extension point="org.eclipse.ui.editors">
 		<editor
-			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
+			class="org.eclipse.recommenders.snipmatch.rcp.SnippetEditor"
 			contributorClass="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorActionBarContributor"
 			default="false"
 			icon="icons/obj16/editor.png"
 			id="org.eclipse.recommenders.snipmatch.rcp.editors.snippet"
 			name="%editors.snippet.name"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.snipmatch.rcp.pageFactories">
+		<pageFactory id="org.eclipse.recommenders.snipmatch.rcp.pageFactories.snippetMetadata"
+			name="%pageFactories.snippetMetadata.name"
+			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetMetadataPageFactory"
+			priority="0"/>
+		<pageFactory id="org.eclipse.recommenders.snipmatch.rcp.pageFactories.snippetSource"
+			name="%pageFactories.snippetSource.name"
+			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetSourcePageFactory"
+			priority="10"/>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
 		<command id="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
