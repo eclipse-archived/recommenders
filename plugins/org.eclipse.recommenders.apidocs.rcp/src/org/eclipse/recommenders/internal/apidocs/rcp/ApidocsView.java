@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  *     Patrick Gottschaemmer, Olav Lenz - add Drag'n'Drop support
@@ -76,9 +76,10 @@ import com.google.common.eventbus.Subscribe;
 
 public class ApidocsView extends ViewPart {
 
-    public static final String ID = "org.eclipse.recommenders.extdoc.rcp.ExtdocView"; //$NON-NLS-1$
+    private static final Logger LOG = LoggerFactory.getLogger(ApidocsView.class);
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    public static final String ID = "org.eclipse.recommenders.apidocs.rcp.views.apidocs"; //$NON-NLS-1$
+
     private final EventBus workspaceBus;
     private final SubscriptionManager subscriptionManager;
     private final List<ApidocProvider> providers;
@@ -371,13 +372,13 @@ public class ApidocsView extends ViewPart {
                 runProvider(selection);
                 refreshAndEnableDrawContentArea();
             } catch (Exception e) {
-                log.error("Exception during view update." + selection, e); //$NON-NLS-1$
+                LOG.error("Exception during view update." + selection, e); //$NON-NLS-1$
             }
         }
     }
 
     private void runProvider(JavaElementSelectionEvent selection) throws IllegalAccessException,
-            InvocationTargetException {
+    InvocationTargetException {
         Optional<Method> opt = subscriptionManager.findSubscribedMethod(activeProvider, selection);
         if (opt.isPresent()) {
             Method method = opt.get();

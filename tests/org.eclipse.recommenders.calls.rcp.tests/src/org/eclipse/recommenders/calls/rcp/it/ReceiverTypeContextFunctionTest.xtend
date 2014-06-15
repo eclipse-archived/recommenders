@@ -7,8 +7,8 @@ import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext
 import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.ReceiverTypeContextFunction
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
-import org.eclipse.recommenders.tests.CodeBuilder
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.CodeBuilder
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Assert
 import org.junit.Test
 

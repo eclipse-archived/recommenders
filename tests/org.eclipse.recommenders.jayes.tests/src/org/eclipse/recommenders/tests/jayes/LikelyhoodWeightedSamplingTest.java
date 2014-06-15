@@ -15,6 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.LikelihoodWeightedSampling;
+import org.eclipse.recommenders.testing.jayes.NetExamples;
 import org.junit.Test;
 
 public class LikelyhoodWeightedSamplingTest {

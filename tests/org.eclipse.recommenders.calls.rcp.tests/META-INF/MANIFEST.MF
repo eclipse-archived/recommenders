@@ -9,7 +9,7 @@ Fragment-Host: org.eclipse.recommenders.calls.rcp
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.completion.rcp.tests,
- org.eclipse.recommenders.tests,
+ org.eclipse.recommenders.testing,
  org.eclipse.xtext.xbase.lib,
  org.mockito,
  org.junit,

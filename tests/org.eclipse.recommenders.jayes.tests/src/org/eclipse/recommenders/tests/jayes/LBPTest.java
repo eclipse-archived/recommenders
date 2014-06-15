@@ -15,6 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
+import org.eclipse.recommenders.testing.jayes.NetExamples;
 import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
 

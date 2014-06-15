@@ -1,7 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.it
 
 import com.google.common.base.Optional
-import com.google.common.collect.ImmutableList
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.jdt.core.ICompilationUnit
@@ -33,7 +32,7 @@ import org.eclipse.recommenders.overrides.NullOverrideModel
 import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.rcp.JavaElementResolver
 import org.eclipse.recommenders.rcp.SharedImages
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.IEditorPart
@@ -43,7 +42,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 
-import static org.eclipse.recommenders.tests.CodeBuilder.*
+import static org.eclipse.recommenders.testing.CodeBuilder.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
