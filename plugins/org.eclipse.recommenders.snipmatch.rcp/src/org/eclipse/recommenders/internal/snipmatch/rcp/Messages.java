@@ -55,6 +55,9 @@ public class Messages extends NLS {
     public static String ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY;
+    public static String ERROR_WHILE_OPENING_EDITOR;
+    public static String ERROR_NO_EDITABLE_REPO_FOUND;
+    public static String ERROR_NO_EDITABLE_REPO_FOUND_HINT;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;

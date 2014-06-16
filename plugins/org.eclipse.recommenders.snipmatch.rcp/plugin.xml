@@ -15,11 +15,18 @@
 			categoryId="org.eclipse.jdt.ui.category.source"
 			name="%commands.completion.name"
 			description="%commands.completion.description"/>
+		<command id="org.eclipse.recommenders.snipmatch.rcp.commands.createSnippet"
+			categoryId="org.eclipse.ui.category.edit"
+			name="%commands.createsnippet.name"
+			description="%commands.createsnippet.description"/>
 	</extension>
 	<extension point="org.eclipse.ui.commandImages">
 		<image
 			commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
-			icon="icons/ecl16/completion.png" />
+			icon="icons/ecl16/completion.png"/>
+		<image
+			commandId="org.eclipse.recommenders.snipmatch.rcp.commands.createSnippet"
+			icon="icons/ecl16/completion.png"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.snipmatch.rpc.preferences.SnipmatchPreferencePage"
@@ -33,6 +40,8 @@
 	<extension point="org.eclipse.ui.handlers">
 		<handler commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
 			class="org.eclipse.recommenders.internal.snipmatch.rcp.CompletionHandler"/>
+		<handler commandId="org.eclipse.recommenders.snipmatch.rcp.commands.createSnippet"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.CreateSnippetHandler"/>
 	</extension>
 	<extension point="org.eclipse.ui.bindings">
 		<key commandId="org.eclipse.recommenders.snipmatch.rcp.commands.completion"
@@ -62,5 +71,13 @@
 			restorable="true"
 			allowMultiple="false"
 			name="%views.snippets.name"/>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:org.eclipse.jdt.ui.CompilationUnitEditor.EditorContext?after=additions">
+			<command id="org.eclipse.recommenders.snipmatch.rcp.menus.createSnippet"
+				commandId="org.eclipse.recommenders.snipmatch.rcp.commands.createSnippet"
+				mnemonic="S"/>
+		</menuContribution>
 	</extension>
 </plugin>

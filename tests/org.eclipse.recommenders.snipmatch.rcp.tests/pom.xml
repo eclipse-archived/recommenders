@@ -13,18 +13,18 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<dependencies>
 						<dependency>
-							<artifactId>org.eclipse.jdt.core</artifactId>
-							<type>eclipse-plugin</type>
-						</dependency>
-						<dependency>
-							<artifactId>org.eclipse.jdt.launching</artifactId>
-							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.e4.rcp</artifactId>
+							<type>eclipse-feature</type>
 						</dependency>
 					</dependencies>
 				</configuration>
