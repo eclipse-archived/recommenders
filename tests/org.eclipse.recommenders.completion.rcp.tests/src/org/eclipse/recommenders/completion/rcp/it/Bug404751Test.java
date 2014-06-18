@@ -1,6 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
-import static org.eclipse.recommenders.tests.CodeBuilder.classDeclaration;
+import static org.eclipse.recommenders.testing.CodeBuilder.classDeclaration;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -16,7 +16,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -15,11 +15,10 @@ screenshots/
 ## jrebel project config files
 rebel.xml
 
-## No Eclipse settings (except Xtend)
+## No Eclipse settings
 .project
 .classpath
 .settings/
-!.settings/org.eclipse.xtend.core.Xtend.prefs
 
 ## No Checkstyle plugin settings
 .checkstyle

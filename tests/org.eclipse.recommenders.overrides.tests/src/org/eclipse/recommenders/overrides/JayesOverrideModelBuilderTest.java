@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.overrides;
 
-import static org.eclipse.recommenders.tests.RecommendationMatchers.recommendation;
+import static org.eclipse.recommenders.testing.RecommendationMatchers.recommendation;
 import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;

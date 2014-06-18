@@ -1,6 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
-import static org.eclipse.recommenders.tests.CodeBuilder.classbody;
+import static org.eclipse.recommenders.testing.CodeBuilder.classbody;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -16,7 +16,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 
 /**
  * Test that the enclosing type is computed correctly when completion is triggered for the generic argument of a field.
- * 
+ *
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=399800">Bug 399800</a>
  */
 @RunWith(Parameterized.class)

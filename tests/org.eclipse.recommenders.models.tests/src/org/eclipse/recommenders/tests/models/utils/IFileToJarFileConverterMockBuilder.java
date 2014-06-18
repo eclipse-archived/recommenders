@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.tests.JarFileMockBuilder;
+import org.eclipse.recommenders.testing.JarFileMockBuilder;
 import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.Zips.IFileToJarFileConverter;
 

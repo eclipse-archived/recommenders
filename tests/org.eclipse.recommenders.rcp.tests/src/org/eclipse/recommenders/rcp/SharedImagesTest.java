@@ -1,11 +1,18 @@
+/**
+ * Copyright (c) 2010, 2014 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.rcp;
 
 import static org.apache.commons.lang3.ArrayUtils.isEquals;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.VIEW_SLICE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;

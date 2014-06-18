@@ -20,7 +20,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.recommenders.tests.jdt.SimpleCompletionRequestor;
+import org.eclipse.recommenders.testing.jdt.SimpleCompletionRequestor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 

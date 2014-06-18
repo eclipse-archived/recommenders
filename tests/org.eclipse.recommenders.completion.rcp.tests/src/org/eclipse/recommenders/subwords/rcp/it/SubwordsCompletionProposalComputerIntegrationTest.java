@@ -1,7 +1,7 @@
 package org.eclipse.recommenders.subwords.rcp.it;
 
 import static java.util.Arrays.asList;
-import static org.eclipse.recommenders.tests.CodeBuilder.*;
+import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -27,7 +27,7 @@ import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor;
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Pair;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -135,7 +135,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         CompletionRcpPreferences prefs = Mockito.mock(CompletionRcpPreferences.class);
         Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
                 ImmutableSet
-                        .of(new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "", processor)));
+                .of(new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "", processor)));
 
         IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
         sut.sessionStarted();
