@@ -11,6 +11,8 @@ import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Test
 
 import static org.junit.Assert.*
+import com.google.common.eventbus.EventBus
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory
 
 class CreateSnippetHandlerTest {
 
@@ -62,7 +64,7 @@ class CreateSnippetHandlerTest {
         val end = struct.second.last;
         val editor = EditorUtility.openInEditor(cu)as CompilationUnitEditor;
         editor.selectionProvider.selection = new TextSelection(start, end - start)
-        val sut = new CreateSnippetHandler(newHashSet())
+        val sut = new CreateSnippetHandler(new Repositories(new EventBus, SnipmatchFactory.eINSTANCE.createSnippetRepositoryConfigurations()))
         actual = sut.createSnippet(editor)
     }
 }

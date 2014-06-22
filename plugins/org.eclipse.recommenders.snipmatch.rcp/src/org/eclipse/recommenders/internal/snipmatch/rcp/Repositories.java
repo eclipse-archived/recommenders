@@ -10,11 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.snipmatch.rcp.RepositoryConfigurations.findMatchingProvider;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.*;
-
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -24,49 +20,37 @@ import javax.annotation.PreDestroy;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.ISnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.ISnippetRepositoryProvider;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Openable;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class Repositories implements IRcpService, Openable, Closeable {
 
-    private File basedir;
     private Set<ISnippetRepository> repositories = Sets.newHashSet();
-    private SnipmatchRcpPreferences prefs;
-    private ImmutableSet<ISnippetRepositoryProvider> providers;
+    private SnippetRepositoryConfigurations configurations;
 
     @Inject
-    public Repositories(@Named(SNIPPET_REPOSITORY_BASEDIR) File basedir, SnipmatchRcpPreferences prefs, EventBus bus,
-            @Named(SNIPPET_REPOSITORY_PROVIDERS) ImmutableSet<ISnippetRepositoryProvider> providers) {
+    public Repositories(EventBus bus, SnippetRepositoryConfigurations configurations) {
         bus.register(this);
-        this.providers = providers;
-        this.basedir = basedir;
-        this.prefs = prefs;
+        this.configurations = configurations;
     }
 
     @Override
     @PostConstruct
     public void open() throws IOException {
         repositories.clear();
-        for (ISnippetRepositoryConfiguration config : prefs.getConfigurations()) {
+        for (SnippetRepositoryConfiguration config : configurations.getRepos()) {
             if (!config.isEnabled()) {
                 continue;
             }
-            ISnippetRepositoryProvider provider = findMatchingProvider(config, providers).orNull();
-            if (provider != null) {
-                ISnippetRepository repo = provider.create(config, basedir).orNull();
-                if (repo != null) {
-                    repo.open();
-                    repositories.add(repo);
-                }
-            }
+            ISnippetRepository repo = config.createRepositoryInstance();
+            repo.open();
+            repositories.add(repo);
         }
     }
 

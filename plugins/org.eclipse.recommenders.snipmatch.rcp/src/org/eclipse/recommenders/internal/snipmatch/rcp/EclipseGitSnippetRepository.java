@@ -25,10 +25,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitUpdateException;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Urls;
 import org.slf4j.Logger;
@@ -36,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
+import com.google.inject.name.Names;
 
 public class EclipseGitSnippetRepository implements ISnippetRepository {
 
@@ -298,5 +304,27 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         } finally {
             readLock.unlock();
         }
+    }
+
+    public static ISnippetRepository createRepositoryInstance(EclipseGitSnippetRepositoryConfiguration config) {
+        EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
+        File basedir = InjectionService.getInstance().requestAnnotatedInstance(File.class,
+                Names.named(SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR));
+
+        return new EclipseGitSnippetRepository(basedir, config.getUrl(), bus);
+    }
+
+    public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {
+        BasicEList<SnippetRepositoryConfiguration> result = new BasicEList<SnippetRepositoryConfiguration>();
+
+        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchFactory.eINSTANCE
+                .createEclipseGitSnippetRepositoryConfiguration();
+        configuration.setName(Messages.DEFAULT_REPO_NAME);
+        configuration.setDescription(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION);
+        configuration.setEnabled(true);
+        configuration.setUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets"); //$NON-NLS-1$
+
+        result.add(configuration);
+        return result;
     }
 }

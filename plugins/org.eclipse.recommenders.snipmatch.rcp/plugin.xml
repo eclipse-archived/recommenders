@@ -84,4 +84,25 @@
 				mnemonic="S"/>
 		</menuContribution>
 	</extension>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<!-- @generated snipmatch -->
+		<package
+			uri="org.eclips.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchPackage"
+			genModel="model/snipmatch.genmodel"/>
+	</extension>
+
+	<extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+		<!-- @generated snipmatch -->
+		<factory
+			uri="org.eclips.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.snipmatch.model.snipmatchmodel.provider.SnipmatchItemProviderAdapterFactory"
+			supportedTypes=
+				"org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+				org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+				org.eclipse.emf.edit.provider.ITreeItemContentProvider
+				org.eclipse.emf.edit.provider.IItemLabelProvider
+				org.eclipse.emf.edit.provider.IItemPropertySource"/>
+	</extension>
+
 </plugin>

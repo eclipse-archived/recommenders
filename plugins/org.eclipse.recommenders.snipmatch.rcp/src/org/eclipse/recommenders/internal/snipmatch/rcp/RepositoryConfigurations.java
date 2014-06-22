@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2013 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2014 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,83 +10,107 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
-import java.util.Collection;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.recommenders.snipmatch.ISnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.ISnippetRepositoryProvider;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EPackage.Registry;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.DefaultSnippetRepositoryConfigurationProvider;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchPackage;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.inject.name.Names;
 
 public class RepositoryConfigurations {
 
-    public static final String INNER_SEPARATOR = ":"; //$NON-NLS-1$
-    public static final String OUTER_SEPARATOR = ";\n"; //$NON-NLS-1$
+    private static Logger LOG = LoggerFactory.getLogger(RepositoryConfigurations.class);
 
-    public static ImmutableList<ISnippetRepositoryConfiguration> fromPreferenceString(String newValue,
-            Collection<ISnippetRepositoryProvider> providers) {
-        List<ISnippetRepositoryConfiguration> result = Lists.newArrayList();
+    public static final File LOCATION = InjectionService.getInstance().requestAnnotatedInstance(File.class,
+            Names.named(SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE));
 
-        Iterable<String> configurations = Splitter.on(OUTER_SEPARATOR).omitEmptyStrings().split(newValue);
+    public static SnippetRepositoryConfigurations loadConfigurations() {
+        Resource resource = provideResource();
 
-        for (String config : configurations) {
-            int indexOfSeparator = config.indexOf(INNER_SEPARATOR);
-            String identifier = config.substring(0, indexOfSeparator);
-            String content = config.substring(indexOfSeparator + 1, config.length());
-            ISnippetRepositoryConfiguration repo = createConfiguration(identifier, content, providers).orNull();
-            if (repo != null) {
-                result.add(repo);
+        SnippetRepositoryConfigurations configurations;
+        if (!resource.getContents().isEmpty()) {
+            configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);
+        } else {
+            configurations = SnipmatchFactory.eINSTANCE.createSnippetRepositoryConfigurations();
+        }
+
+        return configurations;
+    }
+
+    private static Resource provideResource() {
+        Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+        Map<String, Object> m = reg.getExtensionToFactoryMap();
+        m.put("snipmatch", new XMIResourceFactoryImpl()); //$NON-NLS-1$
+
+        ResourceSet resSet = new ResourceSetImpl();
+        Resource resource = resSet.createResource(URI.createFileURI(LOCATION.getAbsolutePath()));
+        return resource;
+    }
+
+    public static void storeConfigurations(SnippetRepositoryConfigurations configurations) {
+        Resource resource = provideResource();
+        resource.getContents().add(configurations);
+
+        try {
+            resource.save(Collections.EMPTY_MAP);
+        } catch (IOException e) {
+            LOG.error("Exception while storing repository configurations.", e); //$NON-NLS-1$
+        }
+    }
+
+    public static List<SnippetRepositoryConfiguration> fetchDefaultConfigurations() {
+        List<SnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
+
+        Registry instance = EPackage.Registry.INSTANCE;
+        for (String key : instance.keySet()) {
+            EPackage ePackage = instance.getEPackage(key);
+            List<EClass> subtypes = searchSubtypes(ePackage,
+                    SnipmatchPackage.Literals.DEFAULT_SNIPPET_REPOSITORY_CONFIGURATION_PROVIDER);
+            for (EClass eClass : subtypes) {
+                DefaultSnippetRepositoryConfigurationProvider configurationProvider = cast(instance.getEFactory(key)
+                        .create(eClass));
+                defaultConfigurations.addAll(configurationProvider.getDefaultConfiguration());
             }
         }
 
-        return ImmutableList.copyOf(result);
+        return defaultConfigurations;
     }
 
-    private static Optional<ISnippetRepositoryConfiguration> createConfiguration(String identifier, String json,
-            Collection<ISnippetRepositoryProvider> providers) {
-        ISnippetRepositoryProvider provider = findMatchingProvider(identifier, providers).orNull();
-        if (provider != null) {
-            return of(provider.fromPreferenceString(json));
-        }
-        return absent();
-    }
-
-    public static String toPreferenceString(Collection<ISnippetRepositoryConfiguration> configurations,
-            Collection<ISnippetRepositoryProvider> providers) {
-        StringBuilder sb = new StringBuilder();
-        for (ISnippetRepositoryConfiguration config : configurations) {
-            sb.append(toPreferenceString(config, providers)).append(OUTER_SEPARATOR);
-        }
-        return sb.toString();
-    }
-
-    public static String toPreferenceString(ISnippetRepositoryConfiguration config,
-            Collection<ISnippetRepositoryProvider> providers) {
-        ISnippetRepositoryProvider provider = findMatchingProvider(config.getClass().getSimpleName(), providers).get();
-        if (provider != null) {
-            return provider.toPreferenceString(config);
-        }
-        return ""; //$NON-NLS-1$
-    }
-
-    public static Optional<ISnippetRepositoryProvider> findMatchingProvider(ISnippetRepositoryConfiguration config,
-            Collection<ISnippetRepositoryProvider> providers) {
-        return findMatchingProvider(config.getClass().getSimpleName(), providers);
-    }
-
-    public static Optional<ISnippetRepositoryProvider> findMatchingProvider(String identifier,
-            Collection<ISnippetRepositoryProvider> providers) {
-        for (ISnippetRepositoryProvider provider : providers) {
-            if (provider.isApplicable(identifier)) {
-                return of(provider);
+    private static List<EClass> searchSubtypes(EPackage ePackage, EClass eClass) {
+        List<EClass> subTypes = Lists.newArrayList();
+        for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+            if (eClassifier instanceof EClass) {
+                EClass otherEClass = (EClass) eClassifier;
+                if (eClass.isSuperTypeOf(otherEClass) && eClass != otherEClass) {
+                    if (!(otherEClass.isAbstract() || otherEClass.isInterface())) {
+                        subTypes.add((EClass) eClassifier);
+                    }
+                }
             }
         }
-        return absent();
+        return subTypes;
     }
 
 }

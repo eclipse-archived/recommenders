@@ -10,4 +10,38 @@
 	</parent>
 	<artifactId>org.eclipse.recommenders.snipmatch.rcp</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-eclipserun-plugin</artifactId>
+				<configuration>
+					<!-- linebreaks not permitted in this arg line -->
+					<appArgLine>-data ${project.build.directory}${file.separator}workspace -application org.eclipse.emf.codegen.ecore.Generator -projects ${basedir} -model ${basedir}${file.separator}model${file.separator}snipmatch.genmodel ${project.build.directory}${file.separator}generated-sources${file.separator}emf</appArgLine>
+					<dependencies>
+						<dependency>
+							<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+					</dependencies>
+					<repositories>
+						<repository>
+							<id>luna</id>
+							<layout>p2</layout>
+							<url>http://download.eclipse.org/releases/luna</url>
+						</repository>
+					</repositories>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>eclipse-run</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

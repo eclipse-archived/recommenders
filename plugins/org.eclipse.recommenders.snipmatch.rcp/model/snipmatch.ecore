@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="snipmatchmodel" nsURI="org.eclips.recommenders.snipmatch.rcp"
+    nsPrefix="org.eclipse.recommenders">
+  <eClassifiers xsi:type="ecore:EClass" name="SnippetRepositoryConfiguration" abstract="true">
+    <eOperations name="createRepositoryInstance" eType="#//ESnippetRepository"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="enabled" ordered="false"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EclipseGitSnippetRepositoryConfiguration"
+      eSuperTypes="#//SnippetRepositoryConfiguration">
+    <eOperations name="createRepositoryInstance" eType="#//ESnippetRepository">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.createRepositoryInstance(this);"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="url" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="ESnippetRepository" instanceClassName="org.eclipse.recommenders.snipmatch.ISnippetRepository"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SnippetRepositoryConfigurations">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="repos" upperBound="-1"
+        eType="#//SnippetRepositoryConfiguration" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DefaultSnippetRepositoryConfigurationProvider"
+      abstract="true" interface="true">
+    <eOperations name="getDefaultConfiguration">
+      <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+        <eTypeArguments eClassifier="#//SnippetRepositoryConfiguration"/>
+      </eGenericType>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DefaultEclipseGitSnippetRepositoryConfiguration"
+      eSuperTypes="#//DefaultSnippetRepositoryConfigurationProvider">
+    <eOperations name="getDefaultConfiguration">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="return org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.getDefaultConfiguration();"/>
+      </eAnnotations>
+      <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+        <eTypeArguments eClassifier="#//SnippetRepositoryConfiguration"/>
+      </eGenericType>
+    </eOperations>
+  </eClassifiers>
+</ecore:EPackage>

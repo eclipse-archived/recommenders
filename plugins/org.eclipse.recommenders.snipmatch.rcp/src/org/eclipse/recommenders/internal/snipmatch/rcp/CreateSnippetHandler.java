@@ -65,7 +65,7 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSnippetHandler.class);
 
-    private Set<ISnippetRepository> repos;
+    private Repositories repos;
 
     private ISourceViewer viewer;
     private ITypeRoot root;
@@ -85,7 +85,7 @@ public class CreateSnippetHandler extends AbstractHandler {
     private ExecutionEvent event;
 
     @Inject
-    public CreateSnippetHandler(Set<ISnippetRepository> repos) {
+    public CreateSnippetHandler(Repositories repos) {
         this.repos = repos;
     }
 
@@ -215,7 +215,7 @@ public class CreateSnippetHandler extends AbstractHandler {
     }
 
     private void openSnippetInEditor(Snippet snippet) {
-        for (ISnippetRepository r : repos) {
+        for (ISnippetRepository r : repos.getRepositories()) {
             if (r.isImportSupported()) {
                 try {
                     SnippetEditorInput input = new SnippetEditorInput(snippet, r);
