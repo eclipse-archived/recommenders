@@ -19,8 +19,19 @@
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.recommenders.rcp.feature" version="2.1.1.qualifier" match="equivalent"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.testing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.jayes.transformation"
          download-size="0"
          install-size="0"
          version="0.0.0"
