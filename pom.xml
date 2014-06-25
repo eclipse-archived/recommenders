@@ -334,32 +334,22 @@
 							</goals>
 							<configuration>
 								<encoding>${project.build.sourceEncoding}</encoding>
-								<header>license-tu-darmstadt-2011.txt</header>
 								<validHeaders>
-									<validHeader>license-achmetow-2013.txt</validHeader>
-									<validHeader>license-amann-2012.txt</validHeader>
-									<validHeader>license-chengchen-2012.txt</validHeader>
-									<validHeader>license-doug-ye-2011.txt</validHeader>
-									<validHeader>license-doug-ye-cheng.txt</validHeader>
-									<validHeader>license-faidherbe-2011.txt</validHeader>
-									<validHeader>license-frankenberger-2011.txt</validHeader>
-									<validHeader>license-google-wb.txt</validHeader>
-									<validHeader>license-fritz-kaluza-2010.txt</validHeader>
-									<validHeader>license-fritz-kaluza-2010.txt</validHeader>
-									<validHeader>license-henss-2010.txt</validHeader>
-									<validHeader>license-henss-2011.txt</validHeader>
-									<validHeader>license-lakjeewa-2013.txt</validHeader>
-									<validHeader>license-kutschke-2011.txt</validHeader>
-									<validHeader>license-kutschke-2012.txt</validHeader>
-									<validHeader>license-kutschke-2013.txt</validHeader>
-									<validHeader>license-prisca-2013.txt</validHeader>
-									<validHeader>license-proksch-2011.txt</validHeader>
-									<validHeader>license-schindl-2007.txt</validHeader>
-									<validHeader>license-tu-darmstadt-2010.txt</validHeader>
-									<validHeader>license-tu-darmstadt-2011.txt</validHeader>
-									<validHeader>license-tu-darmstadt-2012.txt</validHeader>
-									<validHeader>license-tu-darmstadt-2013.txt</validHeader>
-									<validHeader>license-tu-darmstadt-2014.txt</validHeader>
+									<validHeader>header-amann-2012.txt</validHeader>
+									<validHeader>header-faidherbe-2011.txt</validHeader>
+									<validHeader>header-henss-2010.txt</validHeader>
+									<validHeader>header-henss-2011.txt</validHeader>
+									<validHeader>header-lakjeewa-2013.txt</validHeader>
+									<validHeader>header-kutschke-2011.txt</validHeader>
+									<validHeader>header-kutschke-2012.txt</validHeader>
+									<validHeader>header-kutschke-2013.txt</validHeader>
+									<validHeader>header-prisca-2013.txt</validHeader>
+									<validHeader>header-proksch-2011.txt</validHeader>
+									<validHeader>header-tu-darmstadt-2010.txt</validHeader>
+									<validHeader>header-tu-darmstadt-2011.txt</validHeader>
+									<validHeader>header-tu-darmstadt-2012.txt</validHeader>
+									<validHeader>header-tu-darmstadt-2013.txt</validHeader>
+									<validHeader>header-tu-darmstadt-2014.txt</validHeader>
 								</validHeaders>
 								<includes>
 									<include>src/**/*.java</include>
