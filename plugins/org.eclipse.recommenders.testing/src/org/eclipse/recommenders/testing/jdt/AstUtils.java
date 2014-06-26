@@ -30,13 +30,11 @@ public class AstUtils {
         final ASTParser p = ASTParser.newParser(AST.JLS3);
         p.setKind(ASTParser.K_COMPILATION_UNIT);
         p.setSource(content.toCharArray());
-        final CompilationUnit cu = (CompilationUnit) p.createAST(null);
-        return cu;
+        return (CompilationUnit) p.createAST(null);
     }
 
     public ASTNode findNode(final CompilationUnit cu, final int origSourcePosition) {
-        final ASTNode res = NodeFinder.perform(cu, origSourcePosition, 1);
-        return res;
+        return NodeFinder.perform(cu, origSourcePosition, 1);
     }
 
     public static Pair<CompilationUnit, Set<Integer>> createAstWithMarkers(final String content) {
@@ -55,5 +53,4 @@ public class AstUtils {
         // final IType findPrimaryType = typeRoot.findPrimaryType();
         return Pair.newPair(cu, markers);
     }
-
 }

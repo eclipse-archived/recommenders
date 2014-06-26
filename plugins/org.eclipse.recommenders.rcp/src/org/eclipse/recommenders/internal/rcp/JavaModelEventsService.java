@@ -125,8 +125,7 @@ public class JavaModelEventsService implements IElementChangedListener {
     }
 
     private boolean isCompilationUnitChangedEvent(final IJavaElementDelta delta) {
-        final IJavaElement element = delta.getElement();
-        return element instanceof ICompilationUnit;
+        return delta.getElement() instanceof ICompilationUnit;
     }
 
     private void processCompilationUnitChangedEvent(final IJavaElementDelta delta) {
@@ -170,8 +169,7 @@ public class JavaModelEventsService implements IElementChangedListener {
     }
 
     private boolean isJarPackageFragementRootChangedEvent(final IJavaElementDelta delta) {
-        final IJavaElement changedElement = delta.getElement();
-        return changedElement instanceof JarPackageFragmentRoot;
+        return delta.getElement() instanceof JarPackageFragmentRoot;
     }
 
     private void processJarPackageFragementRootChangedEvent(final IJavaElementDelta delta) {

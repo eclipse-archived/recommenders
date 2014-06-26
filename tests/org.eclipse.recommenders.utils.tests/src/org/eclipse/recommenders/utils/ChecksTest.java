@@ -60,8 +60,7 @@ public class ChecksTest {
 
     private File getTempDir() {
         final String tmp = System.getProperties().getProperty("java.io.tmpdir");
-        final File file = new File(tmp);
-        return file;
+        return new File(tmp);
     }
 
     @Test(expected = IllegalArgumentException.class)

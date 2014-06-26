@@ -48,7 +48,6 @@ public class CallsRcpModule extends AbstractModule implements Module {
     @Singleton
     public CallsRcpPreferences provide(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        CallsRcpPreferences prefs = ContextInjectionFactory.make(CallsRcpPreferences.class, context);
-        return prefs;
+        return ContextInjectionFactory.make(CallsRcpPreferences.class, context);
     }
 }

@@ -45,7 +45,6 @@ public class LCSS {
     }
 
     public static boolean containsSubsequence(String completion, String token) {
-        boolean res = !findSequences(completion, token).isEmpty();
-        return res;
+        return !findSequences(completion, token).isEmpty();
     }
 }

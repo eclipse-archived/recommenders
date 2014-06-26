@@ -198,9 +198,7 @@ public class Names {
             while (off + len < buf.length && buf[off + len] != ';') {
                 ++len;
             }
-            final String s1 = new String(buf, off + 1, len - 1).replaceAll("/", ".");
-            final String s2 = s1.replaceAll("\\$", ".");
-            return s2;
+            return new String(buf, off + 1, len - 1).replaceAll("/", ".").replaceAll("\\$", ".");
         default:
             throw throwUnreachable("couldn't handle '%s'", buf);
         }
@@ -214,8 +212,7 @@ public class Names {
         final int indexOfDot = vmMethodSignature.indexOf('.');
         final String declaringType = vmMethodSignature.substring(0, indexOfDot);
         final String methodNameAndDesciptor = vmMethodSignature.substring(indexOfDot + 1);
-        final String[] res = new String[] { declaringType, methodNameAndDesciptor };
-        return res;
+        return new String[] { declaringType, methodNameAndDesciptor };
     }
 
     /**

@@ -73,7 +73,6 @@ public class CompletionRcpModule extends AbstractModule {
     @Singleton
     public CompletionRcpPreferences provideCompletionPreferences(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        CompletionRcpPreferences prefs = ContextInjectionFactory.make(CompletionRcpPreferences.class, context);
-        return prefs;
+        return ContextInjectionFactory.make(CompletionRcpPreferences.class, context);
     }
 }

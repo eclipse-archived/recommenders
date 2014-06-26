@@ -76,8 +76,7 @@ public class JavaProjectFixture {
             matcher = p.matcher(source);
         }
         assertTrue(matcher.matches());
-        final String group = matcher.group(1);
-        return group;
+        return matcher.group(1);
     }
 
     public static List<String> findInnerClassNames(final CharSequence source) {
@@ -133,8 +132,7 @@ public class JavaProjectFixture {
                 Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         if (matcher.matches()) {
-            final String group = matcher.group(1);
-            return group;
+            return matcher.group(1);
         }
         return "";
     }
@@ -235,8 +233,7 @@ public class JavaProjectFixture {
     public CompilationUnit parse(final String content) {
         parser.setSource(content.toCharArray());
         parser.setUnitName(findClassName(content) + ".java");
-        final CompilationUnit cu = cast(parser.createAST(NULL_PROGRESS_MONITOR));
-        return cu;
+        return cast(parser.createAST(NULL_PROGRESS_MONITOR));
     }
 
     /**

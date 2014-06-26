@@ -53,8 +53,7 @@ public class SnipmatchRcpModule extends AbstractModule {
     @Singleton
     public SnipmatchRcpPreferences provide(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        SnipmatchRcpPreferences prefs = ContextInjectionFactory.make(SnipmatchRcpPreferences.class, context);
-        return prefs;
+        return ContextInjectionFactory.make(SnipmatchRcpPreferences.class, context);
     }
 
     @Provides

@@ -199,8 +199,7 @@ public class JavaElementSelections {
             // this *should* never happen but it *can* happen...
             return JavaElementSelectionLocation.UNKNOWN;
         }
-        final JavaElementSelectionLocation res = resolveSelectionLocationFromAstNode(selectedNode);
-        return res;
+        return resolveSelectionLocationFromAstNode(selectedNode);
     }
 
     public static JavaElementSelectionLocation resolveSelectionLocationFromAstNode(final ASTNode node) {

@@ -62,8 +62,7 @@ public class InjectionDescriptor {
     }
 
     public String getPluginId() {
-        final String pluginId = element.getContributor().getName();
-        return pluginId;
+        return element.getContributor().getName();
     }
 
     public Module createInstance() throws CoreException {

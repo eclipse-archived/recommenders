@@ -30,6 +30,7 @@ import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public final class Dependencies {
@@ -68,15 +69,11 @@ public final class Dependencies {
 
     public static DependencyInfo createDependencyInfoForJar(IPackageFragmentRoot pfr) {
         File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr); //$NON-NLS-1$
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
-        return dependencyInfo;
+        return new DependencyInfo(file, DependencyType.JAR);
     }
 
     public static DependencyInfo createDependencyInfoForProject(final IJavaProject project) {
         File file = project.getProject().getLocation().toFile();
-        Map<String, String> hints = Maps.newHashMap();
-        hints.put(PROJECT_NAME, project.getElementName());
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT, hints);
-        return dependencyInfo;
+        return new DependencyInfo(file, DependencyType.PROJECT, ImmutableMap.of(PROJECT_NAME, project.getElementName()));
     }
 }

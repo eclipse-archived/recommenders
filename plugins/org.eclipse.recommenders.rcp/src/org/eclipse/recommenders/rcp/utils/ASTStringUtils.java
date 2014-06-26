@@ -57,8 +57,7 @@ public class ASTStringUtils {
             }
             sb.setLength(sb.length() - 2);
         }
-        final String string = sb.toString();
-        return string;
+        return sb.toString();
     }
 
     public static String toSimpleString(final IMethodName method) {
@@ -173,7 +172,6 @@ public class ASTStringUtils {
     private static String toSimpleMethodString(final IMethodBinding method) {
         final IMethod jdtMethod = (IMethod) method.getJavaElement();
         final IMethodName jdt2crMethod = resolver.toRecMethod(jdtMethod).or(VmMethodName.NULL);
-        final String simpleName = Names.vm2srcSimpleMethod(jdt2crMethod);
-        return simpleName;
+        return Names.vm2srcSimpleMethod(jdt2crMethod);
     }
 }

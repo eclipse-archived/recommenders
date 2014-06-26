@@ -179,8 +179,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.accept(proposal);
         // order matters ;)
         final IJavaCompletionProposal[] jdtProposals = collector.getJavaCompletionProposals();
-        final IJavaCompletionProposal[] newProposals = subarray(jdtProposals, oldLength, jdtProposals.length);
-        return newProposals;
+        return subarray(jdtProposals, oldLength, jdtProposals.length);
     }
 
     public void setReplacementLength(final int y) {

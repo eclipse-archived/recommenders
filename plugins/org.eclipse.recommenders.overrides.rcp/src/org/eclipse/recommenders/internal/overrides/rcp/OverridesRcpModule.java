@@ -36,8 +36,6 @@ public class OverridesRcpModule extends AbstractModule implements Module {
     @Singleton
     public OverridesRcpPreferences provide(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        OverridesRcpPreferences prefs = ContextInjectionFactory.make(OverridesRcpPreferences.class, context);
-        return prefs;
+        return ContextInjectionFactory.make(OverridesRcpPreferences.class, context);
     }
-
 }

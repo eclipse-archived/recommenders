@@ -145,8 +145,7 @@ public class VmTypeName implements ITypeName {
         if (indexOf < 0 && !isPrimitiveType()) {
             return identifier.substring(1);
         }
-        final String classname = identifier.substring(indexOf + 1);
-        return classname;
+        return identifier.substring(indexOf + 1);
     }
 
     @Override
