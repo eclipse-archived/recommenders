@@ -52,8 +52,6 @@
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Overwritten when the "build-server" profile (see below) is activated. -->
-		<build-alias>b000</build-alias>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<!-- Single jacoco.exec referenced from both plugins/* and tests/*. -->
@@ -442,9 +440,6 @@
 		<profile>
 			<!-- If you enable the "build-server" profile locally (for testing purposes), set "-Dcbi.jarsigner.skip=true" to skip JAR signing; signing only works on the build server. -->
 			<id>build-server</id>
-			<properties>
-				<build-alias>b${env.BUILD_NUMBER}</build-alias>
-			</properties>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -477,9 +472,6 @@
 		</profile>
 		<profile>
 			<id>kepler</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -500,6 +492,9 @@
 		</profile>
 		<profile>
 			<id>luna</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
