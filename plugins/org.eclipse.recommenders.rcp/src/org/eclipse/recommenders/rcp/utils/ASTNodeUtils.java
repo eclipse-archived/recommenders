@@ -56,7 +56,7 @@ public class ASTNodeUtils {
 
     /**
      * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"
-     * 
+     *
      * @param name
      * @return
      */
@@ -131,14 +131,6 @@ public class ASTNodeUtils {
         return name.getIdentifier();
     }
 
-    public static Type getBaseType(final Type jdtType) {
-        if (!jdtType.isArrayType()) {
-            return jdtType;
-        }
-        final ArrayType arrayType = (ArrayType) jdtType;
-        return getBaseType(arrayType.getComponentType());
-    }
-
     public static int getLineNumberOfNodeStart(final CompilationUnit cuNode, final ASTNode node) {
         final int startPosition = node.getStartPosition();
         return cuNode.getLineNumber(startPosition);
@@ -174,36 +166,6 @@ public class ASTNodeUtils {
             return sameMethodName;
         }
         return methodName.equals(crMethod.getName());
-    }
-
-    public static boolean haveSameParameterTypes(final List<SingleVariableDeclaration> jdtParams,
-            final ITypeName[] crParams) {
-        for (int i = crParams.length; i-- > 0;) {
-            Type jdtParam = jdtParams.get(i).getType();
-            jdtParam = getBaseType(jdtParam);
-            final ITypeName crParam = crParams[i];
-
-            if (jdtParam.isArrayType()) {
-                if (!crParam.isArrayType()) {
-                    return false;
-                }
-                final ArrayType jdtArrayType = (ArrayType) jdtParam;
-                final int jdtDimensions = jdtArrayType.getDimensions();
-                final int crDimensions = crParam.getArrayDimensions();
-                if (jdtDimensions != crDimensions) {
-                    return false;
-                }
-                return !sameSimpleName(getBaseType(jdtArrayType), crParam.getArrayBaseType());
-            }
-
-            if (jdtParam.isPrimitiveType()) {
-                continue;
-            }
-            if (!sameSimpleName(jdtParam, crParam)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static boolean sameTypes(final List<Type> jdtTypes, final ITypeName[] crTypes) {
