@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-	<extension-point id="providers" name="%extension-point.providers.name" schema="schema/providers.exsd"/>
+	<extension-point id="configurationwizards" name="Configuration wizards" schema="schema/configurationwizards.exsd"/>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor"
@@ -70,12 +70,6 @@
 			allowMultiple="false"
 			name="%views.snippets.name"/>
 	</extension>
-	<extension
-		point="org.eclipse.recommenders.snipmatch.rcp.providers">
-	<provider
-		class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepositoryProvider">
-	</provider>
- </extension>
 	<extension point="org.eclipse.ui.menus">
 		<menuContribution
 			locationURI="popup:org.eclipse.jdt.ui.CompilationUnitEditor.EditorContext?after=additions">
@@ -103,6 +97,12 @@
 				org.eclipse.emf.edit.provider.ITreeItemContentProvider
 				org.eclipse.emf.edit.provider.IItemLabelProvider
 				org.eclipse.emf.edit.provider.IItemPropertySource"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationwizards">
+		<configurationwizard
+			name="%wizards.git-based-repo.name"
+			wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
+		</configurationwizard>
 	</extension>
 
 </plugin>

@@ -87,8 +87,21 @@ public class Messages extends NLS {
     public static String PREFPAGE_DESCRIPTION;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;
+    public static String WARNING_INVALID_URL_FORMAT;
     public static String WARNING_REPOSITION_CURSOR;
     public static String WARNING_FAILURE_TO_UPDATE_REPOSITORY;
+
+    public static String WIZARD_GIT_REPOSITORY_DESCRIPTION;
+    public static String WIZARD_GIT_REPOSITORY_LABEL_NAME;
+    public static String WIZARD_GIT_REPOSITORY_LABEL_URL;
+    public static String WIZARD_GIT_REPOSITORY_PAGE_NAME;
+    public static String WIZARD_GIT_REPOSITORY_TITLE;
+    public static String WIZARD_GIT_REPOSITORY_WINDOW_TITLE;
+    public static String WIZARD_TYPE_SELECTION_DESCRIPTION;
+    public static String WIZARD_TYPE_SELECTION_LABEL_WIZARDS;
+    public static String WIZARD_TYPE_SELECTION_NAME;
+    public static String WIZARD_TYPE_SELECTION_TITLE;
+    public static String WIZARD_TYPE_SELECTION_WINDOW_TITLE;
 
     static {
         // initialize resource bundle

@@ -7,6 +7,8 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.recommenders.testing,
- org.eclipse.xtext.xbase.lib,
- org.junit
+Require-Bundle: org.eclipse.xtext.xbase.lib,
+ org.junit,
+ org.eclipse.recommenders.testing,
+ org.mockito,
+ org.hamcrest

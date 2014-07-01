@@ -8,21 +8,17 @@
  * Contributors:
  *    Madhuranga Lakjeewa - initial API and implementation.
  *    Olav Lenz - introduce ISnippetRepositoryConfiguration.
+ *    Olav Lenz - add wizard support for creating snippet repositories.
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.FieldEditor;
@@ -33,9 +29,9 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
 import org.eclipse.swt.SWT;
@@ -50,6 +46,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -58,6 +55,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
     private EventBus bus;
     private SnippetRepositoryConfigurations configuration;
+    private List<WizardDescriptor> availableWizards;
 
     @Inject
     public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration) {
@@ -65,6 +63,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         setDescription(Messages.PREFPAGE_DESCRIPTION);
         this.bus = bus;
         this.configuration = configuration;
+        availableWizards = WizardDescriptors.loadAvailableWizards();
     }
 
     @Override
@@ -167,101 +166,62 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         private SnippetRepositoryConfiguration getSelectedConfiguration() {
-            SnippetRepositoryConfiguration configuration = cast(tableViewer.getElementAt(tableViewer.getTable()
-                    .getSelectionIndex()));
-            return configuration;
+            List<SnippetRepositoryConfiguration> tableInput = getTableInput();
+            int index = tableViewer.getTable().getSelectionIndex();
+            if (index != -1) {
+                return tableInput.get(index);
+            }
+            return null;
         }
 
         protected void removeConfiguration(SnippetRepositoryConfiguration configuration) {
-            List<SnippetRepositoryConfiguration> configurations = cast(tableViewer.getInput());
+            List<SnippetRepositoryConfiguration> configurations = getTableInput();
             configurations.remove(configuration);
             tableViewer.setInput(configurations);
         }
 
-        protected void editConfiguration(SnippetRepositoryConfiguration configuration) {
-            ensureIsTrue(configuration instanceof EclipseGitSnippetRepositoryConfiguration);
-            EclipseGitSnippetRepositoryConfiguration oldConfig = cast(configuration);
+        protected void editConfiguration(SnippetRepositoryConfiguration oldConfiguration) {
+            if (!availableWizards.isEmpty()) {
+                List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
+                        availableWizards, oldConfiguration);
 
-            String name = showDialogForName(oldConfig.getName());
-            if (isNullOrEmpty(name)) {
-                return;
+                AbstractSnippetRepositoryWizard wizard;
+                if (suitableWizardDescriptors.size() == 1) {
+                    wizard = Iterables.getOnlyElement(suitableWizardDescriptors).getWizard();
+                    wizard.setConfiguration(oldConfiguration);
+                } else {
+                    wizard = new SnippetRepositoryTypeSelectionWizard(oldConfiguration);
+                }
+
+                WizardDialog dialog = new WizardDialog(this.getPage().getShell(), wizard);
+                if (dialog.open() == Window.OK) {
+                    List<SnippetRepositoryConfiguration> configurations = getTableInput();
+                    configurations.add(configurations.indexOf(oldConfiguration), wizard.getConfiguration());
+                    configurations.remove(oldConfiguration);
+                    updateTableContent(configurations);
+                }
             }
-            String repositoryUrl = showDialogForRepositoryUrl(oldConfig.getUrl());
-            if (isNullOrEmpty(repositoryUrl)) {
-                return;
-            }
+        }
 
-            EclipseGitSnippetRepositoryConfiguration newConfig = SnipmatchFactory.eINSTANCE
-                    .createEclipseGitSnippetRepositoryConfiguration();
-            newConfig.setName(name);
-            newConfig.setUrl(repositoryUrl);
-            newConfig.setEnabled(true);
-
+        private List<SnippetRepositoryConfiguration> getTableInput() {
             List<SnippetRepositoryConfiguration> configurations = cast(tableViewer.getInput());
-            configurations.remove(oldConfig);
-            configurations.add(newConfig);
-            updateTableContent(configurations);
-        }
-
-        private String showDialogForRepositoryUrl(String initialValue) {
-            InputDialog d = new InputDialog(getShell(), Messages.DIALOG_TITLE_SET_SNIPPET_REPOSITORY_URL,
-                    Messages.DIALOG_MESSAGE_SET_SNIPPET_REPOSITORY_URL, initialValue, new UriInputValidator());
-            if (d.open() == Window.OK) {
-                return d.getValue();
+            if (configurations == null) {
+                return Lists.newArrayList();
             }
-            return null;
-        }
-
-        private String showDialogForName(String initialValue) {
-            InputDialog d = new InputDialog(getShell(), Messages.DIALOG_TITLE_CHANGE_CONFIGURATION_NAME,
-                    Messages.DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME, initialValue, null);
-            if (d.open() == Window.OK) {
-                return d.getValue();
-            }
-            return null;
+            return Lists.newArrayList(configurations);
         }
 
         protected void addNewConfiguration() {
-            String name = showDialogForName(""); //$NON-NLS-1$
-            if (isNullOrEmpty(name)) {
-                return;
-            }
-
-            String repositoryUrl = showDialogForRepositoryUrl(""); //$NON-NLS-1$
-            if (isNullOrEmpty(repositoryUrl)) {
-                return;
-            }
-
-            EclipseGitSnippetRepositoryConfiguration newConfig = SnipmatchFactory.eINSTANCE
-                    .createEclipseGitSnippetRepositoryConfiguration();
-            newConfig.setName(name);
-            newConfig.setUrl(repositoryUrl);
-
-            newConfig.setName(name);
-            newConfig.setUrl(repositoryUrl);
-            newConfig.setEnabled(true);
-
-            List<SnippetRepositoryConfiguration> configurations = cast(tableViewer.getInput());
-            configurations.add(newConfig);
-            tableViewer.setInput(configurations);
-
-            for (SnippetRepositoryConfiguration config : configurations) {
-                tableViewer.setChecked(config, config.isEnabled());
-            }
-
-        }
-
-        private final class UriInputValidator implements IInputValidator {
-            @Override
-            public String isValid(String newText) {
-                // TODO this does not support git:// urls
-                try {
-                    new URI(newText);
-                    return null;
-                } catch (URISyntaxException e) {
-                    return e.getMessage();
+            if (!availableWizards.isEmpty()) {
+                SnippetRepositoryTypeSelectionWizard newWizard = new SnippetRepositoryTypeSelectionWizard();
+                WizardDialog dialog = new WizardDialog(this.getPage().getShell(), newWizard);
+                if (dialog.open() == Window.OK) {
+                    List<SnippetRepositoryConfiguration> configurations = getTableInput();
+                    configurations.add(newWizard.getConfiguration());
+                    updateTableContent(configurations);
                 }
             }
+
         }
 
         private Button createButton(Composite box, String text) {
@@ -310,11 +270,15 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         public void updateTableContent(List<SnippetRepositoryConfiguration> configurations) {
+            final List<SnippetRepositoryConfiguration> oldConfigurations = getTableInput();
             Collection<SnippetRepositoryConfiguration> checkedConfigurations = Collections2.filter(configurations,
                     new Predicate<SnippetRepositoryConfiguration>() {
 
                         @Override
                         public boolean apply(SnippetRepositoryConfiguration input) {
+                            if (oldConfigurations != null && oldConfigurations.contains(input)) {
+                                return tableViewer.getChecked(input);
+                            }
                             return input.isEnabled();
                         }
 
@@ -326,12 +290,12 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
         @Override
         protected void doLoadDefault() {
-            updateTableContent(RepositoryConfigurations.loadConfigurations().getRepos());
+            updateTableContent(RepositoryConfigurations.fetchDefaultConfigurations());
         }
 
         @Override
         protected void doStore() {
-            List<SnippetRepositoryConfiguration> oldconfigs = cast(tableViewer.getInput());
+            List<SnippetRepositoryConfiguration> oldconfigs = getTableInput();
             List<SnippetRepositoryConfiguration> newConfigs = Lists.newArrayList();
             for (SnippetRepositoryConfiguration config : oldconfigs) {
                 config.setEnabled(tableViewer.getChecked(config));

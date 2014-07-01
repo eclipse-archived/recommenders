@@ -72,7 +72,7 @@ public class SnipmatchRcpModule extends AbstractModule {
     @Singleton
     @Named(REPOSITORY_CONFIGURATION_FILE)
     public File provideConfigurationFile(IWorkspaceRoot root, @Named(SNIPMATCH_ROOT_FOLDER) File snipmatchRoot) {
-        return new File(snipmatchRoot, "repositoryconfiguration.config");
+        return new File(snipmatchRoot, "repositoryconfigurations.config"); //$NON-NLS-1$
     }
 
     @Provides
