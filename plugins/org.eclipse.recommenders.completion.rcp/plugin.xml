@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="%extension-point.sessionprocessors.name" schema="schema/org.eclipse.recommenders.completion.rcp.sessionprocessors.exsd"/>
+	<extension-point id="org.eclipse.recommenders.completion.rcp.tips" name="%extension-point.completiontips.name" schema="schema/org.eclipse.recommenders.completion.rcp.tips.exsd"/>
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
 		id="org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"
 		name="%proposalCategory.intelligent.name">
@@ -22,13 +23,15 @@
 			icon="platform:/plugin/org.eclipse.recommenders.rcp/icons/obj16/bullet_blue.png"
 			name="%sessionprocessors.baseRelevance.name"
 			description="%sessionprocessors.baseRelevance.description"/>
-	</extension>
-	<extension point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
 		<processor id="org.eclipse.recommenders.completion.rcp.sessionprocessors.tips"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.tips.TipsSessionProcessor"
 			icon="platform:/plugin/org.eclipse.recommenders.rcp/icons/obj16/lightbulb.gif"
 			name="%sessionprocessors.tips.name"
 			description="%sessionprocessors.tips.description"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.completion.rcp.tips">
+		<proposal id="org.eclipse.recommenders.completion.rcp.tips.discovery"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.tips.DiscoveryCompletionProposal"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
@@ -37,7 +40,7 @@
 			name="%preferencePages.completions.name"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
-		<initializer class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferenceInitializer"/>
+		<initializer class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences"/>
 	</extension>
 	<extension point="org.eclipse.recommenders.injection.modules">
 		<module class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpModule"/>

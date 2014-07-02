@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
@@ -55,11 +55,10 @@ public class ApidocsRcpModule extends AbstractModule {
     @Provides
     @Singleton
     List<ApidocProvider> provideProviders() {
-        final List<ApidocProvider> providers = instantiateProvidersFromRegistry();
-        return providers;
+        return instantiateProvidersFromRegistry();
     }
 
-    static List<ApidocProvider> instantiateProvidersFromRegistry() {
+    private static List<ApidocProvider> instantiateProvidersFromRegistry() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 EXT_ID_PROVIDER);
         final List<ApidocProvider> providers = Lists.newLinkedList();

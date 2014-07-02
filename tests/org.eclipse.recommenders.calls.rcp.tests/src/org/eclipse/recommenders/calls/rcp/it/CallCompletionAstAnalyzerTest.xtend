@@ -10,8 +10,8 @@ import org.eclipse.recommenders.calls.ICallModel.DefinitionKind
 import org.eclipse.recommenders.completion.rcp.it.CompletionSmokeTest
 import org.eclipse.recommenders.completion.rcp.it.MockedIntelligentCompletionProposalComputer
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor
-import org.eclipse.recommenders.tests.CodeBuilder
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.CodeBuilder
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test

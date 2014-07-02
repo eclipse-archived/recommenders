@@ -18,6 +18,7 @@ public class Messages extends NLS {
 
     public static String DEFAULT_REPO_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
+    public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
     public static String DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY;
@@ -28,25 +29,25 @@ public class Messages extends NLS {
     public static String DIALOG_OPTION_SAVE;
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
-    public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
+    public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
     public static String DIALOG_TITLE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
 
-    public static String DIALOG_VALIDATOR_KEYWORD_ALREADY_ADDED;
+    public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
 
-    public static String EDITOR_BUTTON_ADD_KEYWORDS;
+    public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
     public static String EDITOR_BUTTON_ADD_TAGS;
-    public static String EDITOR_BUTTON_REMOVE_KEYWORDS;
+    public static String EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM;
     public static String EDITOR_BUTTON_REMOVE_TAGS;
 
     public static String EDITOR_LABEL_SNIPPET_DESCRIPTION;
     public static String EDITOR_LABEL_SNIPPET_NAME;
     public static String EDITOR_LABEL_SNIPPET_UUID;
-    public static String EDITOR_LABEL_SNIPPETS_KEYWORD;
+    public static String EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS;
     public static String EDITOR_LABEL_SNIPPETS_TAG;
     public static String EDITOR_LABEL_TITLE_METADATA;
 
@@ -56,6 +57,9 @@ public class Messages extends NLS {
     public static String ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY;
+    public static String ERROR_WHILE_OPENING_EDITOR;
+    public static String ERROR_NO_EDITABLE_REPO_FOUND;
+    public static String ERROR_NO_EDITABLE_REPO_FOUND_HINT;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;

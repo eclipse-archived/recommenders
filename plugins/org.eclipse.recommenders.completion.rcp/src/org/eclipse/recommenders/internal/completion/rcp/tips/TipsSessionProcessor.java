@@ -12,50 +12,62 @@ package org.eclipse.recommenders.internal.completion.rcp.tips;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
-import org.eclipse.recommenders.internal.completion.rcp.DiscoveryCompletionProposal;
-import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.completion.rcp.tips.ICompletionTipProposal;
+import org.eclipse.recommenders.internal.completion.rcp.Constants;
 import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class TipsSessionProcessor extends SessionProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TipsSessionProcessor.class);
 
-    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$
-    private static final String SEEN = "seen"; //$NON-NLS-1$
+    private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
+    private static final String SEEN = "completion_tips_seen"; //$NON-NLS-1$
 
-    private final List<ICompletionProposal> unseenTips = Lists.newLinkedList();
+    private static final String COMPLETION_TIP_ID = "id"; //$NON-NLS-1$
+    private static final String COMPLETION_TIP_CLASS = "class"; //$NON-NLS-1$
 
+    private final Map<ICompletionTipProposal, String> unseenTips = Maps.newHashMap();
     private final HashSet<String> seenTips;
+
     private boolean tipsSeen;
 
-    @Inject
-    public TipsSessionProcessor(SharedImages images) {
-        ImmutableList<? extends ICompletionProposal> availableTips = ImmutableList.of(new DiscoveryCompletionProposal(
-                images));
+    public TipsSessionProcessor() {
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                Constants.EXT_POINT_COMPLETION_TIPS);
 
-        Iterable<String> split = Splitter.on(":").omitEmptyStrings().split(getTipsPreferences().get(SEEN, "")); //$NON-NLS-1$ //$NON-NLS-2$
+        Iterable<String> split = Splitter.on(':').omitEmptyStrings().split(getTipsPreferences().get(SEEN, "")); //$NON-NLS-1$
         seenTips = Sets.newHashSet(split);
 
-        for (ICompletionProposal availableTip : availableTips) {
-            if (!seenTips.contains(availableTip.getClass().getName())) {
-                unseenTips.add(availableTip);
+        for (final IConfigurationElement element : elements) {
+            String id = element.getAttribute(COMPLETION_TIP_ID);
+            if (!seenTips.contains(id)) {
+                try {
+                    ICompletionTipProposal proposal = (ICompletionTipProposal) element
+                            .createExecutableExtension(COMPLETION_TIP_CLASS);
+                    unseenTips.put(proposal, id);
+                } catch (CoreException e) {
+                    LOG.error("Cannot instantiate completion tip", e); //$NON-NLS-1$
+                }
             }
         }
     }
@@ -70,6 +82,10 @@ public class TipsSessionProcessor extends SessionProcessor {
             return false;
         }
 
+        for (ICompletionTipProposal tip : unseenTips.keySet()) {
+            tip.setCursorPosition(context.getInvocationOffset());
+        }
+
         return true;
     }
 
@@ -79,14 +95,21 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     @Override
     public void endSession(List<ICompletionProposal> proposals) {
-        proposals.addAll(unseenTips);
+        proposals.addAll(Collections2.filter(unseenTips.keySet(), new Predicate<ICompletionTipProposal>() {
+
+            @Override
+            public boolean apply(ICompletionTipProposal input) {
+                return input.isApplicable();
+            }
+        }));
         tipsSeen = false;
     }
 
     @Override
     public void selected(ICompletionProposal proposal) {
-        if (unseenTips.remove(proposal)) {
-            seenTips.add(proposal.getClass().getName());
+        if (unseenTips.containsKey(proposal)) {
+            String id = unseenTips.remove(proposal);
+            seenTips.add(id);
             tipsSeen = true;
         }
     }

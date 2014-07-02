@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.tests.jayes.Equality.equalTo;
+import static org.eclipse.recommenders.jayes.io.Equality.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

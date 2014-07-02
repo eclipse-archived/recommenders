@@ -122,11 +122,6 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
         return jarFileConverter.createJarFile(file);
     }
 
-    private String parseAttribute(final Properties properties, String attributeName) {
-        String value = properties.getProperty(attributeName);
-        return value;
-    }
-
     private String parseGroupID(final Properties properties) {
         return parseAttribute(properties, GROUP_ID);
     }
@@ -137,6 +132,10 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
 
     private String parseVersion(final Properties properties) {
         return parseAttribute(properties, VERSION);
+    }
+
+    private String parseAttribute(final Properties properties, String attributeName) {
+        return properties.getProperty(attributeName);
     }
 
     @Override

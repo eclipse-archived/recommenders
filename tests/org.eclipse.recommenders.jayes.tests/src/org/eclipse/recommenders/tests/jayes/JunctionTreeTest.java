@@ -21,6 +21,7 @@ import org.eclipse.recommenders.jayes.factor.AbstractFactor;
 import org.eclipse.recommenders.jayes.factor.FactorFactory;
 import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.testing.jayes.NetExamples;
 import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
 

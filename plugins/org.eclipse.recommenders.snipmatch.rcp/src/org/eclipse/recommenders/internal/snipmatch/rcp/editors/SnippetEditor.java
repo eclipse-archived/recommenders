@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Stefan Prisca - initial API and implementation
  */
@@ -25,6 +25,7 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -84,7 +85,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
     public void doSave(IProgressMonitor monitor) {
         SnippetEditorInput input = (SnippetEditorInput) getEditorInput();
 
-        Snippet snippet = (Snippet) input.getSnippet();
+        Snippet snippet = input.getSnippet();
         ISnippetRepository repo = input.getRepository();
 
         if (repo == null) {
@@ -104,8 +105,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         if (!oldSnippet.getCode().isEmpty() && !snippet.getCode().equals(oldSnippet.getCode())) {
             int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
                     Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
-                            Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
-                            Messages.DIALOG_OPTION_CANCEL }, 0).open();
+                Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
+                Messages.DIALOG_OPTION_CANCEL }, 0).open();
 
             if (status == 1) {
                 // Store as new
@@ -115,7 +116,12 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             }
 
             if (status == 2) {
-                // Cancel
+                // Explicit Cancel
+                return;
+            }
+
+            if (status == SWT.DEFAULT) {
+                // Dialog closed => implicit Cancel
                 return;
             }
         }

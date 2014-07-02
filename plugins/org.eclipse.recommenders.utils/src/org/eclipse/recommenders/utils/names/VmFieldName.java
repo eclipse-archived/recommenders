@@ -62,8 +62,7 @@ public class VmFieldName implements IFieldName {
 
     @Override
     public String getFieldName() {
-        final String fieldName = StringUtils.substringBetween(identifier, ".", ";");
-        return fieldName;
+        return StringUtils.substringBetween(identifier, ".", ";");
     }
 
     @Override

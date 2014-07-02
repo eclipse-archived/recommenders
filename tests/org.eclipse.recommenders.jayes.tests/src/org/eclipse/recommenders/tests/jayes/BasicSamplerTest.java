@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.sampling.BasicSampler;
+import org.eclipse.recommenders.testing.jayes.NetExamples;
 import org.junit.Test;
 
 public class BasicSamplerTest {

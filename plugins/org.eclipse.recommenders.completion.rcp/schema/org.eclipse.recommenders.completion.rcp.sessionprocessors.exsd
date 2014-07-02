@@ -65,7 +65,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.recommenders.completion.rcp.processable.SessionProcessor:"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.recommenders.internal.completion.rcp.tips.ICompletionTipProposal"/>
                </appinfo>
             </annotation>
          </attribute>

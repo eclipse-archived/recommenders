@@ -10,15 +10,15 @@ import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposal
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposalComputer
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.rcp.IAstProvider
-import org.eclipse.recommenders.tests.CodeBuilder
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.CodeBuilder
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 
 import static junit.framework.Assert.*
-import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
+import static org.eclipse.recommenders.testing.SmokeTestScenarios.*
 import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
 
 class ChainCompletionScenariosTest {

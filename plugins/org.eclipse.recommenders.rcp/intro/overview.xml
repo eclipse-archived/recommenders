@@ -4,6 +4,7 @@
 	<extensionContent id="org.eclipse.recommenders.rcp"
 		name="Code Recommenders"
 		style="overview.css"
+		alt-style="overview.properties"
 		path="overview/@">
 		<group style-id="content-group">
 			<link id="recommenders" style-id="content-link" label="Eclipse Code Recommenders" url="http://eclipse.org/recommenders">

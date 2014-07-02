@@ -51,8 +51,7 @@ public class TimeDelimitedProgressMonitor implements IProgressMonitor {
     }
 
     private boolean timedOut() {
-        boolean res = System.currentTimeMillis() - start > limit;
-        return res;
+        return System.currentTimeMillis() - start > limit;
     }
 
     @Override

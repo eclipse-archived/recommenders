@@ -113,8 +113,7 @@ public class RcpModule extends AbstractModule implements Module {
 
     @Provides
     public IWebBrowser provideWebBrowser(IWorkbench wb) throws PartInitException {
-        IWebBrowser browser = wb.getBrowserSupport().getExternalBrowser();
-        return browser;
+        return wb.getBrowserSupport().getExternalBrowser();
     }
 
     @Provides
@@ -218,8 +217,7 @@ public class RcpModule extends AbstractModule implements Module {
             if (t instanceof TypeLiteral<?>) {
                 Class<?> rawType = ((TypeLiteral<?>) t).getRawType();
                 Class<?>[] implemented = rawType.getInterfaces();
-                boolean contains = contains(implemented, IRcpService.class);
-                return contains;
+                return contains(implemented, IRcpService.class);
             }
             return false;
         }

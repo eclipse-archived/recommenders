@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Eclipse-ExtensibleAPI: true
@@ -35,6 +35,9 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.mutable;version="[3.0.0,4.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.completion.rcp;uses:="com.google.common.base,com.google.common.collect",
- org.eclipse.recommenders.completion.rcp.processable;uses:="com.google.common.base",
- org.eclipse.recommenders.internal.completion.rcp;x-internal:=true
+Export-Package: org.eclipse.recommenders.completion.rcp;uses:="com.goo
+ gle.common.base,com.google.common.collect",org.eclipse.recommenders.c
+ ompletion.rcp.processable;uses:="com.google.common.base",org.eclipse.
+ recommenders.completion.rcp.tips,org.eclipse.recommenders.internal.co
+ mpletion.rcp;x-internal:=true,org.eclipse.recommenders.internal.compl
+ etion.rcp.tips;x-internal:=true

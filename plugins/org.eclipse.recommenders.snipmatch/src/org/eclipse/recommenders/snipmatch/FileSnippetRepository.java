@@ -85,14 +85,14 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     private static final String F_NAME = "name";
     private static final String F_DESCRIPTION = "description";
-    private static final String F_KEYWORD = "keyword";
+    private static final String F_EXTRA_SEARCH_TERM = "extra";
     private static final String F_TAG = "tag";
     private static final String F_PATH = "path";
     private static final String F_UUID = "uuid";
 
     private static final float NAME_BOOST = 4.0f;
     private static final float DESCRIPTION_BOOST = 2.0f;
-    private static final float KEYWORD_BOOST = DESCRIPTION_BOOST;
+    private static final float EXTRA_SEARCH_TERM_BOOST = DESCRIPTION_BOOST;
     private static final float TAG_BOOST = 1.0f;
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -145,18 +145,18 @@ public class FileSnippetRepository implements ISnippetRepository {
         Map<String, Analyzer> analyzers = Maps.newHashMap();
         analyzers.put(F_NAME, standardAnalyzer);
         analyzers.put(F_DESCRIPTION, standardAnalyzer);
-        analyzers.put(F_KEYWORD, standardAnalyzer);
+        analyzers.put(F_EXTRA_SEARCH_TERM, standardAnalyzer);
         analyzers.put(F_TAG, standardAnalyzer);
         analyzers.put(F_UUID, new KeywordAnalyzer());
         return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzers);
     }
 
     private QueryParser createParser() {
-        String[] searchFields = new String[] { F_NAME, F_DESCRIPTION, F_KEYWORD, F_TAG };
-        Map<String, Float> boosts = ImmutableMap.of(F_NAME, NAME_BOOST, F_DESCRIPTION, DESCRIPTION_BOOST, F_KEYWORD,
-                KEYWORD_BOOST, F_TAG, TAG_BOOST);
+        String[] searchFields = new String[] { F_NAME, F_DESCRIPTION, F_EXTRA_SEARCH_TERM, F_TAG };
+        Map<String, Float> boosts = ImmutableMap.of(F_NAME, NAME_BOOST, F_DESCRIPTION, DESCRIPTION_BOOST,
+                F_EXTRA_SEARCH_TERM, EXTRA_SEARCH_TERM_BOOST, F_TAG, TAG_BOOST);
         QueryParser parser = new MultiFieldPrefixQueryParser(Version.LUCENE_35, searchFields, analyzer, boosts, F_NAME,
-                F_DESCRIPTION, F_KEYWORD);
+                F_DESCRIPTION, F_EXTRA_SEARCH_TERM);
         parser.setDefaultOperator(AND);
         return parser;
     }
@@ -173,7 +173,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             indexdir.mkdirs();
             directory = FSDirectory.open(indexdir);
             index();
-            reader = IndexReader.open(FSDirectory.open(indexdir));
+            reader = IndexReader.open(directory);
         } finally {
             writeLock.unlock();
         }
@@ -230,8 +230,8 @@ public class FileSnippetRepository implements ISnippetRepository {
             doc.add(new Field(F_TAG, tag, Store.YES, Index.ANALYZED_NO_NORMS));
         }
 
-        for (String keyword : snippet.getKeywords()) {
-            doc.add(new Field(F_KEYWORD, keyword, Store.YES, Index.ANALYZED));
+        for (String extraSearchTerm : snippet.getExtraSearchTerms()) {
+            doc.add(new Field(F_EXTRA_SEARCH_TERM, extraSearchTerm, Store.YES, Index.ANALYZED));
         }
 
         writer.addDocument(doc);

@@ -27,8 +27,7 @@ public class Logs {
     public static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
             final String messageFormat, final Object... messageArgs) {
         final String message = messageFormat == null ? "" : format(messageFormat, messageArgs); //$NON-NLS-1$
-        final IStatus res = new Status(kind, pluginId, message, exception);
-        return res;
+        return new Status(kind, pluginId, message, exception);
     }
 
     public static void logError(final Throwable exception, final Plugin plugin, final String format,

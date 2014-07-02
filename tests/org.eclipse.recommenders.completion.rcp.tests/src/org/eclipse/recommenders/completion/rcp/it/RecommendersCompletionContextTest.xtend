@@ -9,13 +9,13 @@ import org.eclipse.jdt.internal.compiler.ast.MessageSend
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.junit.Test
 
 import static com.google.common.base.Optional.*
 import static junit.framework.Assert.*
-import static org.eclipse.recommenders.tests.CodeBuilder.*
+import static org.eclipse.recommenders.testing.CodeBuilder.*
 
 class RecommendersCompletionContextTest {
 

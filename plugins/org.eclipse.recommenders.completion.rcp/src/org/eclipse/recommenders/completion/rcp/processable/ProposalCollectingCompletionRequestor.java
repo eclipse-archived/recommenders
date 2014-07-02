@@ -66,6 +66,12 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         adjustProposalReplacementLength();
     }
 
+    /**
+     * Configures the delegate collector by calling a series of setters.
+     *
+     * Important: For this to work, this {@code CompletionRequestor} must then delegate all corresponding getters to
+     * {@code collector}.
+     */
     private void configureInterestedProposalTypes(boolean ignoreConstructors, boolean ignoreTypes) {
         collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
         collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, ignoreTypes);
@@ -107,6 +113,26 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.setRequireExtendedContext(true);
     }
 
+    @Override
+    public boolean isIgnored(final int completionProposalKind) {
+        return collector.isIgnored(completionProposalKind);
+    }
+
+    @Override
+    public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
+        return collector.isAllowingRequiredProposals(proposalKind, requiredProposalKind);
+    }
+
+    @Override
+    public boolean isExtendedContextRequired() {
+        return collector.isExtendedContextRequired();
+    }
+
+    @Override
+    public String[] getFavoriteReferences() {
+        return collector.getFavoriteReferences();
+    }
+
     private void adjustProposalReplacementLength() {
         ITextViewer viewer = jdtuiContext.getViewer();
         Point selection = viewer.getSelectedRange();
@@ -127,25 +153,9 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     @Override
-    public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
-        return collector.isAllowingRequiredProposals(proposalKind, requiredProposalKind);
-    };
-
-    @Override
-    public boolean isIgnored(final int completionProposalKind) {
-        boolean ignored = collector.isIgnored(completionProposalKind);
-        return ignored;
-    };
-
-    @Override
     public void acceptContext(final CompletionContext context) {
         compilerContext = cast(context);
         collector.acceptContext(context);
-    }
-
-    @Override
-    public boolean isExtendedContextRequired() {
-        return collector.isExtendedContextRequired();
     }
 
     private String[] getFavoriteStaticMembers() {
@@ -169,8 +179,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.accept(proposal);
         // order matters ;)
         final IJavaCompletionProposal[] jdtProposals = collector.getJavaCompletionProposals();
-        final IJavaCompletionProposal[] newProposals = subarray(jdtProposals, oldLength, jdtProposals.length);
-        return newProposals;
+        return subarray(jdtProposals, oldLength, jdtProposals.length);
     }
 
     public void setReplacementLength(final int y) {

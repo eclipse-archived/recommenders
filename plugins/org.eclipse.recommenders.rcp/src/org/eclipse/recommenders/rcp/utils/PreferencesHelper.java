@@ -49,8 +49,7 @@ public class PreferencesHelper {
                 for (IConfigurationElement e : elements) {
                     String configId = e.getAttribute("id"); //$NON-NLS-1$
                     if (preferencePageID.equalsIgnoreCase(configId)) {
-                        String value = e.getAttribute(attribute);
-                        return value;
+                        return e.getAttribute(attribute);
                     }
                 }
             }

@@ -63,7 +63,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
         setImage(image);
         setRelevance(RELEVANCE);
         setCursorPosition(offset);
-        setReplacementString(""); //$NON-NLS-1$
+        setReplacementString("");
     }
 
     @Override
@@ -72,7 +72,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
     }
 
     @Override
-    protected boolean isPrefix(String prefix, String string) {
+    protected boolean isValidPrefix(String prefix) {
         return true;
     }
 
@@ -113,7 +113,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
             IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
                     .createBrowser(SWT.NONE, "recommenders-homepage", Messages.BROWSER_LABEL_PROJECT_WEBSITE, //$NON-NLS-1$
                             Messages.BROWSER_TOOLTIP_PROJECT_WEBSITE);
-            browser.openURL(new URL(url)); //$NON-NLS-1$
+            browser.openURL(new URL(url));
         } catch (Exception e1) {
         }
     }

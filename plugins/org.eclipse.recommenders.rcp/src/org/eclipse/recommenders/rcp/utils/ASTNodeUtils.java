@@ -56,7 +56,7 @@ public class ASTNodeUtils {
 
     /**
      * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"
-     * 
+     *
      * @param name
      * @return
      */
@@ -131,24 +131,14 @@ public class ASTNodeUtils {
         return name.getIdentifier();
     }
 
-    public static Type getBaseType(final Type jdtType) {
-        if (!jdtType.isArrayType()) {
-            return jdtType;
-        }
-        final ArrayType arrayType = (ArrayType) jdtType;
-        return getBaseType(arrayType.getComponentType());
-    }
-
     public static int getLineNumberOfNodeStart(final CompilationUnit cuNode, final ASTNode node) {
         final int startPosition = node.getStartPosition();
-        final int lineNumber = cuNode.getLineNumber(startPosition);
-        return lineNumber;
+        return cuNode.getLineNumber(startPosition);
     }
 
     public static int getLineNumberOfNodeEnd(final CompilationUnit cuNode, final ASTNode node) {
         final int endPosition = node.getStartPosition() + node.getLength();
-        final int lineNumber = cuNode.getLineNumber(endPosition);
-        return lineNumber;
+        return cuNode.getLineNumber(endPosition);
     }
 
     public static boolean haveSameNumberOfParameters(final List<SingleVariableDeclaration> jdtParams,
@@ -164,8 +154,7 @@ public class ASTNodeUtils {
             final boolean sameMethodName = className.equals(methodName);
             return sameMethodName;
         }
-        final boolean sameMethodName = methodName.equals(crMethod.getName());
-        return sameMethodName;
+        return methodName.equals(crMethod.getName());
     }
 
     public static boolean sameSimpleName(final MethodInvocation invoke, final IMethodName crMethod) {
@@ -176,38 +165,7 @@ public class ASTNodeUtils {
             final boolean sameMethodName = className.equals(methodName);
             return sameMethodName;
         }
-        final boolean sameMethodName = methodName.equals(crMethod.getName());
-        return sameMethodName;
-    }
-
-    public static boolean haveSameParameterTypes(final List<SingleVariableDeclaration> jdtParams,
-            final ITypeName[] crParams) {
-        for (int i = crParams.length; i-- > 0;) {
-            Type jdtParam = jdtParams.get(i).getType();
-            jdtParam = getBaseType(jdtParam);
-            final ITypeName crParam = crParams[i];
-
-            if (jdtParam.isArrayType()) {
-                if (!crParam.isArrayType()) {
-                    return false;
-                }
-                final ArrayType jdtArrayType = (ArrayType) jdtParam;
-                final int jdtDimensions = jdtArrayType.getDimensions();
-                final int crDimensions = crParam.getArrayDimensions();
-                if (jdtDimensions != crDimensions) {
-                    return false;
-                }
-                return !sameSimpleName(getBaseType(jdtArrayType), crParam.getArrayBaseType());
-            }
-
-            if (jdtParam.isPrimitiveType()) {
-                continue;
-            }
-            if (!sameSimpleName(jdtParam, crParam)) {
-                return false;
-            }
-        }
-        return true;
+        return methodName.equals(crMethod.getName());
     }
 
     public static boolean sameTypes(final List<Type> jdtTypes, final ITypeName[] crTypes) {
@@ -267,8 +225,7 @@ public class ASTNodeUtils {
                 return useVisitor(cu, method);
             }
             final ASTNode node = NodeFinder.perform(cu, nameRange);
-            final Optional<MethodDeclaration> opt = getClosestParent(node, MethodDeclaration.class);
-            return opt;
+            return getClosestParent(node, MethodDeclaration.class);
         } catch (final JavaModelException e) {
             LOG.error("Failed to resolve {}.", method, e); //$NON-NLS-1$
             return absent();
