@@ -55,7 +55,6 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
     private EventBus bus;
     private SnippetRepositoryConfigurations configuration;
-    private List<WizardDescriptor> availableWizards;
     private boolean dirty;
 
     @Inject
@@ -64,7 +63,6 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         setDescription(Messages.PREFPAGE_DESCRIPTION);
         this.bus = bus;
         this.configuration = configuration;
-        availableWizards = WizardDescriptors.loadAvailableWizards();
     }
 
     @Override
@@ -187,9 +185,9 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         protected void editConfiguration(SnippetRepositoryConfiguration oldConfiguration) {
-            if (!availableWizards.isEmpty()) {
-                List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
-                        availableWizards, oldConfiguration);
+            List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
+                    WizardDescriptors.loadAvailableWizards(), oldConfiguration);
+            if (!suitableWizardDescriptors.isEmpty()) {
 
                 AbstractSnippetRepositoryWizard wizard;
                 if (suitableWizardDescriptors.size() == 1) {
@@ -219,6 +217,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         protected void addNewConfiguration() {
+            List<WizardDescriptor> availableWizards = WizardDescriptors.loadAvailableWizards();
             if (!availableWizards.isEmpty()) {
                 SnippetRepositoryTypeSelectionWizard newWizard = new SnippetRepositoryTypeSelectionWizard();
                 WizardDialog dialog = new WizardDialog(this.getPage().getShell(), newWizard);
