@@ -113,6 +113,15 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                     }
                     updateButtonStatus();
                 }
+
+                @Override
+                public void widgetDefaultSelected(SelectionEvent e) {
+                    SnippetRepositoryConfiguration selectedConfiguration = getSelectedConfiguration();
+                    if (selectedConfiguration != null) {
+                        editConfiguration(selectedConfiguration);
+                        updateButtonStatus();
+                    }
+                }
             });
 
             buttonBox = getButtonControl(parent);

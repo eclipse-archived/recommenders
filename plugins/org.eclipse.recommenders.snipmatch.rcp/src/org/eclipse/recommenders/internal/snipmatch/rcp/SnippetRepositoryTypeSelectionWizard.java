@@ -16,6 +16,8 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -23,8 +25,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetRepositoryWizard {
+
+    private static Logger LOG = LoggerFactory.getLogger(SnippetRepositoryTypeSelectionWizard.class);
 
     private java.util.List<WizardDescriptor> availableWizards;
     private AbstractSnippetRepositoryWizard selectedWizard;
@@ -147,10 +153,27 @@ public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetReposit
 
             });
 
+            lstWizards.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseDoubleClick(MouseEvent e) {
+                    try {
+                        int index = e.y / lstWizards.getItemHeight();
+                        if (index < lstWizards.getItemCount()) {
+                            if (canFlipToNextPage()) {
+                                getContainer().showPage(getNextPage());
+                            }
+                        }
+                    } catch (ArithmeticException ae) {
+                        LOG.error("Open wizard on double click failed because height of list items is zero.", ae); //$NON-NLS-1$
+                    }
+                }
+
+            });
+
             setControl(container);
             setPageComplete(false);
         }
-
     }
 
 }
