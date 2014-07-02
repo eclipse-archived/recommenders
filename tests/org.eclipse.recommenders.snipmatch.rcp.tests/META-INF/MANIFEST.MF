@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.xtext.xbase.lib,
  org.eclipse.recommenders.testing,
  org.mockito,
  org.hamcrest
+Import-Package: org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)"

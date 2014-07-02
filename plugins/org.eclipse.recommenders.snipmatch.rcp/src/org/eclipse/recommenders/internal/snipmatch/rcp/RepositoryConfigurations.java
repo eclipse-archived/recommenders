@@ -36,6 +36,7 @@ import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepository
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.inject.name.Names;
 
@@ -46,31 +47,41 @@ public class RepositoryConfigurations {
     public static final File LOCATION = InjectionService.getInstance().requestAnnotatedInstance(File.class,
             Names.named(SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE));
 
-    public static SnippetRepositoryConfigurations loadConfigurations() {
-        Resource resource = provideResource();
+    @VisibleForTesting
+    protected static SnippetRepositoryConfigurations loadConfigurations(File file) {
+        Resource resource = provideResource(file);
+        SnippetRepositoryConfigurations configurations = SnipmatchFactory.eINSTANCE
+                .createSnippetRepositoryConfigurations();
 
-        SnippetRepositoryConfigurations configurations;
-        if (!resource.getContents().isEmpty()) {
-            configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);
-        } else {
-            configurations = SnipmatchFactory.eINSTANCE.createSnippetRepositoryConfigurations();
+        try {
+            resource.load(Collections.EMPTY_MAP);
+            if (!resource.getContents().isEmpty()) {
+                configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);
+            }
+        } catch (IOException e) {
+            LOG.error("Exception while loading repository configurations.", e); //$NON-NLS-1$
         }
 
         return configurations;
     }
 
-    private static Resource provideResource() {
+    public static SnippetRepositoryConfigurations loadConfigurations() {
+        return loadConfigurations(LOCATION);
+    }
+
+    private static Resource provideResource(File file) {
         Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
         Map<String, Object> m = reg.getExtensionToFactoryMap();
         m.put("snipmatch", new XMIResourceFactoryImpl()); //$NON-NLS-1$
 
         ResourceSet resSet = new ResourceSetImpl();
-        Resource resource = resSet.createResource(URI.createFileURI(LOCATION.getAbsolutePath()));
+        Resource resource = resSet.createResource(URI.createFileURI(file.getAbsolutePath()));
         return resource;
     }
 
-    public static void storeConfigurations(SnippetRepositoryConfigurations configurations) {
-        Resource resource = provideResource();
+    @VisibleForTesting
+    protected static void storeConfigurations(SnippetRepositoryConfigurations configurations, File file) {
+        Resource resource = provideResource(file);
         resource.getContents().add(configurations);
 
         try {
@@ -80,7 +91,11 @@ public class RepositoryConfigurations {
         }
     }
 
-    public static List<SnippetRepositoryConfiguration> fetchDefaultConfigurations() {
+    public static void storeConfigurations(SnippetRepositoryConfigurations configurations) {
+        storeConfigurations(configurations, LOCATION);
+    }
+
+    protected static List<SnippetRepositoryConfiguration> fetchDefaultConfigurations() {
         List<SnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
 
         Registry instance = EPackage.Registry.INSTANCE;
