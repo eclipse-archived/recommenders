@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Recommendations.top;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -52,7 +53,9 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
+import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -86,13 +89,16 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public static enum CompletionMode {
-        TYPE_NAME, MEMBER_ACCESS, THIS
+        TYPE_NAME,
+        MEMBER_ACCESS,
+        THIS
     }
 
     private final IProjectCoordinateProvider pcProvider;
     private final ICallModelProvider store;
     private final IAstProvider astProvider;
     private final JavaElementResolver elementResolver;
+    private final Map<CompletionContextKey, ICompletionContextFunction> functions;
 
     private IRecommendersCompletionContext rCtx;
     private IMethod enclosingMethod;
@@ -106,11 +112,13 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     @Inject
     public TemplatesCompletionProposalComputer(IProjectCoordinateProvider pcProvider, ICallModelProvider store,
-            IAstProvider astProvider, JavaElementResolver elementResolver) {
+            IAstProvider astProvider, JavaElementResolver elementResolver,
+            Map<CompletionContextKey, ICompletionContextFunction> functions) {
         this.pcProvider = pcProvider;
         this.store = store;
         this.astProvider = astProvider;
         this.elementResolver = elementResolver;
+        this.functions = functions;
         loadImage();
     }
 
@@ -146,7 +154,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             return Collections.EMPTY_LIST;
         }
 
-        rCtx = new RecommendersCompletionContext((JavaContentAssistInvocationContext) context, astProvider);
+        rCtx = new RecommendersCompletionContext((JavaContentAssistInvocationContext) context, astProvider, functions);
         if (!findEnclosingMethod()) {
             return Collections.emptyList();
         }

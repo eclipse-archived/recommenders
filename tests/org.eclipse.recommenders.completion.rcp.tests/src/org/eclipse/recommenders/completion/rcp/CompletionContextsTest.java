@@ -1,11 +1,10 @@
-package org.eclipse.recommenders.completions.rcp.it;
+package org.eclipse.recommenders.completion.rcp;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.eclipse.recommenders.completion.rcp.CompletionContexts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

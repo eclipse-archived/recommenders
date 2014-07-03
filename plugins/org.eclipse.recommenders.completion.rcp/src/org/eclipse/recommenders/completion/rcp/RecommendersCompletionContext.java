@@ -10,14 +10,11 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.defaultFunctions;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
-import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -323,7 +320,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         // if it's not yet in, try computing it using a context-function
         ICompletionContextFunction<T> function = functions.get(key);
         if (function != null) {
-            T res = (T) function.compute(this, key);
+            T res = function.compute(this, key);
             return fromNullable(res);
         }
         return absent();
@@ -331,7 +328,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public <T> T get(CompletionContextKey<T> key, T defaultValue) {
-      T res = (T) get(key).orNull();
-      return res != null ? res : defaultValue;
+        T res = get(key).orNull();
+        return res != null ? res : defaultValue;
     }
 }

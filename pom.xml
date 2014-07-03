@@ -332,6 +332,7 @@
 							</goals>
 							<configuration>
 								<encoding>${project.build.sourceEncoding}</encoding>
+								<header>header-tu-darmstadt-2014.txt</header>
 								<validHeaders>
 									<validHeader>header-amann-2012.txt</validHeader>
 									<validHeader>header-faidherbe-2011.txt</validHeader>
