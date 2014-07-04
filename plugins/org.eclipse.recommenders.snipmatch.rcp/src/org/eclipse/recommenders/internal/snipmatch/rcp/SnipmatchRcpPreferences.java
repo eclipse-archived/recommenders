@@ -13,27 +13,38 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryUrlChangedEvent;
-
-import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public class SnipmatchRcpPreferences {
 
-    private String location;
-    private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
+    private String fetchUrl;
+    private String pushUrl;
+    private String pushBranch;
 
     @Inject
-    public void setLocation(@Preference(Constants.PREF_SNIPPETS_REPO) String newValue) {
-        String old = location;
-        location = newValue;
-        if (old != null) {
-            bus.post(new SnippetRepositoryUrlChangedEvent());
-        }
+    public void setFetchUrl(@Preference(Constants.PREF_SNIPPETS_REPO_FETCH_URL) String newValue) {
+        fetchUrl = newValue;
     }
 
-    public String getLocation() {
-        return location;
+    public String getFetchUrl() {
+        return fetchUrl;
+    }
+
+    @Inject
+    public void setPushUrl(@Preference(Constants.PREF_SNIPPETS_REPO_PUSH_URL) String newValue) {
+        pushUrl = newValue;
+    }
+
+    public String getPushUrl() {
+        return pushUrl;
+    }
+
+    @Inject
+    public void setPushBranch(@Preference(Constants.PREF_SNIPPETS_REPO_PUSH_BRANCH) String newValue) {
+        pushBranch = newValue;
+    }
+
+    public String getPushBranch() {
+        return pushBranch;
     }
 }

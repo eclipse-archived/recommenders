@@ -78,8 +78,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     private void setupDelegate() {
-        String remoteUri = prefs.getLocation();
-        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri);
+        String remoteUri = prefs.getFetchUrl();
+        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri, prefs.getPushUrl(),
+                prefs.getPushBranch());
     }
 
     @Override
@@ -187,7 +188,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Subscribe
-    public void onEvent(SnippetRepositoryUrlChangedEvent e) throws IOException {
+    public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws IOException {
         close();
         setupDelegate();
         open();
@@ -200,7 +201,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
      * {@link SnippetRepositoryClosedEvent} and {@link SnippetRepositoryClosedEvent}. Clients of this event may consider
      * refreshing themselves whenever they receive this event. Clients get notified in a background process.
      */
-    public static class SnippetRepositoryUrlChangedEvent {
+    public static class SnippetRepositoryConfigurationChangedEvent {
     }
 
     /**

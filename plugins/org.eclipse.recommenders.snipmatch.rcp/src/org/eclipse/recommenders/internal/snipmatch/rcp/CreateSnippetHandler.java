@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 import static org.eclipse.jface.dialogs.MessageDialog.openError;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.EDITOR_ID;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.Messages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
@@ -225,16 +224,16 @@ public class CreateSnippetHandler extends AbstractHandler {
                     // if we could add the snippet somewhere, return. Otherwise report an error
                     return;
                 } catch (PartInitException e) {
-                    LOG.error(ERROR_WHILE_OPENING_EDITOR, e);
+                    LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
                 }
             }
         }
-        openError(HandlerUtil.getActiveShell(event), ERROR_NO_EDITABLE_REPO_FOUND, ERROR_NO_EDITABLE_REPO_FOUND_HINT);
+        openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
+                Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
     }
 
     private void replaceLeadingWhitespaces() {
         try {
-
             // fetch the selection's starting line from the editor document to determine the number of leading
             // whitespace characters to remove from the snippet:
             int startLineIndex = textSelection.getStartLine();

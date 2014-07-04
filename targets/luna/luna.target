@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna" sequenceNumber="121">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna" sequenceNumber="122">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
@@ -19,8 +19,8 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4-I-builds/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtext.xbase.feature.group" version="2.5.1.v201402030714"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+<unit id="org.eclipse.xtext.xbase.feature.group" version="2.5.4.v201404100756"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/maintenance/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>

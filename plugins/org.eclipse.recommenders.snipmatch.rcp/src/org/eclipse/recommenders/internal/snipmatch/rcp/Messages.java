@@ -19,7 +19,6 @@ public class Messages extends NLS {
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
-    public static String DIALOG_MESSAGE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
 
@@ -31,7 +30,6 @@ public class Messages extends NLS {
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
-    public static String DIALOG_TITLE_NEW_SNIPPET_REPOSITORY;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
 
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
@@ -71,12 +69,19 @@ public class Messages extends NLS {
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
 
-    public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
+    public static String PREFPAGE_LABEL_SNIPPETS_REPO_FETCH_URL;
+    public static String PREFPAGE_LABEL_SNIPPETS_PUSH_SETTINGS_DESCRIPTION;
+    public static String PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_URL;
+    public static String PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_BRANCH;
     public static String PREFPAGE_DESCRIPTION;
+    public static String PREFPAGE_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;
     public static String WARNING_REPOSITION_CURSOR;
     public static String WARNING_FAILURE_TO_UPDATE_REPOSITORY;
+
+    public static String GROUP_FETCH_SETTINGS;
+    public static String GROUP_PUSH_SETTINGS;
 
     static {
         // initialize resource bundle
