@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.themes.ITheme;
@@ -77,8 +77,8 @@ public class SnipmatchRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public SnippetRepositoryConfigurations provideRepositoryConfigurations() {
-        SnippetRepositoryConfigurations configurations = RepositoryConfigurations.loadConfigurations();
+    public SnippetRepositoryConfigurations provideRepositoryConfigurations(@Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
+        SnippetRepositoryConfigurations configurations = RepositoryConfigurations.loadConfigurations(repositoryConfigurationFile);
         if (configurations.getRepos().isEmpty()) {
             configurations.getRepos().addAll(RepositoryConfigurations.fetchDefaultConfigurations());
         }

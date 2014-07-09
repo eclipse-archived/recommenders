@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.rcp.model.SnipmatchRcpModelFactory;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class RepositoryConfigurationsTest {
 
     @Test
     public void testStoringAndLoadingWithEmptyConfigurationList() {
-        SnippetRepositoryConfigurations storedConfigurations = SnipmatchFactory.eINSTANCE
+        SnippetRepositoryConfigurations storedConfigurations = SnipmatchRcpModelFactory.eINSTANCE
                 .createSnippetRepositoryConfigurations();
         RepositoryConfigurations.storeConfigurations(storedConfigurations, file);
 
@@ -52,7 +52,7 @@ public class RepositoryConfigurationsTest {
 
     @Test
     public void testStoringAndLoadingWithOneConfiguration() {
-        SnippetRepositoryConfigurations configurations = SnipmatchFactory.eINSTANCE
+        SnippetRepositoryConfigurations configurations = SnipmatchRcpModelFactory.eINSTANCE
                 .createSnippetRepositoryConfigurations();
         EclipseGitSnippetRepositoryConfiguration expected = createMockedConfiguration("TestConfig1",
                 "TestConfig1Description", true, "http://www.example.com/repo1");
@@ -69,7 +69,7 @@ public class RepositoryConfigurationsTest {
 
     @Test
     public void testStoringAndLoadingForMoreConfigurations() {
-        SnippetRepositoryConfigurations configurations = SnipmatchFactory.eINSTANCE
+        SnippetRepositoryConfigurations configurations = SnipmatchRcpModelFactory.eINSTANCE
                 .createSnippetRepositoryConfigurations();
         EclipseGitSnippetRepositoryConfiguration expected1 = createMockedConfiguration("TestConfig1",
                 "TestConfig1Description", true, "http://www.example.com/repo1");
@@ -89,7 +89,7 @@ public class RepositoryConfigurationsTest {
 
     private static EclipseGitSnippetRepositoryConfiguration createMockedConfiguration(String name, String description,
             boolean enabled, String url) {
-        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchFactory.eINSTANCE
+        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
                 .createEclipseGitSnippetRepositoryConfiguration();
         configuration.setName(name);
         configuration.setDescription(description);

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="" modelDirectory="/org.eclipse.recommenders.snipmatch/target/generated-sources/emf"
+    editDirectory="/org.eclipse.recommenders.snipmatch/src" editorDirectory="/org.eclipse.recommenders.snipmatch.editor/src"
+    modelPluginID="org.eclipse.recommenders.snipmatch" modelName="Snipmatch" editPluginClass="org.eclipse.recommenders.snipmatch.model.provider.SnipmatchEditPlugin"
+    editorPluginClass="org.eclipse.recommenders.snipmatch.model.presentation.SnipmatchEditorPlugin"
+    nonNLSMarkers="true" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" testSuiteClass="org.eclipse.recommenders.snipmatch.model.tests.SnipmatchAllTests"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="6.0"
+    copyrightFields="false" editPluginID="org.eclipse.recommenders.snipmatch" editorPluginID="org.eclipse.recommenders.snipmatch.editor"
+    language="" operationReflection="true" importOrganizing="true">
+  <foreignModel>snipmatch.ecore</foreignModel>
+  <genPackages prefix="SnipmatchModel" basePackage="org.eclipse.recommenders.snipmatch"
+      disposableProviderFactory="true" contentTypeIdentifier="" ecorePackage="snipmatch.ecore#/">
+    <genDataTypes ecoreDataType="snipmatch.ecore#//ESnippetRepository"/>
+    <genClasses image="false" ecoreClass="snipmatch.ecore#//SnippetRepositoryConfiguration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/enabled"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/description"/>
+      <genOperations ecoreOperation="snipmatch.ecore#//SnippetRepositoryConfiguration/createRepositoryInstance"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="snipmatch.ecore#//DefaultSnippetRepositoryConfigurationProvider">
+      <genOperations ecoreOperation="snipmatch.ecore#//DefaultSnippetRepositoryConfigurationProvider/getDefaultConfiguration"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

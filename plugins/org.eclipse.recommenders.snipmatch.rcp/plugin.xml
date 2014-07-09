@@ -79,18 +79,17 @@
 		</menuContribution>
 	</extension>
 	<extension point="org.eclipse.emf.ecore.generated_package">
-		<!-- @generated snipmatch -->
+		<!-- @generated snipmatchrcp -->
 		<package
-			uri="org.eclips.recommenders.snipmatch.rcp"
-			class="org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchPackage"
-			genModel="model/snipmatch.genmodel"/>
+			uri="org.eclipse.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.rcp.model.SnipmatchRcpModelPackage"
+			genModel="model/snipmatchrcp.genmodel"/>
 	</extension>
-
 	<extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
 		<!-- @generated snipmatch -->
 		<factory
-			uri="org.eclips.recommenders.snipmatch.rcp"
-			class="org.eclipse.recommenders.snipmatch.model.snipmatchmodel.provider.SnipmatchItemProviderAdapterFactory"
+			uri="org.eclipse.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.rcp.model.util.SnipmatchRcpModelAdapterFactory"
 			supportedTypes=
 				"org.eclipse.emf.edit.provider.IEditingDomainItemProvider
 				org.eclipse.emf.edit.provider.IStructuredItemContentProvider

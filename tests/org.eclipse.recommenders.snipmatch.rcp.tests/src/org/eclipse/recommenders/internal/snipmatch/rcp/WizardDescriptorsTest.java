@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Checks;
 import org.junit.Test;
 import org.mockito.Mockito;

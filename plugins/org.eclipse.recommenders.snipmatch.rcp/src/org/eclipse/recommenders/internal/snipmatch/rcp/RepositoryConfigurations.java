@@ -27,29 +27,22 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.DefaultSnippetRepositoryConfigurationProvider;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchPackage;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.rcp.model.SnipmatchRcpModelFactory;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.snipmatch.model.DefaultSnippetRepositoryConfigurationProvider;
+import org.eclipse.recommenders.snipmatch.model.SnipmatchModelPackage;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.google.inject.name.Names;
 
 public class RepositoryConfigurations {
 
     private static Logger LOG = LoggerFactory.getLogger(RepositoryConfigurations.class);
 
-    public static final File LOCATION = InjectionService.getInstance().requestAnnotatedInstance(File.class,
-            Names.named(SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE));
-
-    @VisibleForTesting
-    protected static SnippetRepositoryConfigurations loadConfigurations(File file) {
-        SnippetRepositoryConfigurations configurations = SnipmatchFactory.eINSTANCE
+    public static SnippetRepositoryConfigurations loadConfigurations(File file) {
+        SnippetRepositoryConfigurations configurations = SnipmatchRcpModelFactory.eINSTANCE
                 .createSnippetRepositoryConfigurations();
 
         if (!file.exists()) {
@@ -69,10 +62,6 @@ public class RepositoryConfigurations {
         return configurations;
     }
 
-    public static SnippetRepositoryConfigurations loadConfigurations() {
-        return loadConfigurations(LOCATION);
-    }
-
     private static Resource provideResource(File file) {
         Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
         Map<String, Object> m = reg.getExtensionToFactoryMap();
@@ -83,8 +72,7 @@ public class RepositoryConfigurations {
         return resource;
     }
 
-    @VisibleForTesting
-    protected static void storeConfigurations(SnippetRepositoryConfigurations configurations, File file) {
+    public static void storeConfigurations(SnippetRepositoryConfigurations configurations, File file) {
         Resource resource = provideResource(file);
         resource.getContents().add(configurations);
 
@@ -95,10 +83,6 @@ public class RepositoryConfigurations {
         }
     }
 
-    public static void storeConfigurations(SnippetRepositoryConfigurations configurations) {
-        storeConfigurations(configurations, LOCATION);
-    }
-
     protected static List<SnippetRepositoryConfiguration> fetchDefaultConfigurations() {
         List<SnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
 
@@ -106,7 +90,7 @@ public class RepositoryConfigurations {
         for (String key : instance.keySet()) {
             EPackage ePackage = instance.getEPackage(key);
             List<EClass> subtypes = searchSubtypes(ePackage,
-                    SnipmatchPackage.Literals.DEFAULT_SNIPPET_REPOSITORY_CONFIGURATION_PROVIDER);
+                    SnipmatchModelPackage.Literals.DEFAULT_SNIPPET_REPOSITORY_CONFIGURATION_PROVIDER);
             for (EClass eClass : subtypes) {
                 DefaultSnippetRepositoryConfigurationProvider configurationProvider = cast(instance.getEFactory(key)
                         .create(eClass));

@@ -16,7 +16,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

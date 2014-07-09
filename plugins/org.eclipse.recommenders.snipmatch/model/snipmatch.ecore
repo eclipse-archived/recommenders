@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="org.eclipse.recommenders.snipmatch" nsPrefix="org.eclipse.recommenders">
+  <eClassifiers xsi:type="ecore:EClass" name="SnippetRepositoryConfiguration" abstract="true">
+    <eOperations name="createRepositoryInstance" eType="#//ESnippetRepository"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="enabled" ordered="false"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="ESnippetRepository" instanceClassName="org.eclipse.recommenders.snipmatch.ISnippetRepository"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DefaultSnippetRepositoryConfigurationProvider"
+      abstract="true" interface="true">
+    <eOperations name="getDefaultConfiguration">
+      <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+        <eTypeArguments eClassifier="#//SnippetRepositoryConfiguration"/>
+      </eGenericType>
+    </eOperations>
+  </eClassifiers>
+</ecore:EPackage>

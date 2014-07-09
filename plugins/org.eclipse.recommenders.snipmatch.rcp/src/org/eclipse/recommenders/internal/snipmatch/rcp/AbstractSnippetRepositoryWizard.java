@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 
 public abstract class AbstractSnippetRepositoryWizard extends Wizard {
 

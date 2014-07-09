@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;

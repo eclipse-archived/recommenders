@@ -19,9 +19,9 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.snipmatch.Snippet;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.rcp.model.SnipmatchRcpModelFactory;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -48,7 +48,7 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
 
     @Override
     public boolean performFinish() {
-        configuration = SnipmatchFactory.eINSTANCE.createEclipseGitSnippetRepositoryConfiguration();
+        configuration = SnipmatchRcpModelFactory.eINSTANCE.createEclipseGitSnippetRepositoryConfiguration();
         configuration.setName(page.txtName.getText());
         configuration.setUrl(page.txtFetchUri.getText());
         configuration.setPushUrl(page.txtPushUri.getText());

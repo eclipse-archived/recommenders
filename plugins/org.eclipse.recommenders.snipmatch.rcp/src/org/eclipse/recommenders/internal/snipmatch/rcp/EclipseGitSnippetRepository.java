@@ -27,13 +27,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitUpdateException;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Urls;
 import org.slf4j.Logger;
@@ -337,7 +337,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {
         BasicEList<SnippetRepositoryConfiguration> result = new BasicEList<SnippetRepositoryConfiguration>();
 
-        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchFactory.eINSTANCE
+        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
                 .createEclipseGitSnippetRepositoryConfiguration();
         configuration.setName(Messages.DEFAULT_REPO_NAME);
         configuration.setDescription(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION);

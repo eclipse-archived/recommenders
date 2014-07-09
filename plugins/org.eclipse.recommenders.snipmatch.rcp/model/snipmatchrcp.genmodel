@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.recommenders.snipmatch.rcp/target/generated-sources/emf"
+    modelPluginID="org.eclipse.recommenders.snipmatch.rcp" modelName="Snipmatch" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="6.0"
+    copyrightFields="false" usedGenPackages="../../org.eclipse.recommenders.snipmatch/model/snipmatch.genmodel#//model"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>snipmatchrcp.ecore</foreignModel>
+  <genPackages prefix="SnipmatchRcpModel" basePackage="org.eclipse.recommenders.rcp"
+      disposableProviderFactory="true" ecorePackage="snipmatchrcp.ecore#/">
+    <genClasses ecoreClass="snipmatchrcp.ecore#//EclipseGitSnippetRepositoryConfiguration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatchrcp.ecore#//EclipseGitSnippetRepositoryConfiguration/url"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatchrcp.ecore#//EclipseGitSnippetRepositoryConfiguration/pushUrl"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatchrcp.ecore#//EclipseGitSnippetRepositoryConfiguration/pushBranchPrefix"/>
+      <genOperations ecoreOperation="snipmatchrcp.ecore#//EclipseGitSnippetRepositoryConfiguration/createRepositoryInstance"/>
+    </genClasses>
+    <genClasses ecoreClass="snipmatchrcp.ecore#//SnippetRepositoryConfigurations">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference snipmatchrcp.ecore#//SnippetRepositoryConfigurations/repos"/>
+    </genClasses>
+    <genClasses ecoreClass="snipmatchrcp.ecore#//DefaultEclipseGitSnippetRepositoryConfiguration">
+      <genOperations ecoreOperation="snipmatchrcp.ecore#//DefaultEclipseGitSnippetRepositoryConfiguration/getDefaultConfiguration"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

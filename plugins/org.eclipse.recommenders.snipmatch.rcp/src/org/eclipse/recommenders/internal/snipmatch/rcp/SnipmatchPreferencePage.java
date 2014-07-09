@@ -13,7 +13,9 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,9 +33,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -50,19 +52,22 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class SnipmatchPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    private EventBus bus;
-    private SnippetRepositoryConfigurations configuration;
+    private final EventBus bus;
+    private final SnippetRepositoryConfigurations configuration;
     private boolean dirty;
+    private final File repositoryConfigurationFile;
 
     @Inject
-    public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration) {
+    public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration, @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
         super(GRID);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
         this.bus = bus;
         this.configuration = configuration;
+        this.repositoryConfigurationFile = repositoryConfigurationFile;
     }
 
     @Override
@@ -103,7 +108,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, true)
-            .applyTo(tableViewer.getTable());
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override
@@ -290,15 +295,15 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             Collection<SnippetRepositoryConfiguration> checkedConfigurations = Collections2.filter(configurations,
                     new Predicate<SnippetRepositoryConfiguration>() {
 
-                @Override
-                public boolean apply(SnippetRepositoryConfiguration input) {
-                    if (oldConfigurations != null && oldConfigurations.contains(input)) {
-                        return tableViewer.getChecked(input);
-                    }
-                    return input.isEnabled();
-                }
+                        @Override
+                        public boolean apply(SnippetRepositoryConfiguration input) {
+                            if (oldConfigurations != null && oldConfigurations.contains(input)) {
+                                return tableViewer.getChecked(input);
+                            }
+                            return input.isEnabled();
+                        }
 
-            });
+                    });
 
             tableViewer.setInput(configurations);
             tableViewer.setCheckedElements(checkedConfigurations.toArray());
@@ -331,7 +336,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             configuration.getRepos().clear();
             configuration.getRepos().addAll(newConfigs);
 
-            RepositoryConfigurations.storeConfigurations(configuration);
+            RepositoryConfigurations.storeConfigurations(configuration, repositoryConfigurationFile);
             bus.post(new SnippetRepositoryConfigurationChangedEvent());
             dirty = false;
         }
