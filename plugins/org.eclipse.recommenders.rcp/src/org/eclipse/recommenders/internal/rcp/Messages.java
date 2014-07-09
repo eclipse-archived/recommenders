@@ -22,11 +22,21 @@ public final class Messages extends NLS {
 
     public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;
     public static String LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK;
+    public static String LOG_ERROR_PREFERENCES_NOT_SAVED;
     public static String LOG_ERROR;
     public static String LOG_WARNING;
     public static String LOG_INFO;
     public static String LOG_OK;
     public static String LOG_CANCEL;
+
+    public static String DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE;
+    public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE;
+    public static String DIALOG_TOGGLE_IGNORE_BUNDLE_RESOLUTION_FAILURES;
+    public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAQ;
+    public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FILE_A_BUG;
+    public static String DIALOG_BUTTON_RESTART;
+    public static String DIALOG_LABEL_BUNDLE_LIST;
+    public static String DIALOG_RESTART_NOT_POSSIBLE;
 
     static {
         // initialize resource bundle
