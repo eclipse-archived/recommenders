@@ -10,33 +10,31 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
-import static java.lang.String.valueOf;
-import static org.eclipse.jdt.core.Signature.C_TYPE_VARIABLE;
-import static org.eclipse.jdt.core.Signature.getArrayCount;
-import static org.eclipse.jdt.core.Signature.getElementType;
-import static org.eclipse.jdt.core.Signature.getParameterTypes;
-import static org.eclipse.jdt.core.Signature.getTypeErasure;
-import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
-
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
+import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
+
+import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
 public class ProposalMatcher {
 
-    private String jSignature;
-    private String[] jParams;
-    private String jName;
-    private String rName;
-    private ITypeName[] rParams;
+    private static final String[] NO_TYPE_PARAMETERS = new String[0];
+
+    private final ITypeName[] jParams;
+    private final String jName;
 
     private static Field fOriginalSignature;
+
     static {
         // workaround needed to handle proposals with generics properly.
         // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203
@@ -53,34 +51,94 @@ public class ProposalMatcher {
                 && fOriginalSignature.isAccessible();
     }
 
-    public ProposalMatcher(CompletionProposal proposal) {
-        jSignature = getSignature(proposal);
-        jName = valueOf(proposal.getName());
-        jParams = getParameterTypes(jSignature);
+    public ProposalMatcher(CompletionProposal proposal, Optional<TypeBinding> receiverTypeBinding) {
+        final String jSignature = getSignature(proposal);
+        final String[] parameterTypes = Signature.getParameterTypes(jSignature);
+        final String[] methodTypeParameters = Signature.getTypeParameters(jSignature);
+
+        jName = String.valueOf(proposal.getName());
+        jParams = new ITypeName[parameterTypes.length];
+
+        final String[] classTypeParameters = extractClassTypeParameters(receiverTypeBinding);
 
         for (int i = 0; i < jParams.length; i++) {
-            String param = getTypeErasure(jParams[i]);
-            String paramBaseType = getElementType(param);
-            param = param.replace('.', '/');
-            param = StringUtils.removeEnd(param, ";"); //$NON-NLS-1$
-            if (isWildcardCapture(paramBaseType) || isTypeParameter(paramBaseType)) {
-                int dimensions = getArrayCount(param);
-                param = StringUtils.repeat('[', dimensions) + OBJECT.getIdentifier();
-            }
-            jParams[i] = param;
+            jParams[i] = asTypeName(parameterTypes[i], methodTypeParameters, classTypeParameters);
         }
     }
 
-    private boolean isWildcardCapture(String param) {
-        return param.charAt(0) == Signature.C_CAPTURE;
+    private String[] extractClassTypeParameters(Optional<TypeBinding> receiverTypeBinding) {
+        if (!receiverTypeBinding.isPresent()) {
+            return NO_TYPE_PARAMETERS;
+        }
+        TypeBinding typeBinding = receiverTypeBinding.get();
+        if (!typeBinding.isParameterizedTypeWithActualArguments() || !(typeBinding instanceof ParameterizedTypeBinding)) {
+            return NO_TYPE_PARAMETERS;
+        }
+        ParameterizedTypeBinding parameterizedTypeBinding = (ParameterizedTypeBinding) typeBinding;
+        TypeVariableBinding[] typeVariableBindings = parameterizedTypeBinding.genericType().typeVariables();
+        final String[] classTypeParameters = new String[typeVariableBindings.length];
+        for (int i = 0; i < classTypeParameters.length; i++) {
+            TypeVariableBinding typeVariableBinding = typeVariableBindings[i];
+            classTypeParameters[i] = String.valueOf(typeVariableBinding.genericSignature());
+        }
+        return classTypeParameters;
+    }
+
+    private ITypeName asTypeName(String typeSignature, String[] primaryTypeParameters, String[] secondaryTypeParameters) {
+        int signatureKind = Signature.getTypeSignatureKind(typeSignature);
+        switch (signatureKind) {
+        case Signature.ARRAY_TYPE_SIGNATURE:
+            int arrayCount = Signature.getArrayCount(typeSignature);
+            return VmTypeName.get(StringUtils.repeat('[', arrayCount)
+                    + asTypeName(Signature.getElementType(typeSignature), primaryTypeParameters,
+                            secondaryTypeParameters).getIdentifier());
+        case Signature.CLASS_TYPE_SIGNATURE:
+            final String erasedTypedSignature = Signature.getTypeErasure(typeSignature);
+            return VmTypeName.get(StringUtils.removeEnd(erasedTypedSignature.replace('.', '/'), ";"));
+        case Signature.BASE_TYPE_SIGNATURE:
+            return VmTypeName.get(typeSignature);
+        case Signature.TYPE_VARIABLE_SIGNATURE:
+            String identifier = StringUtils.substring(typeSignature, 1, typeSignature.length() - 1);
+            ITypeName typeParameter = locateTypeParameter(identifier, primaryTypeParameters, secondaryTypeParameters);
+            if (typeParameter == null) {
+                typeParameter = locateTypeParameter(identifier, secondaryTypeParameters, NO_TYPE_PARAMETERS);
+            }
+            return typeParameter;
+        case Signature.WILDCARD_TYPE_SIGNATURE:
+            return null; // Could not think of a case where this occurs.
+        case Signature.CAPTURE_TYPE_SIGNATURE:
+            return null; // Could not think of a case where this occurs.
+        case Signature.INTERSECTION_TYPE_SIGNATURE:
+            return null; // Could not think of a case where this occurs.
+        default:
+            return null; // Unknown/unsupported type signature.
+        }
     }
 
     /**
-     * @param param
-     *            base type - no array dimensions are checked
+     * Locates the type of the type variable {@code identifier} in {@code primaryTypeParameters}.
+     *
+     * Primary type parameters (e.g., of a method) can reference secondary type parameters (of a class) but not vice
+     * versa.
      */
-    private boolean isTypeParameter(String param) {
-        return param.charAt(0) == C_TYPE_VARIABLE;
+    private ITypeName locateTypeParameter(String identifier, String[] primaryTypeParameters,
+            String[] secondaryTypeParameters) {
+        for (int i = 0; i < primaryTypeParameters.length; i++) {
+            final String primaryTypeParameter = primaryTypeParameters[i];
+            if (primaryTypeParameter == null) {
+                continue;
+            }
+            String typeVariable = Signature.getTypeVariable(primaryTypeParameter);
+            if (typeVariable.equals(identifier)) {
+                String[] typeParameterBounds = Signature.getTypeParameterBounds(primaryTypeParameter);
+                if (typeParameterBounds.length == 0) {
+                    return VmTypeName.OBJECT;
+                } else {
+                    return asTypeName(typeParameterBounds[0], primaryTypeParameters, secondaryTypeParameters);
+                }
+            }
+        }
+        return null;
     }
 
     private String getSignature(CompletionProposal proposal) {
@@ -98,34 +156,22 @@ public class ProposalMatcher {
     }
 
     public boolean match(IMethodName rMethod) {
-        rName = rMethod.getName();
-        rParams = rMethod.getParameterTypes();
+        String rName = rMethod.getName();
+        ITypeName[] rParams = rMethod.getParameterTypes();
 
-        if (!sameName()) {
-            return false;
-        }
-        if (!sameNumberOfParameters()) {
+        if (!rName.equals(jName)) {
             return false;
         }
 
-        for (int i = jParams.length; i-- > 0;) {
+        if (rParams.length != jParams.length) {
+            return false;
+        }
 
-            if (!sameParameterType(i)) {
+        for (int i = rParams.length; i-- > 0;) {
+            if (!rParams[i].equals(jParams[i])) {
                 return false;
             }
         }
         return true;
-    }
-
-    private boolean sameParameterType(int i) {
-        return jParams[i].equals(rParams[i].getIdentifier());
-    }
-
-    private boolean sameNumberOfParameters() {
-        return jParams.length == rParams.length;
-    }
-
-    private boolean sameName() {
-        return jName.equals(rName);
     }
 }

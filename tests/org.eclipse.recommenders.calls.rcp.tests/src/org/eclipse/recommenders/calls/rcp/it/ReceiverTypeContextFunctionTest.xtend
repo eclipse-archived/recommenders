@@ -4,13 +4,13 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.IType
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext
-import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.ReceiverTypeContextFunction
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Assert
 import org.junit.Test
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 
 class ReceiverTypeContextFunctionTest {
 

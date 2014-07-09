@@ -2,23 +2,20 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static java.util.Arrays.asList;
 import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_CALLS;
-import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.RECEIVER_TYPE2;
+import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.utils.Recommendation.newRecommendation;
 import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
@@ -129,6 +126,7 @@ public class CallCompletionSessionProcessorTest {
 
         when(context.getCompletionNode()).thenReturn(Optional.<ASTNode>of(completionNode));
         when(context.getExpectedTypeSignature()).thenReturn(Optional.<String>absent());
+        when(context.get(CompletionContextKey.RECEIVER_TYPEBINDING)).thenReturn(Optional.<TypeBinding>absent());
         when(context.get(eq(RECEIVER_TYPE2), any(IType.class))).thenReturn(receiverType);
         when(context.get(eq(RECEIVER_CALLS), anyListOf(IMethodName.class))).thenReturn(asList(observedMethods));
 

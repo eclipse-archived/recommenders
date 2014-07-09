@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.SystemUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jface.preference.IPreferenceStore
-import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposal
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposalComputer
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
@@ -20,6 +19,7 @@ import org.mockito.Mockito
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.SmokeTestScenarios.*
 import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 
 class ChainCompletionScenariosTest {
 
