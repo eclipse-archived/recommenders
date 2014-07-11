@@ -40,6 +40,8 @@ public class ProposalMatcherTest {
     private static IMethodName METHOD_OBJECT = VmMethodName.get("Lorg/example/Any.method(Ljava/lang/Object;)V");
     private static IMethodName METHOD_NUMBER = VmMethodName.get("Lorg/example/Any.method(Ljava/lang/Number;)V");
     private static IMethodName METHOD_COLLECTION = VmMethodName.get("Lorg/example/Any.method(Ljava/util/Collection;)V");
+    private static IMethodName SET_INT_STRING = VmMethodName
+            .get("Ljava/util/List.set(ILjava/lang/Object;)Ljava/lang/Object;");
 
     private static IMethodName METHOD_INTS = VmMethodName.get("Lorg/example/Any.method([I)V");
     private static IMethodName METHOD_OBJECTS = VmMethodName.get("Lorg/example/Any.method([Ljava/lang/Object;)V");
@@ -84,6 +86,14 @@ public class ProposalMatcherTest {
         scenarios.add(match(
                 classbody(classname() + "<N extends Number & Comparable>", "void method(N n) { this.method$ }"),
                 METHOD_NUMBER));
+
+        scenarios.add(match(classbody(classname() + "<L extends List<String>>", "void method(L l) { l.set$ }"),
+                SET_INT_STRING));
+
+        String secondClassDefinition = "class SecondClass<L extends List<String>> { <N extends L> void method(N n) { } }";
+        IMethodName secondClassFoo = VmMethodName.get("LSecondClass.method(Ljava/util/List;)V");
+        scenarios.add(match(classbody(classname(), "void method(SecondClass sc) { sc.method$ }")
+                + secondClassDefinition, secondClassFoo));
 
         scenarios.add(match(classbody(classname() + "<T>", "void method(T[] t) { this.method$ }"), METHOD_OBJECTS));
         scenarios.add(match(classbody(classname() + "<O extends Object>", "void method(O[] o) { this.method$ }"),
