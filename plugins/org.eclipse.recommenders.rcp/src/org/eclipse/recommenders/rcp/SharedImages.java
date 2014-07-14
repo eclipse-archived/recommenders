@@ -20,7 +20,7 @@ import org.eclipse.ui.services.IDisposable;
 /**
  * Registry for images shared over several Recommenders plugins. It's worth mentioning that this registry supports lazy
  * loading of {@link ImageResource}s, and thus, can be used by other plugins to share their images too.
- * 
+ *
  * @See {@link ImageResource}
  */
 public final class SharedImages implements IDisposable {
@@ -29,7 +29,7 @@ public final class SharedImages implements IDisposable {
      * An {@link ImageResource} is a key for Recommenders‘ {@link SharedImages}. The key is used (i) to lookup images in
      * the registry and (ii) to load these images lazily if not yet available in the registry. If not yet loaded, the
      * resource's bundle-classloader is used to lookup the image.
-     * 
+     *
      * @see #getName()
      * @see ImageDescriptor#createFromFile(Class, String)
      */
@@ -37,7 +37,7 @@ public final class SharedImages implements IDisposable {
 
         /**
          * @return the resource name of an image, i.e., a valid parameter to {@link Class#getResource(String)}
-         * 
+         *
          * @see <a href="http://wiki.eclipse.org/User_Interface_Guidelines#Folder_Structure">Eclipse standard for folder
          *      names</a>
          */
@@ -98,14 +98,18 @@ public final class SharedImages implements IDisposable {
         ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")), //$NON-NLS-1$
         ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.gif")), //$NON-NLS-1$
         ELCL_CLEAR(elcl16("clear.gif")), //$NON-NLS-1$
-        OBJ_CHECK_GREEN(obj16("tick_small.png")), //$NON-NLS-1$
-        OBJ_CROSS_RED(obj16("cross_small.png")), //$NON-NLS-1$
+        OBJ_BIRD_BLUE(obj16("bird_blue_16.png")), //$NON-NLS-1$
         OBJ_BULLET_BLUE(obj16("bullet_blue.png")), //$NON-NLS-1$
         OBJ_BULLET_GREEN(obj16("bullet_green.png")), //$NON-NLS-1$
         OBJ_BULLET_ORANGE(obj16("bullet_orange.png")), //$NON-NLS-1$
         OBJ_BULLET_RED(obj16("bullet_red.png")), //$NON-NLS-1$
         OBJ_BULLET_STAR(obj16("bullet_star.png")), //$NON-NLS-1$
         OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")), //$NON-NLS-1$
+        OBJ_CHECK_GREEN(obj16("tick_small.png")), //$NON-NLS-1$
+        OBJ_CROSS_RED(obj16("cross_small.png")), //$NON-NLS-1$
+        OBJ_CONTAINER(obj16("container_obj.gif")), //$NON-NLS-1$
+        OBJ_FAVORITE_STAR(obj16("favorite_star.png")), //$NON-NLS-1$
+        OBJ_HOMEPAGE(obj16("homepage.png")), //$NON-NLS-1$
         OBJ_LIGHTBULB(obj16("lightbulb.gif")), //$NON-NLS-1$
         OBJ_JAR(obj16("jar.gif")), //$NON-NLS-1$
         OBJ_JAVA_PROJECT(obj16("project.gif")), //$NON-NLS-1$
