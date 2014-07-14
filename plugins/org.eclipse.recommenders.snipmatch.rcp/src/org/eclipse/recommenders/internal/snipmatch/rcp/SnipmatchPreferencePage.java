@@ -137,11 +137,11 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
         addField(snippetsRepoPushUrlField);
 
-        Label pushBranchDescription = new Label(pushGroup, SWT.NONE | SWT.WRAP);
+        Label pushBranchDescription = new Label(pushGroup, SWT.WRAP);
         pushBranchDescription.setText(MessageFormat.format(Messages.PREFPAGE_LABEL_SNIPPETS_PUSH_SETTINGS_DESCRIPTION,
                 Snippet.FORMAT_VERSION));
-        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).hint(100, SWT.DEFAULT)
-        .applyTo(pushBranchDescription);
+        GridDataFactory.fillDefaults().span(3, 1).hint(300, SWT.DEFAULT).grab(true, false)
+        .align(SWT.FILL, SWT.BEGINNING).applyTo(pushBranchDescription);
 
         snippetsRepoPushBranchField = new StringFieldEditorWithPrefix(PREF_SNIPPETS_REPO_PUSH_BRANCH,
                 Messages.PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_BRANCH, pushGroup);
