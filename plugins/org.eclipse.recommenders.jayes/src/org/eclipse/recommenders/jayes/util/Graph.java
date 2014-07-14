@@ -79,7 +79,7 @@ public class Graph implements Cloneable {
             return clone;
         } catch (CloneNotSupportedException e) {
             // should not happen
-            throw new AssertionError(e.getMessage());
+            throw new AssertionError(e);
         }
     }
 }

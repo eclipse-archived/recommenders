@@ -15,7 +15,7 @@ import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
 import org.eclipse.recommenders.jayes.factor.opcache.DivisionCache;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 
-public class SparseFactor extends AbstractFactor {
+public class SparseFactor extends AbstractFactor implements Cloneable {
 
     private static final int SIZE_OF_INT = 4;
 
@@ -103,7 +103,7 @@ public class SparseFactor extends AbstractFactor {
      * Prepares the factor in the sense that it's internal structures are optimized according to the zero/non-zero
      * structure of the factors that will be multiplied in. This method should <strong>always</strong> and
      * <strong>only</strong> be called <strong>once before</strong> any call that modifies this factor's values
-     * 
+     *
      * @param compatible
      *            a Factor with compatible dimensions
      */
@@ -381,7 +381,7 @@ public class SparseFactor extends AbstractFactor {
 
     /**
      * approximates whether creating a sparse factor will save memory compared to a dense factor
-     * 
+     *
      * @param futureLength
      *            the length that the new factor's value array would have in a dense factor
      * @param multiplicationCandidates

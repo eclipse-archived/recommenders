@@ -60,7 +60,7 @@ public class Cut implements Cloneable {
         try {
             return (Cut) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError("Is Cloneable but still threw CloneNotSupportedException");
+            throw new AssertionError(e);
         }
     }
 
@@ -109,7 +109,7 @@ public class Cut implements Cloneable {
 
     /**
      * the Cut needs to further split if and only if there is an additional selection between root and leaf
-     * 
+     *
      * @return
      */
     private boolean needsSplit() {
