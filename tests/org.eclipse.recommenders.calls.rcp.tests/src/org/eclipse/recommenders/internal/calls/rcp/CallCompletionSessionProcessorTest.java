@@ -143,6 +143,8 @@ public class CallCompletionSessionProcessorTest {
         when(coreProposal.getSignature()).thenReturn(method.getIdentifier().toCharArray());
         when(coreProposal.getName()).thenReturn(method.getName().toCharArray());
 
+        when(coreProposal.getDeclarationSignature()).thenReturn("LTestClass;".toCharArray());
+
         return proposal;
     }
 }
