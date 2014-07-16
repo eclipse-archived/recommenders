@@ -16,6 +16,7 @@ import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
@@ -55,7 +56,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.progress.UIJob;
+import org.osgi.framework.Bundle;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
@@ -81,6 +84,7 @@ public class RcpModule extends AbstractModule implements Module {
         bind(SharedImages.class).in(SINGLETON);
         configureAstProvider();
         bindRcpServiceListener();
+        checkBundleResolution();
     }
 
     private void configureAstProvider() {
@@ -208,6 +212,34 @@ public class RcpModule extends AbstractModule implements Module {
     @Provides
     public IExtensionRegistry provideRegistry() {
         return Platform.getExtensionRegistry();
+    }
+
+    private void checkBundleResolution() {
+        Bundle[] bundles = RcpPlugin.getDefault().getBundle().getBundleContext().getBundles();
+
+        final Collection<Bundle> unresolvedBundles = Lists.newArrayList();
+        for (Bundle bundle : bundles) {
+            if (bundle.getSymbolicName().startsWith("org.eclipse.recommenders")) { //$NON-NLS-1$
+                if (bundle.getState() == Bundle.INSTALLED) {
+                    unresolvedBundles.add(bundle);
+                }
+            }
+        }
+        if (!unresolvedBundles.isEmpty()) {
+            final Display display = Display.getDefault();
+            display.asyncExec(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    BundleResolutionFailureDialog dialog = new BundleResolutionFailureDialog(display.getActiveShell(),
+                            RcpPlugin.getDefault().getBundle().getVersion(), unresolvedBundles);
+                    if (!dialog.isIgnored()) {
+                        dialog.open();
+                    }
+                }
+            });
+        }
     }
 
     static class RcpServiceMatcher extends AbstractMatcher<Object> {

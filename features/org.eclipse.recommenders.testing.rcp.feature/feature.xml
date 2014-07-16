@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.testing.rcp.feature"
       label="%label"
-      version="2.1.1.qualifier"
+      version="2.1.2.qualifier"
       provider-name="%provider-name"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -25,6 +25,13 @@
 
    <plugin
          id="org.eclipse.recommenders.testing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.testing.rcp"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -12,9 +12,13 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnipmatchFactory;
 import org.eclipse.recommenders.snipmatch.model.snipmatchmodel.SnippetRepositoryConfiguration;
@@ -22,9 +26,8 @@ import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -36,6 +39,7 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
             Messages.WIZARD_GIT_REPOSITORY_PAGE_NAME);
 
     private EclipseGitSnippetRepositoryConfiguration configuration;
+    private final BranchInputValidator branchInputValidator = new BranchInputValidator();
 
     public GitBasedRepositoryConfigurationWizard() {
         setWindowTitle(Messages.WIZARD_GIT_REPOSITORY_WINDOW_TITLE);
@@ -46,7 +50,9 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
     public boolean performFinish() {
         configuration = SnipmatchFactory.eINSTANCE.createEclipseGitSnippetRepositoryConfiguration();
         configuration.setName(page.txtName.getText());
-        configuration.setUrl(page.txtUrl.getText());
+        configuration.setUrl(page.txtFetchUri.getText());
+        configuration.setPushUrl(page.txtPushUri.getText());
+        configuration.setPushBranchPrefix(page.txtPushBranchPrefix.getText());
         configuration.setEnabled(true);
         return true;
     }
@@ -83,9 +89,10 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
 
     class GitBasedRepositoryConfigurationWizardPage extends WizardPage {
 
-        private Composite container;
         private Text txtName;
-        private Text txtUrl;
+        private Text txtFetchUri;
+        private Text txtPushUri;
+        private Text txtPushBranchPrefix;
 
         protected GitBasedRepositoryConfigurationWizardPage(String pageName) {
             super(pageName);
@@ -95,17 +102,13 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
 
         @Override
         public void createControl(Composite parent) {
-            container = new Composite(parent, SWT.NONE);
-            GridLayout layout = new GridLayout();
-            layout.numColumns = 2;
-            container.setLayout(layout);
-
-            GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+            Composite container = new Composite(parent, SWT.NONE);
+            GridLayoutFactory.swtDefaults().numColumns(3).applyTo(container);
 
             Label lblName = new Label(container, SWT.NONE);
             lblName.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_NAME);
             txtName = new Text(container, SWT.BORDER | SWT.SINGLE);
-            txtName.setLayoutData(gd);
+            GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtName);
             txtName.addModifyListener(new ModifyListener() {
 
                 @Override
@@ -114,21 +117,14 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
                 }
             });
 
-            Label lblUrl = new Label(container, SWT.NONE);
-            lblUrl.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_URL);
-            txtUrl = new Text(container, SWT.BORDER | SWT.SINGLE);
-            txtUrl.setLayoutData(gd);
-            txtUrl.addModifyListener(new ModifyListener() {
-
-                @Override
-                public void modifyText(ModifyEvent e) {
-                    updatePageComplete();
-                }
-            });
+            addFetchGroup(container);
+            addPushGroup(container);
 
             if (configuration != null) {
                 txtName.setText(configuration.getName());
-                txtUrl.setText(configuration.getUrl());
+                txtFetchUri.setText(configuration.getUrl());
+                txtPushUri.setText(configuration.getPushUrl());
+                txtPushBranchPrefix.setText(configuration.getPushBranchPrefix());
             }
 
             txtName.forceFocus();
@@ -137,18 +133,99 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
             updatePageComplete();
         }
 
+        private void addFetchGroup(Composite parent) {
+            Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+            group.setText(Messages.WIZARD_GIT_REPOSITORY_GROUP_FETCH_SETTINGS);
+            GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(group);
+            GridLayoutFactory.swtDefaults().margins(5, 5).numColumns(2).applyTo(group);
+
+            Label lblFetchUri = new Label(group, SWT.NONE);
+            lblFetchUri.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_FETCH_URL);
+            txtFetchUri = new Text(group, SWT.BORDER | SWT.SINGLE);
+            GridDataFactory.fillDefaults().grab(true, false).span(1, 1).applyTo(txtFetchUri);
+            txtFetchUri.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    updatePageComplete();
+                }
+            });
+
+        }
+
+        private void addPushGroup(Composite parent) {
+            Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+            group.setText(Messages.WIZARD_GIT_REPOSITORY_GROUP_PUSH_SETTINGS);
+            GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(group);
+            GridLayoutFactory.swtDefaults().margins(5, 5).numColumns(3).applyTo(group);
+
+            Label lblPushUri = new Label(group, SWT.NONE);
+            lblPushUri.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_PUSH_URL);
+            txtPushUri = new Text(group, SWT.BORDER | SWT.SINGLE);
+            GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtPushUri);
+            txtPushUri.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    updatePageComplete();
+                }
+            });
+
+            Label lblPushSettingsDescription = new Label(group, SWT.NONE);
+            lblPushSettingsDescription.setText(MessageFormat.format(
+                    Messages.WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION, Snippet.FORMAT_VERSION));
+            GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(lblPushSettingsDescription);
+
+            Label lblPushBranchPrefix = new Label(group, SWT.NONE);
+            lblPushBranchPrefix.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_PUSH_BRANCH_PREFIX);
+            txtPushBranchPrefix = new Text(group, SWT.BORDER | SWT.SINGLE);
+            GridDataFactory.fillDefaults().grab(true, false).span(1, 1).applyTo(txtPushBranchPrefix);
+            txtPushBranchPrefix.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    updatePageComplete();
+                }
+            });
+
+            Label lblBranch = new Label(group, SWT.NONE);
+            lblBranch.setText("/" + Snippet.FORMAT_VERSION); //$NON-NLS-1$
+
+        }
+
         public void updatePageComplete() {
             setErrorMessage(null);
-            boolean nameNotEmpty = !Strings.isNullOrEmpty(txtName.getText());
-            boolean urlValid = !Strings.isNullOrEmpty(txtUrl.getText());
 
-            try {
-                new URI(txtUrl.getText());
-            } catch (URISyntaxException e) {
-                setErrorMessage(Messages.WARNING_INVALID_URL_FORMAT);
-                urlValid = false;
+            String pushBranchPrefixValid = branchInputValidator.isValid(txtPushBranchPrefix.getText());
+
+            if (Strings.isNullOrEmpty(txtName.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_NAME);
+            } else if (Strings.isNullOrEmpty(txtFetchUri.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_FETCH_URL);
+            } else if (!validUriString(txtFetchUri.getText())) {
+                setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL,
+                        txtFetchUri.getText()));
+            } else if (Strings.isNullOrEmpty(txtPushUri.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_PUSH_URL);
+            } else if (!validUriString(txtPushUri.getText())) {
+                setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL,
+                        txtPushUri.getText()));
+            } else if (Strings.isNullOrEmpty(txtPushBranchPrefix.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX);
+            } else if (pushBranchPrefixValid != null) {
+                setErrorMessage(pushBranchPrefixValid);
             }
-            setPageComplete(nameNotEmpty && urlValid);
+
+            setPageComplete(getErrorMessage() == null);
+        }
+
+        private boolean validUriString(String uriString) {
+            try {
+                new URI(uriString);
+                return true;
+            } catch (URISyntaxException e) {
+                return false;
+            }
         }
 
         public boolean canFinish() {

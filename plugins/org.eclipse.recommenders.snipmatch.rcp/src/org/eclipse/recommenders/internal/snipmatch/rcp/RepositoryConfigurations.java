@@ -49,11 +49,15 @@ public class RepositoryConfigurations {
 
     @VisibleForTesting
     protected static SnippetRepositoryConfigurations loadConfigurations(File file) {
-        Resource resource = provideResource(file);
         SnippetRepositoryConfigurations configurations = SnipmatchFactory.eINSTANCE
                 .createSnippetRepositoryConfigurations();
 
+        if (!file.exists()) {
+            return configurations;
+        }
+
         try {
+            Resource resource = provideResource(file);
             resource.load(Collections.EMPTY_MAP);
             if (!resource.getContents().isEmpty()) {
                 configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);

@@ -17,6 +17,8 @@
     </genClasses>
     <genClasses ecoreClass="snipmatch.ecore#//EclipseGitSnippetRepositoryConfiguration">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//EclipseGitSnippetRepositoryConfiguration/url"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//EclipseGitSnippetRepositoryConfiguration/pushUrl"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//EclipseGitSnippetRepositoryConfiguration/pushBranchPrefix"/>
       <genOperations ecoreOperation="snipmatch.ecore#//EclipseGitSnippetRepositoryConfiguration/createRepositoryInstance"/>
     </genClasses>
     <genClasses ecoreClass="snipmatch.ecore#//SnippetRepositoryConfigurations">

@@ -8,14 +8,13 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommenders.completion.rcp.it;
+package org.eclipse.recommenders.rcp.utils;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

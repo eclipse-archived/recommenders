@@ -16,6 +16,7 @@ import org.junit.Test
 import static com.google.common.base.Optional.*
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.CodeBuilder.*
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 
 class RecommendersCompletionContextTest {
 

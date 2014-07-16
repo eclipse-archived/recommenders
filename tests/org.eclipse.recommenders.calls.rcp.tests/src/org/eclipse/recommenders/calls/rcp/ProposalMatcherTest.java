@@ -1,42 +1,146 @@
 package org.eclipse.recommenders.calls.rcp;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.eclipse.recommenders.testing.CodeBuilder.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Set;
+
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.calls.rcp.ProposalMatcher;
+import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
+import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
+import org.eclipse.recommenders.utils.Pair;
+import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+
+@RunWith(Parameterized.class)
 public class ProposalMatcherTest {
 
-    private ProposalMatcher sut;
+    private static IMethodName METHOD_VOID = VmMethodName.get("Lorg/example/Any.method()V");
+    private static IMethodName METHOD_OBJECT = VmMethodName.get("Lorg/example/Any.method(Ljava/lang/Object;)V");
+    private static IMethodName METHOD_NUMBER = VmMethodName.get("Lorg/example/Any.method(Ljava/lang/Number;)V");
+    private static IMethodName METHOD_COLLECTION = VmMethodName.get("Lorg/example/Any.method(Ljava/util/Collection;)V");
+    private static IMethodName SET_INT_STRING = VmMethodName
+            .get("Ljava/util/List.set(ILjava/lang/Object;)Ljava/lang/Object;");
 
-    @Test
-    public void test() {
-        // just to be sure we also fail sometimes ;)
-        assertFalse(check("m(I)V", "LC.m()V"));
+    private static IMethodName METHOD_INTS = VmMethodName.get("Lorg/example/Any.method([I)V");
+    private static IMethodName METHOD_OBJECTS = VmMethodName.get("Lorg/example/Any.method([Ljava/lang/Object;)V");
 
-        //
-        assertTrue(check("m()V", "LC.m()V"));
-        assertTrue(check("m(Ljava.util.Collection<*>;)V", "LC.m(Ljava/util/Collection;)V"));
-        assertTrue(check("m(Ljava.util.Collection<+Ljava.lang.Object;>;)V", "LC.m(Ljava/util/Collection;)V"));
-        assertTrue(check("m(Ljava.lang.Object;)V", "LC.m(Ljava/lang/Object;)V"));
-        assertTrue(check("m([TT;)V", "LC.m([Ljava/lang/Object;)V"));
-        assertTrue(check("m([I)V", "LC.m([I)V"));
-        assertTrue(check("m([I)V", "LC.m([I)V"));
-        assertTrue(check("m<T:Ljava.lang.Object;>([TT;)[TT;", "LC.m([Ljava/lang/Object;)V"));
+    private final CharSequence code;
+    private final IMethodName method;
+    private final boolean matchExpected;
+
+    public ProposalMatcherTest(CharSequence code, IMethodName method, boolean matchExpected) {
+        this.code = code;
+        this.method = method;
+        this.matchExpected = matchExpected;
     }
 
-    private boolean check(String jSignature, String rSignature) {
-        int sep = StringUtils.indexOfAny(jSignature, "<", "(");
-        String name = StringUtils.substring(jSignature, 0, sep);
-        String sig = StringUtils.substring(jSignature, sep);
-        CompletionProposal p = mock(CompletionProposal.class);
-        when(p.getName()).thenReturn(name.toCharArray());
-        when(p.getSignature()).thenReturn(sig.toCharArray());
-        sut = new ProposalMatcher(p);
-        return sut.match(VmMethodName.get(rSignature));
+    @Parameters
+    public static Collection<Object[]> scenarios() {
+        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+
+        scenarios.add(mismatch(classbody("void methodWithDifferentName() { this.method$ }"), METHOD_VOID));
+        scenarios.add(mismatch(classbody("void method(int i) { this.method$ }"), METHOD_VOID));
+        scenarios.add(mismatch(classbody("void method(int i) { this.method$ }"), METHOD_OBJECT));
+
+        scenarios.add(match(classbody("void method() { this.method$ }"), METHOD_VOID));
+        scenarios.add(match(classbody("void method(Object o) { this.method$ }"), METHOD_OBJECT));
+        scenarios.add(match(classbody("void method(Collection c) { this.method$ }"), METHOD_COLLECTION));
+
+        scenarios.add(match(classbody("void method(int[] is) { this.method$ }"), METHOD_INTS));
+        scenarios.add(match(classbody("void method(Object[] os) { this.method$ }"), METHOD_OBJECTS));
+
+        scenarios.add(match(classbody("void method(Collection<Number> c) { this.method$ }"), METHOD_COLLECTION));
+        scenarios.add(match(classbody("void method(Collection<?> c) { this.method$ }"), METHOD_COLLECTION));
+        scenarios.add(match(classbody("void method(Collection<? extends Number> c) { this.method$ }"),
+                METHOD_COLLECTION));
+        scenarios
+        .add(match(classbody("void method(Collection<? super Number> c) { this.method$ }"), METHOD_COLLECTION));
+
+        scenarios.add(match(classbody(classname() + "<T>", "void method(T t) { this.method$ }"), METHOD_OBJECT));
+        scenarios.add(match(classbody(classname() + "<O extends Object>", "void method(O o) { this.method$ }"),
+                METHOD_OBJECT));
+        scenarios.add(match(classbody(classname() + "<N extends Number>", "void method(N n) { this.method$ }"),
+                METHOD_NUMBER));
+        scenarios.add(match(
+                classbody(classname() + "<N extends Number & Comparable>", "void method(N n) { this.method$ }"),
+                METHOD_NUMBER));
+
+        scenarios.add(match(classbody(classname() + "<L extends List<String>>", "void method(L l) { l.set$ }"),
+                SET_INT_STRING));
+
+        String secondClassDefinition = "class SecondClass<L extends List<String>> { <N extends L> void method(N n) { } }";
+        IMethodName secondClassFoo = VmMethodName.get("LSecondClass.method(Ljava/util/List;)V");
+        scenarios.add(match(classbody(classname(), "void method(SecondClass sc) { sc.method$ }")
+                + secondClassDefinition, secondClassFoo));
+
+        scenarios.add(match(classbody(classname() + "<T>", "void method(T[] t) { this.method$ }"), METHOD_OBJECTS));
+        scenarios.add(match(classbody(classname() + "<O extends Object>", "void method(O[] o) { this.method$ }"),
+                METHOD_OBJECTS));
+
+        scenarios.add(match(
+                classbody(classname() + "<N extends Number>", "void method(Collection<N> c) { this.method$ }"),
+                METHOD_COLLECTION));
+
+        scenarios.add(match(classbody("<T> void method(T t) { this.method$ }"), METHOD_OBJECT));
+        scenarios.add(match(classbody("<O extends Object> void method(O o) { this.method$ }"), METHOD_OBJECT));
+        scenarios.add(match(classbody("<N extends Number> void method(N n) { this.method$ }"), METHOD_NUMBER));
+        scenarios.add(match(classbody("<N extends Number & Comparable> void method(N n) { this.method$ }"),
+                METHOD_NUMBER));
+
+        scenarios.add(match(classbody("<T> void method(T[] t) { this.method$ }"), METHOD_OBJECTS));
+        scenarios.add(match(classbody("<O extends Object> void method(O[] o) { this.method$ }"), METHOD_OBJECTS));
+
+        return scenarios;
+    }
+
+    private static Object[] match(CharSequence compilationUnit, IMethodName method) {
+        return new Object[] { compilationUnit, method, true };
+    }
+
+    private static Object[] mismatch(CharSequence compilationUnit, IMethodName method) {
+        return new Object[] { compilationUnit, method, false };
+    }
+
+    @Test
+    public void testMatch() throws Exception {
+        IRecommendersCompletionContext context = extractProposals(code);
+        Collection<CompletionProposal> proposals = context.getProposals().values();
+        Optional<TypeBinding> receiverTypeBinding = context.get(CompletionContextKey.RECEIVER_TYPEBINDING);
+        ProposalMatcher sut = new ProposalMatcher(getOnlyElement(proposals), receiverTypeBinding);
+
+        assertThat(sut.match(method), is(equalTo(matchExpected)));
+    }
+
+    private IRecommendersCompletionContext extractProposals(CharSequence code) throws CoreException {
+        JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
+        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
+        ICompilationUnit cu = struct.getFirst();
+        int completionIndex = struct.getSecond().iterator().next();
+        JavaContentAssistInvocationContext javaContext = new JavaContentAssistContextMock(cu, completionIndex);
+        IRecommendersCompletionContext recommendersContext = new RecommendersCompletionContext(javaContext,
+                new CachingAstProvider());
+        return recommendersContext;
     }
 }

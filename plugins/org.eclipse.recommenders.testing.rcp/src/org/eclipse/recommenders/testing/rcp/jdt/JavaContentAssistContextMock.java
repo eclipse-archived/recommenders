@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.it;
+package org.eclipse.recommenders.testing.rcp.jdt;
 
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.mockito.Mockito.*;
@@ -79,5 +79,4 @@ public class JavaContentAssistContextMock extends JavaContentAssistInvocationCon
     public CompletionContext getCoreContext() {
         return requestor.context;
     }
-
 }

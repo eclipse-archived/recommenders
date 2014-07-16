@@ -67,10 +67,14 @@ If you want to contribute to Code Recommenders yourself, we suggest that you use
 We recommend setting up Eclipse using [Eclipse Oomph](http://www.eclipse.org/oomph/).
 Oomph will setup an up-to-date Eclipse IDE, install required and useful plugins, and import Code Recommenders’ source ready to build.
 
-![Setting up Eclipse for work on the Code Recommenders master branch with Oomph](../plain/CONTRIBUTING/oomph.png)
+![Selecting an Eclipse Product to install](../plain/CONTRIBUTING/oomph-product-selection.png)
 
 To get started with Oomph, [download the installer](https://wiki.eclipse.org/Eclipse_Oomph_Installer#Installation) and execute it.
-From the list of preconfigured development environments select `Code Recommenders/master` and click on install.
+Select the Eclipse product and version you wish to install, e. g. `Eclipse Standard/SKDK` or `Eclipse IDE for Java Developers`.
+From the list of preconfigured projects double-click `Code Recommenders/Core` and click on `Next`.
+
+![Setting up Eclipse for work on Code Recommenders with Oomph](../plain/CONTRIBUTING/oomph-recommenders.png)
+
 Follow the instructions that ask you for your login data to Eclipse servers.
 The installation may take several minutes.
 The freshly installed Eclipse will open during installation and automatically configure itself to let you work on Code Recommenders.

@@ -83,25 +83,39 @@ public class Messages extends NLS {
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_NEW;
     public static String PREFPAGE_BUTTON_REMOVE;
-    public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
     public static String PREFPAGE_DESCRIPTION;
+    public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;
-    public static String WARNING_INVALID_URL_FORMAT;
     public static String WARNING_REPOSITION_CURSOR;
     public static String WARNING_FAILURE_TO_UPDATE_REPOSITORY;
 
     public static String WIZARD_GIT_REPOSITORY_DESCRIPTION;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_EMPTY_FETCH_URL;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_EMPTY_NAME;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_EMPTY_PUSH_URL;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL;
+    public static String WIZARD_GIT_REPOSITORY_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
+    public static String WIZARD_GIT_REPOSITORY_GROUP_FETCH_SETTINGS;
+    public static String WIZARD_GIT_REPOSITORY_GROUP_PUSH_SETTINGS;
+    public static String WIZARD_GIT_REPOSITORY_LABEL_FETCH_URL;
     public static String WIZARD_GIT_REPOSITORY_LABEL_NAME;
-    public static String WIZARD_GIT_REPOSITORY_LABEL_URL;
+    public static String WIZARD_GIT_REPOSITORY_LABEL_PUSH_URL;
+    public static String WIZARD_GIT_REPOSITORY_LABEL_PUSH_BRANCH_PREFIX;
     public static String WIZARD_GIT_REPOSITORY_PAGE_NAME;
+    public static String WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION;
     public static String WIZARD_GIT_REPOSITORY_TITLE;
     public static String WIZARD_GIT_REPOSITORY_WINDOW_TITLE;
+
     public static String WIZARD_TYPE_SELECTION_DESCRIPTION;
     public static String WIZARD_TYPE_SELECTION_LABEL_WIZARDS;
     public static String WIZARD_TYPE_SELECTION_NAME;
     public static String WIZARD_TYPE_SELECTION_TITLE;
     public static String WIZARD_TYPE_SELECTION_WINDOW_TITLE;
+
+    public static String GROUP_FETCH_SETTINGS;
+    public static String GROUP_PUSH_SETTINGS;
 
     static {
         // initialize resource bundle

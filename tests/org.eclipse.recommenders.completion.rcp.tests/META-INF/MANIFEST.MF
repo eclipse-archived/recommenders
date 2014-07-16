@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.tests;singleton:=true
-Bundle-Version: 2.1.1.qualifier
+Bundle-Version: 2.1.2.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -10,18 +10,19 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.jface.text,
- org.eclipse.recommenders.calls;bundle-version="2.0.0",
- org.eclipse.recommenders.calls.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.chain.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.completion.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.models;bundle-version="2.0.0",
- org.eclipse.recommenders.models.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.overrides;bundle-version="2.0.0",
- org.eclipse.recommenders.overrides.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.subwords.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.testing;bundle-version="2.0.0",
- org.eclipse.recommenders.utils;bundle-version="2.0.0",
+ org.eclipse.recommenders.calls,
+ org.eclipse.recommenders.calls.rcp,
+ org.eclipse.recommenders.chain.rcp,
+ org.eclipse.recommenders.completion.rcp,
+ org.eclipse.recommenders.models,
+ org.eclipse.recommenders.models.rcp,
+ org.eclipse.recommenders.overrides,
+ org.eclipse.recommenders.overrides.rcp,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.subwords.rcp,
+ org.eclipse.recommenders.testing,
+ org.eclipse.recommenders.testing.rcp,
+ org.eclipse.recommenders.utils,
  org.eclipse.ui,
  org.eclipse.xtext.xbase.lib,
  org.hamcrest,

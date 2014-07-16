@@ -43,13 +43,17 @@ public class GitSnippetRepository extends FileSnippetRepository {
     private static Logger LOG = LoggerFactory.getLogger(GitSnippetRepository.class);
 
     private final File basedir;
-    private final String repoUrl;
+    private final String fetchUrl;
     private final File gitFile;
+    private final String pushUrl;
+    private final String pushBranchPrefix;
 
-    public GitSnippetRepository(File basedir, String repoUrl) {
+    public GitSnippetRepository(File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
         super(basedir);
         this.basedir = basedir;
-        this.repoUrl = repoUrl;
+        this.fetchUrl = fetchUrl;
+        this.pushUrl = pushUrl;
+        this.pushBranchPrefix = pushBranchPrefix;
         gitFile = new File(basedir.getAbsolutePath() + "/.git");
     }
 
@@ -68,11 +72,12 @@ public class GitSnippetRepository extends FileSnippetRepository {
                     }
                     initializeSnippetsRepo();
                 }
+                configureGit();
                 pullSnippets();
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
                 throw createException(updatePossible, MessageFormat.format(
-                        "Invalid remote repository \u0027{1}\u0027. Check the repository's URL.", repoUrl), e);
+                        "Invalid remote repository \"{0}\". Check the repository's URL.", fetchUrl), e);
             } catch (TransportException e) {
                 LOG.error("Transport operation failed.", e);
                 throw createException(updatePossible,
@@ -122,14 +127,15 @@ public class GitSnippetRepository extends FileSnippetRepository {
         init.setBare(false);
         init.setDirectory(basedir);
         Git git = init.call();
-        configureGit(git);
     }
 
-    private void configureGit(Git git) throws IOException {
+    private void configureGit() throws IOException {
+        Git git = Git.open(gitFile);
         StoredConfig config = git.getRepository().getConfig();
         config.setString("remote", "origin", "url", getRepositoryLocation());
         config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-        String pushBranch = "HEAD:refs/for/" + FORMAT_VERSION;
+        config.setString("remote", "origin", "pushUrl", pushUrl);
+        String pushBranch = "HEAD:" + pushBranchPrefix + "/" + FORMAT_VERSION;
         config.setString("remote", "origin", "push", pushBranch);
 
         // prevents trust anchor errors when pulling from eclipse.org
@@ -173,6 +179,6 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     @Override
     public String getRepositoryLocation() {
-        return repoUrl;
+        return fetchUrl;
     }
 }

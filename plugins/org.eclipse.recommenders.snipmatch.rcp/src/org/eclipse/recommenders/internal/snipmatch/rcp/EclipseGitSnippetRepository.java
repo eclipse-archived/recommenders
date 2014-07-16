@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.name.Names;
 
 public class EclipseGitSnippetRepository implements ISnippetRepository {
@@ -58,10 +59,12 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private volatile Job openJob = null;
 
-    public EclipseGitSnippetRepository(File basedir, String remoteUri, EventBus bus) {
+    public EclipseGitSnippetRepository(File basedir, String remoteUri, String pushUrl, String pushBranchPrefix,
+            EventBus bus) {
         this.bus = bus;
 
-        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri);
+        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
+                pushBranchPrefix);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
@@ -168,6 +171,22 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         } finally {
             readLock.unlock();
         }
+    }
+
+    @Subscribe
+    public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws IOException {
+        close();
+        open();
+    }
+
+    /**
+     * Triggered when a snippet repository URL was changed (most likely in the a preference page).
+     * <p>
+     * Clients of this event should be an instance of {@link ISnippetRepository}. Other clients should have a look at
+     * {@link SnippetRepositoryClosedEvent} and {@link SnippetRepositoryClosedEvent}. Clients of this event may consider
+     * refreshing themselves whenever they receive this event. Clients get notified in a background process.
+     */
+    public static class SnippetRepositoryConfigurationChangedEvent {
     }
 
     /**
@@ -311,7 +330,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         File basedir = InjectionService.getInstance().requestAnnotatedInstance(File.class,
                 Names.named(SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR));
 
-        return new EclipseGitSnippetRepository(basedir, config.getUrl(), bus);
+        return new EclipseGitSnippetRepository(basedir, config.getUrl(), config.getPushUrl(),
+                config.getPushBranchPrefix(), bus);
     }
 
     public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {
@@ -322,7 +342,11 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         configuration.setName(Messages.DEFAULT_REPO_NAME);
         configuration.setDescription(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION);
         configuration.setEnabled(true);
-        configuration.setUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets"); //$NON-NLS-1$
+        configuration
+                .setUrl("https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
+        configuration
+                .setPushUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
+        configuration.setPushBranchPrefix("refs/for");
 
         result.add(configuration);
         return result;

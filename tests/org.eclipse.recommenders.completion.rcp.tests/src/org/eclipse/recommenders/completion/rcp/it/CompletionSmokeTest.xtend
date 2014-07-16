@@ -47,6 +47,7 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
 import com.google.common.collect.ImmutableSet
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {

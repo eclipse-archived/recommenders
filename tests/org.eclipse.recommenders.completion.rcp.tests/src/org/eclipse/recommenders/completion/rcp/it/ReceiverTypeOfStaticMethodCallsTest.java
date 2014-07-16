@@ -17,6 +17,7 @@ import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.testing.CodeBuilder;
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
 import org.eclipse.recommenders.utils.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +69,6 @@ public class ReceiverTypeOfStaticMethodCallsTest {
         ICompilationUnit cu = struct.getFirst();
         int completionIndex = struct.getSecond().iterator().next();
         JavaContentAssistInvocationContext ctx = new JavaContentAssistContextMock(cu, completionIndex);
-
         return new RecommendersCompletionContext(ctx, new CachingAstProvider());
     }
 }

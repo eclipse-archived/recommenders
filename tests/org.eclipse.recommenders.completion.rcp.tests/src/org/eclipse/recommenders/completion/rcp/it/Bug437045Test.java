@@ -19,6 +19,7 @@ import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.testing.CodeBuilder;
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
 import org.eclipse.recommenders.utils.Pair;
 import org.hamcrest.Matcher;
 import org.junit.After;
