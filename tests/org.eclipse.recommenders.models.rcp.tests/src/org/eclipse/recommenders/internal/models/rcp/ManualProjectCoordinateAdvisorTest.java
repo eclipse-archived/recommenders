@@ -1,11 +1,10 @@
-package org.eclipse.recommenders.models.rcp;
+package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.internal.models.rcp.ManualProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -16,7 +15,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Optional;
 
-public class ManualMappingStrategyTest {
+public class ManualProjectCoordinateAdvisorTest {
 
     private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("example",
             "example.project", "1.0.0");
@@ -72,8 +71,7 @@ public class ManualMappingStrategyTest {
         Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
 
-        Optional<ProjectCoordinate> anotherProjectCoordinate = sut
-                .suggest(anotherExampleDependencyInfo);
+        Optional<ProjectCoordinate> anotherProjectCoordinate = sut.suggest(anotherExampleDependencyInfo);
         assertEquals(ANOTHER_EXPECTED_PROJECT_COORDINATE, anotherProjectCoordinate.get());
 
         sut.close();
@@ -94,8 +92,7 @@ public class ManualMappingStrategyTest {
         Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
 
-        Optional<ProjectCoordinate> anotherProjectCoordinate = sut
-                .suggest(anotherExampleDependencyInfo);
+        Optional<ProjectCoordinate> anotherProjectCoordinate = sut.suggest(anotherExampleDependencyInfo);
         assertEquals(ANOTHER_EXPECTED_PROJECT_COORDINATE, anotherProjectCoordinate.get());
 
         sut.close();

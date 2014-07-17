@@ -26,9 +26,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -64,14 +71,27 @@ import com.google.common.collect.Sets;
  */
 public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ModelIndex.class);
+
     private static final int MAX_DOCUMENTS_SEARCHED = 100;
+
+    private final Lock readLock;
+    private final Lock writeLock;
 
     private File indexdir;
     private Directory index;
+
     private IndexReader reader;
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private IndexWriter writer;
+
+    private ModelIndex() {
+        ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+        readLock = readWriteLock.readLock();
+        writeLock = readWriteLock.writeLock();
+    }
 
     public ModelIndex(File indexdir) {
+        this();
         this.indexdir = indexdir;
     }
 
@@ -82,6 +102,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
      */
     @VisibleForTesting
     ModelIndex(Object index) {
+        this();
         this.index = (Directory) index;
     }
 
@@ -91,42 +112,82 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
     @Override
     public void open() throws IOException {
-        // Normally, indexdir is set; if not, the VisibleForTesting constructor has been used.
-        if (indexdir != null) {
-            index = FSDirectory.open(indexdir);
+        writeLock.lock();
+        try {
+            // Normally, indexdir is set; if not, the VisibleForTesting constructor has been used.
+            if (indexdir != null) {
+                index = FSDirectory.open(indexdir);
+            }
+            Analyzer analyzer = new StandardAnalyzer(org.apache.lucene.util.Version.LUCENE_35, Sets.newHashSet());
+            IndexWriterConfig config = new IndexWriterConfig(org.apache.lucene.util.Version.LUCENE_35, analyzer);
+            writer = new IndexWriter(index, config);
+            reader = IndexReader.open(writer, true);
+        } finally {
+            writeLock.unlock();
         }
-        reader = IndexReader.open(index);
+    }
+
+    @Override
+    public void updateIndex(File index) throws IOException {
+        if (!isAccessible()) {
+            return;
+        }
+
+        writer.deleteAll();
+        writer.addIndexes(FSDirectory.open(index));
+        writer.commit();
+        IndexReader newReader = IndexReader.openIfChanged(reader);
+        IndexReader oldReader = reader;
+
+        writeLock.lock();
+        try {
+            reader = newReader;
+        } finally {
+            writeLock.unlock();
+        }
+        oldReader.close();
     }
 
     @Override
     public void close() throws IOException {
-        closeQuietly(reader);
-        closeQuietly(index);
+        writeLock.lock();
+        try {
+            closeQuietly(reader);
+            closeQuietly(writer);
+            closeQuietly(index);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
     public Optional<ModelCoordinate> suggest(ProjectCoordinate pc, String modelType) {
-        ImmutableSet<ModelCoordinate> results = suggestCandidates(pc, modelType);
+        readLock.lock();
+        try {
+            ImmutableSet<ModelCoordinate> results = suggestCandidates(pc, modelType);
 
-        if (results.isEmpty()) {
-            return absent();
-        }
-
-        final Version closestVersion = Versions.findClosest(Version.valueOf(pc.getVersion()),
-                transform(results, new Function<ModelCoordinate, Version>() {
-
-                    @Override
-                    public Version apply(ModelCoordinate mc) {
-                        return Version.valueOf(mc.getVersion());
-                    }
-                }));
-        return Optional.of(find(results, new Predicate<ModelCoordinate>() {
-
-            @Override
-            public boolean apply(ModelCoordinate mc) {
-                return Version.valueOf(mc.getVersion()).equals(closestVersion);
+            if (results.isEmpty()) {
+                return absent();
             }
-        }));
+
+            final Version closestVersion = Versions.findClosest(Version.valueOf(pc.getVersion()),
+                    transform(results, new Function<ModelCoordinate, Version>() {
+
+                        @Override
+                        public Version apply(ModelCoordinate mc) {
+                            return Version.valueOf(mc.getVersion());
+                        }
+                    }));
+            return Optional.of(find(results, new Predicate<ModelCoordinate>() {
+
+                @Override
+                public boolean apply(ModelCoordinate mc) {
+                    return Version.valueOf(mc.getVersion()).equals(closestVersion);
+                }
+            }));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -135,13 +196,19 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
         if (!isAccessible()) {
             return ImmutableSet.of();
         }
-        Builder<ModelCoordinate> res = ImmutableSet.builder();
-        for (String model : queryLuceneIndexForModelCandidates(pc, modelType)) {
-            Artifact tmp = new DefaultArtifact(model);
-            ModelCoordinate mc = toModelCoordinate(tmp);
-            res.add(mc);
+
+        readLock.lock();
+        try {
+            Builder<ModelCoordinate> res = ImmutableSet.builder();
+            for (String model : queryLuceneIndexForModelCandidates(pc, modelType)) {
+                Artifact tmp = new DefaultArtifact(model);
+                ModelCoordinate mc = toModelCoordinate(tmp);
+                res.add(mc);
+            }
+            return res.build();
+        } finally {
+            readLock.unlock();
         }
-        return res.build();
     }
 
     private Set<String> queryLuceneIndexForModelCandidates(ProjectCoordinate pc, String modelClassifier) {
@@ -170,16 +237,22 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
     @Override
     public ImmutableSet<ModelCoordinate> getKnownModels(String modelType) {
-        List<Artifact> artifacts = findModelArchiveCoordinatesByClassifier(modelType);
-        Collection<ModelCoordinate> transform = Collections2.transform(artifacts,
-                new Artifact2ModelArchiveTransformer());
-        return ImmutableSet.copyOf(transform);
+        if (!isAccessible()) {
+            return ImmutableSet.of();
+        }
+
+        readLock.lock();
+        try {
+            List<Artifact> artifacts = findModelArchiveCoordinatesByClassifier(modelType);
+            Collection<ModelCoordinate> transform = Collections2.transform(artifacts,
+                    new Artifact2ModelArchiveTransformer());
+            return ImmutableSet.copyOf(transform);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private List<Artifact> findModelArchiveCoordinatesByClassifier(String classifier) {
-        if (!isAccessible()) {
-            return Collections.emptyList();
-        }
         List<Artifact> res = Lists.newLinkedList();
         try {
             Term t = new Term(F_CLASSIFIER, classifier);
@@ -193,27 +266,42 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
                 }
             }
         } catch (Exception e) {
-            log.error("Searching index failed with exception", e); //$NON-NLS-1$
+            LOG.error("Searching index failed with exception", e); //$NON-NLS-1$
         }
         return res;
     }
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId) {
+        if (!isAccessible()) {
+            return absent();
+        }
+
         Term t1 = new Term(F_SYMBOLIC_NAMES, artifactId);
-        return findProjectCoordinateByTerm(t1);
+        readLock.lock();
+        try {
+            return findProjectCoordinateByTerm(t1);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint) {
+        if (!isAccessible()) {
+            return absent();
+        }
+
         Term t1 = new Term(F_FINGERPRINTS, fingerprint);
-        return findProjectCoordinateByTerm(t1);
+        readLock.lock();
+        try {
+            return findProjectCoordinateByTerm(t1);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private Optional<ProjectCoordinate> findProjectCoordinateByTerm(Term... terms) {
-        if (reader == null) {
-            return absent();
-        }
         BooleanQuery query = new BooleanQuery();
         for (Term t : terms) {
             TermQuery q = new TermQuery(t);

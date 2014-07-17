@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableList;
@@ -43,10 +42,10 @@ public class AdvisorDescriptorsTest {
 
     @Before
     public void setUp() {
-        Mockito.when(first.getAttribute("id")).thenReturn("first");
-        Mockito.when(second.getAttribute("id")).thenReturn("second");
-        Mockito.when(third.getAttribute("id")).thenReturn("third");
-        Mockito.when(fourth.getAttribute("id")).thenReturn("fourth");
+        when(first.getAttribute("id")).thenReturn("first");
+        when(second.getAttribute("id")).thenReturn("second");
+        when(third.getAttribute("id")).thenReturn("third");
+        when(fourth.getAttribute("id")).thenReturn("fourth");
     }
 
     @Test

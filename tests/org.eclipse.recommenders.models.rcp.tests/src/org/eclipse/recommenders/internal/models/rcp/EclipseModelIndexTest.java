@@ -8,20 +8,17 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models.rcp;
+package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Constants.EXT_ZIP;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.recommenders.internal.models.rcp.EclipseModelIndex;
-import org.eclipse.recommenders.internal.models.rcp.ModelsRcpPreferences;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -43,7 +40,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("unchecked")
-public class MultiRepositorySupportTest {
+public class EclipseModelIndexTest {
 
     public static final ProjectCoordinate PC1 = new ProjectCoordinate("org.example", "one", "1.0.0");
     public static final ProjectCoordinate PC2 = new ProjectCoordinate("org.example", "two", "2.0.0");
@@ -111,9 +108,7 @@ public class MultiRepositorySupportTest {
             }
         });
 
-        doReturn(true).when(sut).indexAlreadyDownloaded(any(File.class));
-
-        sut.open();
+        sut.openForTesting();
         return sut;
     }
 
