@@ -13,7 +13,6 @@ import static org.eclipse.recommenders.internal.subwords.rcp.Constants.*;
 import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLabelToPreferencePage;
 import static org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn;
 
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposa
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,8 +36,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 import com.google.common.collect.ImmutableList;
 
@@ -83,16 +81,6 @@ public class EnableSubwordsCompletionProposal extends AbstractCompletionTipPropo
         createPreferenceDialogOn(getActiveWorkbenchShell(), SUBWORDS_COMPLETION_PREFERENCE_PAGE_ID, null, null).open();
     }
 
-    private void openHomepageInBrowser(String url) {
-        try {
-            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
-                    .createBrowser(SWT.NONE, "recommenders-homepage", Messages.BROWSER_LABEL_PROJECT_WEBSITE, //$NON-NLS-1$
-                            Messages.BROWSER_TOOLTIP_PROJECT_WEBSITE);
-            browser.openURL(new URL(url));
-        } catch (Exception e) {
-        }
-    }
-
     @Override
     protected IInformationControl createInformationControl(Shell parent, String statusLineText) {
         return new ConfigureContentAssistInformationControl(parent, statusLineText);
@@ -129,7 +117,7 @@ public class EnableSubwordsCompletionProposal extends AbstractCompletionTipPropo
                     } else if (ABOUT_PREFERENCES.equals(e.text)) {
                         openPreferencePage();
                     } else if (HTTP_MANUAL.equals(e.text)) {
-                        openHomepageInBrowser(e.text);
+                        BrowserUtils.openInExternalBrowser(e.text);
                     }
                 }
             });

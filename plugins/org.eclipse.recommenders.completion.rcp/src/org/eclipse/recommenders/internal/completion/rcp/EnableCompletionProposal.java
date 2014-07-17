@@ -16,7 +16,6 @@ import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
 import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLabelToPreferencePage;
 import static org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn;
 
-import java.net.URL;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,6 +28,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,8 +36,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 @SuppressWarnings("restriction")
 public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
@@ -108,16 +106,6 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
         createPreferenceDialogOn(getActiveWorkbenchShell(), COMPLETION_PREFERENCE_PAGE_ID, null, null).open();
     }
 
-    private void openHomepageInBrowser(String url) {
-        try {
-            IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
-                    .createBrowser(SWT.NONE, "recommenders-homepage", Messages.BROWSER_LABEL_PROJECT_WEBSITE, //$NON-NLS-1$
-                            Messages.BROWSER_TOOLTIP_PROJECT_WEBSITE);
-            browser.openURL(new URL(url));
-        } catch (Exception e1) {
-        }
-    }
-
     private final class ConfigureContentAssistInformationControl extends AbstractInformationControl {
 
         private ConfigureContentAssistInformationControl(Shell parentShell) {
@@ -147,7 +135,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
                     } else if (ABOUT_PREFERENCES.equals(e.text)) {
                         openPreferencePage();
                     } else if (HTTP_HOMEPAGE.equals(e.text)) {
-                        openHomepageInBrowser(e.text);
+                        BrowserUtils.openInExternalBrowser(e.text);
                     }
                 }
             });

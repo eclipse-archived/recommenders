@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.models.IModelIndex.INDEX;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -42,8 +42,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 
@@ -180,12 +178,7 @@ public class DownloadModelArchiveJob extends Job {
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent event) {
-                    try {
-                        IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
-                                .createBrowser("recommenders-bugzilla"); //$NON-NLS-1$
-                        browser.openURL(new URL(event.text));
-                    } catch (Exception e) {
-                    }
+                    BrowserUtils.openInExternalBrowser(event.text);
                 }
             });
             return link;
