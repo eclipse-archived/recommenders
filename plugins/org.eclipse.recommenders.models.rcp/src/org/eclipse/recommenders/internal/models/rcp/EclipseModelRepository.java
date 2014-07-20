@@ -120,7 +120,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         for (ModelRepository delegate : foundDelegates) {
             Optional<File> location = delegate.getLocation(mc, false);
             if (prefetch && prefs.autoDownloadEnabled) {
-                new DownloadModelArchiveJob(delegate, mc, false, bus).schedule();
+                new DownloadModelArchiveJob(this, mc, false, bus).schedule();
             }
             if (location.isPresent()) {
                 return location;
