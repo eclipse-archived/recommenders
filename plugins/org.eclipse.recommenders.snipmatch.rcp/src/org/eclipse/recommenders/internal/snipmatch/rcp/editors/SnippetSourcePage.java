@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *      Marcel Bruch - Initial design and API
  */
@@ -17,6 +17,8 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.swt.SWT;
@@ -54,6 +56,7 @@ public class SnippetSourcePage extends FormPage {
         txtCode = managedForm.getToolkit()
                 .createText(managedForm.getForm().getBody(), "New Text", SWT.WRAP | SWT.MULTI); //$NON-NLS-1$
         txtCode.setEditable(true);
+        txtCode.setFont(JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT));
 
         initDataBindings();
     }
