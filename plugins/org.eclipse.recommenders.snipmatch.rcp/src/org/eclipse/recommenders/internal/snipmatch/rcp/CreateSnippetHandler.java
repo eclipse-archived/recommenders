@@ -188,6 +188,9 @@ public class CreateSnippetHandler extends AbstractHandler {
         if (type.isPrimitive()) {
             return;
         }
+        if (type.getPackage().getName().equals("java.lang")) {
+            return;
+        }
         String name = type.getErasure().getQualifiedName();
         imports.add(name);
     }
@@ -198,7 +201,7 @@ public class CreateSnippetHandler extends AbstractHandler {
         sb.append("${").append(varname);
         if (vars.add(varname)) {
             sb.append(":").append(command).append("(")
-            .append(type.isArray() ? "array" : type.getErasure().getQualifiedName()).append(")");
+                    .append(type.isArray() ? "array" : type.getErasure().getQualifiedName()).append(")");
         }
         sb.append("}");
 
