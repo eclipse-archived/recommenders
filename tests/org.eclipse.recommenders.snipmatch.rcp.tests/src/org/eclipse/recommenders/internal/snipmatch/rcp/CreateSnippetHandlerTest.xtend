@@ -38,6 +38,26 @@ class CreateSnippetHandlerTest {
         )
     }
 
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439330
+     */
+    @Test
+    def void testNoEmptyImport() {
+        code = CodeBuilder::method(
+            '''
+                $int two = 1 + 1;$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                int ${two:newName(int)} = 1 + 1;
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
     @Test
     def void testGenerics() {
         code = CodeBuilder::method(
