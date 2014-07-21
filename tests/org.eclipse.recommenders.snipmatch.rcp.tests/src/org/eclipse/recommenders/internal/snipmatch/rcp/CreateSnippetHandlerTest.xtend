@@ -23,20 +23,39 @@ class CreateSnippetHandlerTest {
     def void testNewArrayAndCalls() {
         code = CodeBuilder::method(
             '''
-                $List[] l[] = new List[0][];
-                l.hashCode();$
+                $List[][] ls = new List[0][];
+                ls.hashCode();$
             ''')
         exercise()
 
         assertEquals(
             '''
-                List[] ${l:newName(array)}[] = new List[0][];
-                ${l}.hashCode();
+                List[][] ${ls:newName('java.util.List[][]')} = new List[0][];
+                ${ls}.hashCode();
                 ${:import(java.util.List)}${cursor}
             '''.toString,
             actual.code
         )
     }
+
+    @Test
+    def void testReferenceToLocalOutsideSelection() {
+        code = CodeBuilder::method(
+            '''
+                List l = null;
+                $l.hashCode();$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                ${l:var(java.util.List)}.hashCode();
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
         /*
          * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439984
          */
@@ -96,6 +115,99 @@ class CreateSnippetHandlerTest {
         )
     }
 
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
+     */
+    @Test
+    def void testReferenceToFieldBeforeSelection() {
+        code = CodeBuilder::classbody(
+            '''
+                List l = null;
+                void method() {
+                    $l = null;$
+                }
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                ${l:field(java.util.List)} = null;
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
+     */
+    @Test
+    def void testReferenceToFieldAfterSelection() {
+        code = CodeBuilder::classbody(
+            '''
+                void method() {
+                    $l = null;$
+                }
+                List l = null;
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                ${l:field(java.util.List)} = null;
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
+     */
+    @Test
+    def void testReferenceToFieldInSelection() {
+        code = CodeBuilder::classbody(
+            '''
+                $void method() {
+                    l = null;
+                }
+                List l = null;$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                void method() {
+                    ${l} = null;
+                }
+                List ${l:newName(java.util.List)} = null;
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testReferenceToParameterInSelection() {
+        code = CodeBuilder::classbody(
+            '''
+                $void method(List l) {
+                    l = null;
+                }$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                void method(List ${l:newName(java.util.List)}) {
+                    ${l} = null;
+                }
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
     @Test
     def void testGenerics() {
         code = CodeBuilder::method(
@@ -112,7 +224,6 @@ class CreateSnippetHandlerTest {
             actual.code
         )
     }
-
 
     def void exercise() {
         val struct = fixture.createFileAndParseWithMarkers(code)
