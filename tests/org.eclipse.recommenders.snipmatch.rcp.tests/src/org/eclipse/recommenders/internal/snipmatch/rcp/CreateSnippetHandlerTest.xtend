@@ -4,7 +4,6 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
 import org.eclipse.jface.text.TextSelection
-import org.eclipse.recommenders.internal.snipmatch.rcp.CreateSnippetHandler
 import org.eclipse.recommenders.snipmatch.Snippet
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
@@ -56,10 +55,10 @@ class CreateSnippetHandlerTest {
         )
     }
 
-        /*
+    /*
          * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439984
          */
-        @Test
+    @Test
     def void testNoJavaLangImport() {
         code = CodeBuilder::method(
             '''
@@ -80,8 +79,8 @@ class CreateSnippetHandlerTest {
     def void testNoJavaLangImportButOtherImports() {
         code = CodeBuilder::method(
             '''
-                $String s = null;$
-                $List l = null;$
+                $String s = null;
+                List l = null;$
             ''')
         exercise()
 
@@ -203,6 +202,157 @@ class CreateSnippetHandlerTest {
                     ${l} = null;
                 }
                 ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
+     */
+    @Test
+    def void testVariableDeclarationsInDifferentMethods() {
+        code = CodeBuilder::classbody(
+            '''
+                $void method1() {
+                    String e;
+                }
+                void method2() {
+                    String e;
+                }$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                void method1() {
+                    String ${e:newName(java.lang.String)};
+                }
+                void method2() {
+                    String ${e2:newName(java.lang.String)};
+                }
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
+     */
+    @Test
+    def void testVariableDeclarationsInDifferentLoops() {
+        code = CodeBuilder::method(
+            '''
+                $for (int i = 0; i < 10; i++) {
+                    String s;
+                }
+                for (int i = 0; i < 10; i++) {
+                    String s;
+                }$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                for (int ${i:newName(int)} = 0; ${i} < 10; ${i}++) {
+                    String ${s:newName(java.lang.String)};
+                }
+                for (int ${i2:newName(int)} = 0; ${i2} < 10; ${i2}++) {
+                    String ${s2:newName(java.lang.String)};
+                }
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
+     */
+    @Test
+    def void testVariableDeclarationsInNestedLoops() {
+        code = CodeBuilder::method(
+            '''
+                $while (true) {
+                    String e;
+                    for (int i = 0; i < 10; i++) {
+                        String e;
+                    }
+                }$
+                
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                while (true) {
+                    String ${e:newName(java.lang.String)};
+                    for (int ${i:newName(int)} = 0; ${i} < 10; ${i}++) {
+                        String ${e2:newName(java.lang.String)};
+                    }
+                }
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testParameter() {
+        code = CodeBuilder::classbody(
+            '''
+                $void method(String s) {
+                    String s1;
+                    while (true) {
+                        s = "";
+                    }
+                }$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                void method(String ${s:newName(java.lang.String)}) {
+                    String ${s1:newName(java.lang.String)};
+                    while (true) {
+                        ${s} = "";
+                    }
+                }
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testVariableDeclarationsPicksNewName() {
+        code = CodeBuilder::classbody(
+            '''
+                $void method1() {
+                    String e;
+                }
+                void method2() {
+                    String e1;
+                }
+                void method3() {
+                    String e;
+                }$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                void method1() {
+                    String ${e:newName(java.lang.String)};
+                }
+                void method2() {
+                    String ${e1:newName(java.lang.String)};
+                }
+                void method3() {
+                    String ${e2:newName(java.lang.String)};
+                }
+                ${cursor}
             '''.toString,
             actual.code
         )
