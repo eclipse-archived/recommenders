@@ -160,6 +160,7 @@ public class CreateSnippetHandler extends AbstractHandler {
             sb.append(ch);
         }
 
+        sb.append("\n");
         appendImports();
         appendCursor();
         replaceLeadingWhitespaces();
@@ -197,7 +198,7 @@ public class CreateSnippetHandler extends AbstractHandler {
         sb.append("${").append(varname);
         if (vars.add(varname)) {
             sb.append(":").append(command).append("(")
-                    .append(type.isArray() ? "array" : type.getErasure().getQualifiedName()).append(")");
+            .append(type.isArray() ? "array" : type.getErasure().getQualifiedName()).append(")");
         }
         sb.append("}");
 
@@ -205,8 +206,10 @@ public class CreateSnippetHandler extends AbstractHandler {
     }
 
     private void appendImports() {
-        String joinedTypes = Joiner.on(", ").join(imports);
-        sb.append("\n").append("${:import(").append(joinedTypes).append(")}");
+        if (!imports.isEmpty()) {
+            String joinedTypes = Joiner.on(", ").join(imports);
+            sb.append("${:import(").append(joinedTypes).append(")}");
+        }
     }
 
     private void appendCursor() {
