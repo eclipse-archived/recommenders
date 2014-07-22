@@ -168,6 +168,12 @@ public class SnipmatchCompletionEngine {
                                 snippetApplied((SnippetProposal) selectedProposal);
                             }
                             selectedProposal.apply(ctx.getViewer(), (char) 0, SWT.NONE, ctx.getInvocationOffset());
+
+                            Point selection = selectedProposal.getSelection(ctx.getDocument());
+                            if (selection != null) {
+                                ctx.getViewer().setSelectedRange(selection.x, selection.y);
+                                ctx.getViewer().revealRange(selection.x, selection.y);
+                            }
                         }
                     }
                     return;
