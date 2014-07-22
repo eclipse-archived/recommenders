@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.recommenders.internal.rcp.RcpPlugin.logError;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,19 +21,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.internal.corext.template.java.ElementTypeResolver;
-import org.eclipse.jdt.internal.corext.template.java.ExceptionVariableNameResolver;
-import org.eclipse.jdt.internal.corext.template.java.FieldResolver;
-import org.eclipse.jdt.internal.corext.template.java.ImportsResolver;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
-import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
-import org.eclipse.jdt.internal.corext.template.java.LinkResolver;
-import org.eclipse.jdt.internal.corext.template.java.LocalVarResolver;
-import org.eclipse.jdt.internal.corext.template.java.NameResolver;
-import org.eclipse.jdt.internal.corext.template.java.StaticImportResolver;
-import org.eclipse.jdt.internal.corext.template.java.TypeResolver;
-import org.eclipse.jdt.internal.corext.template.java.TypeVariableResolver;
-import org.eclipse.jdt.internal.corext.template.java.VarResolver;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
@@ -63,8 +52,6 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
 
-    private static final String CONTEXT_ID = "SnipMatch-Java-Context"; //$NON-NLS-1$
-
     private final Set<ISnippetRepository> repos;
     private final TemplateContextType contextType;
     private final Image image;
@@ -75,61 +62,8 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     @Inject
     public SnipmatchContentAssistProcessor(Set<ISnippetRepository> repos, SharedImages images) {
         this.repos = repos;
-        contextType = createContextType();
+        contextType = SnipmatchTemplateContextType.getInstance();
         image = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
-    }
-
-    private TemplateContextType createContextType() {
-
-        JavaContextType contextType = new JavaContextType();
-        contextType.setId(CONTEXT_ID);
-        contextType.initializeContextTypeResolvers();
-
-        ImportsResolver importResolver = new ImportsResolver();
-        importResolver.setType("import"); //$NON-NLS-1$
-        contextType.addResolver(importResolver);
-
-        StaticImportResolver staticImportResolver = new StaticImportResolver();
-        staticImportResolver.setType("importStatic"); //$NON-NLS-1$
-        contextType.addResolver(staticImportResolver);
-
-        VarResolver varResolver = new VarResolver();
-        varResolver.setType("var"); //$NON-NLS-1$
-        contextType.addResolver(varResolver);
-
-        LocalVarResolver localVarResolver = new LocalVarResolver();
-        localVarResolver.setType("localVar"); //$NON-NLS-1$
-        contextType.addResolver(localVarResolver);
-
-        FieldResolver fieldResolver = new FieldResolver();
-        fieldResolver.setType("field"); //$NON-NLS-1$
-        contextType.addResolver(fieldResolver);
-
-        TypeResolver typeResolver = new TypeResolver();
-        typeResolver.setType("newType"); //$NON-NLS-1$
-        contextType.addResolver(typeResolver);
-
-        LinkResolver linkResolver = new LinkResolver();
-        linkResolver.setType("link"); //$NON-NLS-1$
-        contextType.addResolver(linkResolver);
-
-        NameResolver nameResolver = new NameResolver();
-        nameResolver.setType("newName"); //$NON-NLS-1$
-        contextType.addResolver(nameResolver);
-
-        ElementTypeResolver elementTypeResolver = new ElementTypeResolver();
-        elementTypeResolver.setType("elemType"); //$NON-NLS-1$
-        contextType.addResolver(elementTypeResolver);
-
-        TypeVariableResolver typeVariableResolver = new TypeVariableResolver();
-        typeVariableResolver.setType("argType"); //$NON-NLS-1$
-        contextType.addResolver(typeVariableResolver);
-
-        ExceptionVariableNameResolver exceptionVariableNameResolver = new ExceptionVariableNameResolver();
-        exceptionVariableNameResolver.setType("exception_variable_name"); //$NON-NLS-1$
-        contextType.addResolver(exceptionVariableNameResolver);
-
-        return contextType;
     }
 
     public void setContext(JavaContentAssistInvocationContext ctx) {
@@ -172,7 +106,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
         for (Recommendation<ISnippet> recommendation : recommendations) {
             ISnippet snippet = recommendation.getProposal();
-            Template template = new Template(snippet.getName(), snippet.getDescription(), CONTEXT_ID,
+            Template template = new Template(snippet.getName(), snippet.getDescription(), SNIPMATCH_CONTEXT_ID,
                     snippet.getCode(), true);
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(recommendation, template, ctx, region, image));

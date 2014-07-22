@@ -15,6 +15,7 @@ import static java.util.UUID.randomUUID;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -91,12 +92,22 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         if (repo == null) {
             MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET,
                     Messages.DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE);
+            monitor.setCanceled(true);
             return;
         }
 
         if (isNullOrEmpty(snippet.getName())) {
             MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_INAVLID_SNIPPET_NAME,
                     Messages.DIALOG_MESSAGE_INVALID_SNIPPET_NAME);
+            monitor.setCanceled(true);
+            return;
+        }
+
+        String sourceValid = SnippetSourceValidator.isSourceValid(snippet.getCode());
+        if (!sourceValid.isEmpty()) {
+            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID,
+                    MessageFormat.format(Messages.DIALOG_MESSAGE_ERROR_SNIPPET_SOURCE_INVALID, sourceValid));
+            monitor.setCanceled(true);
             return;
         }
 
@@ -117,11 +128,13 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
             if (status == 2) {
                 // Explicit Cancel
+                monitor.setCanceled(true);
                 return;
             }
 
             if (status == SWT.DEFAULT) {
                 // Dialog closed => implicit Cancel
+                monitor.setCanceled(true);
                 return;
             }
         }
