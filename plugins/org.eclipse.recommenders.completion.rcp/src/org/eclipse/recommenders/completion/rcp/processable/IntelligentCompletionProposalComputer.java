@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
-import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.CONTEXT;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -134,11 +134,12 @@ ICompletionListener, ICompletionListenerExtension2 {
             for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
                         proposalFactory);
-
                 res.add(jdtProposal);
                 if (jdtProposal instanceof IProcessableProposal) {
                     IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
                     crProposal.setTag(CONTEXT, crContext);
+                    crProposal.setTag(JDT_UI_PROPOSAL, pair.getKey());
+                    crProposal.setTag(JDT_CORE_PROPOSAL, pair.getValue());
                     fireProcessProposal(crProposal);
                 }
             }
