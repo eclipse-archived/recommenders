@@ -12,8 +12,8 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.File;
 import java.util.Collection;
@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
@@ -37,11 +36,16 @@ import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfigurati
 import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -62,7 +66,8 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
     private final File repositoryConfigurationFile;
 
     @Inject
-    public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration, @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
+    public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration,
+            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
         super(GRID);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
         this.bus = bus;
@@ -108,9 +113,8 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, true)
-                    .applyTo(tableViewer.getTable());
+            .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
-
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     if (e.detail == SWT.CHECK) {
@@ -118,14 +122,25 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                     }
                     updateButtonStatus();
                 }
+            });
+            tableViewer.getTable().addMouseListener(new MouseAdapter() {
 
                 @Override
-                public void widgetDefaultSelected(SelectionEvent e) {
-                    SnippetRepositoryConfiguration selectedConfiguration = getSelectedConfiguration();
-                    if (selectedConfiguration != null) {
-                        editConfiguration(selectedConfiguration);
-                        updateButtonStatus();
+                public void mouseDoubleClick(MouseEvent e) {
+                    TableItem item = tableViewer.getTable().getItem(new Point(e.x, e.y));
+                    if (item == null) {
+                        return;
                     }
+
+                    Rectangle bounds = item.getBounds();
+                    boolean isClickOnCheckbox = e.x < bounds.x;
+                    if (isClickOnCheckbox) {
+                        return;
+                    }
+
+                    SnippetRepositoryConfiguration selectedConfiguration = cast(item.getData());
+                    editConfiguration(selectedConfiguration);
+                    updateButtonStatus();
                 }
             });
 
@@ -276,12 +291,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 }
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
-            tableViewer.setContentProvider(new ArrayContentProvider() {
-                @Override
-                public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-                    super.inputChanged(viewer, oldInput, newInput);
-                }
-            });
+            tableViewer.setContentProvider(new ArrayContentProvider());
             return tableViewer;
         }
 
@@ -295,15 +305,15 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             Collection<SnippetRepositoryConfiguration> checkedConfigurations = Collections2.filter(configurations,
                     new Predicate<SnippetRepositoryConfiguration>() {
 
-                        @Override
-                        public boolean apply(SnippetRepositoryConfiguration input) {
-                            if (oldConfigurations != null && oldConfigurations.contains(input)) {
-                                return tableViewer.getChecked(input);
-                            }
-                            return input.isEnabled();
-                        }
+                @Override
+                public boolean apply(SnippetRepositoryConfiguration input) {
+                    if (oldConfigurations != null && oldConfigurations.contains(input)) {
+                        return tableViewer.getChecked(input);
+                    }
+                    return input.isEnabled();
+                }
 
-                    });
+            });
 
             tableViewer.setInput(configurations);
             tableViewer.setCheckedElements(checkedConfigurations.toArray());
