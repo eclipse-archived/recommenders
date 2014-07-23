@@ -130,7 +130,7 @@ public class DoubleArrayWrapper implements IArrayWrapper {
             result.array = array.clone();
             return result;
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError("This should not happen");
+            throw new AssertionError(e);
         }
     }
 

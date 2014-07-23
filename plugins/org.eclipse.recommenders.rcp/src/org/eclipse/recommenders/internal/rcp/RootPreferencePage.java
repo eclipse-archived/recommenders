@@ -11,7 +11,6 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import java.net.URL;
 import java.text.MessageFormat;
 
 import javax.inject.Inject;
@@ -19,6 +18,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -28,8 +28,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 
 public class RootPreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
 
@@ -76,11 +74,7 @@ public class RootPreferencePage extends org.eclipse.jface.preference.PreferenceP
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                try {
-                    IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("recommenders"); //$NON-NLS-1$
-                    browser.openURL(new URL(event.text));
-                } catch (Exception e) {
-                }
+                BrowserUtils.openInExternalBrowser(event.text);
             }
         });
     }

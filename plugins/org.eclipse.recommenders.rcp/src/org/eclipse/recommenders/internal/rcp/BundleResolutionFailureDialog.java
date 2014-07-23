@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.rcp;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Collection;
 
@@ -21,6 +20,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
@@ -64,7 +63,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             Collection<Bundle> unresolvedBundles) {
         super(parentShell, Messages.DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE, null,
                 Messages.DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE, MessageDialog.ERROR, new String[] {
-                        IDialogConstants.CANCEL_LABEL, Messages.DIALOG_BUTTON_RESTART }, 1,
+                IDialogConstants.CANCEL_LABEL, Messages.DIALOG_BUTTON_RESTART }, 1,
                 Messages.DIALOG_TOGGLE_IGNORE_BUNDLE_RESOLUTION_FAILURES, false);
         this.recommendersVersion = recommendersVersion;
         this.unresolvedBundles = unresolvedBundles;
@@ -88,11 +87,11 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
         Collection<String> unresolvedBundleNames = Collections2.transform(unresolvedBundles,
                 new Function<Bundle, String>() {
 
-                    @Override
-                    public String apply(Bundle input) {
-                        return input.getSymbolicName();
-                    }
-                });
+            @Override
+            public String apply(Bundle input) {
+                return input.getSymbolicName();
+            }
+        });
         String version = recommendersVersion.getMajor() + "." + recommendersVersion.getMinor() + "."
                 + recommendersVersion.getMicro();
         String bugLinkUrl = MessageFormat.format(BUGZILLA_URL, version, StringUtils.join(unresolvedBundleNames, '\n'));
@@ -107,12 +106,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                try {
-                    IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
-                            .createBrowser("recommenders-bugzilla"); //$NON-NLS-1$
-                    browser.openURL(new URL(event.text));
-                } catch (Exception e) {
-                }
+                BrowserUtils.openInExternalBrowser(event.text);
             }
         });
     }
