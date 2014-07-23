@@ -46,6 +46,7 @@ import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -53,8 +54,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 
 import com.google.common.base.Optional;
@@ -149,12 +148,7 @@ public final class JavadocProvider extends ApidocProvider {
                                         }
 
                                     } else {
-                                        try {
-                                            PlatformUI.getWorkbench().getBrowserSupport()
-                                                    .createBrowser("recommenders.javadoc").openURL(url); //$NON-NLS-1$
-                                        } catch (final PartInitException e) {
-                                            RcpPlugin.logError(e, "Error during javadoc selection %s", url); //$NON-NLS-1$
-                                        }
+                                        BrowserUtils.openInDefaultBrowser(url);
                                     }
                                 } catch (final Exception e) {
                                     RcpPlugin.logError(e, "Error during javadoc selection %s", url); //$NON-NLS-1$

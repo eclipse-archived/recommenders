@@ -141,7 +141,7 @@ public class FloatArrayWrapper implements IArrayWrapper {
             clone.array = array.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError("This should not happen");
+            throw new AssertionError(e);
         }
     }
 

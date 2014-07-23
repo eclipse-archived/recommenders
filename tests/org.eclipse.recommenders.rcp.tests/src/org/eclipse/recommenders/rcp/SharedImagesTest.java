@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.rcp;
 
-import static org.apache.commons.lang3.ArrayUtils.isEquals;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.VIEW_SLICE;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
@@ -40,19 +40,19 @@ public class SharedImagesTest {
     public void testLoadImages() {
         for (Images i : Images.values()) {
             Image image = sut.getImage(i);
-            assertNotNull(image);
+            assertThat(image, is(notNullValue()));
             ImageDescriptor desc = sut.getDescriptor(i);
-            assertNotNull(desc);
+            assertThat(desc, is(notNullValue()));
             // comparing image equality is a bit tricky:
             Image descImage = desc.createImage();
-            assertTrue(isEquals(image.getImageData().data, descImage.getImageData().data));
+            assertThat(image.getImageData().data, is(equalTo(descImage.getImageData().data)));
         }
     }
 
     @Test
     public void testIsCachingImages() {
-        assertEquals(sut.getImage(VIEW_SLICE), sut.getImage(Images.VIEW_SLICE));
-        assertEquals(sut.getDescriptor(VIEW_SLICE), sut.getDescriptor(Images.VIEW_SLICE));
+        assertThat(sut.getImage(VIEW_SLICE), is(equalTo(sut.getImage(Images.VIEW_SLICE))));
+        assertThat(sut.getDescriptor(VIEW_SLICE), is(equalTo(sut.getDescriptor(Images.VIEW_SLICE))));
     }
 
     @Test
@@ -64,6 +64,6 @@ public class SharedImagesTest {
                 return Images.VIEW_SLICE.getName();
             }
         });
-        assertNotSame(image1, image2);
+        assertThat(image1, is(not(equalTo(image2))));
     }
 }

@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuesser;
+import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -35,17 +36,22 @@ import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.InclusivePositionUpdater;
 import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
+import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.ProposalPosition;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -139,7 +145,38 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
                 final LinkedModeUI ui = new EditorLinkedModeUI(model, getTextViewer());
                 ui.setExitPosition(getTextViewer(), baseOffset + replacement.length(), 0, Integer.MAX_VALUE);
-                ui.setExitPolicy(new ExitPolicy(')', document));
+                final char exitChar = replacement.charAt(replacement.length() - 1);
+                ui.setExitPolicy(new ExitPolicy(exitChar, document) {
+                    @Override
+                    public ExitFlags doExit(LinkedModeModel model2, VerifyEvent event, int offset2, int length) {
+                        if (event.character == ',') {
+                            for (int i = 0; i < fPositions.length - 1; i++) { // not for the last one
+                                Position position = fPositions[i];
+                                if (position.offset <= offset2 && offset2 + length <= position.offset + position.length) {
+                                    try {
+                                        ITypedRegion partition = TextUtilities.getPartition(document,
+                                                IJavaPartitions.JAVA_PARTITIONING, offset2 + length, false);
+                                        if (IDocument.DEFAULT_CONTENT_TYPE.equals(partition.getType())
+                                                || offset2 + length == partition.getOffset() + partition.getLength()) {
+                                            event.character = '\t';
+                                            event.keyCode = SWT.TAB;
+                                            return null;
+                                        }
+                                    } catch (BadLocationException e) {
+                                        // continue; not serious enough to log
+                                    }
+                                }
+                            }
+                        } else if (event.character == ')' && exitChar != ')') {
+                            // exit from link mode when user is in the last ')' position.
+                            Position position = fPositions[fPositions.length - 1];
+                            if (position.offset <= offset2 && offset2 + length <= position.offset + position.length) {
+                                return new ExitFlags(ILinkedModeListener.UPDATE_CARET, false);
+                            }
+                        }
+                        return super.doExit(model2, event, offset2, length);
+                    }
+                });
                 ui.setCyclingMode(LinkedModeUI.CYCLE_WHEN_NO_PARENT);
                 ui.setDoContextInfo(true);
                 ui.enter();
@@ -198,7 +235,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
     /**
      * Creates the completion string. Offsets and Lengths are set to the offsets and lengths of the parameters.
-     * 
+     *
      * @return the completion string
      * @throws JavaModelException
      *             if parameter guessing failed
@@ -252,12 +289,16 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
         buffer.append(RPAREN);
 
+        if (canAutomaticallyAppendSemicolon()) {
+            buffer.append(SEMICOLON);
+        }
+
         return buffer.toString();
     }
 
     /**
      * Returns the currently active java editor, or <code>null</code> if it cannot be determined.
-     * 
+     *
      * @return the currently active java editor, or <code>null</code>
      */
     private JavaEditor getJavaEditor() {

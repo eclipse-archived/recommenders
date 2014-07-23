@@ -25,4 +25,6 @@ public class Constants {
     public static final String PREF_SNIPPETS_REPO_PUSH_BRANCH = "snippets.repo.push.branch"; //$NON-NLS-1$
     public static final String PREF_SEARCH_RESULTS_BACKGROUND = "org.eclipse.recommenders.snipmatch.rcp.searchResultBackgroundColor"; //$NON-NLS-1$
     public static final String PREF_SEARCH_BOX_BACKGROUND = "org.eclipse.recommenders.snipmatch.rcp.searchboxbackground"; //$NON-NLS-1$
+
+    public static final String SNIPMATCH_CONTEXT_ID = "Snipmatch-Java-Context"; //$NON-NLS-1$
 }
