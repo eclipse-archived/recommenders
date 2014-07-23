@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.EDITOR_I
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
@@ -78,6 +80,8 @@ public class CreateSnippetHandler extends AbstractHandler {
     private char[] text;
 
     private Set<String> imports;
+    private HashMap<IVariableBinding, String> vars;
+    private HashMap<String, Integer> lastVarIndex;
     private StringBuilder sb;
 
     private ExecutionEvent event;
@@ -109,6 +113,8 @@ public class CreateSnippetHandler extends AbstractHandler {
         text = textSelection.getText().toCharArray();
 
         imports = Sets.newTreeSet();
+        vars = Maps.newHashMap();
+        lastVarIndex = Maps.newHashMap();
         sb = new StringBuilder();
 
         enclosingNode = NodeFinder.perform(ast, start, length);
@@ -141,17 +147,18 @@ public class CreateSnippetHandler extends AbstractHandler {
                         continue outer;
                     case IBinding.VARIABLE:
                         IVariableBinding vb = (IVariableBinding) b;
+                        String uniqueVariableName = generateUniqueVariableName(vb, name.toString());
                         StructuralPropertyDescriptor locationInParent = name.getLocationInParent();
                         if (VariableDeclarationFragment.class == locationInParent.getNodeClass()
                                 || SingleVariableDeclaration.class == locationInParent.getNodeClass()) {
-                            appendNewName(name, vb);
+                            appendNewName(uniqueVariableName, vb);
                         } else if (selection.covers(ast.findDeclaringNode(vb))) {
-                            appendTemplateVariableReference(name);
+                            appendTemplateVariableReference(uniqueVariableName);
                         } else {
                             if (vb.isField()) {
-                                appendVarReference(name, vb, "field");
+                                appendVarReference(uniqueVariableName, vb, "field");
                             } else {
-                                appendVarReference(name, vb, "var");
+                                appendVarReference(uniqueVariableName, vb, "var");
                             }
                         }
                         i += name.getLength() - 1;
@@ -172,15 +179,38 @@ public class CreateSnippetHandler extends AbstractHandler {
         return new Snippet(UUID.randomUUID(), "<new snippet>", "<enter description>", keywords, tags, sb.toString());
     }
 
+    private String generateUniqueVariableName(IVariableBinding vb, String name) {
+        if (vars.containsKey(vb)) {
+            return vars.get(vb);
+        } else {
+            String newName = name;
+
+            Integer i;
+            if (lastVarIndex.containsKey(newName)) {
+                i = lastVarIndex.get(newName);
+            } else {
+                i = 1;
+            }
+
+            while (vars.containsValue(newName)) {
+                i++;
+                newName = name.concat(i.toString());
+            }
+
+            lastVarIndex.put(name, i);
+            vars.put(vb, newName);
+            return newName;
+        }
+    }
+
     private void appendTypeBinding(SimpleName name, ITypeBinding tb) {
         sb.append(name);
         addImport(tb);
     }
 
-    private void appendNewName(SimpleName name, IVariableBinding vb) {
+    private void appendNewName(String name, IVariableBinding vb) {
         ITypeBinding type = vb.getType();
-        String varname = name.toString();
-        sb.append("${").append(varname).append(":").append("newName").append("(");
+        sb.append("${").append(name).append(":").append("newName").append("(");
         if (type.isArray()) {
             sb.append("'").append(type.getErasure().getQualifiedName()).append("'");
         } else {
@@ -191,14 +221,13 @@ public class CreateSnippetHandler extends AbstractHandler {
         addImport(type);
     }
 
-    private StringBuilder appendTemplateVariableReference(SimpleName name) {
+    private StringBuilder appendTemplateVariableReference(String name) {
         return sb.append("${").append(name).append("}");
     }
 
-    private void appendVarReference(SimpleName name, IVariableBinding vb, String kind) {
+    private void appendVarReference(String name, IVariableBinding vb, String kind) {
         ITypeBinding type = vb.getType();
-        String varname = name.toString();
-        sb.append("${").append(varname).append(":").append(kind).append("(");
+        sb.append("${").append(name).append(":").append(kind).append("(");
         if (type.isArray()) {
             sb.append("'").append(type.getErasure().getQualifiedName()).append("'");
         } else {
