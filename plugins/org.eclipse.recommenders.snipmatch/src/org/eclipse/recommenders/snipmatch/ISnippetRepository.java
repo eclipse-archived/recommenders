@@ -28,7 +28,7 @@ public interface ISnippetRepository extends Openable, Closeable {
      *
      * @return a list of all snippets matching the search query
      */
-    List<Recommendation<ISnippet>> search(String query);
+    List<Recommendation<ISnippet>> search(ISnipmatchContext context);
 
     /**
      * Returns <b>at most</b> <code>maxResults</code> snippets matching the search query. Implementations may return
@@ -40,7 +40,7 @@ public interface ISnippetRepository extends Openable, Closeable {
      *
      * @return a list of snippets matching the search query
      */
-    List<Recommendation<ISnippet>> search(String query, int maxResults);
+    List<Recommendation<ISnippet>> search(ISnipmatchContext context, int maxResults);
 
     String getRepositoryLocation();
 

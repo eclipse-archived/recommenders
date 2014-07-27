@@ -11,8 +11,7 @@
 package org.eclipse.recommenders.utils.gson;
 
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

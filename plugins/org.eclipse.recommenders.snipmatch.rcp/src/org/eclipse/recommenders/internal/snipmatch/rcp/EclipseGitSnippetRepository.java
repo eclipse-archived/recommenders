@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitUpdateException;
+import org.eclipse.recommenders.snipmatch.ISnipmatchContext;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -162,26 +163,26 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Override
-    public List<Recommendation<ISnippet>> search(String query) {
+    public List<Recommendation<ISnippet>> search(ISnipmatchContext context) {
         readLock.lock();
         try {
             if (!isOpen() || !delegateOpen) {
                 return Collections.emptyList();
             }
-            return delegate.search(query);
+            return delegate.search(context);
         } finally {
             readLock.unlock();
         }
     }
 
     @Override
-    public List<Recommendation<ISnippet>> search(String query, int maxResults) {
+    public List<Recommendation<ISnippet>> search(ISnipmatchContext context, int maxResults) {
         readLock.lock();
         try {
             if (!isOpen() || !delegateOpen) {
                 return Collections.emptyList();
             }
-            return delegate.search(query, maxResults);
+            return delegate.search(context, maxResults);
         } finally {
             readLock.unlock();
         }
