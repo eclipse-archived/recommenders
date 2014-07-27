@@ -117,6 +117,12 @@ public class Messages extends NLS {
     public static String GROUP_FETCH_SETTINGS;
     public static String GROUP_PUSH_SETTINGS;
 
+    public static String TABLE_CELL_SUFFIX_SNIPPETS;
+    public static String TABLE_COLUMN_TITLE_SNIPPETS;
+
+    public static String TOOLBAR_TOOLTIP_COLLAPSE_ALL;
+    public static String TOOLBAR_TOOLTIP_EXPAND_ALL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
