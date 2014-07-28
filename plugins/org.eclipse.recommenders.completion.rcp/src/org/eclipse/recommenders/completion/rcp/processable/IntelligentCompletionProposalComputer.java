@@ -59,7 +59,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "rawtypes" })
 public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer implements
 ICompletionListener, ICompletionListenerExtension2 {
 
@@ -101,8 +101,8 @@ ICompletionListener, ICompletionListenerExtension2 {
         }
         activeProcessors.clear();
         activeProcessors.addAll(processors);
-        // code looks odd? This method unregisters this instance from the last(!) source viewer
-        // see unregisterCompletionListener for details
+        // code looks odd? This method unregisters this instance from the last(!) source viewer see
+        // unregisterCompletionListener for details
         unregisterCompletionListener();
     }
 
@@ -138,8 +138,10 @@ ICompletionListener, ICompletionListenerExtension2 {
                 if (jdtProposal instanceof IProcessableProposal) {
                     IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
                     crProposal.setTag(CONTEXT, crContext);
+                    crProposal.setTag(IS_VISIBLE, true);
                     crProposal.setTag(JDT_UI_PROPOSAL, pair.getKey());
                     crProposal.setTag(JDT_CORE_PROPOSAL, pair.getValue());
+                    crProposal.setTag(JDT_SCORE, jdtProposal.getRelevance());
                     fireProcessProposal(crProposal);
                 }
             }

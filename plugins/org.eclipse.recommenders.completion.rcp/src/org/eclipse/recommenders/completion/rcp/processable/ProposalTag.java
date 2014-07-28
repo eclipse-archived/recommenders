@@ -10,11 +10,45 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+
 public enum ProposalTag implements IProposalTag {
+    /**
+     * Key to access the {@link IRecommendersCompletionContext} of the current session.
+     */
     CONTEXT,
+    /**
+     * Key to access the original (unmodified) JDT proposal which was used to create this processable proposal.
+     */
     JDT_UI_PROPOSAL,
+    /**
+     * Key to access the original (unmodified) JDT core completion proposal.
+     */
     JDT_CORE_PROPOSAL,
+    /**
+     * Key to access the original integer score JDT UI assigned to this proposal.
+     */
+    JDT_SCORE,
+    /**
+     * Key to access the integer score (usually the percentage value) code recommenders engines assigned to this
+     * proposal.
+     */
     RECOMMENDERS_SCORE,
+    /**
+     * Key to access the score subwords assigned this processable proposal.
+     */
     SUBWORDS_SCORE,
-    IS_PREFIX_MATCH
+    /**
+     * Key to access a boolean value indicating whether the given proposal was a pure prefix match.
+     */
+    IS_PREFIX_MATCH,
+    /**
+     * Key to access a boolean value indicating whether the given proposal was visible to the user until the end of the
+     * completion session.
+     */
+    IS_VISIBLE,
+    /**
+     * Key to access the active prefix of a proposal. This is similar to {@link IProcessableProposal#getPrefix()}
+     */
+    PREFIX
 }
