@@ -14,10 +14,14 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import static java.text.MessageFormat.format;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_ADD_REPOSITORY;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_COLLAPSE_ALL;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_EXPAND_ALL;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REMOVE_REPOSITORY;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +41,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionManager;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.IViewerObservableList;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -47,13 +55,18 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILazyTreeContentProvider;
 import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryContentChangedEvent;
 import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryOpenedEvent;
@@ -63,6 +76,7 @@ import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
@@ -80,6 +94,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -92,13 +107,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.name.Named;
 
 public class SnippetsView extends ViewPart implements IRcpService {
 
@@ -136,15 +154,25 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
     };
 
+    private Action addRepositoryAction;
+    private Action removeRepositoryAction;
+
+    private EventBus bus;
+
+    private File repositoryConfigurationFile;
+
     @Inject
-    public SnippetsView(Repositories repos, SnippetRepositoryConfigurations configs, SharedImages images) {
+    public SnippetsView(Repositories repos, SharedImages images, SnippetRepositoryConfigurations configs, EventBus bus,
+            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
         this.repos = repos;
         this.configs = configs;
         this.images = images;
+        this.bus = bus;
+        this.repositoryConfigurationFile = repositoryConfigurationFile;
     }
 
     @Override
-    public void createPartControl(Composite parent) {
+    public void createPartControl(final Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayoutFactory.swtDefaults().spacing(0, 5).numColumns(2).equalWidth(false).applyTo(composite);
 
@@ -158,7 +186,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 Job refreshJob = new UIJob(Messages.JOB_REFRESHING_SNIPPETS_VIEW) {
                     @Override
                     public IStatus runInUIThread(IProgressMonitor monitor) {
-                        filterData();
+                        updateData();
                         refreshTable();
                         return Status.OK_STATUS;
                     }
@@ -348,6 +376,70 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         });
 
+        createActions(parent);
+        addToolBar(parent);
+        addContextMenu();
+
+        refreshUI();
+        selection = ViewersObservables.observeMultiSelection(treeViewer);
+        initDataBindings();
+    }
+
+    private int fetchNumberOfSnippets(SnippetRepositoryConfiguration config) {
+        return snippetsGroupedByRepoName.get(config).size();
+    }
+
+    private void createActions(final Composite parent) {
+        addRepositoryAction = new Action() {
+
+            @Override
+            public void run() {
+                List<WizardDescriptor> availableWizards = WizardDescriptors.loadAvailableWizards();
+                if (!availableWizards.isEmpty()) {
+                    SnippetRepositoryTypeSelectionWizard newWizard = new SnippetRepositoryTypeSelectionWizard();
+                    WizardDialog dialog = new WizardDialog(parent.getShell(), newWizard);
+                    if (dialog.open() == Window.OK) {
+                        configs.getRepos().add(newWizard.getConfiguration());
+                        RepositoryConfigurations.storeConfigurations(configs, repositoryConfigurationFile);
+                        bus.post(new Repositories.SnippetRepositoryConfigurationChangedEvent());
+                    }
+                }
+            }
+        };
+
+        removeRepositoryAction = new Action() {
+            @Override
+            public void run() {
+                final Optional<SnippetRepositoryConfiguration> config = Selections.getFirstSelected(treeViewer
+                        .getSelection());
+                if (config.isPresent()) {
+                    configs.getRepos().remove(config.get());
+                    RepositoryConfigurations.storeConfigurations(configs, repositoryConfigurationFile);
+                    bus.post(new Repositories.SnippetRepositoryConfigurationChangedEvent());
+                    updateData();
+                    refreshUI();
+                }
+            }
+        };
+
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (isValidType(treeViewer.getSelection(), SnippetRepositoryConfiguration.class)) {
+                    removeRepositoryAction.setEnabled(true);
+                } else {
+                    removeRepositoryAction.setEnabled(false);
+                }
+            }
+        });
+    }
+
+    private boolean isValidType(ISelection selection, Class<?> expectedType) {
+        return Selections.safeFirstElement(treeViewer.getSelection(), expectedType).isPresent();
+    }
+
+    private void addToolBar(final Composite parent) {
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 
         addAction(Messages.TOOLBAR_TOOLTIP_EXPAND_ALL, ELCL_EXPAND_ALL, toolBarManager, new Action() {
@@ -369,13 +461,32 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         });
 
-        refreshUI();
-        selection = ViewersObservables.observeMultiSelection(treeViewer);
-        initDataBindings();
+        toolBarManager.add(new Separator());
+
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, toolBarManager,
+                addRepositoryAction);
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, toolBarManager,
+                removeRepositoryAction);
+
     }
 
-    private int fetchNumberOfSnippets(SnippetRepositoryConfiguration config) {
-        return snippetsGroupedByRepoName.get(config).size();
+    private void addContextMenu() {
+        final MenuManager menuManager = new MenuManager();
+        Menu contextMenu = menuManager.createContextMenu(tree);
+        menuManager.setRemoveAllWhenShown(true);
+        tree.setMenu(contextMenu);
+
+        menuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, menuManager,
+                        addRepositoryAction);
+
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
+                        removeRepositoryAction);
+            }
+
+        });
     }
 
     private void addAction(String text, ImageResource imageResource, IContributionManager contributionManager,
@@ -386,7 +497,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
         contributionManager.add(action);
     }
 
-    private void filterData() {
+    private void updateData() {
+        initializeTableData = true;
         if (txtSearch.isDisposed()) {
             return;
         }
@@ -482,7 +594,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 if (!treeViewer.getControl().isDisposed()) {
-                    filterData();
+                    updateData();
                     if (initializeTableData) {
                         treeViewer.setInput(getViewSite());
                         initializeTableData = false;

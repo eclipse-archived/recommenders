@@ -76,6 +76,8 @@ public class Messages extends NLS {
     public static String SNIPPETS_VIEW_BUTTON_RECONNECT;
     public static String SNIPPETS_VIEW_BUTTON_REMOVE;
 
+    public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;
+    public static String SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY;
     public static String JOB_OPENING_SNIPPET_REPOSITORY;
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
