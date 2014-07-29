@@ -62,9 +62,11 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -116,11 +118,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private SharedImages images;
 
     private final Repositories repos;
+    private SnippetRepositoryConfigurations configs;
+
     private boolean initializeTableData = true;
 
-    private List<String> availableRepositories = Lists.newArrayList();
-    private ListMultimap<String, KnownSnippet> snippetsGroupedByRepoName = LinkedListMultimap.create();
-    private ListMultimap<String, KnownSnippet> filteredSnippetsGroupedByRepoName = LinkedListMultimap.create();
+    private List<SnippetRepositoryConfiguration> availableRepositories = Lists.newArrayList();
+    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepoName = LinkedListMultimap
+            .create();
+    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> filteredSnippetsGroupedByRepoName = LinkedListMultimap
+            .create();
 
     private final Function<KnownSnippet, String> toStringRepresentation = new Function<KnownSnippet, String>() {
 
@@ -131,8 +137,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
     };
 
     @Inject
-    public SnippetsView(Repositories repos, SharedImages images) {
+    public SnippetsView(Repositories repos, SnippetRepositoryConfigurations configs, SharedImages images) {
         this.repos = repos;
+        this.configs = configs;
         this.images = images;
     }
 
@@ -194,11 +201,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
             public void update(ViewerCell cell) {
                 Object element = cell.getElement();
                 StyledString text = new StyledString();
-                if (element instanceof String) {
-                    String repoName = (String) element;
-                    text.append(repoName);
+                if (element instanceof SnippetRepositoryConfiguration) {
+                    SnippetRepositoryConfiguration config = (SnippetRepositoryConfiguration) element;
+                    text.append(config.getName());
                     text.append(" "); //$NON-NLS-1$
-                    text.append(format(Messages.TABLE_CELL_SUFFIX_SNIPPETS, fetchNumberOfSnippets(repoName)),
+                    text.append(format(Messages.TABLE_CELL_SUFFIX_SNIPPETS, fetchNumberOfSnippets(config)),
                             StyledString.COUNTER_STYLER);
                     cell.setImage(images.getImage(Images.OBJ_REPOSITORY));
                 }
@@ -233,17 +240,17 @@ public class SnippetsView extends ViewPart implements IRcpService {
             @Override
             public void updateElement(Object parent, int index) {
                 if (parent instanceof IViewSite) {
-                    String element = availableRepositories.get(index);
-                    treeViewer.replace(parent, index, element);
-                    treeViewer.setChildCount(element, getChildren(element).length);
-                } else if (parent instanceof String) {
+                    SnippetRepositoryConfiguration config = availableRepositories.get(index);
+                    treeViewer.replace(parent, index, config);
+                    treeViewer.setChildCount(config, getChildren(config).length);
+                } else if (parent instanceof SnippetRepositoryConfiguration) {
                     treeViewer.replace(parent, index, getChildren(parent)[index]);
                 }
             }
 
             private Object[] getChildren(Object element) {
-                if (element instanceof String) {
-                    return filteredSnippetsGroupedByRepoName.get((String) element).toArray();
+                if (element instanceof SnippetRepositoryConfiguration) {
+                    return filteredSnippetsGroupedByRepoName.get((SnippetRepositoryConfiguration) element).toArray();
                 }
                 return new Object[0];
             }
@@ -269,7 +276,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             public Object getParent(Object element) {
                 if (element instanceof KnownSnippet) {
                     KnownSnippet knownSnippet = (KnownSnippet) element;
-                    return knownSnippet.repoName;
+                    return knownSnippet.config;
                 }
                 return null;
             }
@@ -367,8 +374,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
         initDataBindings();
     }
 
-    private int fetchNumberOfSnippets(String repoName) {
-        return snippetsGroupedByRepoName.get(repoName).size();
+    private int fetchNumberOfSnippets(SnippetRepositoryConfiguration config) {
+        return snippetsGroupedByRepoName.get(config).size();
     }
 
     private void addAction(String text, ImageResource imageResource, IContributionManager contributionManager,
@@ -385,21 +392,27 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
         snippetsGroupedByRepoName = searchSnippets(""); //$NON-NLS-1$
         filteredSnippetsGroupedByRepoName = searchSnippets(txtSearch.getText());
-        availableRepositories = Lists.newArrayList(filteredSnippetsGroupedByRepoName.keySet());
+        availableRepositories = configs.getRepos();
     }
 
-    private ListMultimap<String, KnownSnippet> searchSnippets(String searchTerm) {
-        ListMultimap<String, KnownSnippet> snippetsGroupedByRepositoryName = LinkedListMultimap.create();
-        for (ISnippetRepository repo : repos.getRepositories()) {
-            String repoName = repo.getRepositoryLocation();
+    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> searchSnippets(String searchTerm) {
+        ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepositoryName = LinkedListMultimap
+                .create();
+
+        for (SnippetRepositoryConfiguration config : configs.getRepos()) {
+            ISnippetRepository repo = repos.getRepository(config.getId()).orNull();
+            if (repo == null) {
+                continue;
+            }
             Set<KnownSnippet> knownSnippets = Sets.newHashSet();
             for (Recommendation<ISnippet> recommendation : repo.search(searchTerm)) {
-                knownSnippets.add(new KnownSnippet(repoName, recommendation.getProposal()));
+                knownSnippets.add(new KnownSnippet(config, recommendation.getProposal()));
             }
             List<KnownSnippet> sorted = Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(toStringRepresentation)
                     .sortedCopy(knownSnippets);
-            snippetsGroupedByRepositoryName.putAll(repoName, sorted);
+            snippetsGroupedByRepositoryName.putAll(config, sorted);
         }
+
         return snippetsGroupedByRepositoryName;
     }
 
@@ -497,11 +510,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
         treeViewer.refresh();
         int replacedElementsCount = 0;
         for (int i = 0; i < availableRepositories.size(); i++) {
-            String repoName = availableRepositories.get(i);
-            List<KnownSnippet> elements = filteredSnippetsGroupedByRepoName.get(repoName);
-            treeViewer.setChildCount(repoName, elements.size());
+            SnippetRepositoryConfiguration config = availableRepositories.get(i);
+            List<KnownSnippet> elements = filteredSnippetsGroupedByRepoName.get(config);
+            treeViewer.setChildCount(config, elements.size());
             for (int j = 0; j < elements.size() && replacedElementsCount < numberOfVisibleElements; j++) {
-                treeViewer.replace(repoName, j, elements.get(j));
+                treeViewer.replace(config, j, elements.get(j));
                 replacedElementsCount++;
             }
             treeViewer.getTree().getItem(i).setExpanded(true);
@@ -628,10 +641,10 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
     public class KnownSnippet {
         public ISnippet snippet;
-        public String repoName;
+        public SnippetRepositoryConfiguration config;
 
-        public KnownSnippet(String repoName, ISnippet snippet) {
-            this.repoName = repoName;
+        public KnownSnippet(SnippetRepositoryConfiguration config, ISnippet snippet) {
+            this.config = config;
             this.snippet = snippet;
         }
     }

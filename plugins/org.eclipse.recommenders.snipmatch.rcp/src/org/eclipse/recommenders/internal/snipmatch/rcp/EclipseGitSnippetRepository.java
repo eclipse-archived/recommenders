@@ -59,11 +59,11 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private volatile Job openJob = null;
 
-    public EclipseGitSnippetRepository(File basedir, String remoteUri, String pushUrl, String pushBranchPrefix,
+    public EclipseGitSnippetRepository(int id, File basedir, String remoteUri, String pushUrl, String pushBranchPrefix,
             EventBus bus) {
         this.bus = bus;
 
-        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
+        delegate = new GitSnippetRepository(id, new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
                 pushBranchPrefix);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -254,6 +254,16 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     }
 
     @Override
+    public int getId() {
+        readLock.lock();
+        try {
+            return delegate.getId();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
     public boolean hasSnippet(UUID uuid) {
         readLock.lock();
         try {
@@ -330,7 +340,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         File basedir = InjectionService.getInstance().requestAnnotatedInstance(File.class,
                 Names.named(SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR));
 
-        return new EclipseGitSnippetRepository(basedir, config.getUrl(), config.getPushUrl(),
+        return new EclipseGitSnippetRepository(config.getId(), basedir, config.getUrl(), config.getPushUrl(),
                 config.getPushBranchPrefix(), bus);
     }
 

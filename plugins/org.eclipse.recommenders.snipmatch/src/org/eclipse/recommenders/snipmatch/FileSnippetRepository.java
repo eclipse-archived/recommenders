@@ -102,6 +102,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     private final Lock readLock;
     private final Lock writeLock;
 
+    private final int id;
     private final File snippetsdir;
     private final File indexdir;
     private final String repoUrl;
@@ -124,9 +125,10 @@ public class FileSnippetRepository implements ISnippetRepository {
                 }
             });
 
-    public FileSnippetRepository(File basedir) {
+    public FileSnippetRepository(int id, File basedir) {
         Preconditions.checkArgument(CACHE_SIZE > MAX_SEARCH_RESULTS,
                 "The cache size needs to be larger than the maximum number of search results.");
+        this.id = id;
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
         repoUrl = mangle(basedir.getAbsolutePath());
@@ -368,6 +370,11 @@ public class FileSnippetRepository implements ISnippetRepository {
     @Override
     public boolean isDeleteSupported() {
         return true;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 
     @Override

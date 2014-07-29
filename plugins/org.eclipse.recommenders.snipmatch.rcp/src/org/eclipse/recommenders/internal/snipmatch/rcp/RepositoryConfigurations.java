@@ -94,11 +94,31 @@ public class RepositoryConfigurations {
             for (EClass eClass : subtypes) {
                 DefaultSnippetRepositoryConfigurationProvider configurationProvider = cast(instance.getEFactory(key)
                         .create(eClass));
+
                 defaultConfigurations.addAll(configurationProvider.getDefaultConfiguration());
             }
         }
 
+        int id = fetchHighestUsedId(defaultConfigurations) + 1;
+
+        for (SnippetRepositoryConfiguration config : defaultConfigurations) {
+            if (config.getId() == -1) {
+                config.setId(id);
+                id++;
+            }
+        }
+
         return defaultConfigurations;
+    }
+
+    private static int fetchHighestUsedId(List<SnippetRepositoryConfiguration> defaultConfigurations) {
+        int id = 0;
+        for (SnippetRepositoryConfiguration config : defaultConfigurations) {
+            if (config.getId() > id) {
+                id = config.getId();
+            }
+        }
+        return id;
     }
 
     private static List<EClass> searchSubtypes(EPackage ePackage, EClass eClass) {

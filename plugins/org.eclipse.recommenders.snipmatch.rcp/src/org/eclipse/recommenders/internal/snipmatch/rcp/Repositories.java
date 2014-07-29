@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Set;
@@ -24,6 +27,7 @@ import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Openable;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -65,6 +69,15 @@ public class Repositories implements IRcpService, Openable, Closeable {
 
     public Set<ISnippetRepository> getRepositories() {
         return repositories;
+    }
+
+    public Optional<ISnippetRepository> getRepository(int id) {
+        for (ISnippetRepository repo : repositories) {
+            if (repo.getId() == id) {
+                return of(repo);
+            }
+        }
+        return absent();
     }
 
     @Subscribe
