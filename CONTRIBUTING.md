@@ -46,9 +46,17 @@ But if some of the steps below fail – [let us know](https://dev.eclipse.org/ma
 
 ### Building on the Command Line
 
-If you want to build Code Recommenders from the command line, you will need [Apache Maven](http://maven.apache.org/download.html), version 3.x.
+If you want to build Code Recommenders from the command line, you will need both [Git](http://www.git-scm.com/downloads) and  [Apache Maven](http://maven.apache.org/download.html), version 3.x.
+First clone the Code Recommenders Git repository:
 
     $ git clone http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git
+
+**Windows users:** Code Recommenders uses Unix-style newlines (LF) throughout and fails the build if it finds Windows-style newlines (CRLF).
+Please make sure that your Git configuration has `core.autocrlf` set to `false` to prevent Git from changing newlines to Windows-style.
+(Changing newlines is unnecessary, as the Eclipse IDE can handle either style.)
+
+After you have successfully cloned the repository, use Maven to build Eclipse Code Recommenders from scratch:
+
     $ cd org.eclipse.recommenders
     $ mvn clean install
 
@@ -56,9 +64,11 @@ That’s it.
 After a few minutes wait, you should see a `BUILD SUCCESS`.
 (The initial build may take a bit longer, as Maven automatically downloads anything required by the build.)
 
-**Windows users:** Code Recommenders uses Unix-style newlines (LF) throughout and fails the build if it finds Windows-style newlines (CRLF).
-Please make sure that your Git configuration has `core.autocrlf` set to `false` to prevent Git from changing newlines to Windows-style.
-(Changing newlines is unnecessary, as the Eclipse IDE can handle either style.)
+If you experience `OutOfMemoryError`s during the `mvn clean install` step, please set the `MAVEN_OPTS` environment variable as follows:
+
+    $ export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+
+**Windows users:** Substitute `export` with `set` in the above command.
 
 ### Building within the Eclipse IDE
 
