@@ -16,19 +16,16 @@ import static org.eclipse.recommenders.models.IModelIndex.INDEX;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
-import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
@@ -46,13 +43,13 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings({ "restriction" })
 public class DownloadModelArchiveJob extends Job {
 
-    private final Map<String, IProgressMonitor> downloads = Maps.newHashMap();
+    private static final int MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB = 2;
+    private static final int TOTAL_WORK_UNITS = 100000;
 
     private final IModelRepository repository;
     private final ModelCoordinate mc;
@@ -70,12 +67,15 @@ public class DownloadModelArchiveJob extends Job {
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
         try {
-            monitor.beginTask(MessageFormat.format(Messages.TASK_RESOLVING_MODEL, mc), IProgressMonitor.UNKNOWN);
-            ModelArchiveDownloadCallback cb = new ModelArchiveDownloadCallback(monitor);
-            File result = repository.resolve(mc, forceDownload, cb).orNull();
-            if (cb.downloadedArchive) {
+            String message = MessageFormat.format(Messages.TASK_RESOLVING_MODEL, mc);
+            MultipleDownloadCallback downloadCallback = new MultipleDownloadCallback(monitor, message,
+                    TOTAL_WORK_UNITS, MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB);
+            File result = repository.resolve(mc, forceDownload, downloadCallback).orNull();
+            boolean isDownloadSuccessful = downloadCallback.isDownloadSucceeded();
+            if (isDownloadSuccessful) {
                 bus.post(new ModelArchiveDownloadedEvent(mc));
             }
+            downloadCallback.finish();
 
             // Returns null if the model coordinate could not be resolved. This may because we are requesting an mc that
             // does not exist in the repository or because of the network being down.
@@ -116,48 +116,6 @@ public class DownloadModelArchiveJob extends Job {
                 && Objects.equal(INDEX.getArtifactId(), mc.getArtifactId())
                 && Objects.equal(INDEX.getClassifier(), mc.getClassifier())
                 && Objects.equal(INDEX.getExtension(), mc.getExtension());
-    }
-
-    private final class ModelArchiveDownloadCallback extends DownloadCallback {
-        private final IProgressMonitor monitor;
-        private boolean downloadedArchive;
-
-        private ModelArchiveDownloadCallback(IProgressMonitor monitor) {
-            this.monitor = monitor;
-        }
-
-        @Override
-        public synchronized void downloadInitiated(String path) {
-            downloads.put(path, new SubProgressMonitor(monitor, 1));
-        }
-
-        @Override
-        public synchronized void downloadProgressed(String path, long transferred, long total) {
-            IProgressMonitor submonitor = downloads.get(path);
-            String message = bytesToString(transferred) + "/" + bytesToString(total); //$NON-NLS-1$
-            submonitor.subTask(message);
-            submonitor.worked(1);
-        }
-
-        @Override
-        public synchronized void downloadSucceeded(String path) {
-            downloads.get(path).done();
-            downloadedArchive = true;
-        }
-
-        @Override
-        public synchronized void downloadFailed(String path) {
-            downloads.get(path).done();
-        }
-
-        private String bytesToString(long bytes) {
-            if (bytes < 1024) {
-                return bytes + " B"; //$NON-NLS-1$
-            }
-            int exp = (int) (Math.log(bytes) / Math.log(1024));
-            String pre = "KMGTPE".charAt(exp - 1) + "i"; //$NON-NLS-1$ //$NON-NLS-2$
-            return String.format("%.1f %sB", bytes / Math.pow(1024, exp), pre); //$NON-NLS-1$
-        }
     }
 
     private static final class IndexDownloadFailureDialog extends MessageDialogWithToggle {
