@@ -12,13 +12,8 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static java.text.MessageFormat.format;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
-import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_ADD_REPOSITORY;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_COLLAPSE_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_EXPAND_ALL;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REMOVE_REPOSITORY;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.File;
@@ -30,10 +25,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -48,6 +39,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.IViewerObservableList;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -87,13 +79,9 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -125,18 +113,24 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Text txtSearch;
     private TreeViewer treeViewer;
     private Tree tree;
-    private Button btnEdit;
-    private Button btnRemove;
-    private Button btnAdd;
-    private Button btnReconnect;
 
-    private DataBindingContext ctx;
     private IViewerObservableList selection;
 
     private SharedImages images;
 
     private final Repositories repos;
-    private SnippetRepositoryConfigurations configs;
+    private final SnippetRepositoryConfigurations configs;
+    private final File repositoryConfigurationFile;
+    private final EventBus bus;
+
+    private Action addRepositoryAction;
+    private Action removeRepositoryAction;
+
+    private Action refreshAction;
+
+    private Action addSnippetAction;
+    private Action removeSnippetAction;
+    private Action editSnippetAction;
 
     private boolean initializeTableData = true;
 
@@ -154,13 +148,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
     };
 
-    private Action addRepositoryAction;
-    private Action removeRepositoryAction;
-
-    private EventBus bus;
-
-    private File repositoryConfigurationFile;
-
     @Inject
     public SnippetsView(Repositories repos, SharedImages images, SnippetRepositoryConfigurations configs, EventBus bus,
             @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
@@ -174,11 +161,11 @@ public class SnippetsView extends ViewPart implements IRcpService {
     @Override
     public void createPartControl(final Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.swtDefaults().spacing(0, 5).numColumns(2).equalWidth(false).applyTo(composite);
+        GridLayoutFactory.swtDefaults().applyTo(composite);
 
         txtSearch = new Text(composite, SWT.BORDER | SWT.ICON_SEARCH | SWT.SEARCH | SWT.CANCEL);
         txtSearch.setMessage(Messages.SEARCH_PLACEHOLDER_SEARCH_TEXT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(txtSearch);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(1, 1).applyTo(txtSearch);
         txtSearch.addModifyListener(new ModifyListener() {
 
             @Override
@@ -204,7 +191,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 }
             }
         });
-        new Label(composite, SWT.NONE);
 
         Composite treeComposite = new Composite(composite, SWT.NONE);
 
@@ -217,7 +203,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
         tree = treeViewer.getTree();
         tree.setHeaderVisible(true);
         tree.setLinesVisible(true);
-        GridDataFactory.fillDefaults().grab(true, false).span(1, 1).applyTo(tree);
 
         TreeViewerColumn snippetViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
         TreeColumn snippetColumn = snippetViewerColumn.getColumn();
@@ -310,79 +295,12 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         });
 
-        Composite buttonComposite = new Composite(composite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().numColumns(1).equalWidth(false).applyTo(buttonComposite);
-        GridDataFactory.fillDefaults().grab(false, false).applyTo(buttonComposite);
-
-        btnAdd = new Button(buttonComposite, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(btnAdd);
-        btnAdd.setText(Messages.SNIPPETS_VIEW_BUTTON_ADD);
-        btnAdd.setEnabled(isImportSupported());
-        btnAdd.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                for (ISnippetRepository repo : repos.getRepositories()) {
-                    if (repo.isImportSupported()) {
-                        // TODO Make the repo selectable
-                        // don't just store in the first that can import
-                        doAdd(repo);
-                        break;
-                    }
-                }
-            }
-        });
-
-        btnEdit = new Button(buttonComposite, SWT.NONE);
-        btnEdit.setEnabled(false);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(btnEdit);
-        btnEdit.setText(Messages.SNIPPETS_VIEW_BUTTON_EDIT);
-        btnEdit.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                doOpen();
-            }
-        });
-
-        btnRemove = new Button(buttonComposite, SWT.NONE);
-        btnRemove.setEnabled(false);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(btnRemove);
-        btnRemove.setText(Messages.SNIPPETS_VIEW_BUTTON_REMOVE);
-        btnRemove.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                for (int i = 0; i < selection.size(); i++) {
-                    Object selectedItem = selection.get(i);
-                    if (selectedItem instanceof KnownSnippet) {
-                        KnownSnippet knownSnippet = cast(selection.get(i));
-                        try {
-                            for (ISnippetRepository repo : repos.getRepositories()) {
-                                repo.delete(knownSnippet.snippet.getUuid());
-                            }
-                        } catch (Exception e) {
-                            Throwables.propagate(e);
-                        }
-                    }
-                }
-            }
-        });
-
-        btnReconnect = new Button(buttonComposite, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(btnReconnect);
-        btnReconnect.setText(Messages.SNIPPETS_VIEW_BUTTON_RECONNECT);
-        btnReconnect.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                reconnect();
-            }
-        });
-
         createActions(parent);
         addToolBar(parent);
         addContextMenu();
 
         refreshUI();
         selection = ViewersObservables.observeMultiSelection(treeViewer);
-        initDataBindings();
     }
 
     private int fetchNumberOfSnippets(SnippetRepositoryConfiguration config) {
@@ -399,7 +317,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     SnippetRepositoryTypeSelectionWizard newWizard = new SnippetRepositoryTypeSelectionWizard();
                     WizardDialog dialog = new WizardDialog(parent.getShell(), newWizard);
                     if (dialog.open() == Window.OK) {
-                        configs.getRepos().add(newWizard.getConfiguration());
+                        SnippetRepositoryConfiguration newConfiguration = newWizard.getConfiguration();
+                        newConfiguration.setId(RepositoryConfigurations.fetchHighestUsedId(configs.getRepos()) + 1);
+                        configs.getRepos().add(newConfiguration);
                         RepositoryConfigurations.storeConfigurations(configs, repositoryConfigurationFile);
                         bus.post(new Repositories.SnippetRepositoryConfigurationChangedEvent());
                     }
@@ -413,6 +333,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 final Optional<SnippetRepositoryConfiguration> config = Selections.getFirstSelected(treeViewer
                         .getSelection());
                 if (config.isPresent()) {
+
+                    boolean confirmed = MessageDialog.openConfirm(parent.getShell(),
+                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
+                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE);
+
+                    if (!confirmed) {
+                        return;
+                    }
+
                     configs.getRepos().remove(config.get());
                     RepositoryConfigurations.storeConfigurations(configs, repositoryConfigurationFile);
                     bus.post(new Repositories.SnippetRepositoryConfigurationChangedEvent());
@@ -422,15 +351,101 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         };
 
+        refreshAction = new Action() {
+            @Override
+            public void run() {
+                Job reconnectJob = new Job(Messages.JOB_RECONNECTING_SNIPPET_REPOSITORY) {
+
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor) {
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshAction.setEnabled(false);
+                            }
+                        });
+                        try {
+                            repos.close();
+                        } catch (IOException e) {
+                            // Snipmatch's default repositories cannot throw an IOException here
+                            LOG.error(e.getMessage(), e);
+                        }
+                        try {
+                            repos.open();
+                        } catch (IOException e) {
+                            // Snipmatch's default repositories cannot throw an IOException here
+                            LOG.error(e.getMessage(), e);
+                        }
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshAction.setEnabled(true);
+                            }
+                        });
+                        return Status.OK_STATUS;
+                    }
+                };
+                reconnectJob.schedule();
+            }
+        };
+
+        addSnippetAction = new Action() {
+            @Override
+            public void run() {
+                for (ISnippetRepository repo : repos.getRepositories()) {
+                    if (repo.isImportSupported()) {
+                        // TODO Make the repo selectable
+                        // don't just store in the first that can import
+                        doAdd(repo);
+                        break;
+                    }
+                }
+            }
+        };
+
+        removeSnippetAction = new Action() {
+            public void run() {
+                Object selectedItem = selection.get(0);
+                if (selectedItem instanceof KnownSnippet) {
+                    KnownSnippet knownSnippet = cast(selectedItem);
+
+                    boolean confirmed = MessageDialog.openConfirm(parent.getShell(),
+                            Messages.CONFIRM_DIALOG_DELETE_SNIPPET_TITLE,
+                            Messages.CONFIRM_DIALOG_DELETE_SNIPPET_MESSAGE);
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    try {
+                        for (ISnippetRepository repo : repos.getRepositories()) {
+                            repo.delete(knownSnippet.snippet.getUuid());
+                        }
+                    } catch (Exception e) {
+                        Throwables.propagate(e);
+                    }
+                }
+            }
+        };
+
+        editSnippetAction = new Action() {
+            @Override
+            public void run() {
+                doOpen();
+            }
+        };
+
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                if (isValidType(treeViewer.getSelection(), SnippetRepositoryConfiguration.class)) {
-                    removeRepositoryAction.setEnabled(true);
-                } else {
-                    removeRepositoryAction.setEnabled(false);
-                }
+                boolean isConfigurationSelected = isValidType(treeViewer.getSelection(),
+                        SnippetRepositoryConfiguration.class);
+                removeRepositoryAction.setEnabled(isConfigurationSelected);
+
+                boolean isSnippetSelected = isValidType(treeViewer.getSelection(), KnownSnippet.class);
+                removeSnippetAction.setEnabled(isSnippetSelected);
+                editSnippetAction.setEnabled(isSnippetSelected);
             }
         });
     }
@@ -441,6 +456,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
     private void addToolBar(final Composite parent) {
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+        addActions(toolBarManager);
+
+        toolBarManager.add(new Separator());
 
         addAction(Messages.TOOLBAR_TOOLTIP_EXPAND_ALL, ELCL_EXPAND_ALL, toolBarManager, new Action() {
             @Override
@@ -463,11 +481,24 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         toolBarManager.add(new Separator());
 
-        addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, toolBarManager,
-                addRepositoryAction);
-        addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, toolBarManager,
-                removeRepositoryAction);
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_REFRESH, ELCL_REFRESH, toolBarManager, refreshAction);
+    }
 
+    private void addActions(IContributionManager contributionManager) {
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET, ELCL_ADD_SNIPPET, contributionManager, addSnippetAction);
+
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET, ELCL_REMOVE_SNIPPET, contributionManager,
+                removeSnippetAction);
+
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET, ELCL_EDIT_SNIPPET, contributionManager,
+                editSnippetAction);
+
+        contributionManager.add(new Separator());
+
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, contributionManager,
+                addRepositoryAction);
+        addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY,
+                ELCL_REMOVE_REPOSITORY_DISABLED, contributionManager, removeRepositoryAction);
     }
 
     private void addContextMenu() {
@@ -479,11 +510,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, menuManager,
-                        addRepositoryAction);
-
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
-                        removeRepositoryAction);
+                addActions(manager);
             }
 
         });
@@ -497,8 +524,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
         contributionManager.add(action);
     }
 
+    private void addAction(String text, Images imageResource, Images imageResourceDisabled,
+            IContributionManager contributionManager, Action action) {
+        action.setDisabledImageDescriptor(images.getDescriptor(imageResourceDisabled));
+        addAction(text, imageResource, contributionManager, action);
+    }
+
     private void updateData() {
-        initializeTableData = true;
         if (txtSearch.isDisposed()) {
             return;
         }
@@ -526,41 +558,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
 
         return snippetsGroupedByRepositoryName;
-    }
-
-    private void reconnect() {
-        Job reconnectJob = new Job(Messages.JOB_RECONNECTING_SNIPPET_REPOSITORY) {
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnReconnect.setEnabled(false);
-                    }
-                });
-                try {
-                    repos.close();
-                } catch (IOException e) {
-                    // Snipmatch's default repositories cannot throw an IOException here
-                    LOG.error(e.getMessage(), e);
-                }
-                try {
-                    repos.open();
-                } catch (IOException e) {
-                    // Snipmatch's default repositories cannot throw an IOException here
-                    LOG.error(e.getMessage(), e);
-                }
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnReconnect.setEnabled(true);
-                    }
-                });
-                return Status.OK_STATUS;
-            }
-        };
-        reconnectJob.schedule();
     }
 
     @Subscribe
@@ -602,15 +599,10 @@ public class SnippetsView extends ViewPart implements IRcpService {
                         refreshTable();
                     }
                 }
-                if (!btnAdd.isDisposed()) {
-                    btnAdd.setEnabled(isImportSupported());
-                }
-                if (!btnEdit.isDisposed()) {
-                    btnEdit.setEnabled(false);
-                }
-                if (!btnRemove.isDisposed()) {
-                    btnRemove.setEnabled(false);
-                }
+                addSnippetAction.setEnabled(isImportSupported());
+                editSnippetAction.setEnabled(false);
+                removeSnippetAction.setEnabled(false);
+                removeRepositoryAction.setEnabled(false);
                 return Status.OK_STATUS;
             }
         };
@@ -678,77 +670,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
     @Override
     public void setFocus() {
         treeViewer.getControl().setFocus();
-    }
-
-    protected void initDataBindings() {
-        ctx = new DataBindingContext();
-
-        UpdateValueStrategy editSupportedStrategy = new UpdateValueStrategy();
-        editSupportedStrategy.setConverter(new IConverter() {
-
-            @Override
-            public Object getFromType() {
-                return KnownSnippet.class;
-            }
-
-            @Override
-            public Object getToType() {
-                return Boolean.class;
-            }
-
-            @Override
-            public Boolean convert(Object fromObject) {
-                if (fromObject == null) {
-                    return false;
-                }
-                if (fromObject instanceof KnownSnippet) {
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        IObservableValue selectionValue = singleSelection().observe(treeViewer);
-        IObservableValue enabledBtnEditValue = enabled().observe(btnEdit);
-        ctx.bindValue(selectionValue, enabledBtnEditValue, editSupportedStrategy, null);
-
-        UpdateValueStrategy deleteSupportedStrategy = new UpdateValueStrategy();
-
-        deleteSupportedStrategy.setConverter(new IConverter() {
-
-            @Override
-            public Object getFromType() {
-                return KnownSnippet.class;
-            }
-
-            @Override
-            public Object getToType() {
-                return Boolean.class;
-            }
-
-            @Override
-            public Boolean convert(Object fromObject) {
-                if (fromObject == null) {
-                    return false;
-                }
-                if (fromObject instanceof KnownSnippet) {
-
-                    KnownSnippet selection = cast(fromObject);
-                    ISnippet snippet = selection.snippet;
-                    for (ISnippetRepository repo : repos.getRepositories()) {
-                        if (repo.isDeleteSupported()) {
-                            if (repo.hasSnippet(snippet.getUuid())) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-
-        });
-        IObservableValue enabledBtnRemoveValue = enabled().observe(btnRemove);
-        ctx.bindValue(selectionValue, enabledBtnRemoveValue, deleteSupportedStrategy, null);
     }
 
     public class KnownSnippet {

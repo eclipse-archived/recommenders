@@ -17,7 +17,13 @@ public class Messages extends NLS {
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
     public static String CONFIGURATION_DISPLAY_STRING;
 
+    public static String CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE;
+    public static String CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE;
+    public static String CONFIRM_DIALOG_DELETE_SNIPPET_MESSAGE;
+    public static String CONFIRM_DIALOG_DELETE_SNIPPET_TITLE;
+
     public static String DEFAULT_REPO_NAME;
+
     public static String DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
@@ -71,13 +77,13 @@ public class Messages extends NLS {
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;
 
-    public static String SNIPPETS_VIEW_BUTTON_ADD;
-    public static String SNIPPETS_VIEW_BUTTON_EDIT;
-    public static String SNIPPETS_VIEW_BUTTON_RECONNECT;
-    public static String SNIPPETS_VIEW_BUTTON_REMOVE;
-
-    public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY;
+    public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET;
+    public static String SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET;
+    public static String SNIPPETS_VIEW_MENUITEM_REFRESH;
+    public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;
+    public static String SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET;
+
     public static String JOB_OPENING_SNIPPET_REPOSITORY;
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;

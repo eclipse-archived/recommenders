@@ -111,7 +111,7 @@ public class RepositoryConfigurations {
         return defaultConfigurations;
     }
 
-    private static int fetchHighestUsedId(List<SnippetRepositoryConfiguration> defaultConfigurations) {
+    public static int fetchHighestUsedId(List<SnippetRepositoryConfiguration> defaultConfigurations) {
         int id = 0;
         for (SnippetRepositoryConfiguration config : defaultConfigurations) {
             if (config.getId() > id) {

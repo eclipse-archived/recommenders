@@ -113,7 +113,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, true)
-            .applyTo(tableViewer.getTable());
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -252,7 +252,9 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 WizardDialog dialog = new WizardDialog(this.getPage().getShell(), newWizard);
                 if (dialog.open() == Window.OK) {
                     List<SnippetRepositoryConfiguration> configurations = getTableInput();
-                    configurations.add(newWizard.getConfiguration());
+                    SnippetRepositoryConfiguration newConfiguration = newWizard.getConfiguration();
+                    newConfiguration.setId(RepositoryConfigurations.fetchHighestUsedId(configurations) + 1);
+                    configurations.add(newConfiguration);
                     updateTableContent(configurations);
                     dirty = true;
                 }
@@ -305,15 +307,15 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             Collection<SnippetRepositoryConfiguration> checkedConfigurations = Collections2.filter(configurations,
                     new Predicate<SnippetRepositoryConfiguration>() {
 
-                @Override
-                public boolean apply(SnippetRepositoryConfiguration input) {
-                    if (oldConfigurations != null && oldConfigurations.contains(input)) {
-                        return tableViewer.getChecked(input);
-                    }
-                    return input.isEnabled();
-                }
+                        @Override
+                        public boolean apply(SnippetRepositoryConfiguration input) {
+                            if (oldConfigurations != null && oldConfigurations.contains(input)) {
+                                return tableViewer.getChecked(input);
+                            }
+                            return input.isEnabled();
+                        }
 
-            });
+                    });
 
             tableViewer.setInput(configurations);
             tableViewer.setCheckedElements(checkedConfigurations.toArray());
