@@ -48,6 +48,8 @@ public class GitSnippetRepository extends FileSnippetRepository {
     private final String pushUrl;
     private final String pushBranchPrefix;
 
+    private FileRepository localRepo;
+
     public GitSnippetRepository(int id, File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
         super(id, basedir);
         this.basedir = basedir;
@@ -150,7 +152,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     private void pullSnippets() throws IOException, InvalidRemoteException, TransportException, GitAPIException,
             CoreException {
         String remoteBranch = "origin/" + FORMAT_VERSION;
-        FileRepository localRepo = new FileRepository(gitFile);
+        localRepo = new FileRepository(gitFile);
         Git git = new Git(localRepo);
 
         git.fetch().call();
@@ -181,4 +183,23 @@ public class GitSnippetRepository extends FileSnippetRepository {
     public String getRepositoryLocation() {
         return fetchUrl;
     }
+
+    @Override
+    public void close() {
+        localRepo.close();
+        super.close();
+    };
+
+    @Override
+    public boolean delete() {
+        close();
+        try {
+            FileUtils.deleteDirectory(basedir);
+            return true;
+        } catch (IOException e) {
+            LOG.error("Exception while deleting files on disk.", e);
+            return false;
+        }
+    }
+
 }

@@ -19,6 +19,7 @@ public class Messages extends NLS {
 
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE;
+    public static String CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_TITLE;
 

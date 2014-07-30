@@ -356,9 +356,27 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                 .setUrl("https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
         configuration
                 .setPushUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
-        configuration.setPushBranchPrefix("refs/for");
+        configuration.setPushBranchPrefix("refs/for"); //$NON-NLS-1$
 
         result.add(configuration);
         return result;
+    }
+
+    @Override
+    public boolean delete() {
+        writeLock.lock();
+        try {
+            try {
+                close();
+                delegate.delete();
+                return true;
+            } catch (IOException e) {
+                LOG.error("Exception while deleting files on disk.", e); //$NON-NLS-1$
+                return false;
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
     }
 }

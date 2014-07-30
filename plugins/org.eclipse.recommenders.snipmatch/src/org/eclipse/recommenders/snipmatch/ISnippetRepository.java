@@ -55,4 +55,6 @@ public interface ISnippetRepository extends Openable, Closeable {
     void importSnippet(ISnippet snippet) throws IOException;
 
     boolean isImportSupported();
+
+    boolean delete();
 }

@@ -32,6 +32,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -454,6 +455,23 @@ public class FileSnippetRepository implements ISnippetRepository {
         @Override
         public float idf(int docFreq, int numDocs) {
             return 1.0f;
+        }
+    }
+
+    @Override
+    public boolean delete() {
+        writeLock.lock();
+        try {
+            close();
+            try {
+                FileUtils.deleteDirectory(snippetsdir);
+                FileUtils.deleteDirectory(indexdir);
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
 }

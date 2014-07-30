@@ -19,8 +19,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.FieldEditor;
@@ -34,6 +36,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
 import org.eclipse.recommenders.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -61,16 +64,18 @@ import com.google.inject.name.Named;
 public class SnipmatchPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private final EventBus bus;
+    private final Repositories repos;
     private final SnippetRepositoryConfigurations configuration;
     private boolean dirty;
     private final File repositoryConfigurationFile;
 
     @Inject
-    public SnipmatchPreferencePage(EventBus bus, SnippetRepositoryConfigurations configuration,
+    public SnipmatchPreferencePage(EventBus bus, Repositories repos, SnippetRepositoryConfigurations configuration,
             @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
         super(GRID);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
         this.bus = bus;
+        this.repos = repos;
         this.configuration = configuration;
         this.repositoryConfigurationFile = repositoryConfigurationFile;
     }
@@ -208,6 +213,25 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
         protected void removeConfiguration(SnippetRepositoryConfiguration configuration) {
             List<SnippetRepositoryConfiguration> configurations = getTableInput();
+
+            MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openInformation(
+                    SnipmatchPreferencePage.this.getShell(), Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
+                    Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE,
+                    Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE, true, null, null);
+
+            boolean confirmed = confirmDialog.getReturnCode() == Status.OK;
+            if (!confirmed) {
+                return;
+            }
+
+            boolean delete = confirmDialog.getToggleState();
+            if (delete) {
+                ISnippetRepository repo = repos.getRepository(configuration.getId()).orNull();
+                if (repo != null) {
+                    repo.delete();
+                }
+            }
+
             configurations.remove(configuration);
             updateTableContent(configurations);
             dirty = true;

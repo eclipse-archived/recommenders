@@ -40,6 +40,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.IViewerObservableList;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -334,12 +335,22 @@ public class SnippetsView extends ViewPart implements IRcpService {
                         .getSelection());
                 if (config.isPresent()) {
 
-                    boolean confirmed = MessageDialog.openConfirm(parent.getShell(),
-                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
-                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE);
+                    MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openOkCancelConfirm(
+                            parent.getShell(), Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
+                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE,
+                            Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE, true, null, null);
 
+                    boolean confirmed = confirmDialog.getReturnCode() == Status.OK;
                     if (!confirmed) {
                         return;
+                    }
+
+                    boolean delete = confirmDialog.getToggleState();
+                    if (delete) {
+                        ISnippetRepository repo = repos.getRepository(config.get().getId()).orNull();
+                        if (repo != null) {
+                            repo.delete();
+                        }
                     }
 
                     configs.getRepos().remove(config.get());
