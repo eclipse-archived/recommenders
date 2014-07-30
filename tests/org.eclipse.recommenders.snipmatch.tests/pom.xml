@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>tests</artifactId>
-		<version>2.1.2-SNAPSHOT</version>
+		<version>2.1.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.eclipse.recommenders.snipmatch.tests</artifactId>
@@ -57,4 +57,5 @@
 			</build>
 		</profile>
 	</profiles>
+<version>2.1.2-SNAPSHOT</version>
 </project>
