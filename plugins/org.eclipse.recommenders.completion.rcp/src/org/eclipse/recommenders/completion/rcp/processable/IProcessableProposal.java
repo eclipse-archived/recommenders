@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 @Beta
 public interface IProcessableProposal extends IJavaCompletionProposal {
@@ -35,11 +36,22 @@ public interface IProcessableProposal extends IJavaCompletionProposal {
 
     Optional<CompletionProposal> getCoreProposal();
 
+    /**
+     * @return the last know user-entered completion prefix. May be null initially.
+     * @see Proposals#getPrefix(IProcessableProposal) for a null-safe variant
+     */
     String getPrefix();
 
     void setTag(IProposalTag key, Object value);
 
     <T> Optional<T> getTag(IProposalTag key);
 
+    <T> Optional<T> getTag(String key);
+
     <T> T getTag(IProposalTag key, T defaultValue);
+
+    <T> T getTag(String key, T defaultValue);
+
+    ImmutableSet<IProposalTag> tags();
+
 }
