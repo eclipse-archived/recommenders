@@ -77,8 +77,11 @@ public class Messages extends NLS {
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;
 
+    public static String SELECT_REPOSITORY_DIALOG_MESSAGE;
+    public static String SELECT_REPOSITORY_DIALOG_TITLE;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET;
+    public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_REFRESH;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;

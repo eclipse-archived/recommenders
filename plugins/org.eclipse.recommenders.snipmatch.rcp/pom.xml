@@ -10,7 +10,6 @@
 	</parent>
 	<artifactId>org.eclipse.recommenders.snipmatch.rcp</artifactId>
 	<packaging>eclipse-plugin</packaging>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -35,6 +34,7 @@
 				</configuration>
 				<executions>
 					<execution>
+						<id>generate-sources</id>
 						<goals>
 							<goal>eclipse-run</goal>
 						</goals>

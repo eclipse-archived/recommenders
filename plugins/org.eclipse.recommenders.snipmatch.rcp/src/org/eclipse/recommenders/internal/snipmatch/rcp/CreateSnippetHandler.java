@@ -46,6 +46,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.ui.IWorkbenchPage;
@@ -64,7 +65,8 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSnippetHandler.class);
 
-    private Repositories repos;
+    private final Repositories repos;
+    private final SnippetRepositoryConfigurations configs;
 
     private ISourceViewer viewer;
     private ITypeRoot root;
@@ -83,8 +85,9 @@ public class CreateSnippetHandler extends AbstractHandler {
     private ExecutionEvent event;
 
     @Inject
-    public CreateSnippetHandler(Repositories repos) {
+    public CreateSnippetHandler(Repositories repos, SnippetRepositoryConfigurations configs) {
         this.repos = repos;
+        this.configs = configs;
     }
 
     @Override
@@ -237,22 +240,22 @@ public class CreateSnippetHandler extends AbstractHandler {
     }
 
     private void openSnippetInEditor(Snippet snippet) {
-        for (ISnippetRepository r : repos.getRepositories()) {
-            if (r.isImportSupported()) {
-                try {
-                    SnippetEditorInput input = new SnippetEditorInput(snippet, r);
-                    IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
-                    SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
-                    ed.setDirty(true);
-                    // if we could add the snippet somewhere, return. Otherwise report an error
-                    return;
-                } catch (PartInitException e) {
-                    LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
-                }
-            }
+        IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
+        ISnippetRepository repository = SelectRepositoryDialog.openSelectRepositoryDialog(
+                page.getActivePart().getSite().getShell(), repos, configs).orNull();
+        if (repository == null) {
+            return;
         }
-        openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
-                Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
+
+        try {
+            SnippetEditorInput input = new SnippetEditorInput(snippet, repository);
+            SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
+            ed.setDirty(true);
+        } catch (PartInitException e) {
+            LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
+            openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
+                    Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
+        }
     }
 
     private void replaceLeadingWhitespaces() {
