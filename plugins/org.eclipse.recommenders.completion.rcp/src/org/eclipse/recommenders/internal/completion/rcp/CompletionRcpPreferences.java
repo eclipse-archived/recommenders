@@ -90,11 +90,11 @@ public class CompletionRcpPreferences extends AbstractPreferenceInitializer {
         return Maps.filterValues(fromString(availableProcessors, enabledSessionProcessorString),
                 new Predicate<Boolean>() {
 
-                    @Override
-                    public boolean apply(Boolean input) {
-                        return input;
-                    }
-                }).keySet();
+            @Override
+            public boolean apply(Boolean input) {
+                return input;
+            }
+        }).keySet();
     }
 
     public SessionProcessorDescriptor getSessionProcessorDescriptor(String id) {
@@ -143,6 +143,9 @@ public class CompletionRcpPreferences extends AbstractPreferenceInitializer {
     private static Map<SessionProcessorDescriptor, Boolean> fromString(
             Iterable<SessionProcessorDescriptor> descriptors, String string) {
         Map<SessionProcessorDescriptor, Boolean> result = Maps.newHashMap();
+        for (SessionProcessorDescriptor descriptor : descriptors) {
+            result.put(descriptor, true);
+        }
         for (String id : StringUtils.split(string, SEPARATOR)) {
             final boolean enabled;
             if (id.charAt(0) == DISABLED_FLAG) {
