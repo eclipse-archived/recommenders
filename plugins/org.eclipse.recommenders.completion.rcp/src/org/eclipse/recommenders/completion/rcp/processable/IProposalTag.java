@@ -11,11 +11,9 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 /**
- * Interface for tags that may be used with {@link IProcessableProposal}s.
- *
+ * Marker interface for tags that may be used with {@link IProcessableProposal}s.
+ * 
  * @see ProposalTag standard tags
  */
 public interface IProposalTag {
-
-    String name();
 }

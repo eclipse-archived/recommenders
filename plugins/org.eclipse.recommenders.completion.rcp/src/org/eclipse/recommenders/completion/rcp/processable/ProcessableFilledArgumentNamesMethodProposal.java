@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
-import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -38,15 +37,14 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 /**
  * A method proposal with filled in argument names.
  */
-@SuppressWarnings({ "restriction", "unchecked" })
+@SuppressWarnings("restriction")
 public class ProcessableFilledArgumentNamesMethodProposal extends JavaMethodCompletionProposal implements
-IProcessableProposal {
+        IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private IRegion fSelectedRegion; // initialized by apply()
@@ -165,7 +163,7 @@ IProcessableProposal {
 
     /**
      * Returns the currently active java editor, or <code>null</code> if it cannot be determined.
-     *
+     * 
      * @return the currently active java editor, or <code>null</code>
      */
     private JavaEditor getJavaEditor() {
@@ -199,9 +197,10 @@ IProcessableProposal {
     @Override
     public boolean isPrefix(final String prefix, final String completion) {
         lastPrefix = prefix;
-        boolean res = mgr.prefixChanged(prefix) || super.isPrefix(prefix, completion);
-        setTag(IS_VISIBLE, res);
-        return res;
+        if (mgr.prefixChanged(prefix)) {
+            return true;
+        }
+        return super.isPrefix(prefix, completion);
     }
 
     @Override
@@ -240,23 +239,9 @@ IProcessableProposal {
     }
 
     @Override
-    public <T> Optional<T> getTag(String key) {
-        return Proposals.getTag(this, key);
-    }
-
-    @Override
     public <T> T getTag(IProposalTag key, T defaultValue) {
         T res = (T) tags.get(key);
         return res != null ? res : defaultValue;
     }
 
-    @Override
-    public <T> T getTag(String key, T defaultValue) {
-        return this.<T>getTag(key).or(defaultValue);
-    }
-
-    @Override
-    public ImmutableSet<IProposalTag> tags() {
-        return ImmutableSet.copyOf(tags.keySet());
-    }
 }

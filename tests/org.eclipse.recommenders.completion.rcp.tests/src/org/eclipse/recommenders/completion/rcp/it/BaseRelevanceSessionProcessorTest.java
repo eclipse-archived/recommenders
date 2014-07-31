@@ -15,7 +15,6 @@ import org.eclipse.swt.graphics.Point;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 
 public class BaseRelevanceSessionProcessorTest {
 
@@ -129,21 +128,6 @@ public class BaseRelevanceSessionProcessorTest {
 
         @Override
         public <T> T getTag(IProposalTag key, T defaultValue) {
-            return null;
-        }
-
-        @Override
-        public <T> Optional<T> getTag(String key) {
-            return null;
-        }
-
-        @Override
-        public <T> T getTag(String key, T defaultValue) {
-            return null;
-        }
-
-        @Override
-        public ImmutableSet<IProposalTag> tags() {
             return null;
         }
     }
