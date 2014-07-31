@@ -30,6 +30,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.JavaCo
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.LookupEnvironmentContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.ReceiverNameContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.ReceiverTypeBindingContextFunction;
+import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.SessionIdFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleFieldsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleLocalsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleMethodsContextFunction;
@@ -41,6 +42,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 
+@SuppressWarnings({ "rawtypes" })
 public class CompletionRcpModule extends AbstractModule {
 
     @Override
@@ -67,6 +69,7 @@ public class CompletionRcpModule extends AbstractModule {
         functions.addBinding(VISIBLE_METHODS).to(VisibleMethodsContextFunction.class);
         functions.addBinding(VISIBLE_FIELDS).to(VisibleFieldsContextFunction.class);
         functions.addBinding(VISIBLE_LOCALS).to(VisibleLocalsContextFunction.class);
+        functions.addBinding(SESSION_ID).to(SessionIdFunction.class);
     }
 
     @Provides

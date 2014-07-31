@@ -12,7 +12,29 @@ package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE_PARENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_SCOPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.CCTX_COMPILATION_UNIT_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.COMPLETION_PREFIX;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_AST_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_ELEMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPENAMES;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.INTERNAL_COMPLETIONCONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.IS_COMPLETION_ON_TYPE;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_CONTENTASSIST_CONTEXT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.LOOKUP_ENVIRONMENT;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_TYPEBINDING;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.SESSION_ID;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_FIELDS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_LOCALS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_METHODS;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -22,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -74,7 +97,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "rawtypes" })
 public class CompletionContextFunctions {
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
@@ -97,6 +120,7 @@ public class CompletionContextFunctions {
         res.put(VISIBLE_METHODS, new VisibleMethodsContextFunction());
         res.put(VISIBLE_FIELDS, new VisibleFieldsContextFunction());
         res.put(VISIBLE_LOCALS, new VisibleLocalsContextFunction());
+        res.put(SESSION_ID, new SessionIdFunction());
         return res;
     }
 
@@ -328,7 +352,7 @@ public class CompletionContextFunctions {
                 final CompletionOnLocalName c = cast(n);
                 name = c.realName;
             } else if (n instanceof CompletionOnSingleNameReference) {
-                final CompletionOnSingleNameReference c = cast(n);
+                // final CompletionOnSingleNameReference c = cast(n);
                 // TODO is that correct?
                 // name = c.token;
                 name = new char[0];
@@ -337,9 +361,11 @@ public class CompletionContextFunctions {
                 if (c.receiver instanceof ThisReference) {
                     name = "this".toCharArray(); //$NON-NLS-1$
                 } else if (c.receiver instanceof MessageSend) {
-                    // some anonymous type/method return value that has no name...
+                    // some anonymous type/method return value that has no
+                    // name...
                     // e.g.:
-                    // PlatformUI.getWorkbench()|^Space --> receiver is anonymous
+                    // PlatformUI.getWorkbench()|^Space --> receiver is
+                    // anonymous
                     // --> name = null
                     name = null;
                 } else if (c.fieldBinding() != null) {
@@ -531,6 +557,16 @@ public class CompletionContextFunctions {
             }
             context.set(key, env);
             return env;
+        }
+    }
+
+    public static class SessionIdFunction implements ICompletionContextFunction<UUID> {
+
+        @Override
+        public UUID compute(IRecommendersCompletionContext context, CompletionContextKey<UUID> key) {
+            UUID res = UUID.randomUUID();
+            context.set(key, res);
+            return res;
         }
     }
 
