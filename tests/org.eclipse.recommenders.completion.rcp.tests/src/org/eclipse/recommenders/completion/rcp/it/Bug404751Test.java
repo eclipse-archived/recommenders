@@ -33,6 +33,7 @@ import com.google.common.collect.Lists;
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=404751">Bug 404751</a>
  */
 @RunWith(Parameterized.class)
+@SuppressWarnings({ "restriction" })
 public class Bug404751Test {
 
     private final String expectedType;

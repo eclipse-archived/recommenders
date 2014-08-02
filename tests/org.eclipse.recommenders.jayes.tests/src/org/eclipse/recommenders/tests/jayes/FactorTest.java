@@ -21,6 +21,7 @@ import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.testing.jayes.ArrayUtils;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class FactorTest {
 
     private static double[] distribution2x2x2() {

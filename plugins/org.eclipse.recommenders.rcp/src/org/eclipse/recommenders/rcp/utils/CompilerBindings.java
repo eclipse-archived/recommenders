@@ -10,9 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -140,6 +138,7 @@ public class CompilerBindings {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
+    @SuppressWarnings("unchecked")
     public static Optional<ITypeName> toTypeName(final TypeReference type) {
         return (Optional<ITypeName>) (type == null ? Optional.absent() : toTypeName(type.resolvedType));
     }

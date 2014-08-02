@@ -59,6 +59,7 @@ import org.osgi.framework.Bundle;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public final class JavadocProvider extends ApidocProvider {
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();

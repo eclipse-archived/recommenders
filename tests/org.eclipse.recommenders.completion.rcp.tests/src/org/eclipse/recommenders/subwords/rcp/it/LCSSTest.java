@@ -21,7 +21,7 @@ import org.eclipse.recommenders.internal.subwords.rcp.LCSS;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "restriction" })
 public class LCSSTest {
 
     @Test

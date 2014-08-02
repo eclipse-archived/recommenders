@@ -59,6 +59,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public class StaticHooksProvider extends ApidocProvider {
 
     private final class HooksRendererRunnable implements Runnable {

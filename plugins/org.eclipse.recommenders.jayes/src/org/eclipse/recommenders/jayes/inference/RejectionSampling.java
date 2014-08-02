@@ -18,6 +18,7 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.sampling.BasicSampler;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 
+@SuppressWarnings("deprecation")
 public class RejectionSampling extends AbstractInferer {
 
     private int sampleCount = 200;

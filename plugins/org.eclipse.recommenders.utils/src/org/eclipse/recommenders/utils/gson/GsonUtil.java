@@ -189,7 +189,7 @@ public class GsonUtil {
                 }
             }
         } finally {
-            Closeables.closeQuietly(zis);
+            Closeables.close(zis, true);
         }
         return res;
     }

@@ -52,6 +52,7 @@ public class CallCompletionContextFunctions {
 
     public static class ReceiverCallsCompletionContextFunction implements ICompletionContextFunction {
 
+        @SuppressWarnings("unchecked")
         @Override
         public Object compute(IRecommendersCompletionContext context, CompletionContextKey key) {
             List<IMethodName> calls = null;

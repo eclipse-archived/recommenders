@@ -20,7 +20,7 @@ import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.SmokeTestScenarios.*
 import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
 import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
-
+@SuppressWarnings("unchecked")
 class ChainCompletionScenariosTest {
 
     static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(), "test")

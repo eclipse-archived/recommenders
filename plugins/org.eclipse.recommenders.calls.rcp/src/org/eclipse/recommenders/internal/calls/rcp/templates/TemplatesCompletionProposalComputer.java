@@ -83,7 +83,7 @@ import com.google.common.collect.Sets;
 /**
  * Controls the process of template recommendations.
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -148,7 +148,6 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List computeCompletionProposals(ContentAssistInvocationContext context, IProgressMonitor monitor) {
         if (!shouldMakeProposals()) {
             return Collections.EMPTY_LIST;

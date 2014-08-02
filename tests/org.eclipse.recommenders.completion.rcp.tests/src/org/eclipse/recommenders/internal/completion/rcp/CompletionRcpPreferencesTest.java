@@ -23,6 +23,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+@SuppressWarnings("restriction")
 public class CompletionRcpPreferencesTest {
 
     private static final SessionProcessorDescriptor FIRST_DESCRIPTOR = new SessionProcessorDescriptor("first", "name",

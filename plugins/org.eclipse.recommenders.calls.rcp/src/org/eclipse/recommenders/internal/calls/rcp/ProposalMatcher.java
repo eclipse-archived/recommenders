@@ -18,6 +18,7 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 
+@SuppressWarnings({ "restriction" })
 public class ProposalMatcher {
 
     private final IMethodName proposedMethod;

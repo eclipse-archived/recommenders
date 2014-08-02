@@ -17,6 +17,7 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.factor.FactorFactory;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractInferrer implements IBayesInferer {
 
     protected Map<BayesNode, String> evidence = new HashMap<BayesNode, String>();

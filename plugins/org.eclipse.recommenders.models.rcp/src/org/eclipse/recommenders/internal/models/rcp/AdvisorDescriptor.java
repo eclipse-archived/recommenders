@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 
+@SuppressWarnings("restriction")
 public class AdvisorDescriptor {
 
     private final IConfigurationElement config;
@@ -54,8 +55,7 @@ public class AdvisorDescriptor {
             return (IProjectCoordinateAdvisor) config.createExecutableExtension("class"); //$NON-NLS-1$
         } catch (CoreException e) {
             String pluginId = config.getContributor().getName();
-            RcpPlugin.logError(e, Messages.LOG_ERROR_ADVISOR_INSTANTIATION,
-                    pluginId, config.getAttribute("class")); //$NON-NLS-1$
+            RcpPlugin.logError(e, Messages.LOG_ERROR_ADVISOR_INSTANTIATION, pluginId, config.getAttribute("class")); //$NON-NLS-1$
             throw e;
         }
     }

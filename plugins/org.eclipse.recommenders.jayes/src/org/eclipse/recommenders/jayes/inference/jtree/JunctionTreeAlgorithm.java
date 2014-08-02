@@ -35,6 +35,7 @@ import org.eclipse.recommenders.jayes.util.sharing.CanonicalArrayWrapperManager;
 import org.eclipse.recommenders.jayes.util.sharing.CanonicalIntArrayManager;
 import org.eclipse.recommenders.jayes.util.triangulation.MinFillIn;
 
+@SuppressWarnings("deprecation")
 public class JunctionTreeAlgorithm extends AbstractInferer {
 
     private static final double ONE = 1.0;
@@ -156,7 +157,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     /**
      * checks which nodes need not be processed during collectEvidence (because of preprocessing). These are those nodes
      * without evidence which are leaves or which only have non-evidence descendants
-     * 
+     *
      * @param root
      *            the node to start the check from
      * @return a set of the nodes not needing a call of collectEvidence
@@ -190,7 +191,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
      * <li>not the query factor of a non-evidence variable</li>
      * <li>AND have no descendants that cannot be skipped</li>
      * </ul>
-     * 
+     *
      * @param distNode
      * @return
      */
@@ -416,9 +417,9 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
             for (final Integer f : concernedClusters[i]) {
                 final boolean isFirstOrSmallerTable = queryFactors[i] == null
                         || queryFactors[i].getValues().length() > nodePotentials[f].getValues().length();
-                if (isFirstOrSmallerTable) {
-                    queryFactors[i] = nodePotentials[f];
-                }
+                        if (isFirstOrSmallerTable) {
+                            queryFactors[i] = nodePotentials[f];
+                        }
             }
         }
 
@@ -444,10 +445,9 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     private void prepareSepsetMultiplications(final CanonicalIntArrayManager flyWeight) {
         for (int node = 0; node < nodePotentials.length; node++) {
             for (final int n : junctionTree.getNeighbors(node)) {
-                final int[] preparedMultiplication = nodePotentials[n]
-                        .prepareMultiplication(sepSets.get(new OrderIgnoringPair<Integer>(node, n)));
-                preparedMultiplications.put(Pair.newPair(node, n),
-                        flyWeight.getInstance(preparedMultiplication));
+                final int[] preparedMultiplication = nodePotentials[n].prepareMultiplication(sepSets
+                        .get(new OrderIgnoringPair<Integer>(node, n)));
+                preparedMultiplications.put(Pair.newPair(node, n), flyWeight.getInstance(preparedMultiplication));
             }
         }
     }

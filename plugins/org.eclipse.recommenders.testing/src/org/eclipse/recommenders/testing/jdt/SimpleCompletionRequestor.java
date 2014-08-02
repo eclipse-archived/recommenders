@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("restriction")
 public final class SimpleCompletionRequestor extends CompletionRequestor {
     public List<CompletionProposal> proposals = Lists.newLinkedList();
     public InternalCompletionContext context;

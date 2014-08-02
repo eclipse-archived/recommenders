@@ -36,6 +36,7 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 
+@SuppressWarnings("restriction")
 public class ApidocsRcpModule extends AbstractModule {
 
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.apidocs.rcp.providers"; //$NON-NLS-1$

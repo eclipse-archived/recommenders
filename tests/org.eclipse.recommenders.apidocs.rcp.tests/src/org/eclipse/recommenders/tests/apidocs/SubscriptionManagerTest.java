@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
@@ -31,6 +31,7 @@ import org.junit.Test;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
+@SuppressWarnings({ "deprecation" })
 public class SubscriptionManagerTest {
 
     public static final List<JavaElementSelectionEvent> POOL = asList(TYPE_IN_TYPE_DECLARATION,

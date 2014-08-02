@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ProviderImplementation extends ApidocProvider {
 
+    @SuppressWarnings("deprecation")
     @JavaSelectionSubscriber(TYPE_DECLARATION)
     public Status methodInSuperclass(IType type, JavaElementSelectionEvent selection, Composite parent) {
         return null;

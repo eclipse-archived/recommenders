@@ -12,29 +12,7 @@ package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_NODE_PARENT;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ASSIST_SCOPE;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.CCTX_COMPILATION_UNIT_DECLARATION;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.COMPLETION_PREFIX;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_AST_METHOD;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_ELEMENT;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_TYPE;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPE;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.EXPECTED_TYPENAMES;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.INTERNAL_COMPLETIONCONTEXT;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.IS_COMPLETION_ON_TYPE;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_CONTENTASSIST_CONTEXT;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.LOOKUP_ENVIRONMENT;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_TYPEBINDING;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.SESSION_ID;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_FIELDS;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_LOCALS;
-import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.VISIBLE_METHODS;
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -97,7 +75,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-@SuppressWarnings({ "restriction", "rawtypes" })
+@SuppressWarnings({ "restriction", "rawtypes", "deprecation" })
 public class CompletionContextFunctions {
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
@@ -414,7 +392,7 @@ public class CompletionContextFunctions {
     }
 
     public static class JavaContentAssistInvocationContextFunction implements
-            ICompletionContextFunction<JavaContentAssistInvocationContext> {
+    ICompletionContextFunction<JavaContentAssistInvocationContext> {
 
         @Override
         public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,

@@ -49,6 +49,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings({ "restriction" })
 public class DownloadModelArchiveJob extends Job {
 
     private final Map<String, IProgressMonitor> downloads = Maps.newHashMap();

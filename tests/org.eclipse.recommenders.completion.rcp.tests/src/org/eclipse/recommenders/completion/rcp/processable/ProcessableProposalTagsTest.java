@@ -27,6 +27,7 @@ public class ProcessableProposalTagsTest {
         this.clazz = clazz;
     }
 
+    @SuppressWarnings("unchecked")
     @Parameters(name = "{0}")
     public static Collection<Object[]> fieldDeclarations() {
         LinkedList<Object[]> classes = Lists.newLinkedList();
@@ -85,7 +86,10 @@ public class ProcessableProposalTagsTest {
     }
 
     private static enum TestTag implements IProposalTag {
-        KEY, REMOVE, DEFAULT, DEFAULT_UNSET
+        KEY,
+        REMOVE,
+        DEFAULT,
+        DEFAULT_UNSET
     }
 
 }

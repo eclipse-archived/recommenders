@@ -372,6 +372,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 return Boolean.class;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public Boolean convert(Object fromObject) {
                 if (fromObject == null) {

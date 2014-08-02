@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -147,6 +147,7 @@ public class SparseFactorTest {
         assertThat(sparse.getValues().toDoubleArray(), is(new double[] { 0, 0, 1, 2 }));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSum() {
         AbstractFactor dense = new DenseFactor();

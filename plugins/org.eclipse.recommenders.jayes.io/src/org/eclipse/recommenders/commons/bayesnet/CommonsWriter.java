@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -20,6 +20,7 @@ import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("deprecation")
 public class CommonsWriter implements IBayesNetWriter {
 
     private OutputStream out;

@@ -12,13 +12,9 @@ package org.eclipse.recommenders.models.rcp;
 
 import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Constants.EXT_ZIP;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +42,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("unchecked")
 public class MultiRepositorySupportTest {
 
     public static final ProjectCoordinate PC1 = new ProjectCoordinate("org.example", "one", "1.0.0");

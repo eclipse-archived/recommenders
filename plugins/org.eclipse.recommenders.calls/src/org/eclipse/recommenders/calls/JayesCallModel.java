@@ -92,6 +92,7 @@ import com.google.common.collect.Lists;
  * </ul>
  * </ul>
  */
+@SuppressWarnings("deprecation")
 @Beta
 public class JayesCallModel implements ICallModel {
 
@@ -228,8 +229,8 @@ public class JayesCallModel implements ICallModel {
             BayesNode node = pair.getValue();
             IMethodName method = pair.getKey();
             if (evidence.containsKey(node) && evidence.get(node).equals(Constants.N_STATE_TRUE)
-                    // remove the NULL that may have been introduced by
-                    // res.add(compute...)
+            // remove the NULL that may have been introduced by
+            // res.add(compute...)
                     && !VmMethodName.NULL.equals(method)) {
                 builder.add(method);
             }
