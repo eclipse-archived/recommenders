@@ -28,6 +28,7 @@ import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 @SuppressWarnings({ "rawtypes", "restriction" })
@@ -66,7 +67,8 @@ public class CallCompletionContextFunctions {
                 defBy = f.getDefiningMethod().orNull();
 
                 if (defType == DefinitionKind.UNKNOWN) {
-                    // if the ast resolver could not find a definition of the variable, it's a method return value? Ask
+                    // if the ast resolver could not find a definition of the
+                    // variable, it's a method return value? Ask
                     // the context and try.
                     IMethodName def = context.getMethodDef().orNull();
                     if (def == null) {
@@ -112,6 +114,14 @@ public class CallCompletionContextFunctions {
                 final IType type = m.getDeclaringType();
                 final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
                 receiverType = hierarchy.getSuperclass(type);
+
+                // XXX workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=441021
+                if (receiverType == null) {
+                    String superclassTypeSignature = type.getSuperclassTypeSignature();
+                    if (superclassTypeSignature != null) {
+                        receiverType = JdtUtils.findTypeFromSignature(superclassTypeSignature, type).orNull();
+                    }
+                }
             }
             return receiverType;
         }
