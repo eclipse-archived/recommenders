@@ -26,13 +26,17 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.collect.Lists;
@@ -102,6 +106,39 @@ public class StacktraceWizard extends Wizard implements IWizard {
                 });
                 v.setSelection(new StructuredSelection(prefs.mode));
                 gdFactory.applyTo(v.getControl());
+            }
+            {
+                Composite feedback = new Composite(container, SWT.NONE);
+                // Color color = feedback.getDisplay().getSystemColor(SWT.COLOR_RED);
+                // feedback.setBackground(color);
+                glFactory.applyTo(feedback);
+                gdFactory.grab(true, true).applyTo(feedback);
+                {
+                    Link feedbackLink = new Link(feedback, SWT.NONE);
+                    gdFactory.align(SWT.BEGINNING, SWT.END).applyTo(feedbackLink);
+                    feedbackLink.setText("<a>Learn more...</a>");
+                    feedbackLink.addSelectionListener(new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            BrowserUtils
+                                    .openInExternalBrowser("https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub");
+                        }
+                    });
+                }
+
+                {
+                    Link feedbackLink = new Link(feedback, SWT.NONE);
+                    gdFactory.align(SWT.END, SWT.END).applyTo(feedbackLink);
+                    feedbackLink.setText("<a>Provide feedback...</a>");
+                    feedbackLink.addSelectionListener(new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            BrowserUtils
+                                    .openInExternalBrowser("https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform");
+                        }
+                    });
+                }
+
             }
             setControl(container);
         }
