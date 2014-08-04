@@ -148,18 +148,16 @@ public class CreateSnippetHandler extends AbstractHandler {
                     case IBinding.VARIABLE:
                         IVariableBinding vb = (IVariableBinding) b;
                         String uniqueVariableName = generateUniqueVariableName(vb, name.toString());
-                        StructuralPropertyDescriptor locationInParent = name.getLocationInParent();
-                        if (VariableDeclarationFragment.class == locationInParent.getNodeClass()
-                                || SingleVariableDeclaration.class == locationInParent.getNodeClass()) {
+                        if (isDeclaration(name)) {
                             appendNewName(uniqueVariableName, vb);
-                        } else if (selection.covers(ast.findDeclaringNode(vb))) {
-                            appendTemplateVariableReference(uniqueVariableName);
-                        } else {
+                        } else if (!selection.covers(ast.findDeclaringNode(vb))) {
                             if (vb.isField()) {
                                 appendVarReference(uniqueVariableName, vb, "field");
                             } else {
                                 appendVarReference(uniqueVariableName, vb, "var");
                             }
+                        } else {
+                            appendTemplateVariableReference(uniqueVariableName);
                         }
                         i += name.getLength() - 1;
                         continue outer;
@@ -177,6 +175,19 @@ public class CreateSnippetHandler extends AbstractHandler {
         List<String> keywords = Lists.<String>newArrayList();
         List<String> tags = Lists.<String>newArrayList();
         return new Snippet(UUID.randomUUID(), "<new snippet>", "<enter description>", keywords, tags, sb.toString());
+    }
+
+    private boolean isDeclaration(SimpleName node) {
+        StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
+        if (VariableDeclarationFragment.class == locationInParent.getNodeClass()
+                && "name".equals(locationInParent.getId())) {
+            return true;
+        } else if (SingleVariableDeclaration.class == locationInParent.getNodeClass()
+                && "name".equals(locationInParent.getId())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private String generateUniqueVariableName(IVariableBinding vb, String name) {

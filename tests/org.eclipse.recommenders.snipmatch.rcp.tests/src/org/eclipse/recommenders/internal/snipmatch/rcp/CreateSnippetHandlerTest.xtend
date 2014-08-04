@@ -37,27 +37,9 @@ class CreateSnippetHandlerTest {
         )
     }
 
-    @Test
-    def void testReferenceToLocalOutsideSelection() {
-        code = CodeBuilder::method(
-            '''
-                List l = null;
-                $l.hashCode();$
-            ''')
-        exercise()
-
-        assertEquals(
-            '''
-                ${l:var(java.util.List)}.hashCode();
-                ${:import(java.util.List)}${cursor}
-            '''.toString,
-            actual.code
-        )
-    }
-
     /*
-         * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439984
-         */
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439984
+     */
     @Test
     def void testNoJavaLangImport() {
         code = CodeBuilder::method(
@@ -109,6 +91,63 @@ class CreateSnippetHandlerTest {
             '''
                 int ${two:newName(int)} = 1 + 1;
                 ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=440726
+     */
+    @Test
+    def void testReferenceToLocalVariable() {
+        code = CodeBuilder::method(
+            '''
+                $int i = 0;
+                int j = i;$;
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                int ${i:newName(int)} = 0;
+                int ${j:newName(int)} = ${i};
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testReferenceToLocalVariableInMultiDeclaration() {
+        code = CodeBuilder::method(
+            '''
+                $int i = 0, j = i;$;
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                int ${i:newName(int)} = 0, ${j:newName(int)} = ${i};
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testReferenceToLocalOutsideSelection() {
+        code = CodeBuilder::method(
+            '''
+                List l = null;
+                $l.hashCode();$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                ${l:var(java.util.List)}.hashCode();
+                ${:import(java.util.List)}${cursor}
             '''.toString,
             actual.code
         )
