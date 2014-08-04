@@ -63,6 +63,8 @@ public class SnippetSourcePage extends FormPage {
         GridDataFactory.fillDefaults().grab(true, true).applyTo(txtCode);
 
         initDataBindings();
+        updateMessage();
+
         form.reflow(true);
     }
 
@@ -81,17 +83,11 @@ public class SnippetSourcePage extends FormPage {
                     @Override
                     public void handleChange(org.eclipse.core.databinding.observable.ChangeEvent event) {
                         ((SnippetEditor) getEditor()).setDirty(true);
-                        String sourceValid = SnippetSourceValidator.isSourceValid(txtCode.getText());
-                        if (sourceValid.isEmpty()) {
-                            form.setMessage(null, IMessageProvider.NONE);
-                        } else {
-                            form.setMessage(sourceValid, IMessageProvider.ERROR);
-                        }
+                        updateMessage();
                     }
                 });
             }
         }
-
     }
 
     @Override
@@ -103,6 +99,15 @@ public class SnippetSourcePage extends FormPage {
     public void update() {
         ctx.dispose();
         initDataBindings();
+    }
+
+    private void updateMessage() {
+        String sourceValid = SnippetSourceValidator.isSourceValid(txtCode.getText());
+        if (sourceValid.isEmpty()) {
+            form.setMessage(null, IMessageProvider.NONE);
+        } else {
+            form.setMessage(sourceValid, IMessageProvider.ERROR);
+        }
     }
 
     @Override
