@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.testing.rcp.feature"
       label="%label"
-      version="2.1.4.qualifier"
+      version="2.1.5.qualifier"
       provider-name="%provider-name"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
