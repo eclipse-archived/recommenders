@@ -28,8 +28,12 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.ClassOverrideDirectives;
@@ -56,7 +60,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
@@ -100,6 +103,30 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     @JavaSelectionSubscriber
+    public void onMethodSelection(final IMethod method, final JavaElementSelectionEvent event, final Composite parent)
+            throws ExecutionException {
+        onTypeSelection(method.getDeclaringType(), event, parent);
+    }
+
+    @JavaSelectionSubscriber
+    public void onVariableSelection(ILocalVariable var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onTypeSelection(type, event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
+    public void onVariableSelection(IField var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException, JavaModelException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onTypeSelection(type, event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
     public void onTypeSelection(final IType type, final JavaElementSelectionEvent event, final Composite parent)
             throws ExecutionException {
         renderClassOverrideDirectives(type, parent);
@@ -107,20 +134,27 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     private boolean renderClassOverrideDirectives(final IType type, final Composite parent) throws ExecutionException {
-        Optional<ClassOverrideDirectives> model = dStore.acquireModel(pcProvider.toUniqueName(type).orNull());
-        if (!model.isPresent() || model.get().getOverrides() == null) {
-            return false;
+        ClassOverrideDirectives model = dStore.acquireModel(pcProvider.toUniqueName(type).orNull()).orNull();
+        try {
+            if (model == null || model.getOverrides() == null) {
+                return false;
+            }
+            runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, model, parent));
+        } finally {
+            dStore.releaseModel(model);
         }
-        runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, model.get(), parent));
         return true;
     }
 
     private boolean renderClassOverridesPatterns(final IType type, final Composite parent) throws ExecutionException {
-        Optional<ClassOverridePatterns> opt = pStore.acquireModel(pcProvider.toUniqueName(type).orNull());
-        if (!opt.isPresent()) {
-            return false;
+        ClassOverridePatterns opt = pStore.acquireModel(pcProvider.toUniqueName(type).orNull()).orNull();
+        try {
+            if (opt != null) {
+                runSyncInUiThread(new OverridePatternsRenderer(type, opt, parent));
+            }
+        } finally {
+            pStore.releaseModel(opt);
         }
-        runSyncInUiThread(new OverridePatternsRenderer(type, opt.get(), parent));
         return true;
     }
 
@@ -157,8 +191,8 @@ public final class OverridesProvider extends ApidocProvider {
         }
 
         private void addHeader() {
-            final String message = format(Messages.PROVIDER_INTRO_OVERRIDE_STATISTICS, directive.getNumberOfSubclasses(),
-                    type.getElementName());
+            final String message = format(Messages.PROVIDER_INTRO_OVERRIDE_STATISTICS,
+                    directive.getNumberOfSubclasses(), type.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
             setInfoForegroundColor(label);
@@ -245,7 +279,7 @@ public final class OverridesProvider extends ApidocProvider {
 
         private void addDirectives(final org.eclipse.recommenders.apidocs.MethodPattern pattern, final int index) {
 
-            final double patternPercentage = pattern.getNumberOfObservations() / (double) totalNumberOfExamples;
+            final double patternPercentage = pattern.getNumberOfObservations() / totalNumberOfExamples;
             final String text = format(Messages.TABLE_HEADER_OVERRIDE_PATTERN, index, patternPercentage,
                     pattern.getNumberOfObservations());
             createLabel(container, text, true, false, SWT.COLOR_DARK_GRAY, true);
