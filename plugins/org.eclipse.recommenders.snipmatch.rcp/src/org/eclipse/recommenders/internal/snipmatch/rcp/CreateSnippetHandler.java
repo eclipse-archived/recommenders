@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
@@ -150,14 +151,16 @@ public class CreateSnippetHandler extends AbstractHandler {
                         String uniqueVariableName = generateUniqueVariableName(vb, name.toString());
                         if (isDeclaration(name)) {
                             appendNewName(uniqueVariableName, vb);
-                        } else if (!selection.covers(ast.findDeclaringNode(vb))) {
+                        } else if (declaredInSelection(selection, vb)) {
+                            appendTemplateVariableReference(uniqueVariableName);
+                        } else if (isQualified(name)) {
+                            sb.append(name.getIdentifier());
+                        } else {
                             if (vb.isField()) {
                                 appendVarReference(uniqueVariableName, vb, "field");
                             } else {
                                 appendVarReference(uniqueVariableName, vb, "var");
                             }
-                        } else {
-                            appendTemplateVariableReference(uniqueVariableName);
                         }
                         i += name.getLength() - 1;
                         continue outer;
@@ -177,13 +180,30 @@ public class CreateSnippetHandler extends AbstractHandler {
         return new Snippet(UUID.randomUUID(), "<new snippet>", "<enter description>", keywords, tags, sb.toString());
     }
 
-    private boolean isDeclaration(SimpleName node) {
-        StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
+    private boolean isDeclaration(SimpleName name) {
+        StructuralPropertyDescriptor locationInParent = name.getLocationInParent();
         if (VariableDeclarationFragment.class == locationInParent.getNodeClass()
                 && "name".equals(locationInParent.getId())) {
             return true;
         } else if (SingleVariableDeclaration.class == locationInParent.getNodeClass()
                 && "name".equals(locationInParent.getId())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean declaredInSelection(Selection selection, IVariableBinding vb) {
+        ASTNode declaringNode = ast.findDeclaringNode(vb);
+        if (declaringNode == null) {
+            return false; // Declared in different compilation unit
+        }
+        return selection.covers(declaringNode);
+    }
+
+    private boolean isQualified(SimpleName node) {
+        StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
+        if (QualifiedName.class == locationInParent.getNodeClass() && "name".equals(locationInParent.getId())) {
             return true;
         } else {
             return false;
