@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.httpclient,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.core.di,
- org.eclipse.recommenders.stacktraces;bundle-version="2.1.4"
+ org.eclipse.recommenders.stacktraces;bundle-version="2.1.4",
+ org.eclipse.core.net;bundle-version="1.2.200"
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",

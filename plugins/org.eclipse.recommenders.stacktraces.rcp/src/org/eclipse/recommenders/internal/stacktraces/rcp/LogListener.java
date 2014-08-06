@@ -11,9 +11,8 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.apache.commons.lang3.StringUtils.startsWith;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Stacktraces.createDto;
 
-import org.apache.http.client.fluent.Request;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -22,7 +21,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.stacktraces.StackTraceEvent;
-import org.eclipse.recommenders.stacktraces.ThrowableDto;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
@@ -61,40 +59,23 @@ public class LogListener implements ILogListener, IStartup {
         return startsWith(s, "org.eclipse.") || startsWith(s, "com.codetrails");
     }
 
-    private void send(IStatus status) {
+    private void send(final IStatus status) {
         if (pref.modeIgnore()) {
             // double safety. This is checked before elsewhere. But just to make sure...
             return;
         }
+
         if (pref.modeAsk()) {
-            StackTraceEvent tmp = createDto(status);
+            StackTraceEvent tmp = createDto(status, pref);
             tmp.name = "[filled on submit]";
             tmp.email = "[filled on submit]";
             int open = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                     new StacktraceWizard(pref, GsonUtil.serialize(tmp))).open();
-            if (open != Dialog.OK) {
-                return;
+            if (open == Dialog.OK) {
+                StackTraceEvent event = createDto(status, pref);
+                new StacktraceUploadJob(event, pref.getServerUri()).schedule();
             }
         }
-        try {
-            StackTraceEvent event = createDto(status);
-            String body = GsonUtil.serialize(event);
-            Request.Post(pref.server).bodyString(body, APPLICATION_JSON).execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private StackTraceEvent createDto(IStatus status) {
-        StackTraceEvent event = new StackTraceEvent();
-        event.name = pref.name;
-        event.email = pref.email;
-        event.severity = status.getSeverity();
-        event.code = status.getCode();
-        event.message = status.getMessage();
-        event.pluginId = status.getPlugin();
-        event.exception = ThrowableDto.from(status.getException());
-        return event;
     }
 
     @Override

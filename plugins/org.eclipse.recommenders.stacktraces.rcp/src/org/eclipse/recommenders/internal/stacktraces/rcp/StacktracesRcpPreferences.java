@@ -10,6 +10,11 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static com.google.common.base.Throwables.propagate;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -81,5 +86,13 @@ public class StacktracesRcpPreferences {
 
     public void setEmail(String text) {
         putString(PROP_EMAIL, text);
+    }
+
+    public URI getServerUri() {
+        try {
+            return new URI(server);
+        } catch (URISyntaxException e) {
+            throw propagate(e);
+        }
     }
 }

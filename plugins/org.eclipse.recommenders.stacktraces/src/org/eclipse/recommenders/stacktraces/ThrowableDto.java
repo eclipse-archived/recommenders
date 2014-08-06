@@ -13,9 +13,14 @@ package org.eclipse.recommenders.stacktraces;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.recommenders.utils.Nullable;
+
+import com.google.common.base.Joiner;
+
 public class ThrowableDto {
 
-    public static ThrowableDto from(Throwable throwable) {
+    @Nullable
+    public static ThrowableDto from(@Nullable Throwable throwable) {
         if (throwable == null) {
             return null;
         }
@@ -27,10 +32,23 @@ public class ThrowableDto {
         for (StackTraceElement el : throwable.getStackTrace()) {
             res.elements.add(StackTraceElementDto.from(el));
         }
+        if (throwable instanceof Exception) {
+            res.cause = from(throwable.getCause());
+        }
         return res;
     }
 
     public String classname;
     public String message;
     public List<StackTraceElementDto> elements;
+    public ThrowableDto cause;
+
+    @Override
+    public String toString() {
+        String s = classname + ": " + message + Joiner.on("\n\t").join(elements);
+        if (cause != null) {
+            s += "\ncause:\n" + cause.toString();
+        }
+        return s;
+    }
 }

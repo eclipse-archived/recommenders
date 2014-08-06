@@ -25,4 +25,9 @@ public class StackTraceElementDto {
     public String methodname;
     public int line;
     public boolean isNative;
+
+    @Override
+    public String toString() {
+        return classname + "." + methodname + " (" + line + ")";
+    }
 }

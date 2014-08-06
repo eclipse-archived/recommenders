@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.stacktraces;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class StackTraceEvent implements Serializable {
 
@@ -25,4 +26,8 @@ public class StackTraceEvent implements Serializable {
     public String message;
 
     public ThrowableDto exception;
+
+    public Map<String, String> properties;
+
+    public String pluginVersion;
 }
