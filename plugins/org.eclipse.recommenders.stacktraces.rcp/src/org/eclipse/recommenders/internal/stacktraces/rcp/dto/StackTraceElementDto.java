@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.stacktraces;
+package org.eclipse.recommenders.internal.stacktraces.rcp.dto;
 
 public class StackTraceElementDto {
 
@@ -28,6 +28,6 @@ public class StackTraceElementDto {
 
     @Override
     public String toString() {
-        return classname + "." + methodname + " (" + line + ")";
+        return classname + "." + methodname + " (line: " + line + ")";
     }
 }

@@ -24,13 +24,6 @@
    </requires>
 
    <plugin
-         id="org.eclipse.recommenders.stacktraces"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.recommenders.stacktraces.rcp"
          download-size="0"
          install-size="0"
