@@ -176,6 +176,64 @@ class CreateSnippetHandlerTest {
         )
     }
 
+    @Test
+    def void testReferenceToThisQualifiedFieldBeforeSelection() {
+        code = CodeBuilder::classbody(
+            '''
+                List l = null;
+                void method() {
+                    $this.l = null;$
+                }
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                this.${l:field(java.util.List)} = null;
+                ${:import(java.util.List)}${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    @Test
+    def void testReferenceToQualifiedFieldBeforeSelection() {
+        code = CodeBuilder::method(
+            '''
+                System s = null;
+                $s.out.println("");$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                ${s:var(java.lang.System)}.out.println("");
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
+    /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=441205
+     */
+    @Test
+    def void testStaticReferenceToQualifiedField() {
+        code = CodeBuilder::method(
+            '''
+                $System.out.println("");$
+            ''')
+        exercise()
+
+        assertEquals(
+            '''
+                System.out.println("");
+                ${cursor}
+            '''.toString,
+            actual.code
+        )
+    }
+
     /*
      * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
      */
