@@ -300,15 +300,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     @Override
     public boolean isDeleteSupported() {
-        readLock.lock();
-        try {
-            if (!isOpen() || !delegateOpen) {
-                return false;
-            }
-            return delegate.isDeleteSupported();
-        } finally {
-            readLock.unlock();
-        }
+        return delegate.isDeleteSupported();
     }
 
     private boolean isOpen() {
@@ -319,7 +311,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     public void importSnippet(ISnippet snippet) throws IOException {
         writeLock.lock();
         try {
-            Preconditions.checkState(isOpen());
+            Preconditions.checkState(isOpen(), Messages.ERROR_REPOSITORY_NOT_OPEN_YET);
             delegate.importSnippet(snippet);
             bus.post(new SnippetRepositoryContentChangedEvent(this));
         } finally {
@@ -329,14 +321,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     @Override
     public boolean isImportSupported() {
-        readLock.lock();
-        try {
-            if (!isOpen() || !delegateOpen) {
-                return false;
-            }
-            return delegate.isImportSupported();
-        } finally {
-            readLock.unlock();
-        }
+        return delegate.isImportSupported();
     }
 }
