@@ -58,6 +58,7 @@ public class Messages extends NLS {
     public static String ERROR_WHILE_OPENING_EDITOR;
     public static String ERROR_NO_EDITABLE_REPO_FOUND;
     public static String ERROR_NO_EDITABLE_REPO_FOUND_HINT;
+    public static String ERROR_REPOSITORY_NOT_OPEN_YET;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;
