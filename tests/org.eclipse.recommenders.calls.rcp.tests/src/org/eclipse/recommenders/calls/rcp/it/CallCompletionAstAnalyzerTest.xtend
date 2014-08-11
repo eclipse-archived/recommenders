@@ -57,6 +57,19 @@ class CallCompletionAstAnalyzerTest {
     }
 
     @Test
+    def void testDefInlineNew() {
+        code = CodeBuilder::method(
+            '''
+                new Object().$
+            ''')
+
+        exercise()
+
+        verifyDefinition(NEW)
+        verifyCalls(newHashSet())
+    }
+
+    @Test
     def void testDefField() {
         code = CodeBuilder::classbody(
             '''

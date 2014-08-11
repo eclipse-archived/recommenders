@@ -78,6 +78,9 @@ public class CallCompletionContextFunctions {
                         } else {
                             defType = FIELD;
                         }
+                    } else if (def.isInit()) {
+                        defType = DefinitionKind.NEW;
+                        defBy = def;
                     } else {
                         defType = RETURN;
                         defBy = def;
