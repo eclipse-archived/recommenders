@@ -14,6 +14,7 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static java.text.MessageFormat.format;
 
 import java.io.File;
 import java.util.Collection;
@@ -216,7 +217,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
             MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openInformation(
                     SnipmatchPreferencePage.this.getShell(), Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
-                    Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE,
+                    format(Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE, configuration.getName()),
                     Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE, true, null, null);
 
             boolean confirmed = confirmDialog.getReturnCode() == Status.OK;

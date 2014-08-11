@@ -90,11 +90,12 @@ public final class SharedImages implements IDisposable {
 
     public static enum Images implements ImageResource {
         // @formatter:off
-        ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")), //$NON-NLS-1$
+        ELCL_ADD_REPOSITORY(elcl16("add_repository.png")), //$NON-NLS-1$
         ELCL_ADD_SNIPPET(elcl16("add_snippet.png")), //$NON-NLS-1$
         ELCL_CLEAR(elcl16("clear.gif")), //$NON-NLS-1$
         ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")), //$NON-NLS-1$
         ELCL_DELETE(elcl16("delete.gif")), //$NON-NLS-1$
+        ELCL_EDIT_REPOSITORY(elcl16("edit_repository.png")), //$NON-NLS-1$
         ELCL_EDIT_SNIPPET(elcl16("edit_snippet.png")), //$NON-NLS-1$
         ELCL_EXPAND_ALL(elcl16("expandall.gif")), //$NON-NLS-1$
         ELCL_REFRESH(elcl16("refresh_tab.gif")), //$NON-NLS-1$

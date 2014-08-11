@@ -83,6 +83,7 @@ public class Messages extends NLS {
     public static String SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY;
+    public static String SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_REFRESH;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;

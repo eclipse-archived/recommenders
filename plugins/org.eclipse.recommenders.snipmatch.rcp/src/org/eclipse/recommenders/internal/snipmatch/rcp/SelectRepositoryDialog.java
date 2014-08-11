@@ -31,28 +31,50 @@ public final class SelectRepositoryDialog {
 
     public static Optional<ISnippetRepository> openSelectRepositoryDialog(final Shell shell, Repositories repos,
             SnippetRepositoryConfigurations configs) {
-        List<SnippetRepositoryConfiguration> filteredConfigurations = Lists.newArrayList();
-        for (SnippetRepositoryConfiguration config : configs.getRepos()) {
-            ISnippetRepository repository = repos.getRepository(config.getId()).orNull();
-            if (repository == null) {
-                continue;
-            }
-            if (repository.isImportSupported()) {
-                filteredConfigurations.add(config);
-            }
-        }
+        return openSelectRepositoryDialog(shell, repos, configs, null);
+    }
 
+    public static Optional<ISnippetRepository> openSelectRepositoryDialog(final Shell shell, Repositories repos,
+            SnippetRepositoryConfigurations configs, SnippetRepositoryConfiguration preSelectedConfiguration) {
+
+        List<SnippetRepositoryConfiguration> filteredConfigurations = filterImportSupportingConfigurations(repos,
+                configs);
         if (filteredConfigurations.isEmpty()) {
             return absent();
         }
+
+        ListDialog selectRepositoryDialog = createSelectRepositoryDialog(shell, filteredConfigurations,
+                preSelectedConfiguration, repos);
+
+        int status = selectRepositoryDialog.open();
+        if (status == Status.OK) {
+            SnippetRepositoryConfiguration config = cast(selectRepositoryDialog.getResult()[0]);
+            return repos.getRepository(config.getId());
+        }
+        return absent();
+    }
+
+    private static ListDialog createSelectRepositoryDialog(final Shell shell,
+            List<SnippetRepositoryConfiguration> configurations,
+            SnippetRepositoryConfiguration preSelectedConfiguration, Repositories repos) {
 
         ListDialog selectRepositoryDialog = new ListDialog(shell);
         selectRepositoryDialog.setTitle(Messages.SELECT_REPOSITORY_DIALOG_TITLE);
         selectRepositoryDialog.setMessage(Messages.SELECT_REPOSITORY_DIALOG_MESSAGE);
         selectRepositoryDialog.setContentProvider(new ArrayContentProvider());
-        selectRepositoryDialog.setInput(filteredConfigurations);
-        selectRepositoryDialog.setInitialSelections(new SnippetRepositoryConfiguration[] { filteredConfigurations
-                .get(0) });
+        selectRepositoryDialog.setInput(configurations);
+
+        SnippetRepositoryConfiguration selectedElement = null;
+        if (preSelectedConfiguration != null && isImportSupported(preSelectedConfiguration, repos)) {
+            selectedElement = preSelectedConfiguration;
+        } else if (!configurations.isEmpty()) {
+            selectedElement = configurations.get(0);
+        }
+
+        if (selectedElement != null) {
+            selectRepositoryDialog.setInitialSelections(new SnippetRepositoryConfiguration[] { selectedElement });
+        }
+
         selectRepositoryDialog.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
@@ -60,12 +82,25 @@ public final class SelectRepositoryDialog {
                 return config.getName();
             }
         });
-        int status = selectRepositoryDialog.open();
-        if (status == Status.OK) {
-            SnippetRepositoryConfiguration config = cast(selectRepositoryDialog.getResult()[0]);
-            return repos.getRepository(config.getId());
+        return selectRepositoryDialog;
+    }
+
+    private static boolean isImportSupported(SnippetRepositoryConfiguration configuration, Repositories repos) {
+        ISnippetRepository repo = repos.getRepository(configuration.getId()).orNull();
+        return repo != null && repo.isImportSupported();
+    }
+
+    private static List<SnippetRepositoryConfiguration> filterImportSupportingConfigurations(Repositories repos,
+            SnippetRepositoryConfigurations configs) {
+
+        List<SnippetRepositoryConfiguration> filteredConfigurations = Lists.newArrayList();
+        for (SnippetRepositoryConfiguration config : configs.getRepos()) {
+            if (isImportSupported(config, repos)) {
+                filteredConfigurations.add(config);
+            }
         }
-        return absent();
+
+        return filteredConfigurations;
     }
 
 }
