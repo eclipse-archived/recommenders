@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.FAILED_TO_INSTANTIATE_PROVIDER;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -24,7 +26,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProviderDescription;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -36,7 +37,6 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 
-@SuppressWarnings("restriction")
 public class ApidocsRcpModule extends AbstractModule {
 
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.apidocs.rcp.providers"; //$NON-NLS-1$
@@ -100,8 +100,7 @@ public class ApidocsRcpModule extends AbstractModule {
             provider.setDescription(description);
             return Optional.of(provider);
         } catch (final Exception e) {
-            RcpPlugin.logError(e, "failed to instantiate provider %s:%s", //$NON-NLS-1$
-                    pluginId, element.getAttribute("class")); //$NON-NLS-1$
+            log(FAILED_TO_INSTANTIATE_PROVIDER, e, pluginId, element.getAttribute("class")); //$NON-NLS-1$
             return Optional.absent();
         }
     }

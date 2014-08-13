@@ -13,8 +13,10 @@ package org.eclipse.recommenders.completion.rcp;
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -63,8 +65,6 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
@@ -247,7 +247,7 @@ public class CompletionContextFunctions {
                     }
                 });
             } catch (JavaModelException x) {
-                RcpPlugin.log(x);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
             } finally {
                 discardWorkingCopy(wc);
             }
@@ -260,7 +260,7 @@ public class CompletionContextFunctions {
                     wc.discardWorkingCopy();
                 }
             } catch (JavaModelException x) {
-                RcpPlugin.log(x);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
             }
         }
 
@@ -376,7 +376,7 @@ public class CompletionContextFunctions {
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
             } catch (final Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
             InternalCompletionContext internal = collector.getCoreContext();
             context.set(INTERNAL_COMPLETIONCONTEXT, internal);

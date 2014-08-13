@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
+import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.io.File;
@@ -64,12 +65,22 @@ public class Logs {
 
     public abstract static class DefaultLogMessage implements ILogMessage {
 
+        private static final DefaultLogMessage INVALID_MESSAGE = new DefaultLogMessage(ERROR, 1,
+                "Failed to format log message '{0}'") {
+
+            @Override
+            public Bundle bundle() {
+                return FrameworkUtil.getBundle(getClass());
+            }
+        };
+
         private int severity;
         private int code;
         private String message;
 
         public DefaultLogMessage(int severity, int code, String message) {
             ensureIsGreaterOrEqualTo(code, 1, "The error code cannot be '0'");
+            ensureIsNotNull(message);
             this.severity = severity;
             this.code = code;
             this.message = message;
@@ -96,7 +107,23 @@ public class Logs {
     }
 
     public static IStatus toStatus(ILogMessage msg, Throwable t, Object... args) {
-        String message = MessageFormat.format(msg.message(), args);
+        ensureIsNotNull(msg);
+        String message = null;
+        try {
+            message = MessageFormat.format(msg.message(), args);
+        } catch (Exception e) {
+            // in case of an error, do a bullet proof error logging and continue working as if almost nothing happened:
+            message = msg.message();
+            Bundle bundle = FrameworkUtil.getBundle(Logs.class);
+            if (bundle != null) {
+                ILog log = Platform.getLog(bundle);
+                if (log != null) {
+                    String format = MessageFormat.format("Failed to format '{0}': {1}", msg.message(), e.getMessage());
+                    Status error = new Status(ERROR, bundle.getSymbolicName(), format, e);
+                    log.log(error);
+                }
+            }
+        }
         return new Status(msg.severity(), msg.bundle().getSymbolicName(), msg.code(), message, t);
     }
 

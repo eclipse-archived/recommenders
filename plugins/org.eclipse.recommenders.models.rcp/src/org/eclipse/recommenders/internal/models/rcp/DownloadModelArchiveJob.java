@@ -12,7 +12,9 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
+import static org.eclipse.recommenders.internal.models.rcp.LogMessages.SAVE_PREFERENCES_FAILED;
 import static org.eclipse.recommenders.models.IModelIndex.INDEX;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +28,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
@@ -45,7 +46,6 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 
-@SuppressWarnings({ "restriction" })
 public class DownloadModelArchiveJob extends Job {
 
     private static final int MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB = 2;
@@ -149,7 +149,7 @@ public class DownloadModelArchiveJob extends Job {
             try {
                 ((ScopedPreferenceStore) getPrefStore()).save();
             } catch (IOException e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SAVE_PREFERENCES);
+                log(SAVE_PREFERENCES_FAILED, e);
             }
         }
 

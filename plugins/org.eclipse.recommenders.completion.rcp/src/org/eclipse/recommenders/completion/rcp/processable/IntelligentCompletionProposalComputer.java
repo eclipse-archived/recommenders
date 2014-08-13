@@ -13,7 +13,9 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_SESSION_PROCESSOR_FAILED;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,10 +50,9 @@ import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,7 +224,7 @@ ICompletionListener, ICompletionListenerExtension2 {
                     it.remove();
                 }
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -234,7 +235,7 @@ ICompletionListener, ICompletionListenerExtension2 {
                 proposal.getRelevance();
                 p.process(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
         proposal.getProposalProcessorManager().prefixChanged(crContext.getPrefix());
@@ -245,7 +246,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             try {
                 p.endSession(proposals);
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -255,7 +256,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             try {
                 p.aboutToShow(proposals);
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -265,7 +266,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             try {
                 p.aboutToClose();
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -290,7 +291,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             try {
                 p.selected(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -301,7 +302,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             try {
                 p.applied(proposal);
             } catch (Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED, p.getClass());
+                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
         unregisterCompletionListener();
