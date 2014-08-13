@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2014 Darmstadt University of Technology.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,10 @@ public class StacktracesRcpPreferences {
 
     private static final String PROP_EMAIL = "email";
 
+    private static final String PROP_ANONYMIZE = "false";
+
+    private static final String PROP_CLEAR_MSG = "false";
+
     @Inject
     @Preference
     public IEclipsePreferences prefs;
@@ -55,6 +59,14 @@ public class StacktracesRcpPreferences {
     @Inject
     @Preference(PROP_MODE)
     public String mode;
+
+    @Inject
+    @Preference(PROP_ANONYMIZE)
+    public String anonymize;
+
+    @Inject
+    @Preference(PROP_CLEAR_MSG)
+    public String clearMsg;
 
     public boolean modeSilent() {
         return MODE_SILENT.equals(mode);
@@ -95,4 +107,13 @@ public class StacktracesRcpPreferences {
             throw propagate(e);
         }
     }
+
+    public void setAnonymize(String anonymize) {
+        this.anonymize = anonymize;
+    }
+
+    public void setClearMsg(String clearMsg) {
+        this.clearMsg = clearMsg;
+    }
+
 }

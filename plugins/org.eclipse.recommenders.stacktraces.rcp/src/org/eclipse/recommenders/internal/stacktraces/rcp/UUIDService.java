@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2014 Darmstadt University of Technology.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
+// XXX this has to be replaced by the centralized UUID service later
 class UUIDService {
 
     private static UUID userId;

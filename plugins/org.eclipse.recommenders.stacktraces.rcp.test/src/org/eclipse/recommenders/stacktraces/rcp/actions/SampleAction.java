@@ -6,14 +6,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Marcel Bruch - initial API and implementation.
+ *    Marcel Bruch - manual test code.
  */
 package org.eclipse.recommenders.stacktraces.rcp.actions;
 
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -24,12 +26,27 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 
     @Override
     public void run(IAction action) {
-        ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
-        RuntimeException cause = new RuntimeException("cause");
-        cause.fillInStackTrace();
-        Exception exception = new RuntimeException("exception message", cause);
-        exception.fillInStackTrace();
-        log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", exception));
+        Job job = new Job("test exceptions") {
+            @Override
+            public IStatus run(IProgressMonitor monitor) {
+                for (int i = 0; i < 10; i++) {
+                    ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
+                    RuntimeException cause = new RuntimeException("cause" + i);
+                    cause.fillInStackTrace();
+                    Exception exception = new RuntimeException("exception message", cause);
+                    exception.fillInStackTrace();
+                    log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message",
+                            exception));
+                    try {
+                        Thread.sleep(750);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return Status.OK_STATUS;
+            }
+        };
+        job.schedule();
     }
 
     @Override

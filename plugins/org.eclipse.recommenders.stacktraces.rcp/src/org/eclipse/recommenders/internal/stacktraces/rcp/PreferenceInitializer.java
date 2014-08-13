@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2014 Darmstadt University of Technology.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.put("name", SystemUtils.USER_NAME);
         s.put("email", "me@example.org");
         s.put("mode", "ask");
+        s.putBoolean("anonymize stacktraces", false);
+        s.putBoolean("clear messages", false);
     }
 
 }
