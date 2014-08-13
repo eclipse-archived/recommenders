@@ -12,16 +12,18 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.math.RoundingMode.HALF_EVEN;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
-import static org.eclipse.recommenders.utils.Recommendations.*;
+import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -55,6 +57,8 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.math.DoubleMath;
 
 @SuppressWarnings({ "serial", "restriction" })
 public class CallCompletionSessionProcessor extends SessionProcessor {
@@ -83,6 +87,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private CallsRcpPreferences prefs;
     private ImageDescriptor overlay;
     private HashSet<IMethodName> observedCalls;
+
+    private Map<Recommendation<IMethodName>, Integer> recommendationsIndex;
 
     @Inject
     public CallCompletionSessionProcessor(final IProjectCoordinateProvider pcProvider,
@@ -156,7 +162,26 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             recommendations = Recommendations.filterVoid(recommendations);
         }
         recommendations = top(recommendations, prefs.maxNumberOfProposals, prefs.minProposalProbability / (double) 100);
+
+        calculateProposalRelevanceBoostMap();
         return !isEmpty(recommendations);
+    }
+
+    private void calculateProposalRelevanceBoostMap() {
+        recommendationsIndex = Maps.newHashMap();
+        int i = prefs.maxNumberOfProposals;
+        for (Recommendation<IMethodName> r : recommendations) {
+            double rel = r.getRelevance() * 100;
+            int score = 0;
+            if (rel < 1d) {
+                int promille = DoubleMath.roundToInt(rel * 100, HALF_EVEN);
+                score = promille;
+            } else {
+                score = 100 + DoubleMath.roundToInt(rel, HALF_EVEN);
+
+            }
+            recommendationsIndex.put(r, score);
+        }
     }
 
     private void releaseModel() {
@@ -210,17 +235,22 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 continue;
             }
 
-            final int boost = prefs.changeProposalRelevance ? 200 + asPercentage(call) : 0;
-            final String label = prefs.decorateProposalText ? format(Messages.PROPOSAL_LABEL_PERCENTAGE,
-                    call.getRelevance()) : ""; //$NON-NLS-1$
+            Integer score = recommendationsIndex.get(call);
+            final int boost = prefs.changeProposalRelevance ? 200 + score : 0;
 
+            String label = "";
+            if (prefs.decorateProposalText) {
+                double relevance = call.getRelevance();
+                String format = relevance < 0.01d ? Messages.PROPOSAL_LABEL_PROMILLE
+                        : Messages.PROPOSAL_LABEL_PERCENTAGE;
+                label = format(format, relevance);
+            }
             if (prefs.decorateProposalIcon) {
                 overlay(proposal, overlay);
             }
 
             if (boost > 0) {
-                // TODO Shouldn't this convey the real boost?
-                proposal.setTag(RECOMMENDERS_SCORE, asPercentage(call));
+                proposal.setTag(RECOMMENDERS_SCORE, score);
             }
 
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();

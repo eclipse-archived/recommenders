@@ -18,6 +18,7 @@ public final class Messages extends NLS {
 
     public static String PROPOSAL_LABEL_USED;
     public static String PROPOSAL_LABEL_PERCENTAGE;
+    public static String PROPOSAL_LABEL_PROMILLE;
 
     public static String PREFPAGE_DESCRIPTION_CALLS;
 

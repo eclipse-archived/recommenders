@@ -229,8 +229,8 @@ public class JayesCallModel implements ICallModel {
             BayesNode node = pair.getValue();
             IMethodName method = pair.getKey();
             if (evidence.containsKey(node) && evidence.get(node).equals(Constants.N_STATE_TRUE)
-            // remove the NULL that may have been introduced by
-            // res.add(compute...)
+                    // remove the NULL that may have been introduced by
+                    // res.add(compute...)
                     && !VmMethodName.NULL.equals(method)) {
                 builder.add(method);
             }
@@ -331,7 +331,8 @@ public class JayesCallModel implements ICallModel {
             pass &= setCalled(m, N_STATE_TRUE);
         }
         // explicitly set the "no-method" used node to false:
-        pass &= setCalled(Constants.NO_METHOD, N_STATE_FALSE);
+        // TODO we disabled this for testing purpose:
+        // pass &= setCalled(Constants.NO_METHOD, N_STATE_FALSE);
         return pass;
     }
 
