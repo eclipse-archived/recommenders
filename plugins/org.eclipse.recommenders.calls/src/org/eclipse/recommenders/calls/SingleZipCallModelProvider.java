@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.calls;
 
 import static com.google.common.base.Optional.of;
+import static org.eclipse.recommenders.utils.Constants.DOT_JBIF;
 import static org.eclipse.recommenders.utils.Zips.*;
 
 import java.io.File;
@@ -78,7 +79,7 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
     }
 
     public Set<ITypeName> acquireableTypes() {
-        return Zips.types(zip.entries(), ".data");
+        return Zips.types(zip.entries(), DOT_JBIF);
     }
 
     @Override
