@@ -21,3 +21,4 @@ Export-Package: org.eclipse.recommenders.utils;uses:="com.google.commo
  n.base,com.google.common.collect",org.eclipse.recommenders.utils.gson
  ; uses:="com.google.common.collect,  com.google.gson.stream,  com.goo
  gle.gson",org.eclipse.recommenders.utils.names
+Require-Bundle: org.eclipse.core.runtime
