@@ -11,7 +11,8 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.HashMap;
 import java.util.Set;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 Darmstadt University of Technology.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,9 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils;
 
-import static java.text.MessageFormat.format;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.io.File;
@@ -19,19 +18,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.internal.rcp.Messages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -41,63 +38,101 @@ import org.osgi.framework.Version;
 
 public class Logs {
 
-    public static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
-            final String messageFormat, final Object... messageArgs) {
-        final String message = messageFormat == null ? "" : format(messageFormat, messageArgs); //$NON-NLS-1$
-        return new Status(kind, pluginId, message, exception);
+    public interface ILogMessage {
+
+        /**
+         * The severity of a log message. One of {@link IStatus#ERROR}, {@link IStatus#WARNING}, {@link IStatus#INFO},
+         * {@link IStatus#OK}, {@link IStatus#CANCEL}
+         */
+        int severity();
+
+        /**
+         * The error or log code of this log message.
+         */
+        int code();
+
+        /**
+         * A message string that may contain {@link MessageFormat} compatible placeholders (e.g., {0}).
+         */
+        String message();
+
+        /**
+         * The bundle the log message is defined by.
+         */
+        Bundle bundle();
     }
 
-    public static void logError(final Throwable exception, final Plugin plugin, final String format,
-            final Object... args) {
-        final IStatus error = newStatus(IStatus.ERROR, exception, getSymbolicName(plugin), format, args);
-        log(error, plugin);
-    }
+    public abstract static class DefaultLogMessage implements ILogMessage {
 
-    public static void logWarning(final Throwable exception, final Plugin plugin, final String format,
-            final Object... args) {
-        final IStatus status = newStatus(IStatus.WARNING, exception, getSymbolicName(plugin), format, args);
-        log(status, plugin);
-    }
+        private int severity;
+        private int code;
+        private String message;
 
-    private static String getSymbolicName(final Plugin plugin) {
-        ensureIsNotNull(plugin, "Logging requires a plug-in to be specified"); //$NON-NLS-1$
-        final Bundle bundle = plugin.getBundle();
-        return bundle.getSymbolicName();
-    }
-
-    public static void log(final IStatus status, final Plugin plugin) {
-        final ILog log = plugin.getLog();
-        try {
-            // this fails sometimes with an NPE in
-            // org.eclipse.core.internal.runtime.Log.isLoggable(Log.java:101)
-            log.log(status);
-        } catch (final Exception e) {
-            System.out.println(status);
+        public DefaultLogMessage(int severity, int code, String message) {
+            ensureIsGreaterOrEqualTo(code, 1, "The error code cannot be '0'");
+            this.severity = severity;
+            this.code = code;
+            this.message = message;
         }
+
+        @Override
+        public int severity() {
+            return severity;
+        }
+
+        @Override
+        public int code() {
+            return code;
+        }
+
+        @Override
+        public String message() {
+            return message;
+        }
+
+        @Override
+        public abstract Bundle bundle();
+
     }
 
-    public static void log(final CoreException exception, final Plugin plugin) {
-        final IStatus status = exception.getStatus();
-        log(status, plugin);
+    public static IStatus toStatus(ILogMessage msg, Throwable t, Object... args) {
+        String message = MessageFormat.format(msg.message(), args);
+        return new Status(msg.severity(), msg.bundle().getSymbolicName(), msg.code(), message, t);
     }
 
-    public static IStatus newInfo(final Throwable exception, final String pluginId, final String messageFormat,
-            final Object... methodArgs) {
-        return newStatus(IStatus.INFO, exception, pluginId, messageFormat, methodArgs);
+    public static void log(ILogMessage msg) {
+        log(msg, (Object[]) null);
     }
 
-    public static IStatus newInfo(final String pluginId, final String messageFormat, final Object... methodArgs) {
-        return newStatus(IStatus.INFO, null, pluginId, messageFormat, methodArgs);
+    public static void log(ILogMessage msg, Throwable t) {
+        log(msg, LogTraceException.newTrace(), t, (Object[]) null);
     }
 
-    public static IStatus newError(final Throwable exception, final String pluginId, final String messageFormat,
-            final Object... methodArgs) {
-        return newStatus(IStatus.ERROR, exception, pluginId, messageFormat, methodArgs);
+    public static void log(ILogMessage msg, Object... args) {
+        log(msg, LogTraceException.newTrace(), args);
     }
 
-    public static IStatus newWarning(final Throwable exception, final String pluginId, final String messageFormat,
-            final Object... methodArgs) {
-        return newStatus(IStatus.WARNING, exception, pluginId, messageFormat, methodArgs);
+    public static void log(ILogMessage msg, Throwable t, Object... args) {
+        IStatus status = toStatus(msg, t, args);
+        Bundle bundle = msg.bundle();
+        ILog log = Platform.getLog(bundle);
+        log.log(status);
+    }
+
+    public static Bundle getBundle(Class<?> bundleClazz) {
+        Bundle res = FrameworkUtil.getBundle(bundleClazz);
+        if (res != null) {
+            return res;
+        }
+        String fakeSymbolicName = bundleClazz.getPackage().getName();
+        return new FakeBundle(fakeSymbolicName);
+    }
+
+    public static ILog getLog(Bundle bundle) {
+        if (bundle == null) {
+            return new SystemOutLog();
+        }
+        return Platform.getLog(bundle);
     }
 
     public static String toString(final IStatus status) {
@@ -117,15 +152,15 @@ public class Logs {
     private static String toSeverity(final IStatus status) {
         switch (status.getSeverity()) {
         case IStatus.CANCEL:
-            return Messages.LOG_CANCEL;
+            return "CANCEL";
         case IStatus.ERROR:
-            return Messages.LOG_ERROR;
+            return "ERROR";
         case IStatus.WARNING:
-            return Messages.LOG_WARNING;
+            return "WARNING";
         case IStatus.INFO:
-            return Messages.LOG_INFO;
+            return "INFO";
         case IStatus.OK:
-            return Messages.LOG_OK;
+            return "OK";
         default:
             throw throwUnreachable();
         }
@@ -141,22 +176,6 @@ public class Logs {
         for (final IStatus child : status.getChildren()) {
             sb.append('\n').append(toString(child));
         }
-    }
-
-    public static Bundle getBundle(Class<?> bundleClazz) {
-        Bundle res = FrameworkUtil.getBundle(bundleClazz);
-        if (res != null) {
-            return res;
-        }
-        String fakeSymbolicName = bundleClazz.getPackage().getName();
-        return new FakeBundle(fakeSymbolicName);
-    }
-
-    public static ILog getLog(Bundle bundle) {
-        if (bundle == null) {
-            return new SystemOutLog();
-        }
-        return Platform.getLog(bundle);
     }
 
     private static final class SystemOutLog implements ILog {
@@ -179,7 +198,7 @@ public class Logs {
         }
     }
 
-    static final class FakeBundle implements Bundle {
+    private static final class FakeBundle implements Bundle {
 
         private String symbolicName;
 
@@ -324,6 +343,16 @@ public class Logs {
         @Override
         public <A> A adapt(Class<A> type) {
             return null;
+        }
+    }
+
+    private static final class LogTraceException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        static LogTraceException newTrace() {
+            LogTraceException res = new LogTraceException();
+            res.fillInStackTrace();
+            return res;
         }
     }
 }

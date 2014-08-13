@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static java.text.MessageFormat.format;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
 import static org.eclipse.recommenders.models.IModelIndex.INDEX;
 
@@ -30,7 +31,6 @@ import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
-import org.eclipse.recommenders.rcp.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -97,14 +97,14 @@ public class DownloadModelArchiveJob extends Job {
                 }
 
                 // Log that as informational but do not open a (extra, in case of index downloads) popup.
-                IStatus err = Logs.newStatus(IStatus.INFO, null, Constants.BUNDLE_ID,
-                        Messages.LOG_INFO_NO_MODEL_RESOLVED, mc);
+                IStatus err = new Status(IStatus.INFO, Constants.BUNDLE_ID, format(Messages.LOG_INFO_NO_MODEL_RESOLVED,
+                        mc));
                 StatusManager.getManager().handle(err, StatusManager.LOG);
                 return Status.CANCEL_STATUS;
             }
         } catch (Exception e) {
-            return Logs.newStatus(IStatus.ERROR, e, Constants.BUNDLE_ID, Messages.LOG_ERROR_MODEL_RESOLUTION_FAILURE,
-                    mc);
+            return new Status(IStatus.ERROR, Constants.BUNDLE_ID, format(Messages.LOG_ERROR_MODEL_RESOLUTION_FAILURE,
+                    mc), e);
         } finally {
             monitor.done();
         }

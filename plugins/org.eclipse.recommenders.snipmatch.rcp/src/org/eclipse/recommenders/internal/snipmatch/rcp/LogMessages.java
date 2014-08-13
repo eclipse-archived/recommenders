@@ -10,44 +10,28 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.rcp.utils.Logs;
+import static org.eclipse.core.runtime.IStatus.ERROR;
+
+import org.eclipse.recommenders.utils.Logs;
+import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
-public enum LogMessages {
+public class LogMessages extends DefaultLogMessage {
 
-    SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED(IStatus.ERROR, 100,
+    public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR, 100,
+            Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
+
+    public static final LogMessages SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR, 101,
             "An error occured while determining the leading whitespace characters.");
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
-    static ILog log = Logs.getLog(bundle);
-
-    private int severity;
-    private int code;
-    private String message;
 
     private LogMessages(int severity, int code, String message) {
-        this.severity = severity;
-        this.code = code;
-        this.message = message;
+        super(severity, code, message);
     }
 
-    public IStatus toStatus(Throwable t, Object... args) {
-        return new Status(severity, bundle.getSymbolicName(), code, String.format(message, args), t);
+    @Override
+    public Bundle bundle() {
+        return bundle;
     }
-
-    public static void log(LogMessages msg) {
-        LogMessages.log(msg, null, (Object[]) null);
-    }
-
-    public static void log(LogMessages msg, Object... args) {
-        LogMessages.log(msg, null, args);
-    }
-
-    public static void log(LogMessages msg, Throwable t, Object... args) {
-        log.log(msg.toStatus(t, args));
-    }
-
 }
