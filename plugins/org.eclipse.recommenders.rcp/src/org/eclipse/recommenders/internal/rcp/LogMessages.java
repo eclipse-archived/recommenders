@@ -18,6 +18,8 @@ import org.osgi.framework.Bundle;
 
 public class LogMessages extends DefaultLogMessage {
 
+    private static int code = 1;
+
     public static final LogMessages EXCEPTION_OCCURRED_IN_SERVICE_HOOK = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK);
     public static final LogMessages ACTIVE_PAGE_FINDER_TOO_EARLY = new LogMessages(ERROR,
@@ -28,8 +30,6 @@ public class LogMessages extends DefaultLogMessage {
             Messages.DIALOG_RESTART_NOT_POSSIBLE);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
-
-    private static int code = 1;
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

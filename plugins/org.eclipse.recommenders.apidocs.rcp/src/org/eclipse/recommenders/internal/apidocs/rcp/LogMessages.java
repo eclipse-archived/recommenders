@@ -19,6 +19,8 @@ import org.osgi.framework.Bundle;
 
 public class LogMessages extends DefaultLogMessage {
 
+    private static int code = 1;
+
     public static final LogMessages FAILED_TO_DETERMINE_STATIC_MEMEBERS = new LogMessages(ERROR,
             "Failed to determine static members for '{0}'");
     public static final LogMessages ERROR_DURING_JAVADOC_SELECTION = new LogMessages(ERROR,
@@ -36,8 +38,6 @@ public class LogMessages extends DefaultLogMessage {
     public static final ILogMessage NO_SUCH_ENTRY = new LogMessages(WARNING, Messages.LOG_WARNING_NO_SUCH_ENTRY);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
-
-    private static int code = 1;
 
     private LogMessages(int severity, String message) {
         // we are a bit lazy and don't use fixed error codes. But this this is likely not too much of a problem.

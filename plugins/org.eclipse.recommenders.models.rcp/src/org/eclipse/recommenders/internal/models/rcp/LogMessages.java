@@ -18,14 +18,14 @@ import org.osgi.framework.Bundle;
 
 public class LogMessages extends DefaultLogMessage {
 
+    private static int code = 1;
+
     public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SAVE_PREFERENCES);
     public static final LogMessages ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_ADVISOR_INSTANTIATION);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
-
-    private static int code = 1;
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
