@@ -82,8 +82,7 @@
 		<!-- @generated snipmatchrcp -->
 		<package
 			uri="org.eclipse.recommenders.snipmatch.rcp"
-			class="org.eclipse.recommenders.rcp.model.SnipmatchRcpModelPackage"
-			genModel="model/snipmatchrcp.genmodel"/>
+			class="org.eclipse.recommenders.rcp.model.SnipmatchRcpModelPackage"/>
 	</extension>
 	<extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
 		<!-- @generated snipmatch -->
