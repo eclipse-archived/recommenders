@@ -23,6 +23,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories;
+import org.eclipse.recommenders.internal.snipmatch.rcp.SelectRepositoryDialog;
+import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
@@ -34,15 +37,25 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+
 public class SnippetEditor extends FormEditor implements IResourceChangeListener {
 
     private static Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
+
+    private final Repositories repos;
+    private final SnippetRepositoryConfigurations configs;
+
     private boolean dirty;
 
     private SnippetMetadataPage metadataEditorPage;
     private SnippetSourcePage sourceEditorPage;
 
-    public SnippetEditor() {
+    @Inject
+    public SnippetEditor(Repositories repos, SnippetRepositoryConfigurations configs) {
+        this.repos = repos;
+        this.configs = configs;
+
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
 
@@ -87,14 +100,6 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         SnippetEditorInput input = (SnippetEditorInput) getEditorInput();
 
         Snippet snippet = input.getSnippet();
-        ISnippetRepository repo = input.getRepository();
-
-        if (repo == null) {
-            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET,
-                    Messages.DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE);
-            monitor.setCanceled(true);
-            return;
-        }
 
         if (isNullOrEmpty(snippet.getName())) {
             MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_INAVLID_SNIPPET_NAME,
@@ -111,13 +116,23 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             return;
         }
 
+        ISnippetRepository repo = input.getRepository();
+
+        if (repo == null) {
+            repo = SelectRepositoryDialog.openSelectRepositoryDialog(getSite().getShell(), repos, configs).orNull();
+            if (repo == null) {
+                return;
+            }
+            input.setRepository(repo);
+        }
+
         ISnippet oldSnippet = input.getOldSnippet();
 
         if (!oldSnippet.getCode().isEmpty() && !snippet.getCode().equals(oldSnippet.getCode())) {
             int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
                     Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
-                Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
-                Messages.DIALOG_OPTION_CANCEL }, 0).open();
+                            Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
+                            Messages.DIALOG_OPTION_CANCEL }, 0).open();
 
             if (status == 1) {
                 // Store as new

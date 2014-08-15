@@ -16,10 +16,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-
-import javax.inject.Inject;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -33,8 +30,6 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor;
 import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
-import org.eclipse.recommenders.rcp.model.SnippetRepositoryConfigurations;
-import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -50,17 +45,7 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSnippetHandler.class);
 
-    private final Repositories repos;
-    private final SnippetRepositoryConfigurations configs;
-
-    //
     private ExecutionEvent event;
-
-    @Inject
-    public CreateSnippetHandler(Repositories repos, SnippetRepositoryConfigurations configs) {
-        this.repos = repos;
-        this.configs = configs;
-    }
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -89,14 +74,9 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private void openSnippetInEditor(Snippet snippet) {
         IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
-        ISnippetRepository repository = SelectRepositoryDialog.openSelectRepositoryDialog(
-                page.getActivePart().getSite().getShell(), repos, configs).orNull();
-        if (repository == null) {
-            return;
-        }
 
         try {
-            SnippetEditorInput input = new SnippetEditorInput(snippet, repository);
+            SnippetEditorInput input = new SnippetEditorInput(snippet);
             SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
             ed.setDirty(true);
         } catch (PartInitException e) {

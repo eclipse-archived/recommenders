@@ -529,13 +529,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void addSnippet() {
-        SnippetRepositoryConfiguration selectedConfiguration = guessConfigurationForNewSnippet().orNull();
-
-        ISnippetRepository selectedRepository = SelectRepositoryDialog.openSelectRepositoryDialog(tree.getShell(),
-                repos, configs, selectedConfiguration).orNull();
-        if (selectedRepository != null) {
-            addSnippet(selectedRepository);
-        }
+        addSnippet(null);
     }
 
     private void removeSnippets() {

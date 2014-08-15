@@ -1,11 +1,9 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp
 
-import com.google.common.eventbus.EventBus
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
 import org.eclipse.jface.text.TextSelection
-import org.eclipse.recommenders.rcp.model.SnipmatchRcpModelFactory
 import org.eclipse.recommenders.snipmatch.Snippet
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
@@ -481,8 +479,7 @@ class CreateSnippetHandlerTest {
         val end = struct.second.last;
         val editor = EditorUtility.openInEditor(cu) as CompilationUnitEditor;
         editor.selectionProvider.selection = new TextSelection(start, end - start)
-        val configurations = SnipmatchRcpModelFactory.eINSTANCE.createSnippetRepositoryConfigurations()
-        val sut = new CreateSnippetHandler(new Repositories(new EventBus, configurations), configurations)
+        val sut = new CreateSnippetHandler()
         actual = sut.createSnippet(editor)
     }
 }
