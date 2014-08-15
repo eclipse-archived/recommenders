@@ -261,7 +261,7 @@ public class JavaElementResolver {
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                LOG.error("Failed to resolve JDT method '{}': {}", jdtMethod, e.getMessage(), e); //$NON-NLS-1$
+                LOG.error("Failed to resolve JDT method '{}': {}", new Object[] { jdtMethod, e.getMessage(), e }); //$NON-NLS-1$
                 return absent();
             }
         }
@@ -309,7 +309,7 @@ public class JavaElementResolver {
             }
             return absent();
         } catch (final Exception e) {
-            LOG.warn("Failed to resolve method '{}' in workspace: {}", recMethod, e.getMessage(), e); //$NON-NLS-1$
+            LOG.warn("Failed to resolve method '{}' in workspace: {}", new Object[] { recMethod, e.getMessage(), e }); //$NON-NLS-1$
             return absent();
         }
     }

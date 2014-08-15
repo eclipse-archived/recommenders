@@ -59,6 +59,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
 
     static {
+        // No all versions of JDT offer all kinds of CompletionProposal. Probe using reflection.
         try {
             javaMethodCompletionProposalClass = JavaMethodCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
