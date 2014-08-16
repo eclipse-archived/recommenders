@@ -70,9 +70,14 @@ public class ModelRepository implements IModelRepository {
         this(createRepositorySystem(), basedir, remoteUrl);
     }
 
+    /**
+     * @param system
+     *            instance of {@link RepositorySystem}. Here, {@code Object} so that {@code RepositorySystem} does not
+     *            become part of our public API.
+     */
     @VisibleForTesting
-    public ModelRepository(RepositorySystem system, File basedir, String remoteUrl) {
-        this.system = system;
+    public ModelRepository(Object system, File basedir, String remoteUrl) {
+        this.system = (RepositorySystem) system;
         this.defaultSession = createDefaultSession(basedir);
         this.defaultRemoteRepo = createRemoteRepository(remoteUrl);
     }
@@ -175,7 +180,7 @@ public class ModelRepository implements IModelRepository {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
             RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
-            .setAuthentication(authentication).setProxy(proxy).build();
+                    .setAuthentication(authentication).setProxy(proxy).build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
             return Optional.of(result.getArtifact().getFile());
