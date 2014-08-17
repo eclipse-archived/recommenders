@@ -18,13 +18,15 @@ import org.osgi.framework.FrameworkUtil;
 
 public class LogMessages extends DefaultLogMessage {
 
-    public static final LogMessages NO_INTERNET = new LogMessages(WARNING, 12,
+    private static int code = 1;
+
+    public static final LogMessages NO_INTERNET = new LogMessages(WARNING,
             "Could not connect to server. Your IP is '{0}'");
 
     private static Bundle b = FrameworkUtil.getBundle(LogMessages.class);
 
-    public LogMessages(int severity, int code, String message) {
-        super(severity, code, message);
+    public LogMessages(int severity, String message) {
+        super(severity, code++, message);
     }
 
     @Override

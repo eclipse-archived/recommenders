@@ -18,16 +18,18 @@ import org.osgi.framework.Bundle;
 
 public class LogMessages extends DefaultLogMessage {
 
-    public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR, 100,
+    private static int code = 1;
+
+    public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR,
             Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
 
-    public static final LogMessages SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR, 101,
+    public static final LogMessages SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
             "An error occured while determining the leading whitespace characters.");
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 
-    private LogMessages(int severity, int code, String message) {
-        super(severity, code, message);
+    private LogMessages(int severity, String message) {
+        super(severity, code++, message);
     }
 
     @Override

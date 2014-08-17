@@ -18,16 +18,18 @@ import org.osgi.framework.Bundle;
 
 public class LogMessages extends DefaultLogMessage {
 
-    public static final LogMessages LOG_ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR, 30,
+    private static int code = 1;
+
+    public static final LogMessages LOG_ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
 
-    public static final LogMessages LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR, 30,
+    public static final LogMessages LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 
-    private LogMessages(int severity, int code, String message) {
-        super(severity, code, message);
+    private LogMessages(int severity, String message) {
+        super(severity, code++, message);
     }
 
     @Override
