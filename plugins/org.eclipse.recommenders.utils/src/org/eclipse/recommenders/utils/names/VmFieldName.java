@@ -24,9 +24,13 @@ public class VmFieldName implements IFieldName {
 
     private static Map<String /* vmTypeName */, VmFieldName> index = new MapMaker().weakValues().makeMap();
 
+    public static synchronized VmFieldName get(ITypeName declaringType, String fieldName, ITypeName fieldType) {
+        return VmFieldName.get(declaringType.getIdentifier() + "." + fieldName + ";" + fieldType.getIdentifier());
+    }
+
     /**
      * Format: DeclaringType'.'fieldName;FieldType, i.e., &lt;VmTypeName&gt;.&lt;String&gt;;&lt;VmTypeName&gt;
-     * 
+     *
      * @param fieldName
      * @return
      */
