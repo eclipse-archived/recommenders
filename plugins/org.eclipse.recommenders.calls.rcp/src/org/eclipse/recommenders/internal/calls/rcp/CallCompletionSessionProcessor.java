@@ -238,7 +238,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             Integer score = recommendationsIndex.get(call);
             final int boost = prefs.changeProposalRelevance ? 200 + score : 0;
 
-            String label = "";
+            String label = ""; //$NON-NLS-1$
             if (prefs.decorateProposalText) {
                 double relevance = call.getRelevance();
                 String format = relevance < 0.01d ? Messages.PROPOSAL_LABEL_PROMILLE

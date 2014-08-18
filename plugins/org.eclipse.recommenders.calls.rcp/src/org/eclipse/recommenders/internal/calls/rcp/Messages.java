@@ -40,6 +40,7 @@ public final class Messages extends NLS {
     public static String TABLE_CELL_RELATION_DEFINED_BY;
     public static String TABLE_CELL_RELATION_OBSERVED;
     public static String TABLE_CELL_SUFFIX_PERCENTAGE;
+    public static String TABLE_CELL_SUFFIX_PROMILLE;
 
     static {
         // initialize resource bundle
