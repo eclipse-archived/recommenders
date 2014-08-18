@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	<name>Targets Definitions</name>
 	<modules>
+		<module>juno</module>
 		<module>kepler</module>
 		<module>luna</module>
 	</modules>
