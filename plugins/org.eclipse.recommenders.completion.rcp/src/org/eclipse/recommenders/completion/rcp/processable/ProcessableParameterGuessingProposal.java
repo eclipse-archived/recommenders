@@ -69,6 +69,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
+    private final boolean hasCanAutomaticallyAppendSemicolon;
 
     protected ProcessableParameterGuessingProposal(final CompletionProposal proposal,
             final JavaContentAssistInvocationContext context, final boolean fillBestGuess) {
@@ -76,6 +77,19 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
         coreProposal = proposal;
         fCoreContext = context.getCoreContext();
         fFillBestGuess = fillBestGuess;
+        // Method canAutomaticallyAppendSemicolon available in JDT 3.9+ only, missing in Eclipse Juno
+        hasCanAutomaticallyAppendSemicolon = hasMethod("canAutomaticallyAppendSemicolon");
+    }
+
+    private boolean hasMethod(String name) {
+        try {
+            getClass().getMethod(name);
+        } catch (NoSuchMethodException e) {
+            return false;
+        } catch (SecurityException e) {
+            return false; // Err on the side of caution
+        }
+        return true;
     }
 
     // JDT parts below
@@ -291,8 +305,10 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
         buffer.append(RPAREN);
 
-        if (canAutomaticallyAppendSemicolon()) {
-            buffer.append(SEMICOLON);
+        if (hasCanAutomaticallyAppendSemicolon) {
+            if (canAutomaticallyAppendSemicolon()) {
+                buffer.append(SEMICOLON);
+            }
         }
 
         return buffer.toString();
