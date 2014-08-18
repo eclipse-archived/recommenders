@@ -21,7 +21,7 @@
 
    <requires>
       <import feature="org.eclipse.mylyn.java_feature" version="3.8.0"/>
-      <import feature="org.eclipse.recommenders.rcp.feature" version="2.1.6.qualifier" match="equivalent"/>
+      <import feature="org.eclipse.recommenders.rcp.feature" version="2.1.6" match="equivalent"/>
    </requires>
 
    <plugin
