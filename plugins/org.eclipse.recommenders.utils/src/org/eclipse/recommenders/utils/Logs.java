@@ -132,7 +132,7 @@ public class Logs {
     }
 
     public static void log(ILogMessage msg, Throwable t) {
-        log(msg, LogTraceException.newTrace(), t, (Object[]) null);
+        log(msg, t, (Object[]) null);
     }
 
     public static void log(ILogMessage msg, Object... args) {
