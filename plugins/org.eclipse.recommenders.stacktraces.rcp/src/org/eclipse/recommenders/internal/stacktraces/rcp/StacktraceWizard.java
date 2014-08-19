@@ -38,8 +38,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
-import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -144,7 +142,7 @@ public class StacktraceWizard extends Wizard implements IWizard {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             BrowserUtils
-                                    .openInExternalBrowser("https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub");
+                            .openInExternalBrowser("https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub");
                         }
                     });
                 }
@@ -157,7 +155,7 @@ public class StacktraceWizard extends Wizard implements IWizard {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             BrowserUtils
-                                    .openInExternalBrowser("https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform");
+                            .openInExternalBrowser("https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform");
                         }
                     });
                 }
@@ -167,7 +165,7 @@ public class StacktraceWizard extends Wizard implements IWizard {
         }
 
         public void performFinish() {
-            String mode = Selections.<String>getFirstSelected(actionComboViewer.getSelection()).orNull();
+            String mode = (String) ((IStructuredSelection) actionComboViewer.getSelection()).getFirstElement();
             prefs.setMode(mode);
             prefs.setName(nameTxt.getText());
             prefs.setEmail(emailTxt.getText());
@@ -198,7 +196,7 @@ public class StacktraceWizard extends Wizard implements IWizard {
                 tableViewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL
                         | SWT.FULL_SELECTION | SWT.BORDER);
                 GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).span(1, 2).grab(true, true)
-                        .applyTo(tableComposite);
+                .applyTo(tableComposite);
                 TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
                 column.setLabelProvider(new ColumnLabelProvider() {
 

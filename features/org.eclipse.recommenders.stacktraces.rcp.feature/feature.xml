@@ -19,10 +19,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.recommenders.rcp.feature" version="2.1.7" match="equivalent"/>
-   </requires>
-
    <plugin
          id="org.eclipse.recommenders.stacktraces.rcp"
          download-size="0"

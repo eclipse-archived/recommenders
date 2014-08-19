@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
-import org.eclipse.recommenders.rcp.utils.Proxies;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
 @SuppressWarnings("restriction")
