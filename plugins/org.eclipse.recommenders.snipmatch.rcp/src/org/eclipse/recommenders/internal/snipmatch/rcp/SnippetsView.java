@@ -111,6 +111,10 @@ import com.google.inject.name.Named;
 
 public class SnippetsView extends ViewPart implements IRcpService {
 
+    public static final String SEARCH_FIELD = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.searchfield";
+    public static final String TREE = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.tree";
+    public static final String SWT_ID = "org.eclipse.swtbot.widget.key";
+
     private static Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
     private Text txtSearch;
@@ -185,7 +189,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 refreshJob.schedule();
             }
         });
-
+        txtSearch.setData(SWT_ID, SEARCH_FIELD);
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -205,6 +209,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         treeViewer = new TreeViewer(treeComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(treeViewer);
         tree = treeViewer.getTree();
+        tree.setData(SWT_ID, TREE);
         tree.setHeaderVisible(true);
         tree.setLinesVisible(true);
 
@@ -352,6 +357,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         };
 
         removeSnippetAction = new Action() {
+            @Override
             public void run() {
                 removeSnippets();
             }
@@ -583,7 +589,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 addRepositoryAction);
 
         toolBarManager.add(new Separator());
-
         addAction(Messages.TOOLBAR_TOOLTIP_EXPAND_ALL, ELCL_EXPAND_ALL, toolBarManager, new Action() {
             @Override
             public void run() {

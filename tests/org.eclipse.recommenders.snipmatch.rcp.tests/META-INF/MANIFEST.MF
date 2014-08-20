@@ -8,8 +8,12 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.recommenders.testing,
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
  org.eclipse.xtext.xbase.lib,
  org.junit,
  org.mockito,
- org.hamcrest
+ org.hamcrest,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.junit4_x
 Import-Package: org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)"

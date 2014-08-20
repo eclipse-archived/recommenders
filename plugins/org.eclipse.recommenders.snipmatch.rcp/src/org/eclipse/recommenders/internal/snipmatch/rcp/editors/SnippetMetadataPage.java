@@ -37,6 +37,7 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -67,6 +68,8 @@ import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
 public class SnippetMetadataPage extends FormPage {
+
+    public static final String TEXT_SNIPPETNAME = "org.eclipse.recommenders.snipmatch.rcp.snippetmetadatapage.snippetname";
 
     private ISnippet snippet;
 
@@ -115,6 +118,7 @@ public class SnippetMetadataPage extends FormPage {
         txtName = managedForm.getToolkit().createText(managedForm.getForm().getBody(), null, SWT.NONE);
         txtName.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
                 .indent(horizontalIndent, 0).create());
+        txtName.setData(SnippetsView.SWT_ID, TEXT_SNIPPETNAME);
 
         final ControlDecoration decor = new ControlDecoration(txtName, SWT.LEFT);
         decor.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY);
