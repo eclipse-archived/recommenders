@@ -9,6 +9,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.jdt.launching,
  org.eclipse.recommenders.testing,
+ org.eclipse.recommenders.testing.rcp,
  org.eclipse.xtext.xbase.lib,
  org.junit,
  org.mockito,
