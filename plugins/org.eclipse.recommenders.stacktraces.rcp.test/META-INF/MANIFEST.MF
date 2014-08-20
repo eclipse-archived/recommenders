@@ -4,9 +4,10 @@ Bundle-SymbolicName: org.eclipse.recommenders.stacktraces.rcp.test;singleton:=tr
 Bundle-Version: 2.1.8.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Fragment-Host: org.eclipse.recommenders.stacktraces.rcp
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
- org.eclipse.recommenders.stacktraces.rcp;bundle-version="2.1.8"
+ org.hamcrest,
+ org.junit

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -25,7 +26,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         // s.put("server", "http://localhost:9002/new/");
         s.put("name", SystemUtils.USER_NAME);
         s.put("email", "me@example.org");
-        s.put("mode", "ask");
+        s.put("mode", Mode.ASK.name());
         s.putBoolean("anonymize stacktraces", false);
         s.putBoolean("clear messages", false);
     }

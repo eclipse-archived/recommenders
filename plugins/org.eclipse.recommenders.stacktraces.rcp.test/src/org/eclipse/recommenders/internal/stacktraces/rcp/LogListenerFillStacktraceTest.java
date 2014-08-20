@@ -8,19 +8,17 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.stacktraces.rcp.actions;
+package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.internal.stacktraces.rcp.LogListener;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-@SuppressWarnings("restriction")
 public class LogListenerFillStacktraceTest {
 
     @Test

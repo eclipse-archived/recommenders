@@ -28,6 +28,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
@@ -93,7 +94,7 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private boolean ignoreAllLogEvents() {
-        return pref.modeIgnore();
+        return pref.getMode() == Mode.IGNORE;
     }
 
     private boolean isErrorSeverity(final IStatus status) {
@@ -136,15 +137,12 @@ public class LogListener implements ILogListener, IStartup {
                 if (isDialogOpen) {
                     return;
                 }
-                if (pref.modeAsk()) {
-                    StackTraceEvent tmp = createDto(status, pref);
-                    // TODO set name and email?
-                    tmp.name = "[filled on submit]";
-                    tmp.email = "[filled on submit]";
+                if (pref.getMode() == Mode.ASK) {
                     isDialogOpen = true;
-
-                    int open = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                            new StacktraceWizard(pref, statusList)).open();
+                    StacktraceWizard stacktraceWizard = new StacktraceWizard(pref, statusList);
+                    WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                            .getShell(), stacktraceWizard);
+                    int open = wizardDialog.open();
                     isDialogOpen = false;
                     if (open != Dialog.OK) {
                         clear();
@@ -180,7 +178,6 @@ public class LogListener implements ILogListener, IStartup {
 
         cache.put(status.toString(), status.toString());
         StackTraceEvent event = createDto(status, pref);
-        // System.out.println(event);
         new StacktraceUploadJob(event, pref.getServerUri()).schedule();
     }
 
