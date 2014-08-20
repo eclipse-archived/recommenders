@@ -30,6 +30,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
@@ -41,8 +42,8 @@ import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
 
-    private static Method SET_EXCEPTION = ReflectionUtils.getDeclaredMethod(Status.class, "setException",
-            Throwable.class).orNull();
+    private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
+            .orNull();
 
     private Cache<String, String> cache = CacheBuilder.newBuilder().maximumSize(10).build();
     private IEclipseContext ctx = (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class);

@@ -15,6 +15,7 @@ import static com.google.common.base.Throwables.getCausalChain;
 import static com.google.common.collect.Iterables.toArray;
 import static com.google.common.collect.Lists.newLinkedList;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -22,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.stacktraces.rcp.StacktraceWizard.WizardPreferences;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.Severity;
+import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceElementDto;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.ThrowableDto;
 import org.eclipse.recommenders.utils.AnonymousId;
@@ -31,6 +33,7 @@ import org.osgi.framework.Constants;
 public class Stacktraces {
 
     private static final String ANONYMIZED_TAG = "HIDDEN";
+    private static final List<String> PREFIX_WHITELIST = Arrays.asList("java.", "javax.", "org.eclipse.");
 
     public static final String PLUGIN_ID = "org.eclipse.recommenders.stacktraces.rcp";
 
@@ -41,6 +44,9 @@ public class Stacktraces {
         event.email = wizardPreferences.email;
         if (wizardPreferences.clearMessages) {
             clearMessages(event);
+        }
+        if (wizardPreferences.anonymize) {
+            anonymizeStackTraceElements(event);
         }
         return event;
     }
@@ -78,6 +84,9 @@ public class Stacktraces {
         if (pref.shouldClearMessages()) {
             clearMessages(event);
         }
+        if (pref.shouldAnonymizeStackTraceElements()) {
+            anonymizeStackTraceElements(event);
+        }
         return event;
     }
 
@@ -86,6 +95,41 @@ public class Stacktraces {
         for (ThrowableDto dto : event.chain) {
             dto.message = ANONYMIZED_TAG;
         }
+    }
+
+    public static void anonymizeStackTraceElements(StackTraceEvent event) {
+        if (event.chain != null) {
+            for (ThrowableDto dto : event.chain) {
+                anonymizeStackTraceElements(dto);
+            }
+        }
+    }
+
+    static void anonymizeStackTraceElements(ThrowableDto dto) {
+        if (!matchesWhitelist(dto.classname, PREFIX_WHITELIST)) {
+            dto.classname = ANONYMIZED_TAG;
+        }
+        if (dto.elements != null) {
+            for (StackTraceElementDto stDto : dto.elements) {
+                anonymizeStackTraceElement(stDto);
+            }
+        }
+    }
+
+    static void anonymizeStackTraceElement(StackTraceElementDto stDto) {
+        if (!matchesWhitelist(stDto.classname, PREFIX_WHITELIST)) {
+            stDto.classname = ANONYMIZED_TAG;
+            stDto.methodname = ANONYMIZED_TAG;
+        }
+    }
+
+    private static boolean matchesWhitelist(String className, List<String> whitelist) {
+        for (String whiteListedPrefix : whitelist) {
+            if (className.startsWith(whiteListedPrefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Severity getSeverity(IStatus status) {

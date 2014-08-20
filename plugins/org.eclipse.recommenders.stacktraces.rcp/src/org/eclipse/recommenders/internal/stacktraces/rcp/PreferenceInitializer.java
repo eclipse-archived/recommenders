@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -21,14 +23,14 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     @Override
     public void initializeDefaultPreferences() {
 
-        IEclipsePreferences s = DefaultScope.INSTANCE.getNode("org.eclipse.recommenders.stacktraces.rcp");
-        s.put("server", "http://recommenders.eclipse.org/stats/stacktraces/0.2.0/new/");
-        // s.put("server", "http://localhost:9002/new/");
-        s.put("name", SystemUtils.USER_NAME);
-        s.put("email", "me@example.org");
-        s.put("mode", Mode.ASK.name());
-        s.putBoolean("anonymize stacktraces", false);
-        s.putBoolean("clear messages", false);
+        IEclipsePreferences s = DefaultScope.INSTANCE.getNode(PLUGIN_ID);
+        s.put(PROP_SERVER, "http://recommenders.eclipse.org/stats/stacktraces/0.2.0/new/");
+        // s.put(PROP_SERVER, "http://localhost:9002/new/");
+        s.put(PROP_NAME, SystemUtils.USER_NAME);
+        s.put(PROP_EMAIL, "me@example.org");
+        s.put(PROP_MODE, Mode.ASK.name());
+        s.putBoolean(PROP_ANONYMIZE_STACKFRAMES, false);
+        s.putBoolean(PROP_CLEAR_MESSAGES, false);
     }
 
 }

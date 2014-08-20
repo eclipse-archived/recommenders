@@ -16,7 +16,7 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
-public class BrowserUtils {
+public class Browsers {
 
     /**
      * Tries to open an URL wit the web browser configured in the Eclipse preferences (General &gt; Web Browser). By

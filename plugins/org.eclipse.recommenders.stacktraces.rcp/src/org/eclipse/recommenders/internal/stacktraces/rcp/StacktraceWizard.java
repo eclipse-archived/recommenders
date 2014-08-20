@@ -33,7 +33,7 @@ public class StacktraceWizard extends Wizard {
             this.name = stacktracesPreferences.getName();
             this.email = stacktracesPreferences.getEmail();
             this.mode = stacktracesPreferences.getMode();
-            this.anonymize = stacktracesPreferences.shouldAnonymize();
+            this.anonymize = stacktracesPreferences.shouldAnonymizeStackTraceElements();
             this.clearMessages = stacktracesPreferences.shouldClearMessages();
         }
 
@@ -67,7 +67,7 @@ public class StacktraceWizard extends Wizard {
     }
 
     private void updatePreferences() {
-        stacktracesPreferences.setAnonymize(wizardPreferences.anonymize);
+        stacktracesPreferences.setAnonymizeStackframes(wizardPreferences.anonymize);
         stacktracesPreferences.setClearMessages(wizardPreferences.clearMessages);
         stacktracesPreferences.setEmail(wizardPreferences.email);
         stacktracesPreferences.setMode(wizardPreferences.mode);
