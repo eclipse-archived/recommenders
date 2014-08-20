@@ -45,6 +45,7 @@ import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -130,7 +131,8 @@ public final class CallsApidocProvider extends ApidocProvider {
             model.setObservedCalls(calls);
             model.setObservedDefinitionKind(kind);
 
-            Iterable<Recommendation<IMethodName>> methodCalls = sortByRelevance(model.recommendCalls());
+            Iterable<Recommendation<IMethodName>> methodCalls = sortByRelevance(Recommendations.filterRelevance(
+                    model.recommendCalls(), 0.01 / 100));
             runSyncInUiThread(new CallRecommendationsRenderer(overrideContext, methodCalls, calls,
                     variable.getElementName(), definingMethod, kind, parent));
         } finally {

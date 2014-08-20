@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Math.max;
 import static java.math.RoundingMode.HALF_EVEN;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
@@ -161,7 +162,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (ctx.getExpectedTypeSignature().isPresent()) {
             recommendations = Recommendations.filterVoid(recommendations);
         }
-        recommendations = top(recommendations, prefs.maxNumberOfProposals, prefs.minProposalProbability / (double) 100);
+        recommendations = top(recommendations, prefs.maxNumberOfProposals,
+                max(prefs.minProposalProbability, 0.01) / 100);
 
         calculateProposalRelevanceBoostMap();
         return !isEmpty(recommendations);
