@@ -55,62 +55,73 @@ class JsonPreviewPage extends WizardPage {
     public void createControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
-        {
-            Composite tableComposite = new Composite(container, SWT.NONE);
-            tableViewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION
-                    | SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).span(1, 2).grab(false, true).applyTo(tableComposite);
-            TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-            column.setLabelProvider(new ColumnLabelProvider() {
+        GridDataFactory.fillDefaults().minSize(300, 300).grab(true, true).applyTo(container);
 
-                @Override
-                public String getText(Object element) {
-                    IStatus event = (IStatus) element;
-                    return event.getMessage();
-                }
-            });
-            TableColumnLayout tableColumnLayout = new TableColumnLayout();
-            tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(100));
-            tableComposite.setLayout(tableColumnLayout);
-            tableViewer.setContentProvider(new ObservableListContentProvider());
-            tableViewer.setInput(errors);
-            tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        Composite tableComposite = createTableComposite(container);
+        GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).span(1, 2).grab(false, true).applyTo(tableComposite);
 
-                @Override
-                public void selectionChanged(SelectionChangedEvent event) {
-                    if (!event.getSelection().isEmpty()) {
-                        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                        IStatus selected = (IStatus) selection.getFirstElement();
-                        messageText.setText(GsonUtil.serialize(Stacktraces.createDto(selected, stacktracesPreferences,
-                                wizardPreferences)));
-                    }
-                }
-            });
-        }
-        {
-            Composite messageComposite = new Composite(container, SWT.NONE);
-            GridLayoutFactory.fillDefaults().applyTo(messageComposite);
-            Label messageLabel = new Label(messageComposite, SWT.NONE);
-            messageLabel.setText("Message:");
-            GridDataFactory.fillDefaults().applyTo(messageLabel);
-            messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.BORDER);
-            messageText.setEditable(false);
-            GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 300).grab(true, false).applyTo(messageText);
+        Composite messageComposite = createMessageComposite(container);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(messageComposite);
 
-            GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(messageComposite);
-        }
-        {
-            Composite commentComposite = new Composite(container, SWT.NONE);
-            GridLayoutFactory.fillDefaults().applyTo(commentComposite);
-            Label commentLabel = new Label(commentComposite, SWT.NONE);
-            commentLabel.setText("Comment:");
-            GridDataFactory.fillDefaults().applyTo(commentLabel);
-            StyledText commentText = new StyledText(commentComposite, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
-            GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 75).applyTo(commentText);
-            GridDataFactory.fillDefaults().span(2, 1).applyTo(commentComposite);
-        }
+        Composite commentComposite = createCommentComposite(container);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(commentComposite);
         setControl(container);
+    }
+
+    private Composite createTableComposite(Composite container) {
+        Composite tableComposite = new Composite(container, SWT.NONE);
+        tableViewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION
+                | SWT.BORDER);
+        TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
+        column.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                IStatus event = (IStatus) element;
+                return event.getMessage();
+            }
+        });
+        TableColumnLayout tableColumnLayout = new TableColumnLayout();
+        tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(100));
+        tableComposite.setLayout(tableColumnLayout);
+        tableViewer.setContentProvider(new ObservableListContentProvider());
+        tableViewer.setInput(errors);
+        tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (!event.getSelection().isEmpty()) {
+                    IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                    IStatus selected = (IStatus) selection.getFirstElement();
+                    messageText.setText(GsonUtil.serialize(Stacktraces.createDto(selected, stacktracesPreferences,
+                            wizardPreferences)));
+                }
+            }
+        });
+        return tableComposite;
+    }
+
+    private Composite createMessageComposite(Composite container) {
+        Composite messageComposite = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().applyTo(messageComposite);
+        Label messageLabel = new Label(messageComposite, SWT.NONE);
+        messageLabel.setText("Message:");
+        GridDataFactory.fillDefaults().applyTo(messageLabel);
+        messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+        messageText.setEditable(false);
+        GridDataFactory.fillDefaults().hint(300, 300).grab(true, false).applyTo(messageText);
+        return messageComposite;
+    }
+
+    private Composite createCommentComposite(Composite container) {
+        Composite commentComposite = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().applyTo(commentComposite);
+        Label commentLabel = new Label(commentComposite, SWT.NONE);
+        commentLabel.setText("Comment:");
+        GridDataFactory.fillDefaults().applyTo(commentLabel);
+        StyledText commentText = new StyledText(commentComposite, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 75).applyTo(commentText);
+        return commentComposite;
     }
 
     @Override
