@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2014 Darmstadt University of Technology.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,32 +8,39 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.net;
 
 import static com.google.common.base.Optional.*;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.*;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.utils.Nullable;
+import org.apache.http.HttpHost;
+import org.apache.http.client.fluent.Executor;
+import org.eclipse.core.internal.net.ProxyManager;
+import org.eclipse.core.net.proxy.IProxyData;
 
 import com.google.common.base.Optional;
 
+@SuppressWarnings("restriction")
 public class Proxies {
 
     private static final String DOUBLEBACKSLASH = "\\\\";
-    public static final String ENV_USERDOMAIN = "USERDOMAIN";
-    public static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain";
+    private static final String ENV_USERDOMAIN = "USERDOMAIN";
+    private static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain";
 
     /**
      * Returns the domain of the current machine- if any.
      *
      * @param userName
-     *            the username which (on windows it may contain the domain name as prefix "domain\\username")
+     *            the user name which may be null. On windows it may contain the domain name as prefix
+     *            "domain\\username".
      */
-    public static Optional<String> getUserDomain(@Nullable String userName) {
+    public static Optional<String> getUserDomain(String userName) {
 
         // check the app's system properties
         String domain = System.getProperty(PROP_HTTP_AUTH_NTLM_DOMAIN);
@@ -78,5 +85,23 @@ public class Proxies {
             return absent();
         }
         return contains(userName, DOUBLEBACKSLASH) ? of(substringAfterLast(userName, DOUBLEBACKSLASH)) : of(userName);
+    }
+
+    public static Executor proxy(Executor executor, URI target) {
+        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
+        if (isEmpty(proxies)) {
+            executor.clearAuth();
+        } else {
+            IProxyData proxy = proxies[0];
+            HttpHost host = new HttpHost(proxy.getHost(), proxy.getPort());
+            if (proxy.getUserId() != null) {
+                String userId = getUserName(proxy.getUserId()).orNull();
+                String pass = proxy.getPassword();
+                String workstation = getWorkstation().orNull();
+                String domain = getUserDomain(proxy.getUserId()).orNull();
+                executor.auth(host, userId, pass, workstation, domain);
+            }
+        }
+        return executor;
     }
 }

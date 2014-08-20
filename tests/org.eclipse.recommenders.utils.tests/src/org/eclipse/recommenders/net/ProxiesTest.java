@@ -8,13 +8,17 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.net;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+// XXX a single test does not justify a new test plugin yet. This may be changed later
 public class ProxiesTest {
+
+    static final String ENV_USERDOMAIN = "USERDOMAIN";
+    static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain";
 
     @Test
     public void testUserDomain() {
@@ -23,7 +27,7 @@ public class ProxiesTest {
         // System.getenv().put(ProxyUtils.ENV_USERDOMAIN, "mydomain_env\\\\user");
         // assertEquals(null, ProxyUtils.getUserDomain("mydomain_env\\\\user").orNull());
 
-        System.getProperties().put(Proxies.PROP_HTTP_AUTH_NTLM_DOMAIN, "mydomain_props");
+        System.getProperties().put(PROP_HTTP_AUTH_NTLM_DOMAIN, "mydomain_props");
         assertEquals("mydomain_props", Proxies.getUserDomain("mydomain_props").orNull());
 
     }
