@@ -75,9 +75,14 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
         this.indexdir = indexdir;
     }
 
+    /**
+     * @param index
+     *            instance of {@link Directory}. Here, {@code Object} so that {@code Directory} does not become part of
+     *            our public API.
+     */
     @VisibleForTesting
-    ModelIndex(Directory index) {
-        this.index = index;
+    ModelIndex(Object index) {
+        this.index = (Directory) index;
     }
 
     public boolean isAccessible() {

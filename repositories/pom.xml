@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders</artifactId>
-		<version>2.1.2-SNAPSHOT</version>
+		<version>2.1.7-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>repositories</artifactId>
@@ -27,7 +27,7 @@
 		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>
 		<p2StatsURL>http://download.eclipse.org/stats/recommenders/${project.artifactId}</p2StatsURL>
 		<!-- At the moment, this list of features needs to be maintained manually. -->
-		<statsTrackedArtifacts>org.eclipse.recommenders.3rd.feature,org.eclipse.recommenders.feature.rcp,org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.mylyn.rcp.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature,org.eclipse.recommenders.snipmatch.rcp.feature</statsTrackedArtifacts>
+		<statsTrackedArtifacts>org.eclipse.recommenders.3rd.feature,org.eclipse.recommenders.feature.rcp,org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.mylyn.rcp.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature,org.eclipse.recommenders.snipmatch.rcp.feature,org.eclipse.recommenders.stacktraces.rcp.feature</statsTrackedArtifacts>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -130,8 +130,7 @@ public final class CallsApidocProvider extends ApidocProvider {
             model.setObservedCalls(calls);
             model.setObservedDefinitionKind(kind);
 
-            Iterable<Recommendation<IMethodName>> methodCalls = sortByRelevance(filterRelevance(model.recommendCalls(),
-                    0.05d));
+            Iterable<Recommendation<IMethodName>> methodCalls = sortByRelevance(model.recommendCalls());
             runSyncInUiThread(new CallRecommendationsRenderer(overrideContext, methodCalls, calls,
                     variable.getElementName(), definingMethod, kind, parent));
         } finally {
@@ -208,9 +207,12 @@ public final class CallsApidocProvider extends ApidocProvider {
                 createLabel(container, percentageToRecommendationPhrase(asPercentage(rec)), true, false,
                         COLOR_INFO_FOREGROUND, false);
 
-                createLabel(container, Messages.TABLE_CELL_RELATION_CALL + " ", false);
+                createLabel(container, Messages.TABLE_CELL_RELATION_CALL + " ", false); //$NON-NLS-1$
                 ApidocsViewUtils.createMethodLink(container, rec.getProposal(), jdtResolver, workspaceBus);
-                createLabel(container, " - " + format(Messages.TABLE_CELL_SUFFIX_PERCENTAGE, rec.getRelevance()), false); //$NON-NLS-1$
+                double relevance = rec.getRelevance();
+                String format = relevance < 0.01d ? Messages.TABLE_CELL_SUFFIX_PROMILLE
+                        : Messages.TABLE_CELL_SUFFIX_PERCENTAGE;
+                createLabel(container, " - " + format(format, relevance), false);
             }
 
             new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -227,7 +229,7 @@ public final class CallsApidocProvider extends ApidocProvider {
                 text = format(Messages.PROVIDER_INFO_UNTRAINED_CONTEXT, receiverType.getElementName());
             } else {
                 text = format(Messages.PROVIDER_INFO_LOCAL_VAR_CONTEXT, receiverType.getElementName(),
-                        Names.vm2srcSimpleTypeName(ctx.getDeclaringType()) + "." + Names.vm2srcSimpleMethod(ctx));
+                        Names.vm2srcSimpleTypeName(ctx.getDeclaringType()) + "." + Names.vm2srcSimpleMethod(ctx)); //$NON-NLS-1$
             }
             preamble.setText(text);
 

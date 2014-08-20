@@ -60,7 +60,7 @@ import com.google.common.collect.Lists;
  * The Bayesian network is expected to follow the structure specified below:
  * <ul>
  * <li>every node must have at least <b>2 states</b>!
- * <li>the first state is supposed to be a dummy state. Call it like {@link Constants#N_STATE_DUMMY_CTX}
+ * <li>the first state is supposed to be a dummy state. Call it like {@link Constants#DUMMY_METHOD}
  * <li>the second state <b>may</b> to be a dummy state too if no valuable other state could be found.
  * </ul>
  * <ul>
@@ -92,6 +92,7 @@ import com.google.common.collect.Lists;
  * </ul>
  * </ul>
  */
+@SuppressWarnings("deprecation")
 @Beta
 public class JayesCallModel implements ICallModel {
 
@@ -279,7 +280,7 @@ public class JayesCallModel implements ICallModel {
         for (int i = definedByNode.getOutcomeCount(); i-- > 0;) {
             if (beliefs[i] > 0.01d) {
                 String outcomeName = definedByNode.getOutcomeName(i);
-                if (outcomeName.equals("LNone.none()V")) {
+                if (outcomeName.equals(NONE_METHOD.getIdentifier())) {
                     continue;
                 }
                 if (outcomeName.equals(UNKNOWN_METHOD.getIdentifier())) {
@@ -330,7 +331,8 @@ public class JayesCallModel implements ICallModel {
             pass &= setCalled(m, N_STATE_TRUE);
         }
         // explicitly set the "no-method" used node to false:
-        pass &= setCalled(Constants.NO_METHOD, N_STATE_FALSE);
+        // TODO we disabled this for testing purpose:
+        // pass &= setCalled(Constants.NO_METHOD, N_STATE_FALSE);
         return pass;
     }
 

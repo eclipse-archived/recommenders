@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a transition from Type A to Type B by some chain element ( {@link IField} access, {@link IMethod} call, or
  * {@link ILocalVariable} (as entrypoints only)).
- * 
+ *
  * @see ChainFinder
  */
 @SuppressWarnings("restriction")
@@ -34,7 +34,9 @@ public class ChainElement {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public enum ElementType {
-        METHOD, FIELD, LOCAL_VARIABLE
+        METHOD,
+        FIELD,
+        LOCAL_VARIABLE
     }
 
     private final Binding element;
@@ -70,6 +72,7 @@ public class ChainElement {
         dimension = returnType.dimensions();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Binding> T getElementBinding() {
         return (T) element;
     }

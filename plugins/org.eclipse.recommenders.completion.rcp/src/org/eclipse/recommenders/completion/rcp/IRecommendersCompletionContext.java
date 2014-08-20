@@ -34,7 +34,7 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "rawtypes" })
 public interface IRecommendersCompletionContext {
 
     CompilationUnit getAST();

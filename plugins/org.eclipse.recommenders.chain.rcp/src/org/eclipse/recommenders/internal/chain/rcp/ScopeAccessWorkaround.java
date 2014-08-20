@@ -24,6 +24,7 @@ import com.google.common.base.Optional;
 /**
  * A scope is required to determine for methods and fields if they are visible from the invocation site.
  */
+@SuppressWarnings("restriction")
 @Beta
 public final class ScopeAccessWorkaround {
 

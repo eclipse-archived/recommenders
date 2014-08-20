@@ -5,13 +5,14 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders</artifactId>
-		<version>2.1.2-SNAPSHOT</version>
+		<version>2.1.7-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>targets</artifactId>
 	<packaging>pom</packaging>
 	<name>Targets Definitions</name>
 	<modules>
+		<module>juno</module>
 		<module>kepler</module>
 		<module>luna</module>
 	</modules>

@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
+@SuppressWarnings("restriction")
 public class JavaModelEvents {
 
     private static class CompilationUnitDeltaEvent {

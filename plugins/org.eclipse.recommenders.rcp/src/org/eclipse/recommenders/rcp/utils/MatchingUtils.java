@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -50,6 +51,7 @@ public class MatchingUtils {
                 && fOriginalSignature.isAccessible();
     }
 
+    @Nullable
     public static IMethodName asMethodName(CompletionProposal proposal, Optional<TypeBinding> receiverTypeBinding) {
         final String jSignature = MatchingUtils.getSignature(proposal);
 
@@ -64,11 +66,23 @@ public class MatchingUtils {
 
         ITypeName elementType = MatchingUtils.asTypeName(declarationSignature, methodTypeParameters,
                 classTypeParameters);
+        if (elementType == null) {
+            return null;
+        }
+
         ITypeName[] params = new ITypeName[parameterTypes.length];
         for (int i = 0; i < params.length; i++) {
-            params[i] = MatchingUtils.asTypeName(parameterTypes[i], methodTypeParameters, classTypeParameters);
+            ITypeName param = MatchingUtils.asTypeName(parameterTypes[i], methodTypeParameters, classTypeParameters);
+            if (param == null) {
+                return null;
+            }
+            params[i] = param;
         }
+
         ITypeName returnType = MatchingUtils.asTypeName(returnTypeSignature, methodTypeParameters, classTypeParameters);
+        if (returnType == null) {
+            return null;
+        }
 
         return MatchingUtils.createMethodName(elementType, name, params, returnType);
     }
@@ -104,6 +118,7 @@ public class MatchingUtils {
         return classTypeParameters;
     }
 
+    @Nullable
     public static ITypeName asTypeName(String typeSignature, String[] primaryTypeParameters,
             String[] secondaryTypeParameters) {
         int signatureKind = Signature.getTypeSignatureKind(typeSignature);

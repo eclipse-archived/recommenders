@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelIndex;
 import org.eclipse.recommenders.models.ProjectCoordinate;

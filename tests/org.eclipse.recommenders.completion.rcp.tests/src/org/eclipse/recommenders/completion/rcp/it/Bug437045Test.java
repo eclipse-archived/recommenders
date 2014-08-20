@@ -38,6 +38,7 @@ import com.google.common.collect.Lists;
  *
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=437045">Bug 437045</a>
  */
+@SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
 public class Bug437045Test {
 

@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 /**
  * Test that receiver types of static method calls are handled correctly.
  */
+@SuppressWarnings({ "restriction" })
 @RunWith(Parameterized.class)
 public class ReceiverTypeOfStaticMethodCallsTest {
 

@@ -74,6 +74,7 @@ import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -425,7 +426,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         for (SnippetRepositoryConfiguration config : configurations) {
             MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openOkCancelConfirm(tree.getShell(),
-                    Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE, format(Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE, config.getName()),
+                    Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
+                    format(Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE, config.getName()),
                     Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE, true, null, null);
 
             boolean confirmed = confirmDialog.getReturnCode() == Status.OK;
@@ -815,6 +817,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
     }
 
+    @Nullable
     private ISnippetRepository findRepoForOriginalSnippet(ISnippet snippet) {
         for (ISnippetRepository repo : repos.getRepositories()) {
             if (repo.hasSnippet(snippet.getUuid())) {

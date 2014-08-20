@@ -13,13 +13,14 @@ package org.eclipse.recommenders.examples.models;
 import java.io.File;
 
 import org.eclipse.recommenders.examples.models.UsingModelProvider.RecommendationModel;
-import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.IModelProvider;
+import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 
+@SuppressWarnings("unused")
 public class CompletionEngineExample {
 
     void resolveGavFromPackgeFragmentRoot(IPackageFragementRoot jdtElement, EclipseProjectCoordinateProvider r) {

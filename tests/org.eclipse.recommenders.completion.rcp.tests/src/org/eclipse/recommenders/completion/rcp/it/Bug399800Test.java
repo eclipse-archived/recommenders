@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=399800">Bug 399800</a>
  */
 @RunWith(Parameterized.class)
+@SuppressWarnings({ "restriction" })
 public class Bug399800Test {
 
     private final String fieldDeclaration;

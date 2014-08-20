@@ -79,6 +79,8 @@ public final class Messages extends NLS {
 
     public static String JOB_DELETING_MODEL_CACHE;
     public static String JOB_DOWNLOADING_MODELS;
+    public static String JOB_DOWNLOAD_TRANSFERRED_SIZE;
+    public static String JOB_DOWNLOAD_TRANSFERRED_TOTAL_SIZE;
     public static String JOB_REFRESHING_CACHED_COORDINATES;
     public static String JOB_REFRESHING_DEPENDENCY_OVERVIEW_VIEW;
     public static String JOB_REFRESHING_MODEL_REPOSITORIES_VIEW;

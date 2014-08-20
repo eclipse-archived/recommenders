@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -58,15 +59,17 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableParameterGuessingProposal extends JavaMethodCompletionProposal implements IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
+    private final boolean hasCanAutomaticallyAppendSemicolon;
 
     protected ProcessableParameterGuessingProposal(final CompletionProposal proposal,
             final JavaContentAssistInvocationContext context, final boolean fillBestGuess) {
@@ -74,6 +77,19 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
         coreProposal = proposal;
         fCoreContext = context.getCoreContext();
         fFillBestGuess = fillBestGuess;
+        // Method canAutomaticallyAppendSemicolon available in JDT 3.9+ only, missing in Eclipse Juno
+        hasCanAutomaticallyAppendSemicolon = hasMethod("canAutomaticallyAppendSemicolon");
+    }
+
+    private boolean hasMethod(String name) {
+        try {
+            getClass().getMethod(name);
+        } catch (NoSuchMethodException e) {
+            return false;
+        } catch (SecurityException e) {
+            return false; // Err on the side of caution
+        }
+        return true;
     }
 
     // JDT parts below
@@ -289,8 +305,10 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
         buffer.append(RPAREN);
 
-        if (canAutomaticallyAppendSemicolon()) {
-            buffer.append(SEMICOLON);
+        if (hasCanAutomaticallyAppendSemicolon) {
+            if (canAutomaticallyAppendSemicolon()) {
+                buffer.append(SEMICOLON);
+            }
         }
 
         return buffer.toString();
@@ -430,10 +448,9 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     @Override
     public boolean isPrefix(final String prefix, final String completion) {
         lastPrefix = prefix;
-        if (mgr.prefixChanged(prefix)) {
-            return true;
-        }
-        return super.isPrefix(prefix, completion);
+        boolean res = mgr.prefixChanged(prefix) || super.isPrefix(prefix, completion);
+        setTag(IS_VISIBLE, res);
+        return res;
     }
 
     @Override
@@ -472,9 +489,23 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     }
 
     @Override
+    public <T> Optional<T> getTag(String key) {
+        return Proposals.getTag(this, key);
+    }
+
+    @Override
     public <T> T getTag(IProposalTag key, T defaultValue) {
         T res = (T) tags.get(key);
         return res != null ? res : defaultValue;
     }
 
+    @Override
+    public <T> T getTag(String key, T defaultValue) {
+        return this.<T>getTag(key).or(defaultValue);
+    }
+
+    @Override
+    public ImmutableSet<IProposalTag> tags() {
+        return ImmutableSet.copyOf(tags.keySet());
+    }
 }

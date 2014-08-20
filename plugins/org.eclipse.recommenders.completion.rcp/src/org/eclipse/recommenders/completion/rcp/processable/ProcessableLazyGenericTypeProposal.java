@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.HashMap;
@@ -61,13 +62,14 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionProposal implements IProcessableProposal {
 
-    private static final char LESS = '<'; //$NON-NLS-1$
-    private static final char GREATER = '>'; //$NON-NLS-1$
+    private static final char LESS = '<';
+    private static final char GREATER = '>';
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
@@ -171,7 +173,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
         /*
          * @see java.lang.Object#hashCode()
-         * 
+         *
          * @since 3.1
          */
         @Override
@@ -297,7 +299,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * This assumes that modifications happen only at the beginning of the replacement string and do not touch the type
      * arguments list.
      * </p>
-     * 
+     *
      * @param offsets
      *            the offsets to modify
      * @param buffer
@@ -323,7 +325,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * The argument proposals have their <code>isAmbiguos</code> flag set to <code>false</code> if the argument can be
      * mapped to a non-wildcard type argument in the expected type, otherwise the proposal is ambiguous.
      * </p>
-     * 
+     *
      * @return the type argument proposals for the proposed type
      * @throws JavaModelException
      *             if accessing the java model fails
@@ -394,7 +396,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * <li>the type parameter name for all other (unbounded or more than one bound) type parameters</li>
      * </ul>
      * Type argument proposals for type parameters are always ambiguous.
-     * 
+     *
      * @param parameter
      *            the type parameter of the inserted type
      * @return a type argument proposal for <code>parameter</code>
@@ -439,7 +441,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * </ul>
      * </li>
      * </ul>
-     * 
+     *
      * @param binding
      *            the type argument binding in the expected type
      * @param parameter
@@ -480,7 +482,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * index. If <code>subType</code> equals <code>superType</code> , an array of length 1 is returned containing that
      * type.
      * </p>
-     * 
+     *
      * @param subType
      *            the sub type
      * @param superType
@@ -524,7 +526,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * For the type parameter at <code>paramIndex</code> in the type at <code>path[pathIndex]</code> , this method
      * computes the corresponding type parameter index in the type at <code>path[0]</code>. If the type parameter does
      * not map to a type parameter of the super type, <code>-1</code> is returned.
-     * 
+     *
      * @param path
      *            the type inheritance path, a non-empty array of consecutive sub types
      * @param pathIndex
@@ -564,7 +566,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     /**
      * Finds and returns the super type signature in the <code>extends</code> or <code>implements</code> clause of
      * <code>subType</code> that corresponds to <code>superType</code>.
-     * 
+     *
      * @param subType
      *            a direct and true sub type of <code>superType</code>
      * @param superType
@@ -599,7 +601,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      * If <code>signature</code> does not contain a corresponding type argument, or if <code>signature</code> has no
      * type parameters (i.e. is a reference to a non-parameterized type or a raw type), -1 is returned.
      * </p>
-     * 
+     *
      * @param signature
      *            the super type signature from a type's <code>extends</code> or <code>implements</code> clause
      * @param argument
@@ -619,7 +621,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     /**
      * Returns the super interface signatures of <code>subType</code> if <code>superType</code> is an interface,
      * otherwise returns the super type signature.
-     * 
+     *
      * @param subType
      *            the sub type signature
      * @param superType
@@ -638,7 +640,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     /**
      * Returns the type binding of the expected type as it is contained in the code completion context.
-     * 
+     *
      * @return the binding of the expected type
      */
     private ITypeBinding getExpectedType() {
@@ -676,7 +678,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     /**
      * Returns <code>true</code> if type arguments should be appended when applying this proposal, <code>false</code> if
      * not (for example if the document already contains a type argument list after the insertion point.
-     * 
+     *
      * @param document
      *            the document
      * @param offset
@@ -818,7 +820,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     /**
      * Returns the currently active java editor, or <code>null</code> if it cannot be determined.
-     * 
+     *
      * @return the currently active java editor, or <code>null</code>
      */
     private JavaEditor getJavaEditor() {
@@ -887,7 +889,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     /**
      * Sets whether this proposal can use the diamond.
-     * 
+     *
      * @param canUseDiamond
      *            <code>true</code> if a diamond can be inserted
      * @see CompletionProposal#canUseDiamond(org.eclipse.jdt.core.CompletionContext)
@@ -899,7 +901,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     /**
      * Tells whether this proposal can use the diamond.
-     * 
+     *
      * @return <code>true</code> if a diamond can be used
      * @see CompletionProposal#canUseDiamond(org.eclipse.jdt.core.CompletionContext)
      * @since 3.7
@@ -912,10 +914,9 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     @Override
     public boolean isPrefix(final String prefix, final String completion) {
         lastPrefix = prefix;
-        if (mgr.prefixChanged(prefix)) {
-            return true;
-        }
-        return super.isPrefix(prefix, completion);
+        boolean res = mgr.prefixChanged(prefix) || super.isPrefix(prefix, completion);
+        setTag(IS_VISIBLE, res);
+        return res;
     }
 
     @Override
@@ -954,9 +955,23 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     }
 
     @Override
+    public <T> Optional<T> getTag(String key) {
+        return Proposals.getTag(this, key);
+    }
+
+    @Override
     public <T> T getTag(IProposalTag key, T defaultValue) {
         T res = (T) tags.get(key);
         return res != null ? res : defaultValue;
     }
 
+    @Override
+    public <T> T getTag(String key, T defaultValue) {
+        return this.<T>getTag(key).or(defaultValue);
+    }
+
+    @Override
+    public ImmutableSet<IProposalTag> tags() {
+        return ImmutableSet.copyOf(tags.keySet());
+    }
 }

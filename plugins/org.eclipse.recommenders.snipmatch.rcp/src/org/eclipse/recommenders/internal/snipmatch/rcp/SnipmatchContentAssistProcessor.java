@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.rcp.RcpPlugin.logError;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(recommendation, template, ctx, region, image));
             } catch (Exception e) {
-                logError(e, Constants.BUNDLE_ID, Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
+                log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
             }
         }
         return Iterables.toArray(proposals, ICompletionProposal.class);

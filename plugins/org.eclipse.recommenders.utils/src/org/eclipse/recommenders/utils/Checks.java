@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 /**
  * This class contains various frequently used checks we used in our code base. Some methods return their arguments
  * where appropriate, others return {@link Void} if a return value has no or at least ambiguous meaning.
- * 
+ *
  */
 public final class Checks {
     public static void ensureEquals(final Object value, final Object expected, final String message) {
@@ -242,6 +242,7 @@ public final class Checks {
         // no-one should instantiate this class
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, S extends T> S castOrNull(T object) {
         try {
             return (S) object;

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.google.common.collect.Sets;
 
+@SuppressWarnings("restriction")
 public class ContentAssistEnablementBlock {
 
     public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$

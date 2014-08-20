@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
+import static org.eclipse.recommenders.internal.subwords.rcp.LogMessages.EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Map;
 import java.util.Set;
@@ -41,8 +43,6 @@ import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.ui.IEditorPart;
@@ -149,7 +149,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         try {
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
         } catch (final Exception e) {
-            RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+            log(EXCEPTION_DURING_CODE_COMPLETION, e);
         }
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
         return proposals != null ? proposals : Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();

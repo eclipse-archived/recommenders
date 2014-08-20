@@ -19,9 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -40,13 +39,14 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEven
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -62,7 +62,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     private final IProxyService proxy;
     private final ModelsRcpPreferences prefs;
     private final EventBus bus;
-    private final Map<String, ModelRepository> delegates = Maps.newHashMap();
+    private final List<Pair<String, ModelRepository>> delegates = Lists.newLinkedList();
 
     private boolean isOpen = false;
 
@@ -77,14 +77,20 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
 
     @PostConstruct
     void open() throws Exception {
-        delegates.clear();
         String[] remoteUrls = prefs.remotes;
+        List<Pair<String, ModelRepository>> repositories = Lists.newLinkedList();
         for (String remoteUrl : remoteUrls) {
             File cache = new File(basedir, mangle(remoteUrl));
             cache.mkdirs();
-            delegates.put(remoteUrl, new ModelRepository(cache, remoteUrl));
+            repositories.add(Pair.newPair(remoteUrl, new ModelRepository(cache, remoteUrl)));
         }
+        openInternal(repositories);
+    }
 
+    @VisibleForTesting
+    void openInternal(List<Pair<String, ModelRepository>> repositories) {
+        delegates.clear();
+        delegates.addAll(repositories);
         isOpen = true;
         bus.post(new ModelRepositoryOpenedEvent());
     }
@@ -102,14 +108,16 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     }
 
     private List<ModelRepository> searchDelegates(ModelCoordinate mc) {
+        LinkedList<ModelRepository> result = Lists.newLinkedList();
+
         String repoUrl = mc.getHint(HINT_REPOSITORY_URL).orNull();
-        if (repoUrl != null) {
-            ModelRepository modelRepository = delegates.get(repoUrl);
-            if (modelRepository != null) {
-                return Lists.newArrayList(modelRepository);
+        for (Pair<String, ModelRepository> delegate : delegates) {
+            if (repoUrl == null || repoUrl.equals(delegate.getFirst())) {
+                result.add(delegate.getSecond());
             }
         }
-        return Lists.newArrayList(delegates.values());
+
+        return result;
     }
 
     @Override
@@ -160,20 +168,19 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         return absent();
     }
 
-    void updateProxySettings() {
-        Collection<ModelRepository> modelRepositories = delegates.values();
-        for (ModelRepository modelRepository : modelRepositories) {
-            updateProxySettings(modelRepository);
+    private void updateProxySettings() {
+        for (Pair<String, ModelRepository> delegate : delegates) {
+            updateProxySettings(delegate.getFirst(), delegate.getSecond());
         }
     }
 
-    private void updateProxySettings(ModelRepository modelRepository) {
+    private void updateProxySettings(String repositoryUri, ModelRepository modelRepository) {
         if (!proxy.isProxiesEnabled()) {
             modelRepository.unsetProxy();
             return;
         }
         try {
-            URI uri = new URI(prefs.remotes[0]);
+            URI uri = new URI(repositoryUri);
             IProxyData[] entries = proxy.select(uri);
             if (entries.length == 0) {
                 modelRepository.unsetProxy();

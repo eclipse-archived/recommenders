@@ -13,12 +13,17 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeFromSignature;
 import static org.eclipse.swt.SWT.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -390,4 +395,17 @@ public final class ApidocsViewUtils {
         return container;
     }
 
+    public static Optional<IType> findType(ILocalVariable var) {
+        String signature = var.getTypeSignature();
+        return findTypeFromSignature(signature, var);
+    }
+
+    public static Optional<IType> findType(IField var) {
+        try {
+            String signature = var.getTypeSignature();
+            return findTypeFromSignature(signature, var);
+        } catch (JavaModelException e) {
+            return Optional.absent();
+        }
+    }
 }

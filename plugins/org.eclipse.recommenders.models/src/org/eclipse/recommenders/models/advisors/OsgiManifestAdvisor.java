@@ -67,7 +67,8 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
 
     private Optional<Manifest> extractManifestFromProject(DependencyInfo dependencyInfo) {
         File projectFolder = dependencyInfo.getFile();
-        File manifestFile = new File(projectFolder, "META-INF" + File.separator + "MANIFEST.MF");
+        File metaInfFolder = new File(projectFolder, "META-INF");
+        File manifestFile = new File(metaInfFolder, "MANIFEST.MF");
         if (manifestFile.exists()) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(manifestFile);
@@ -106,11 +107,11 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
         }
         int indexOf = bundleName.indexOf(';');
         String artifactId = bundleName.substring(0, indexOf == -1 ? bundleName.length() : indexOf);
-        String groupId = guessGroupId(artifactId);
+        Optional<String> groupId = guessGroupId(artifactId);
         Optional<String> version = OsgiVersionParser.parse(bundleVersion);
 
-        if (version.isPresent()) {
-            return tryNewProjectCoordinate(groupId, artifactId, canonicalizeVersion(version.get()));
+        if (groupId.isPresent() && version.isPresent()) {
+            return tryNewProjectCoordinate(groupId.get(), artifactId, canonicalizeVersion(version.get()));
         }
         return absent();
     }
@@ -120,18 +121,22 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
         return JAR == type || PROJECT == type;
     }
 
-    private static String guessGroupId(String reverseDomainName) {
+    private static Optional<String> guessGroupId(String reverseDomainName) {
         String[] segments = split(reverseDomainName, ".");
         removeSlashes(segments);
         String[] reverse = copyAndReverse(segments);
-        InternetDomainName name = InternetDomainName.from(join(reverse, "."));
-        if (!name.isUnderPublicSuffix()) {
-            return segments[0];
-        } else {
-            InternetDomainName topPrivateDomain = name.topPrivateDomain();
-            int size = topPrivateDomain.parts().size();
-            int end = Math.min(segments.length, size + 1);
-            return join(subarray(segments, 0, end), ".");
+        try {
+            InternetDomainName name = InternetDomainName.from(join(reverse, "."));
+            if (!name.isUnderPublicSuffix()) {
+                return Optional.of(segments[0]);
+            } else {
+                InternetDomainName topPrivateDomain = name.topPrivateDomain();
+                int size = topPrivateDomain.parts().size();
+                int end = Math.min(segments.length, size + 1);
+                return Optional.of(join(subarray(segments, 0, end), "."));
+            }
+        } catch (IllegalArgumentException e) {
+            return Optional.absent();
         }
     }
 

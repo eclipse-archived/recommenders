@@ -13,7 +13,9 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
+import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.resolveSelectionLocationFromJavaElement;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +44,6 @@ import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
@@ -59,6 +60,7 @@ import org.osgi.framework.Bundle;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public final class JavadocProvider extends ApidocProvider {
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
@@ -151,7 +153,7 @@ public final class JavadocProvider extends ApidocProvider {
                                         BrowserUtils.openInDefaultBrowser(url);
                                     }
                                 } catch (final Exception e) {
-                                    RcpPlugin.logError(e, "Error during javadoc selection %s", url); //$NON-NLS-1$
+                                    log(ERROR_DURING_JAVADOC_SELECTION, e, url);
                                 }
                                 return true;
                             }

@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.utils.Logs.log;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -63,7 +66,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             Collection<Bundle> unresolvedBundles) {
         super(parentShell, Messages.DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE, null,
                 Messages.DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE, MessageDialog.ERROR, new String[] {
-                IDialogConstants.CANCEL_LABEL, Messages.DIALOG_BUTTON_RESTART }, 1,
+                        IDialogConstants.CANCEL_LABEL, Messages.DIALOG_BUTTON_RESTART }, 1,
                 Messages.DIALOG_TOGGLE_IGNORE_BUNDLE_RESOLUTION_FAILURES, false);
         this.recommendersVersion = recommendersVersion;
         this.unresolvedBundles = unresolvedBundles;
@@ -87,11 +90,11 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
         Collection<String> unresolvedBundleNames = Collections2.transform(unresolvedBundles,
                 new Function<Bundle, String>() {
 
-            @Override
-            public String apply(Bundle input) {
-                return input.getSymbolicName();
-            }
-        });
+                    @Override
+                    public String apply(Bundle input) {
+                        return input.getSymbolicName();
+                    }
+                });
         String version = recommendersVersion.getMajor() + "." + recommendersVersion.getMinor() + "."
                 + recommendersVersion.getMicro();
         String bugLinkUrl = MessageFormat.format(BUGZILLA_URL, version, StringUtils.join(unresolvedBundleNames, '\n'));
@@ -120,7 +123,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             try {
                 ((ScopedPreferenceStore) getPrefStore()).save();
             } catch (IOException e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_PREFERENCES_NOT_SAVED);
+                log(PREFERENCES_NOT_SAVED, e);
             }
         }
         if (buttonId == IDialogConstants.INTERNAL_ID) {
@@ -149,7 +152,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
     private String buildCommandLine() {
         String property = System.getProperty(PROP_VM);
         if (property == null) {
-            RcpPlugin.logWarning(Messages.DIALOG_RESTART_NOT_POSSIBLE);
+            log(RESTART_ECLIPSE_NOT_POSSIBLE);
             return null;
         }
 

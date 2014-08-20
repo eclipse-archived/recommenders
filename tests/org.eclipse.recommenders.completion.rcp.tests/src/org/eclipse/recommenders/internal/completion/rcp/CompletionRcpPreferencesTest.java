@@ -23,6 +23,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+@SuppressWarnings("restriction")
 public class CompletionRcpPreferencesTest {
 
     private static final SessionProcessorDescriptor FIRST_DESCRIPTOR = new SessionProcessorDescriptor("first", "name",
@@ -54,10 +55,17 @@ public class CompletionRcpPreferencesTest {
 
     @Test
     public void testEnabledProcessors() {
-
         Set<SessionProcessorDescriptor> enabledSessionProcessors = sut.getEnabledSessionProcessors();
         assertThat(enabledSessionProcessors, hasItems(FIRST_DESCRIPTOR));
         assertThat(enabledSessionProcessors.size(), is(1));
+    }
+
+    @Test
+    public void testEnabledProcessorsNotInPreferencesString() {
+        sut.setEnabledSessionProcessorString("second");
+        Set<SessionProcessorDescriptor> enabledSessionProcessors = sut.getEnabledSessionProcessors();
+        assertThat(enabledSessionProcessors, hasItems(FIRST_DESCRIPTOR, SECOND_DESCRIPTOR));
+        assertThat(enabledSessionProcessors.size(), is(2));
     }
 
     @Test

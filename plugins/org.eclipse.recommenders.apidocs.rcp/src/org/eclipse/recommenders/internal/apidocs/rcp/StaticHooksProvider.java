@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2012 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2014 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,16 +11,12 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
-import static org.eclipse.jdt.ui.JavaElementLabels.M_APP_RETURNTYPE;
-import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
-import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
-import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.createComposite;
-import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.createLabel;
-import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.setInfoBackgroundColor;
-import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.setInfoForegroundColor;
+import static com.google.common.base.Optional.*;
+import static org.eclipse.jdt.ui.JavaElementLabels.*;
+import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
+import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.FAILED_TO_DETERMINE_STATIC_MEMEBERS;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +24,9 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -40,7 +38,6 @@ import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.IOUtils;
@@ -63,6 +60,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public class StaticHooksProvider extends ApidocProvider {
 
     private final class HooksRendererRunnable implements Runnable {
@@ -251,7 +249,7 @@ public class StaticHooksProvider extends ApidocProvider {
                 }
             }
         } catch (final Exception x) {
-            RcpPlugin.logError(x, "Failed to determine static members for %s", root.getElementName()); //$NON-NLS-1$
+            log(FAILED_TO_DETERMINE_STATIC_MEMEBERS, x, root.getElementName());
         }
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
     }
@@ -265,10 +263,37 @@ public class StaticHooksProvider extends ApidocProvider {
         try {
             findStaticHooks(pkg, index);
         } catch (final Exception e) {
-            RcpPlugin.logError(e, "Failed to determine static members for package %s", pkg.getElementName()); //$NON-NLS-1$
+            log(FAILED_TO_DETERMINE_STATIC_MEMEBERS, e, pkg.getElementName());
         }
 
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
+    }
+
+    @JavaSelectionSubscriber
+    public void onVariableSelection(ILocalVariable var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onPackageSelection(type.getPackageFragment(), event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
+    public void onVariableSelection(IField var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException, JavaModelException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onPackageSelection(type.getPackageFragment(), event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
+    public void onJavaElementSelection(final IJavaElement e, final JavaElementSelectionEvent event,
+            final Composite parent) throws ExecutionException {
+        IPackageFragment pkg = (IPackageFragment) e.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+        if (pkg != null) {
+            onPackageSelection(pkg, event, parent);
+        }
     }
 
     private void findStaticHooks(final IPackageFragment pkg, final TreeMultimap<IType, IMethod> index)

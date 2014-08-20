@@ -30,23 +30,10 @@ public final class Constants {
     /** {@value} */
     public static final String F_CLASSIFIER = "classifier";
     /** {@value} */
-    public static final String F_ARTIFACT_ID = "artifactId";
-    /** {@value} */
     public static final String F_SYMBOLIC_NAMES = "symbolic-names";
 
     /** {@value} */
-    public static final String GID_CR = "org.eclipse.recommenders";
-    /** {@value} */
-    public static final String AID_OVRS = "overrides";
-    /** {@value} */
-    public static final String AID_INDEX = "index";
-
-    /** {@value} */
     public static final String R_COORD_INDEX = "org.eclipse.recommenders:index:zip:0.0.0";
-    /** {@value} */
-    public static final String R_COORD_CALL = "org.eclipse.recommenders:call:zip:0.0.0";
-    /** {@value} */
-    public static final String VERSION = "0.0.1";
 
     /** {@value} */
     public static final String EXT_POM = "pom";
@@ -56,28 +43,26 @@ public final class Constants {
     public static final String EXT_JAR = "jar";
     /** {@value} */
     public static final String EXT_JSON = "json";
+    /** {@value} */
+    public static final String EXT_JBIF = "jbif";
+    /** {@value} */
+    public static final String EXT_DATA = "data";
 
+    /** {@value} */
+    public static final String DOT_POM = ".pom";
+    /** {@value} */
+    public static final String DOT_ZIP = ".zip";
+    /** {@value} */
+    public static final String DOT_JAR = ".jar";
+    /** {@value} */
+    public static final String DOT_JSON = ".json";
     /** {@value} */
     public static final String DOT_JBIF = ".jbif";
     /** {@value} */
     public static final String DOT_DATA = ".data";
-    /** {@value} */
-    public static final String DOT_JSON = ".json";
 
     /** {@value} */
     public static final String CLASS_CALL_MODELS = "call";
-    /** {@value} */
-    public static final String CLASS_DECLARES = "declares";
-    /** {@value} */
-    public static final String CLASS_OVERRIDES_DIRECTIVES = "ovrd";
-    /** {@value} */
-    public static final String CLASS_OVERRIDES_PATTERNS = "ovrp";
-    /** {@value} */
-    public static final String CLASS_OVR_DATA = "ovr";
-    /** {@value} */
-    public static final String CLASS_OUS_DATA = "ous";
-    /** {@value} */
-    public static final String CLASS_OUS_ALL_DATA = "allous";
     /** {@value} */
     public static final String CLASS_OVRM_MODEL = "ovrm";
     /** {@value} */
@@ -88,21 +73,14 @@ public final class Constants {
     public static final String CLASS_SELFC_MODEL = "selfc";
     /** {@value} */
     public static final String CLASS_SELFM_MODEL = "selfm";
-    /** MethodUsageExamples: {@value} */
-    public static final String CLASS_MUE = "mue";
-    /** MethodUsageExamples: {@value} */
-    public static final String CLASS_CHAIN_MODEL = "chain";
-    /** {@value} */
-    public static final String CLASS_OUP_DATA = "oups";
 
     /*
      * Type and method name constants. Used in many different locations: analysis, networks, etc.
      */
-    public static final ITypeName UNKNOWN_TYPE = VmTypeName.get("LUnkown");
     public static final ITypeName NULL_TYPE = VmTypeName.NULL;
 
     public static final IMethodName UNKNOWN_METHOD = VmMethodName.get("LECR.unknown()V");
-    public static final IMethodName NULL_METHOD = VmMethodName.get("LNull.null()V");
+    public static final IMethodName NONE_METHOD = VmMethodName.get("LNone.none()V");
     public static final IMethodName NO_METHOD = VmMethodName.get("LNo.nothing()V");
     public static final IMethodName ANY_METHOD = VmMethodName.get("LAny.any()V");
     public static final IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V");
@@ -124,15 +102,4 @@ public final class Constants {
     public static final String N_STATE_TRUE = "true";
     /** {@value} */
     public static final String N_STATE_FALSE = "false";
-    /** {@value} */
-    public static final String N_STATE_ANY_CTX = Constants.ANY_METHOD.getIdentifier();
-    /** {@value} */
-    public static final String N_STATE_DUMMY_CTX = Constants.DUMMY_METHOD.getIdentifier();
-    /** {@value} */
-    public static final String N_STATE_ANY_DEF = Constants.ANY_METHOD.getIdentifier();
-    /** {@value} */
-    public static final String N_STATE_DUMMY_DEF = Constants.DUMMY_METHOD.getIdentifier();
-    /** {@value} */
-    public static final String N_STATE_DUMMY_GRP = "pattern dummy";
-
 }

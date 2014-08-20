@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.snipmatch;singleton:=true
-Bundle-Version: 2.1.2.qualifier
+Bundle-Version: 2.1.7.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -22,7 +22,7 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)",
  org.slf4j;version="[1.7.0,2.0.0)"
-Export-Package: 
+Export-Package: org.eclipse.recommenders.snipmatch; uses:="org.apache.lucene.analysis,  org.apache.lucene.index,  org.apache.lucene.queryParser,  org.apache.lucene.search,  org.apache.lucene.util",
  org.eclipse.recommenders.snipmatch,
  org.eclipse.recommenders.snipmatch.model,
  org.eclipse.recommenders.snipmatch.model.impl,

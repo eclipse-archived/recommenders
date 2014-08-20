@@ -24,6 +24,7 @@ import org.eclipse.recommenders.models.ModelCoordinate;
 
 import com.google.common.base.Optional;
 
+@SuppressWarnings("unused")
 public class UsingModelRepository {
 
     private static final boolean PREFETCH = true;
@@ -32,7 +33,7 @@ public class UsingModelRepository {
     /**
      * Gets a cached model archive if available. It also requests that the model archive be prefetch in the background
      * if possible.
-     * 
+     *
      * This operation can be assumed to finish quickly.
      */
     public void getCachedModelArchive(final ModelCoordinate mc, final IModelRepository repository) {
@@ -43,7 +44,7 @@ public class UsingModelRepository {
      * Updates a model archive if necessary, i.e., if the one currently cached is out-dated. When exactly a cached model
      * archive is considered to be out-dated and will be downloaded anew is up to the <code>IModelRepository</code>
      * implementation.
-     * 
+     *
      * This operation can potentially, if network I/O is necessary, take some time.
      */
     public void updateModelArchiveIfNecessary(final ModelCoordinate mc, final IModelRepository repository) {
@@ -62,7 +63,7 @@ public class UsingModelRepository {
      * Updates a model archive if necessary, i.e., if the one currently cached is out-dated, in a background thread. The
      * <code>IModelRepository</code> is thread-safe but not necessarily lock-free. Also, having more than a small number
      * of resolutions in progress is often undesirable.
-     * 
+     *
      * Reporting the progress of the initiated downloads (if any) can be done using a <code>DownloadCallback</code>.
      * Care needs to be taken during progress reporting as multiple downloads may run concurrently.
      */

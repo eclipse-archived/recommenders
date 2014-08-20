@@ -169,7 +169,7 @@ public class JavaElementSelections {
             // actually, these can happen when using snipmatch's in-editor completion.
             // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
             if (!isInvalidSelection(root, offset)) {
-                LOG.error("Failed to resolve selection in '{}' at offset {}", root.getHandleIdentifier(), offset, e); //$NON-NLS-1$
+                LOG.error("Failed to resolve selection in '{}' at offset {}", new Object[] { root.getHandleIdentifier(), offset, e }); //$NON-NLS-1$
             }
             return absent();
         }

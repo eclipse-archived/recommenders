@@ -13,6 +13,7 @@ package org.eclipse.recommenders.completion.rcp;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
@@ -45,6 +46,7 @@ public class CompletionContextKey<T> {
     public static final CompletionContextKey<CompilationUnitDeclaration> CCTX_COMPILATION_UNIT_DECLARATION = make();
 
     public static final CompletionContextKey<IAstProvider> AST_PROVIDER = make();
+    public static final CompletionContextKey<UUID> SESSION_ID = make();
     public static final CompletionContextKey<String> COMPLETION_PREFIX = make();
     public static final CompletionContextKey<IJavaElement> ENCLOSING_ELEMENT = make();
     public static final CompletionContextKey<IMethod> ENCLOSING_METHOD = make();

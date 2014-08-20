@@ -36,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.base.Optional;
 
+@SuppressWarnings({ "restriction", "unchecked" })
 @RunWith(MockitoJUnitRunner.class)
 public class CallCompletionSessionProcessorTest {
 

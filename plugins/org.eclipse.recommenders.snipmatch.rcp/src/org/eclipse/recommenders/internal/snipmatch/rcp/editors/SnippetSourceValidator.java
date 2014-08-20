@@ -28,6 +28,7 @@ public class SnippetSourceValidator {
         TemplateContextType contextType = SnipmatchTemplateContextType.getInstance();
         Template template = new Template("name", "description", SNIPMATCH_CONTEXT_ID, source, true); //$NON-NLS-1$
         JavaContext context = new JavaContext(contextType, new Document(), new Position(0), null);
+        context.setForceEvaluation(true);
         try {
             context.evaluate(template);
         } catch (Exception e) {

@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.recommenders.rcp.utils.Logs;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -22,26 +19,6 @@ public class RcpPlugin extends AbstractUIPlugin {
 
     public static RcpPlugin getDefault() {
         return plugin;
-    }
-
-    public static void log(final CoreException e) {
-        Logs.log(e, getDefault());
-    }
-
-    public static void logError(final Exception e, final String format, final Object... args) {
-        Logs.logError(e, getDefault(), format, args);
-    }
-
-    public static void logWarning(final Exception e, final String format, final Object... args) {
-        Logs.logError(e, getDefault(), format, args);
-    }
-
-    public static void logWarning(final String format, final Object... args) {
-        Logs.logWarning(null, getDefault(), format, args);
-    }
-
-    public static void log(final IStatus res) {
-        Logs.log(res, getDefault());
     }
 
     @Override

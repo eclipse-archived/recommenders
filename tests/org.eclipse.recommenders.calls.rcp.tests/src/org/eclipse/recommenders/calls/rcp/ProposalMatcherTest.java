@@ -33,6 +33,7 @@ import org.junit.runners.Parameterized.Parameters;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
 public class ProposalMatcherTest {
 
@@ -76,7 +77,7 @@ public class ProposalMatcherTest {
         scenarios.add(match(classbody("void method(Collection<? extends Number> c) { this.method$ }"),
                 METHOD_COLLECTION));
         scenarios
-        .add(match(classbody("void method(Collection<? super Number> c) { this.method$ }"), METHOD_COLLECTION));
+                .add(match(classbody("void method(Collection<? super Number> c) { this.method$ }"), METHOD_COLLECTION));
 
         scenarios.add(match(classbody(classname() + "<T>", "void method(T t) { this.method$ }"), METHOD_OBJECT));
         scenarios.add(match(classbody(classname() + "<O extends Object>", "void method(O o) { this.method$ }"),

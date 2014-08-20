@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.rcp.feature"
       label="%label"
-      version="2.1.2.qualifier"
+      version="2.1.7.qualifier"
       provider-name="%provider-name"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
@@ -22,9 +22,9 @@
 
    <requires>
       <!-- These third-party bundles/fragments are not depended upon directly, but should nevertheless be installed. -->
-      <import plugin="ch.qos.logback.classic" version="1.0.7" match="compatible"/>
-      <import plugin="ch.qos.logback.core" version="1.0.7" match="compatible"/>
-      <import plugin="ch.qos.logback.slf4j" version="1.0.7" match="compatible"/>
+      <import plugin="ch.qos.logback.classic" version="1.0.0" match="compatible"/>
+      <import plugin="ch.qos.logback.core" version="1.0.0" match="compatible"/>
+      <import plugin="ch.qos.logback.slf4j" version="1.0.0" match="compatible"/>
       <import plugin="com.google.inject.multibindings" version="3.0.0" match="compatible"/>
    </requires>
 

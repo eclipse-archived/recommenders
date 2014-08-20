@@ -29,8 +29,10 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.util.FS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +115,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     private boolean isUpdatePossible() throws IOException {
         if (RepositoryCache.FileKey.isGitRepository(gitFile, FS.DETECTED)) {
-            FileRepository localRepo = new FileRepository(gitFile);
+            Repository localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
             for (Ref ref : localRepo.getAllRefs().values()) {
                 if (ref.getObjectId() != null) {
                     return true;
@@ -123,6 +125,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         return false;
     }
 
+    @SuppressWarnings("unused")
     private void initializeSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException,
             IOException {
         InitCommand init = Git.init();

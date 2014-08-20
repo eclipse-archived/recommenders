@@ -19,9 +19,12 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.apidocs.ClassSelfCallsModelProvider;
 import org.eclipse.recommenders.apidocs.ClassSelfcallDirectives;
 import org.eclipse.recommenders.apidocs.MethodSelfCallsDirectivesModelProvider;
@@ -42,7 +45,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Multiset;
 import com.google.common.eventbus.EventBus;
 
@@ -75,12 +77,34 @@ public final class SelfCallsProvider extends ApidocProvider {
     }
 
     @JavaSelectionSubscriber
+    public void onVariableSelection(ILocalVariable var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onTypeSelection(type, event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
+    public void onVariableSelection(IField var, JavaElementSelectionEvent event, Composite parent)
+            throws ExecutionException, JavaModelException {
+        IType type = ApidocsViewUtils.findType(var).orNull();
+        if (type != null) {
+            onTypeSelection(type, event, parent);
+        }
+    }
+
+    @JavaSelectionSubscriber
     public void onTypeSelection(final IType type, final JavaElementSelectionEvent event, final Composite parent)
             throws ExecutionException {
         UniqueTypeName name = pcProvider.toUniqueName(type).orNull();
-        Optional<ClassSelfcallDirectives> model = cStore.acquireModel(name);
-        if (model.isPresent()) {
-            runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, model.get(), parent));
+        ClassSelfcallDirectives model = cStore.acquireModel(name).orNull();
+        try {
+            if (model != null) {
+                runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, model, parent));
+            }
+        } finally {
+            cStore.releaseModel(model);
         }
     }
 
@@ -89,9 +113,13 @@ public final class SelfCallsProvider extends ApidocProvider {
 
         for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
             UniqueMethodName name = pcProvider.toUniqueName(current).orNull();
-            final Optional<MethodSelfcallDirectives> selfcalls = mStore.acquireModel(name);
-            if (selfcalls.isPresent()) {
-                runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls.get(), parent));
+            MethodSelfcallDirectives selfcalls = mStore.acquireModel(name).orNull();
+            try {
+                if (selfcalls != null) {
+                    runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
+                }
+            } finally {
+                mStore.releaseModel(selfcalls);
             }
         }
     }

@@ -43,6 +43,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
+@SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class Stubs {
 
     private static final class CallModelSpy implements ICallModel {
@@ -51,7 +52,6 @@ public class Stubs {
         private IMethodName overriddenMethod;
         private IMethodName definedBy;
         private DefinitionKind defType;
-        private String patternName;
 
         @Override
         public ITypeName getReceiverType() {
@@ -88,7 +88,6 @@ public class Stubs {
 
         @Override
         public boolean setObservedPattern(String patternName) {
-            this.patternName = patternName;
             return true;
         }
 

@@ -73,7 +73,7 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
     }
 
     @Override
-    public void releaseModel(M model) {
+    public void releaseModel(@Nullable M model) {
         if (model == null) {
             return;
         }

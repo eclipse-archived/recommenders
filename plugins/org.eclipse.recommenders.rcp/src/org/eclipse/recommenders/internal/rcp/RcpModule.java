@@ -13,7 +13,9 @@ package org.eclipse.recommenders.internal.rcp;
 import static com.google.inject.Scopes.SINGLETON;
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.AstBindings;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionService;
@@ -190,7 +193,7 @@ public class RcpModule extends AbstractModule implements Module {
                 task.get(2, TimeUnit.SECONDS);
             }
         } catch (final Exception e) {
-            RcpPlugin.logError(e, Messages.LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY);
+            log(ACTIVE_PAGE_FINDER_TOO_EARLY, e);
         }
         return finder;
     }
@@ -295,7 +298,7 @@ public class RcpModule extends AbstractModule implements Module {
                         m.setAccessible(true);
                         m.invoke(i);
                     } catch (Exception e) {
-                        RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK, m);
+                        Logs.log(EXCEPTION_OCCURRED_IN_SERVICE_HOOK, e, m);
                     }
                 }
 

@@ -22,9 +22,11 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.recommenders.utils.Nullable;
+import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -105,7 +107,7 @@ public class AstBindings {
     /**
      * Converts a method binding to its IMethodName counterpart. Note that type variables filled in by JDT are ignored,
      * i.e., the declaring method is used to find the IMethodName.
-     * 
+     *
      * @param b
      *            the binding to resolve.
      * @see IMethodBinding#getMethodDeclaration()
@@ -149,15 +151,30 @@ public class AstBindings {
         try {
             ref = VmMethodName.get(sb.toString());
         } catch (final Exception e1) {
-            LOG.error("Failed to create IMethodName from binding {}." , e1); //$NON-NLS-1$
+            LOG.error("Failed to create IMethodName from binding {}.", e1); //$NON-NLS-1$
             return absent();
         }
-        return Optional.of(ref);
+        return of(ref);
     }
 
-    public static IVariableBinding getVariableBinding(final Name name) {
+    public static Optional<IVariableBinding> getVariableBinding(final Name name) {
         final IBinding b = name.resolveBinding();
-        return (IVariableBinding) (b instanceof IVariableBinding ? b : null);
+        IVariableBinding res = (IVariableBinding) (b instanceof IVariableBinding ? b : null);
+        return fromNullable(res);
+    }
+
+    public static Optional<IFieldName> toFieldName(IVariableBinding b) {
+        if (b == null || !b.isField()) {
+            return absent();
+        }
+        String name = b.getName();
+        ITypeName declared = toTypeName(b.getDeclaringClass()).orNull();
+        ITypeName type = toTypeName(b.getType()).orNull();
+        if (declared == null || type == null) {
+            return absent();
+        }
+        IFieldName res = VmFieldName.get(declared.getIdentifier() + "." + name + ";" + type.getIdentifier());
+        return of(res);
     }
 
     public static Optional<IPackageName> toPackageName(IPackageBinding pkg) {

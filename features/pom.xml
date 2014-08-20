@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders</artifactId>
-		<version>2.1.2-SNAPSHOT</version>
+		<version>2.1.7-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>features</artifactId>
@@ -18,6 +18,7 @@
 		<module>org.eclipse.recommenders.rcp.feature</module>
 		<module>org.eclipse.recommenders.testing.rcp.feature</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp.feature</module>
+		<module>org.eclipse.recommenders.stacktraces.rcp.feature</module>
 		<!-- Features only needed for 1.x to 2.x migration -->
 		<module>org.eclipse.recommenders.feature.rcp</module>
 	</modules>
@@ -29,7 +30,8 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<configuration>
 						<archive>
-							<!-- Workaround to Bug 411443: Avoids extremely long filenames in META-INF/maven. -->
+							<!-- Workaround to Bug 411443: Avoids extremely long filenames in 
+								META-INF/maven. -->
 							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=411443 -->
 							<addMavenDescriptor>false</addMavenDescriptor>
 						</archive>
@@ -78,7 +80,7 @@
 							<!-- Exclude 3rd party plugins without sources (or with remote sources). -->
 							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=374663 -->
 							<excludes>
-								<plugin id="org.eclipse.aether.maven"/>
+								<plugin id="org.eclipse.aether.maven" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
 							<labelSuffix>&#xA0;(Sources)</labelSuffix>
@@ -91,7 +93,8 @@
 				<artifactId>tycho-p2-plugin</artifactId>
 				<executions>
 					<execution>
-						<!-- Don't attach (default) metadata before the "generate-source-feature" execution. -->
+						<!-- Don't attach (default) metadata before the "generate-source-feature" 
+							execution. -->
 						<id>default-p2-metadata-default</id>
 						<configuration>
 							<attachP2Metadata>false</attachP2Metadata>

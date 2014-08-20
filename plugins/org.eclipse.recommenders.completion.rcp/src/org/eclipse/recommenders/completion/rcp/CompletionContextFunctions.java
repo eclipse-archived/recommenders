@@ -13,8 +13,10 @@ package org.eclipse.recommenders.completion.rcp;
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -62,8 +65,6 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
-import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
@@ -74,7 +75,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction", "rawtypes", "deprecation" })
 public class CompletionContextFunctions {
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
@@ -97,6 +98,7 @@ public class CompletionContextFunctions {
         res.put(VISIBLE_METHODS, new VisibleMethodsContextFunction());
         res.put(VISIBLE_FIELDS, new VisibleFieldsContextFunction());
         res.put(VISIBLE_LOCALS, new VisibleLocalsContextFunction());
+        res.put(SESSION_ID, new SessionIdFunction());
         return res;
     }
 
@@ -245,7 +247,7 @@ public class CompletionContextFunctions {
                     }
                 });
             } catch (JavaModelException x) {
-                RcpPlugin.log(x);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
             } finally {
                 discardWorkingCopy(wc);
             }
@@ -258,7 +260,7 @@ public class CompletionContextFunctions {
                     wc.discardWorkingCopy();
                 }
             } catch (JavaModelException x) {
-                RcpPlugin.log(x);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
             }
         }
 
@@ -328,7 +330,7 @@ public class CompletionContextFunctions {
                 final CompletionOnLocalName c = cast(n);
                 name = c.realName;
             } else if (n instanceof CompletionOnSingleNameReference) {
-                final CompletionOnSingleNameReference c = cast(n);
+                // final CompletionOnSingleNameReference c = cast(n);
                 // TODO is that correct?
                 // name = c.token;
                 name = new char[0];
@@ -337,9 +339,11 @@ public class CompletionContextFunctions {
                 if (c.receiver instanceof ThisReference) {
                     name = "this".toCharArray(); //$NON-NLS-1$
                 } else if (c.receiver instanceof MessageSend) {
-                    // some anonymous type/method return value that has no name...
+                    // some anonymous type/method return value that has no
+                    // name...
                     // e.g.:
-                    // PlatformUI.getWorkbench()|^Space --> receiver is anonymous
+                    // PlatformUI.getWorkbench()|^Space --> receiver is
+                    // anonymous
                     // --> name = null
                     name = null;
                 } else if (c.fieldBinding() != null) {
@@ -372,7 +376,7 @@ public class CompletionContextFunctions {
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
             } catch (final Exception e) {
-                RcpPlugin.logError(e, Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
             InternalCompletionContext internal = collector.getCoreContext();
             context.set(INTERNAL_COMPLETIONCONTEXT, internal);
@@ -388,7 +392,7 @@ public class CompletionContextFunctions {
     }
 
     public static class JavaContentAssistInvocationContextFunction implements
-            ICompletionContextFunction<JavaContentAssistInvocationContext> {
+    ICompletionContextFunction<JavaContentAssistInvocationContext> {
 
         @Override
         public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,
@@ -531,6 +535,16 @@ public class CompletionContextFunctions {
             }
             context.set(key, env);
             return env;
+        }
+    }
+
+    public static class SessionIdFunction implements ICompletionContextFunction<UUID> {
+
+        @Override
+        public UUID compute(IRecommendersCompletionContext context, CompletionContextKey<UUID> key) {
+            UUID res = UUID.randomUUID();
+            context.set(key, res);
+            return res;
         }
     }
 

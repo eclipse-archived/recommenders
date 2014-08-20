@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
@@ -218,6 +219,10 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
             if (n.receiver instanceof MessageSend) {
                 final MessageSend receiver = (MessageSend) n.receiver;
                 final MethodBinding binding = receiver.binding;
+                return CompilerBindings.toMethodName(binding);
+            } else if (n.receiver instanceof AllocationExpression) {
+                AllocationExpression receiver = (AllocationExpression) n.receiver;
+                MethodBinding binding = receiver.binding;
                 return CompilerBindings.toMethodName(binding);
             }
         }

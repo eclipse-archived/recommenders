@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
+@SuppressWarnings({ "unchecked" })
 public class Selections {
 
     public static <T> Optional<T> getFirstSelected(OpenEvent e) {

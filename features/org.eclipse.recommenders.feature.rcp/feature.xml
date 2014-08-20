@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.rcp"
       label="%label"
-      version="2.1.2.qualifier"
+      version="2.1.7.qualifier"
       provider-name="%provider-name"
       plugin="org.eclipse.recommenders.rcp"
       license-feature="org.eclipse.license"
@@ -21,7 +21,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.recommenders.rcp.feature" version="2.0.0.qualifier" match="greaterOrEqual"/>
+      <import feature="org.eclipse.recommenders.rcp.feature" version="2.0.0" match="greaterOrEqual"/>
    </requires>
 
 </feature>

@@ -65,6 +65,7 @@ public class SnippetEditorInput implements IEditorInput {
         return getOldSnippet().hashCode();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Object getAdapter(Class adapter) {
         return null;
