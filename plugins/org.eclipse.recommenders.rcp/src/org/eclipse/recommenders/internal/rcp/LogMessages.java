@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -26,6 +26,8 @@ public class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY);
     public static final LogMessages PREFERENCES_NOT_SAVED = new LogMessages(ERROR,
             Messages.LOG_ERROR_PREFERENCES_NOT_SAVED);
+    public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
+            Messages.LOG_WARNING_REFLECTION_FAILED);
     public static final LogMessages RESTART_ECLIPSE_NOT_POSSIBLE = new LogMessages(ERROR,
             Messages.DIALOG_RESTART_NOT_POSSIBLE);
     public static final LogMessages FAILED_TO_RESOLVE_SELECTION = new LogMessages(ERROR,

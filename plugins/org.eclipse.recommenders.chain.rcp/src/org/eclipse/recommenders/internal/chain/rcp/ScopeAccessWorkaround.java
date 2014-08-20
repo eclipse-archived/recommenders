@@ -17,6 +17,7 @@ import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.rcp.utils.ReflectionUtils;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
@@ -28,35 +29,30 @@ import com.google.common.base.Optional;
 @Beta
 public final class ScopeAccessWorkaround {
 
-    private static Field extendedContextField;
-    private static Field assistScopeField;
+    private static Field EXTENDED_CONTEXT = ReflectionUtils.getDeclaredField(InternalCompletionContext.class,
+            "extendedContext").orNull(); //$NON-NLS-1$
+    private static Field ASSIST_SCOPE = ReflectionUtils.getDeclaredField(InternalExtendedCompletionContext.class,
+            "assistScope").orNull(); //$NON-NLS-1$
 
     private ScopeAccessWorkaround() {
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
-    static {
-        try {
-            extendedContextField = InternalCompletionContext.class.getDeclaredField("extendedContext"); //$NON-NLS-1$
-            extendedContextField.setAccessible(true);
-            assistScopeField = InternalExtendedCompletionContext.class.getDeclaredField("assistScope"); //$NON-NLS-1$
-            assistScopeField.setAccessible(true);
-        } catch (final Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    static Optional<Scope> resolveScope(final IRecommendersCompletionContext ctx) {
+    public static Optional<Scope> resolveScope(final IRecommendersCompletionContext ctx) {
         InternalCompletionContext context = ctx.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
         if (context == null) {
             return Optional.absent();
         }
+        if (EXTENDED_CONTEXT == null || ASSIST_SCOPE == null) {
+            return Optional.absent();
+        }
         try {
-            final InternalExtendedCompletionContext extendedContext = (InternalExtendedCompletionContext) extendedContextField
+            final InternalExtendedCompletionContext extendedContext = (InternalExtendedCompletionContext) EXTENDED_CONTEXT
                     .get(context);
             if (extendedContext == null) {
                 return Optional.absent();
             }
-            return Optional.fromNullable((Scope) assistScopeField.get(extendedContext));
+            return Optional.fromNullable((Scope) ASSIST_SCOPE.get(extendedContext));
         } catch (final IllegalAccessException e) {
             throw new IllegalStateException(e);
         }

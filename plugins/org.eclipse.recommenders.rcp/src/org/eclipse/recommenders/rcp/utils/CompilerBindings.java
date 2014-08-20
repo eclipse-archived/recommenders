@@ -27,7 +27,11 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
-public class CompilerBindings {
+public final class CompilerBindings {
+
+    private CompilerBindings() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
 
     /**
      * TODO nested anonymous types are not resolved correctly. JDT uses line numbers for inner types instead of $1,..,$n

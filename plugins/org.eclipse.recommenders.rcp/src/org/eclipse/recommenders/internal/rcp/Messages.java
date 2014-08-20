@@ -36,6 +36,7 @@ public final class Messages extends NLS {
     public static String LOG_INFO;
     public static String LOG_OK;
     public static String LOG_CANCEL;
+    public static String LOG_WARNING_REFLECTION_FAILED;
 
     public static String DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE;
     public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE;

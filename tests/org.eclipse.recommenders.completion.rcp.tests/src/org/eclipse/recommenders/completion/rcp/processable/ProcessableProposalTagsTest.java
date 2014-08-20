@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.eclipse.recommenders.rcp.utils.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +50,7 @@ public class ProcessableProposalTagsTest {
     @Before
     public void before() throws Exception {
         sut = Mockito.mock(clazz);
-        Field f = clazz.getDeclaredField("tags");
-        f.setAccessible(true);
+        Field f = ReflectionUtils.getDeclaredField(clazz, "tags").orNull();
         f.set(sut, Maps.newHashMap());
         Mockito.doCallRealMethod().when(sut).setTag(Mockito.any(IProposalTag.class), Mockito.anyObject());
         Mockito.doCallRealMethod().when(sut).getTag(Mockito.any(IProposalTag.class), Mockito.anyObject());

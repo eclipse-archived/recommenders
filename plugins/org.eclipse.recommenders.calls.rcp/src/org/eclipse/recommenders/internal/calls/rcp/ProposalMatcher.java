@@ -10,41 +10,36 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
-import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.eclipse.recommenders.rcp.utils.MatchingUtils;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-import com.google.common.base.Optional;
-
-@SuppressWarnings({ "restriction" })
 public class ProposalMatcher {
 
-    private final Optional<IMethodName> proposedMethod;
+    private final String proposedName;
+    private final ITypeName[] proposedParameterTypes;
 
-    public ProposalMatcher(CompletionProposal proposal, Optional<TypeBinding> receiverTypeBinding) {
-        proposedMethod = Optional.fromNullable(MatchingUtils.asMethodName(proposal, receiverTypeBinding));
+    public ProposalMatcher(IMethodName proposedMethod) {
+        proposedName = proposedMethod.getName();
+        proposedParameterTypes = proposedMethod.getParameterTypes();
     }
 
-    public boolean match(IMethodName candidate) {
-        IMethodName method = proposedMethod.orNull();
-        if (method == null) {
+    public boolean match(@Nullable IMethodName candidate) {
+        if (candidate == null) {
             return false;
         }
 
         String candidateName = candidate.getName();
-        if (!candidateName.equals(method.getName())) {
+        if (!candidateName.equals(proposedName)) {
             return false;
         }
 
-        ITypeName[] params = method.getParameterTypes();
-        ITypeName[] candidateParams = candidate.getParameterTypes();
-        if (candidateParams.length != params.length) {
+        ITypeName[] candidateParameterTypes = candidate.getParameterTypes();
+        if (proposedParameterTypes == null || candidateParameterTypes.length != proposedParameterTypes.length) {
             return false;
         }
-        for (int i = candidateParams.length; i-- > 0;) {
-            if (!candidateParams[i].equals(params[i])) {
+        for (int i = candidateParameterTypes.length; i-- > 0;) {
+            if (!candidateParameterTypes[i].equals(proposedParameterTypes[i])) {
                 return false;
             }
         }

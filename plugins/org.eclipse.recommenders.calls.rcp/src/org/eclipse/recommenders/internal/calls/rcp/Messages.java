@@ -42,6 +42,9 @@ public final class Messages extends NLS {
     public static String TABLE_CELL_SUFFIX_PERCENTAGE;
     public static String TABLE_CELL_SUFFIX_PROMILLE;
 
+    public static String LOG_ERROR_MISSING_LOOKUP_ENVIRONMENT;
+    public static String LOG_ERROR_PROPOSAL_MATCHING_FAILED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

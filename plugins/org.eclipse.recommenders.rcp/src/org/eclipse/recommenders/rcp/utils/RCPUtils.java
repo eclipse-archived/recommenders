@@ -22,7 +22,12 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 
-public class RCPUtils {
+public final class RCPUtils {
+
+    private RCPUtils() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
+
     public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {
         final IWorkbench workbench = PlatformUI.getWorkbench();
         if (workbench == null) {

@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
+import static org.eclipse.recommenders.rcp.utils.ReflectionUtils.getDeclaredField;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -49,7 +50,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedAllocat
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
@@ -57,7 +57,6 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
@@ -392,7 +391,7 @@ public class CompletionContextFunctions {
     }
 
     public static class JavaContentAssistInvocationContextFunction implements
-    ICompletionContextFunction<JavaContentAssistInvocationContext> {
+            ICompletionContextFunction<JavaContentAssistInvocationContext> {
 
         @Override
         public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,
@@ -502,39 +501,31 @@ public class CompletionContextFunctions {
 
     public static class LookupEnvironmentContextFunction implements ICompletionContextFunction<LookupEnvironment> {
 
-        private static Field fExtendedContext;
-        private static Field fLookupEnvironment;
-
-        static {
-            try {
-                Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
-                fExtendedContext = clazzCtx.getDeclaredField("extendedContext"); //$NON-NLS-1$
-                fExtendedContext.setAccessible(true);
-
-                Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
-                fLookupEnvironment = clazzExt.getDeclaredField("lookupEnvironment"); //$NON-NLS-1$
-                fLookupEnvironment.setAccessible(true);
-            } catch (Exception e) {
-                LOG.error("Cannot access InternalExtendedCompletionContext.LookupEnvironment by reflection.", e); //$NON-NLS-1$
-            }
-        }
+        private static final Field EXTENDED_CONTEXT = getDeclaredField(InternalCompletionContext.class,
+                "extendedContext").orNull();
+        private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(InternalExtendedCompletionContext.class,
+                "lookupEnvironment").orNull();
 
         @Override
         public LookupEnvironment compute(IRecommendersCompletionContext context,
                 CompletionContextKey<LookupEnvironment> key) {
-            LookupEnvironment env = null;
+            if (EXTENDED_CONTEXT == null || LOOKUP_ENVIRONMENT == null) {
+                return null;
+            }
+
             try {
                 InternalCompletionContext ctx = context.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
-                InternalExtendedCompletionContext extCtx = cast(fExtendedContext.get(ctx));
+                InternalExtendedCompletionContext extCtx = cast(EXTENDED_CONTEXT.get(ctx));
                 if (extCtx == null) {
                     return null;
                 }
-                env = cast(fLookupEnvironment.get(extCtx));
+                LookupEnvironment env = cast(LOOKUP_ENVIRONMENT.get(extCtx));
+                context.set(key, env);
+                return env;
             } catch (Exception e) {
                 LOG.error("Cannot access LookupEnvironment by reflection.", e); //$NON-NLS-1$
+                return null;
             }
-            context.set(key, env);
-            return env;
         }
     }
 
@@ -545,56 +536,6 @@ public class CompletionContextFunctions {
             UUID res = UUID.randomUUID();
             context.set(key, res);
             return res;
-        }
-    }
-
-    public static class E37ContextInitializerCompletionContextFunction implements ICompletionContextFunction<Void> {
-
-        private static Field fAssistScope;
-        private static Field fAssistNode;
-        private static Field fAssistNodeParent;
-        private static Field fCompilationUnitDeclaration;
-        private static Field fExtendedContext;
-        static {
-            try {
-                Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
-                fExtendedContext = clazzCtx.getDeclaredField("extendedContext"); //$NON-NLS-1$
-                fExtendedContext.setAccessible(true);
-
-                Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
-                fAssistScope = clazzExt.getDeclaredField("assistScope"); //$NON-NLS-1$
-                fAssistScope.setAccessible(true);
-                fAssistNode = clazzExt.getDeclaredField("assistNode"); //$NON-NLS-1$
-                fAssistNode.setAccessible(true);
-                fAssistNodeParent = clazzExt.getDeclaredField("assistNodeParent"); //$NON-NLS-1$
-                fAssistNodeParent.setAccessible(true);
-                fCompilationUnitDeclaration = clazzExt.getDeclaredField("compilationUnitDeclaration"); //$NON-NLS-1$
-                fCompilationUnitDeclaration.setAccessible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public Void compute(IRecommendersCompletionContext context, CompletionContextKey<Void> key) {
-            try {
-                InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
-                InternalExtendedCompletionContext extContext = cast(fExtendedContext.get(ctx));
-                if (extContext == null) {
-                    return null;
-                }
-                ASTNode assistNode = cast(fAssistNode.get(extContext));
-                context.set(ASSIST_NODE, assistNode);
-                ASTNode assistNodeParent = cast(fAssistNodeParent.get(extContext));
-                context.set(ASSIST_NODE_PARENT, assistNodeParent);
-                Scope assistScope = cast(fAssistScope.get(extContext));
-                context.set(ASSIST_SCOPE, assistScope);
-                CompilationUnitDeclaration cuDeclaration = cast(fCompilationUnitDeclaration.get(extContext));
-                context.set(CCTX_COMPILATION_UNIT_DECLARATION, cuDeclaration);
-            } catch (Exception e) {
-                LOG.error("Reflection initalizer failed.", e); //$NON-NLS-1$
-            }
-            return null;
         }
     }
 }

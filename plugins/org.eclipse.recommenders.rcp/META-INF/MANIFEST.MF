@@ -28,7 +28,6 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.util.concurrent;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)"
-Export-Package: org.eclipse.recommenders.internal.rcp;x-friends:="org.
- eclipse.recommenders.rcp.tests",org.eclipse.recommenders.rcp;uses:="c
- om.google.common.base",org.eclipse.recommenders.rcp.utils; uses:="com
- .google.common.base"
+Export-Package: org.eclipse.recommenders.internal.rcp;x-friends:="org.eclipse.recommenders.rcp.tests",
+ org.eclipse.recommenders.rcp;uses:="com.google.common.base",
+ org.eclipse.recommenders.rcp.utils;uses:="com.google.common.base"
