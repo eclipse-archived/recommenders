@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.Severity;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
 import org.eclipse.recommenders.internal.stacktraces.rcp.dto.ThrowableDto;
+import org.eclipse.recommenders.utils.AnonymousId;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -32,7 +33,7 @@ public class Stacktraces {
 
     public static StackTraceEvent createDto(IStatus status, StacktracesRcpPreferences pref) {
         StackTraceEvent event = new StackTraceEvent();
-        event.anonymousId = UUIDService.getAnonmyousId();
+        event.anonymousId = AnonymousId.getId();
         event.name = pref.name;
         event.email = pref.email;
         event.severity = getSeverity(status);
