@@ -77,6 +77,7 @@ public class Messages extends NLS {
     public static String PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_URL;
     public static String PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_BRANCH;
     public static String PREFPAGE_DESCRIPTION;
+    public static String PREFPAGE_ERROR_INVALID_REPO_URL;
     public static String PREFPAGE_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;

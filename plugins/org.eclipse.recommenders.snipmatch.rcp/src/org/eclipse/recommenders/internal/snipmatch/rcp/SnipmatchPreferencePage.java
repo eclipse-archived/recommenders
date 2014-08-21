@@ -141,7 +141,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         pushBranchDescription.setText(MessageFormat.format(Messages.PREFPAGE_LABEL_SNIPPETS_PUSH_SETTINGS_DESCRIPTION,
                 Snippet.FORMAT_VERSION));
         GridDataFactory.fillDefaults().span(3, 1).hint(300, SWT.DEFAULT).grab(true, false)
-        .align(SWT.FILL, SWT.BEGINNING).applyTo(pushBranchDescription);
+                .align(SWT.FILL, SWT.BEGINNING).applyTo(pushBranchDescription);
 
         snippetsRepoPushBranchField = new StringFieldEditorWithPrefix(PREF_SNIPPETS_REPO_PUSH_BRANCH,
                 Messages.PREFPAGE_LABEL_SNIPPETS_REPO_PUSH_BRANCH, pushGroup);
@@ -246,7 +246,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         @Override
         public String isValid(String newText) {
             if (newText.isEmpty()) {
-                return Messages.PREFPAGE_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
+                return Messages.PREFPAGE_ERROR_INVALID_REPO_URL;
             }
             try {
                 new URI(newText);
