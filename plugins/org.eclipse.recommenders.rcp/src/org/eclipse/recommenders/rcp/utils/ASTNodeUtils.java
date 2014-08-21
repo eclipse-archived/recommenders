@@ -12,7 +12,9 @@ package org.eclipse.recommenders.rcp.utils;
 
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_RESOLVE_METHOD;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Throws.*;
 
 import java.util.List;
@@ -45,14 +47,10 @@ import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.Names;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
 public class ASTNodeUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ASTNodeUtils.class);
 
     /**
      * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"
@@ -227,7 +225,7 @@ public class ASTNodeUtils {
             final ASTNode node = NodeFinder.perform(cu, nameRange);
             return getClosestParent(node, MethodDeclaration.class);
         } catch (final JavaModelException e) {
-            LOG.error("Failed to resolve {}.", method, e); //$NON-NLS-1$
+            log(FAILED_TO_RESOLVE_METHOD, method, cu, e);
             return absent();
         }
     }

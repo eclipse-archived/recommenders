@@ -140,10 +140,15 @@ public class Logs {
     }
 
     public static void log(ILogMessage msg, Throwable t, Object... args) {
-        IStatus status = toStatus(msg, t, args);
-        Bundle bundle = msg.bundle();
-        ILog log = Platform.getLog(bundle);
-        log.log(status);
+        try {
+            IStatus status = toStatus(msg, t, args);
+            Bundle bundle = msg.bundle();
+            ILog log = Platform.getLog(bundle);
+            log.log(status);
+        } catch (Exception e) {
+            // swallow this one...
+            // we are likely in a test case that does not run inside an OSGI/Eclipse runtime.
+        }
     }
 
     public static Bundle getBundle(Class<?> bundleClazz) {

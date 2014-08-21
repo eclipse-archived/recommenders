@@ -13,6 +13,7 @@ package org.eclipse.recommenders.rcp.utils;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.*;
 import static org.eclipse.jdt.ui.SharedASTProvider.*;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_RESOLVE_TYPE_PARAMETER;
 import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.*;
 
@@ -58,22 +59,20 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.internal.rcp.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
 public class JdtUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JdtUtils.class);
 
     private static final Util.BindingsToNodesMap EMPTY_NODE_MAP = new Util.BindingsToNodesMap() {
 
@@ -226,7 +225,7 @@ public class JdtUtils {
                 }
             }
         } catch (final Exception e) {
-            LOG.error("Failed to resolve type parameter {}", t.getElementName(), e); //$NON-NLS-1$
+            Logs.log(FAILED_TO_RESOLVE_TYPE_PARAMETER, t.getElementName(), e);
         }
         return fromNullable(type);
     }
@@ -521,7 +520,7 @@ public class JdtUtils {
     }
 
     public static void log(final Exception e) {
-        LOG.error("Exception occurred.", e); //$NON-NLS-1$
+        Logs.log(LogMessages.AN_ERROR_OCCURRED, e);
     }
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {

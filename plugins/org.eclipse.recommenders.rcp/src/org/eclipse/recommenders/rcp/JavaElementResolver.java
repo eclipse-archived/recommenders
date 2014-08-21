@@ -11,7 +11,9 @@
 package org.eclipse.recommenders.rcp;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.util.HashSet;
@@ -44,8 +46,6 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
@@ -55,8 +55,6 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JavaElementResolver.class);
 
     public static JavaElementResolver INSTANCE;
 
@@ -112,7 +110,7 @@ public class JavaElementResolver {
         if (recType.isArrayType()) {
             // TODO see https://bugs.eclipse.org/bugs/show_bug.cgi?id=339806
             // should throw an exception? or return an Array type?
-            LOG.error("Array type in JavaElementResolver. Decision Bug 339806 pending...?"); //$NON-NLS-1$
+            log(ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER, recType);
             return absent();
         }
 
@@ -261,7 +259,7 @@ public class JavaElementResolver {
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                LOG.error("Failed to resolve JDT method '{}': {}", new Object[] { jdtMethod, e.getMessage(), e }); //$NON-NLS-1$
+                log(FAILED_TO_RESOLVE_METHOD, jdtMethod, e.getMessage(), e);
                 return absent();
             }
         }
@@ -309,7 +307,7 @@ public class JavaElementResolver {
             }
             return absent();
         } catch (final Exception e) {
-            LOG.warn("Failed to resolve method '{}' in workspace: {}", new Object[] { recMethod, e.getMessage(), e }); //$NON-NLS-1$
+            log(FAILED_TO_RESOLVE_METHOD, recMethod, e.getMessage(), e);
             return absent();
         }
     }

@@ -10,21 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.FIELD_DECLARATION;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.FIELD_DECLARATION_INITIALIZER;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_BODY;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_PARAMETER;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_RETURN;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION_THROWS;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION_EXTENDS;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
-import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.UNKNOWN;
+import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.*;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeRoot;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,8 +37,6 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
 import org.eclipse.ui.IEditorPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
@@ -57,7 +46,7 @@ import com.google.common.base.Optional;
 @SuppressWarnings("restriction")
 public class JavaElementSelections {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JavaElementSelections.class);
+    // private static final Logger LOG = LoggerFactory.getLogger(JavaElementSelections.class);
 
     @SuppressWarnings("serial")
     private static final Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {
@@ -119,7 +108,7 @@ public class JavaElementSelections {
 
     /**
      * Returns the {@link IJavaElement} at the given offset in the editor.
-     * 
+     *
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
         ensureIsNotNull(editor);
@@ -169,7 +158,7 @@ public class JavaElementSelections {
             // actually, these can happen when using snipmatch's in-editor completion.
             // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
             if (!isInvalidSelection(root, offset)) {
-                LOG.error("Failed to resolve selection in '{}' at offset {}", new Object[] { root.getHandleIdentifier(), offset, e }); //$NON-NLS-1$
+                log(FAILED_TO_RESOLVE_SELECTION, root.getHandleIdentifier(), offset, e);
             }
             return absent();
         }
@@ -177,7 +166,8 @@ public class JavaElementSelections {
 
     private static boolean isInvalidSelection(ITypeRoot root, final int offset) {
         try {
-            // check whether the type root is part of an pacakge fragment root. If not, it's an invalid selection and all
+            // check whether the type root is part of an package fragment root. If not, it's an invalid selection and
+            // all
             // resolutions are likely to fail. Thus, return true (=invalid):
             IJavaElement ancestor = root.getAncestor(IJavaProject.PACKAGE_FRAGMENT_ROOT);
             if (!ancestor.exists()) {
@@ -186,7 +176,7 @@ public class JavaElementSelections {
             ISourceRange range = root.getSourceRange();
             return range == null || offset < 0 || offset > range.getLength();
         } catch (Exception e) {
-            LOG.debug("Exception while checking editor offset", e); //$NON-NLS-1$
+            log(EXCEPTION_WHILE_CHECKING_OFFSETS, e);
             return false;
         }
     }

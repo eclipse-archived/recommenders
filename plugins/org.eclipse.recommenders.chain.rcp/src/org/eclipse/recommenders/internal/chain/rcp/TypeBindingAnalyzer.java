@@ -222,7 +222,7 @@ public final class TypeBindingAnalyzer {
                 bindings.add(Optional.of(scope.getType(type.getClassName().toCharArray())));
             }
         } else {
-            LOG.warn("Can't handle %s as parent of completion location.", parent.getClass()); //$NON-NLS-1$
+            LOG.warn("Can't handle {} as parent of completion location.", parent.getClass()); //$NON-NLS-1$
         }
         return bindings;
     }

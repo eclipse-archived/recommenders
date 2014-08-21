@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.rcp.utils;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.List;
 
@@ -30,15 +32,11 @@ import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 public class AstBindings {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AstBindings.class);
 
     public static Optional<ITypeName> toTypeName(ITypeBinding b) {
         if (b == null) {
@@ -70,7 +68,7 @@ public class AstBindings {
             final ITypeName res = VmTypeName.get(sb.toString());
             return of(res);
         } catch (final Exception e) {
-            LOG.error("Failed to create type name from {}.", b, e); //$NON-NLS-1$
+            log(FAILED_TO_CREATE_TYPENAME, b, e);
             return absent();
         }
     }
@@ -151,7 +149,7 @@ public class AstBindings {
         try {
             ref = VmMethodName.get(sb.toString());
         } catch (final Exception e1) {
-            LOG.error("Failed to create IMethodName from binding {}.", e1); //$NON-NLS-1$
+            log(FAILED_TO_CREATE_METHODNAME, b, e1);
             return absent();
         }
         return of(ref);

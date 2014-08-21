@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.collect.Iterators.forEnumeration;
-import static com.google.common.collect.Iterators.toArray;
+import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Iterators.*;
 import static java.net.NetworkInterface.getNetworkInterfaces;
 import static org.eclipse.recommenders.internal.rcp.Constants.PREF_UUID;
+import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_GENERATE_UUID;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -24,15 +24,11 @@ import java.util.UUID;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public class UUIDs {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UUIDs.class);
 
     public static String getUUID() {
         final Optional<String> uuid = lookupUUIDFromStore();
@@ -83,7 +79,7 @@ public class UUIDs {
                 return fromNullable(uuid);
             }
         } catch (final Exception e) {
-            LOG.warn("Failed to generate UUID from MAC address.", e); //$NON-NLS-1$
+            log(FAILED_TO_GENERATE_UUID, e);
         }
         return absent();
     }
