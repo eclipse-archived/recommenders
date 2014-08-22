@@ -26,7 +26,6 @@ import static org.eclipse.recommenders.utils.Recommendations.top;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -58,23 +57,19 @@ import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 
-@SuppressWarnings({ "serial", "restriction" })
+@SuppressWarnings({ "restriction" })
 public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private static final CompletionProposal NULL_PROPOSAL = new CompletionProposal();
 
-    private final Set<Class<? extends ASTNode>> supportedCompletionRequests = new HashSet<Class<? extends ASTNode>>() {
-        {
-            add(CompletionOnMemberAccess.class);
-            add(CompletionOnMessageSend.class);
-            add(CompletionOnQualifiedNameReference.class);
-            add(CompletionOnSingleNameReference.class);
-        }
-    };
+    private final ImmutableSet<Class<? extends ASTNode>> supportedCompletionRequests = ImmutableSet
+            .<Class<? extends ASTNode>>of(CompletionOnMemberAccess.class, CompletionOnMessageSend.class,
+                    CompletionOnQualifiedNameReference.class, CompletionOnSingleNameReference.class);
 
     private final IProjectCoordinateProvider pcProvider;
     private final ICallModelProvider modelProvider;
@@ -106,7 +101,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
         env = ctx.get(CompletionContextKey.LOOKUP_ENVIRONMENT).orNull();
         if (env == null) {
-            log(LogMessages.LOG_ERROR_MISSING_LOOKUP_ENVIRONMENT);
+            log(LogMessages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
             return false;
         }
 

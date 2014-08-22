@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -20,8 +20,8 @@ public class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
 
-    public static final LogMessages LOG_ERROR_MISSING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
-            Messages.LOG_ERROR_MISSING_LOOKUP_ENVIRONMENT);
+    public static final LogMessages LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT = new LogMessages(WARNING,
+            Messages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
     public static final LogMessages LOG_ERROR_PROPOSAL_MATCHING_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_PROPOSAL_MATCHING_FAILED);
 
