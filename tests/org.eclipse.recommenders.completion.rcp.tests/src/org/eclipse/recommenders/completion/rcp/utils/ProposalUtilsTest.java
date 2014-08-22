@@ -59,6 +59,13 @@ public class ProposalUtilsTest {
     private static IMethodName NESTED_INIT_NUMBER = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Number;)V");
     private static IMethodName NESTED_INIT_COLLECTION = VmMethodName
             .get("LExample$Nested.<init>(Ljava/util/Collection;)V");
+    private static IMethodName INNER_INIT_EXAMPLE = VmMethodName.get("LExample$Inner.<init>(LExample;)V");
+    private static IMethodName INNER_INIT_EXAMPLE_OBJECT = VmMethodName
+            .get("LExample$Inner.<init>(LExample;Ljava/lang/Object;)V");
+    private static IMethodName INNER_INIT_EXAMPLE_NUMBER = VmMethodName
+            .get("LExample$Inner.<init>(LExample;Ljava/lang/Number;)V");
+    private static IMethodName INNER_INIT_EXAMPLE_COLLECTION = VmMethodName
+            .get("LExample$Inner.<init>(LExample;Ljava/util/Collection;)V");
 
     private static IMethodName COMPARE_TO_BOOLEAN = VmMethodName
             .get("Ljava/lang/Boolean.compareTo(Ljava/lang/Boolean;)I");
@@ -174,6 +181,20 @@ public class ProposalUtilsTest {
                 classbody("Example",
                         "static class Nested<N> { Nested(Collection<? extends N> c) { new Example.Nested$ } }"),
                 NESTED_INIT_COLLECTION));
+
+        scenarios.add(scenario(classbody("Example", "class Inner { Inner() { new Example.Inner$ } }"),
+                INNER_INIT_EXAMPLE));
+        scenarios.add(scenario(classbody("Example", "class Inner<T> { Inner(T t) { new Example.Inner$ } }"),
+                INNER_INIT_EXAMPLE_OBJECT));
+        scenarios.add(scenario(
+                classbody("Example", "class Inner<T extends Object> { Inner(T t) { new Example.Inner$ } }"),
+                INNER_INIT_EXAMPLE_OBJECT));
+        scenarios.add(scenario(
+                classbody("Example", "class Inner<N extends Number> { Inner(N n) { new Example.Inner$ } }"),
+                INNER_INIT_EXAMPLE_NUMBER));
+        scenarios.add(scenario(
+                classbody("Example", "class Inner<N> { Inner(Collection<? extends N> c) { new Example.Inner$ } }"),
+                INNER_INIT_EXAMPLE_COLLECTION));
 
         scenarios.add(scenario(classbody("Example implements Comparable", "compareTo$"), COMPARE_TO_OBJECT));
         scenarios.add(scenario(classbody("Example implements Comparable<Example>", "compareTo$"), COMPARE_TO_OBJECT));

@@ -14,7 +14,7 @@ package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.base.Optional.absent;
 import static java.lang.Math.min;
-import static org.eclipse.jdt.core.compiler.CharOperation.*;
+import static org.eclipse.jdt.core.compiler.CharOperation.splitOn;
 import static org.eclipse.recommenders.rcp.utils.ReflectionUtils.getDeclaredField;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -85,14 +86,9 @@ public class ProposalUtils {
         char[] proposalSignature = getSignature(proposal);
         char[] strippedProposalSignature = stripTypeParameters(proposalSignature);
 
-        proposalSignature = replaceOnCopy(proposalSignature, '.', '/');
-        strippedProposalSignature = replaceOnCopy(strippedProposalSignature, '.', '/');
-
         for (MethodBinding overload : overloads) {
-            char[] signature = overload.genericSignature();
-            if (signature == null) {
-                signature = overload.signature();
-            }
+            char[] signature = CompletionEngine.getSignature(overload);
+
             if (Arrays.equals(proposalSignature, signature)) {
                 return CompilerBindings.toMethodName(overload);
             }
