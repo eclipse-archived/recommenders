@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
@@ -20,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
 @Beta
+@SuppressWarnings("restriction")
 public interface IProcessableProposal extends IJavaCompletionProposal {
 
     void setRelevance(int newRelevance);
@@ -33,6 +35,8 @@ public interface IProcessableProposal extends IJavaCompletionProposal {
     ProposalProcessorManager getProposalProcessorManager();
 
     void setProposalProcessorManager(ProposalProcessorManager mgr);
+
+    void setProposalInfo(ProposalInfo info);
 
     Optional<CompletionProposal> getCoreProposal();
 

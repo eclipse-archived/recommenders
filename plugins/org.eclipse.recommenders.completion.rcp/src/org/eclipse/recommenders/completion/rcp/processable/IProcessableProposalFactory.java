@@ -19,7 +19,6 @@ import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompleti
 import org.eclipse.jdt.internal.ui.text.java.LazyPackageCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
-import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 @SuppressWarnings("restriction")
@@ -28,7 +27,7 @@ public interface IProcessableProposalFactory {
     // TODO: let's see whether we can get rid of the UIproposals soon
     IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
-            throws JavaModelException;
+                    throws JavaModelException;
 
     IProcessableProposal newJavaCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context);
@@ -57,9 +56,9 @@ public interface IProcessableProposalFactory {
     IProcessableProposal newMethodDeclarationCompletionProposal(CompletionProposal coreProposal,
             MethodDeclarationCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 
-    IJavaCompletionProposal newGetterSetterCompletionProposal(CompletionProposal coreProposal,
+    IProcessableProposal newGetterSetterCompletionProposal(CompletionProposal coreProposal,
             GetterSetterCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 
-    IJavaCompletionProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
+    IProcessableProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
             LazyPackageCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 }

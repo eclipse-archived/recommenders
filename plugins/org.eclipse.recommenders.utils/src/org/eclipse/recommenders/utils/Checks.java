@@ -26,6 +26,23 @@ import com.google.common.collect.Sets;
  *
  */
 public final class Checks {
+
+    /**
+     * Returns true if any of the given values is null
+     *
+     * @param values
+     *            the values to check for null
+     * @return
+     */
+    public static boolean isNull(Object... values) {
+        for (Object v : values) {
+            if (v == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void ensureEquals(final Object value, final Object expected, final String message) {
         final boolean equals = value == null ? expected == null : value.equals(expected);
         if (!equals) {

@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
@@ -17,6 +19,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.FilledArgumentNamesMethodProposal;
 import org.eclipse.jdt.internal.ui.text.java.GetterSetterCompletionProposal;
@@ -29,9 +32,12 @@ import org.eclipse.jdt.internal.ui.text.java.LazyPackageCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
+import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.rcp.utils.ReflectionUtils;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Throws;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +63,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
+    private static Method proposalInfoMethod = ReflectionUtils.getDeclaredMethod(AbstractJavaCompletionProposal.class,
+            "getProposalInfo").orNull();
 
     static {
         // No all versions of JDT offer all kinds of CompletionProposal. Probe using reflection.
@@ -134,37 +142,63 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             JavaContentAssistInvocationContext context, IProcessableProposalFactory factory) {
 
         final Class<? extends IJavaCompletionProposal> c = uiProposal.getClass();
+        // TODO the handling of setProposalInfo should be improved soon.
         try {
             if (javaMethodCompletionProposalClass == c) {
-                return factory.newJavaMethodCompletionProposal(coreProposal, context);
+                IProcessableProposal res = factory.newJavaMethodCompletionProposal(coreProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (javaFieldWithCastedReceiverCompletionProposalClass == c) {
-                return factory.newJavaFieldWithCastedReceiverCompletionProposal(coreProposal,
+                IProcessableProposal res = factory.newJavaFieldWithCastedReceiverCompletionProposal(coreProposal,
                         (JavaFieldWithCastedReceiverCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (overrideCompletionProposalClass == c) {
-                return factory.newOverrideCompletionProposal(coreProposal, (OverrideCompletionProposal) uiProposal,
-                        context);
+                IProcessableProposal res = factory.newOverrideCompletionProposal(coreProposal,
+                        (OverrideCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (anonymousTypeCompletionProposalClass == c) {
-                return factory.newAnonymousTypeCompletionProposal(coreProposal,
+                IProcessableProposal res = factory.newAnonymousTypeCompletionProposal(coreProposal,
                         (AnonymousTypeCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (javaCompletionProposalClass == c) {
-                return factory.newJavaCompletionProposal(coreProposal, (JavaCompletionProposal) uiProposal, context);
+                IProcessableProposal res = factory.newJavaCompletionProposal(coreProposal,
+                        (JavaCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (lazyGenericTypeProposalClass == c) {
-                return factory.newLazyGenericTypeProposal(coreProposal, context);
+                IProcessableProposal res = factory.newLazyGenericTypeProposal(coreProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (lazyJavaTypeCompletionProposalClass == c) {
-                return factory.newLazyJavaTypeCompletionProposal(coreProposal, context);
+                IProcessableProposal res = factory.newLazyJavaTypeCompletionProposal(coreProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (filledArgumentNamesMethodProposalClass == c) {
-                return factory.newFilledArgumentNamesMethodProposal(coreProposal, context);
+                IProcessableProposal res = factory.newFilledArgumentNamesMethodProposal(coreProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (parameterGuessingProposalClass == c) {
-                return factory.newParameterGuessingProposal(coreProposal, context);
+                IProcessableProposal res = factory.newParameterGuessingProposal(coreProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (methodDeclarationCompletionProposalClass == c) {
-                return factory.newMethodDeclarationCompletionProposal(coreProposal,
+                IProcessableProposal res = factory.newMethodDeclarationCompletionProposal(coreProposal,
                         (MethodDeclarationCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (lazyPackageCompletionProposalClass == c) {
-                return factory.newLazyPackageCompletionProposal(coreProposal,
+                IProcessableProposal res = factory.newLazyPackageCompletionProposal(coreProposal,
                         (LazyPackageCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             } else if (getterSetterCompletionProposalClass == c) {
-                return factory.newGetterSetterCompletionProposal(coreProposal,
+                IProcessableProposal res = factory.newGetterSetterCompletionProposal(coreProposal,
                         (GetterSetterCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             }
             // return the fallback proposal
             LOG.warn("Unknown JDT proposal type '{}' ('{}'). Returning original proposal instead.", c, //$NON-NLS-1$
@@ -174,6 +208,19 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             LOG.warn("Wrapping JDT proposal '{}' ('{}') failed. Returning original proposal instead.", c, //$NON-NLS-1$
                     uiProposal.getDisplayString(), e);
             return uiProposal;
+        }
+    }
+
+    private static void setProposalInfo(IProcessableProposal crProposal, IJavaCompletionProposal uiProposal) {
+        // XXX this method should under no circumstances throw any exception
+        if (Checks.isNull(proposalInfoMethod, crProposal, uiProposal)) {
+            return;
+        }
+        try {
+            ProposalInfo info = (ProposalInfo) proposalInfoMethod.invoke(uiProposal);
+            crProposal.setProposalInfo(info);
+        } catch (Exception e) {
+            LOG.warn("Failed to set proposal info to '{}'). Returning proposal without additional info.", crProposal);
         }
     }
 
@@ -282,7 +329,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     }
 
     @Override
-    public IJavaCompletionProposal newGetterSetterCompletionProposal(CompletionProposal coreProposal,
+    public IProcessableProposal newGetterSetterCompletionProposal(CompletionProposal coreProposal,
             GetterSetterCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             IField field = (IField) uiProposal.getJavaElement();
@@ -294,7 +341,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     }
 
     @Override
-    public IJavaCompletionProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
+    public IProcessableProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
             LazyPackageCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         return postConstruct(new ProcessableLazyPackageCompletionProposal(coreProposal, context));
     }

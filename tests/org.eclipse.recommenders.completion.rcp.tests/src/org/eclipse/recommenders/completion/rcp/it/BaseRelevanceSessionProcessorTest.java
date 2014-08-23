@@ -3,6 +3,7 @@ package org.eclipse.recommenders.completion.rcp.it;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.viewers.StyledString;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
+@SuppressWarnings("restriction")
 public class BaseRelevanceSessionProcessorTest {
 
     @Test
@@ -145,6 +147,10 @@ public class BaseRelevanceSessionProcessorTest {
         @Override
         public ImmutableSet<IProposalTag> tags() {
             return null;
+        }
+
+        @Override
+        public void setProposalInfo(ProposalInfo info) {
         }
     }
 }
