@@ -15,11 +15,11 @@ package org.eclipse.recommenders.testing.jdt;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertTrue;
 import static org.eclipse.recommenders.testing.jdt.AstUtils.*;
 import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Pair.newPair;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

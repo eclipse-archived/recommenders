@@ -26,7 +26,6 @@ import org.osgi.service.prefs.Preferences;
 
 import com.google.common.base.Joiner;
 
-@SuppressWarnings("restriction")
 public class ApidocsPreferences {
 
     public static final String PROVIDER_RANKING = "providerRanking"; //$NON-NLS-1$

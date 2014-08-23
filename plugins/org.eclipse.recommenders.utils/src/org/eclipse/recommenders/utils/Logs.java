@@ -65,15 +65,6 @@ public class Logs {
 
     public abstract static class DefaultLogMessage implements ILogMessage {
 
-        private static final DefaultLogMessage INVALID_MESSAGE = new DefaultLogMessage(ERROR, 1,
-                "Failed to format log message '{0}'") {
-
-            @Override
-            public Bundle bundle() {
-                return FrameworkUtil.getBundle(getClass());
-            }
-        };
-
         private int severity;
         private int code;
         private String message;

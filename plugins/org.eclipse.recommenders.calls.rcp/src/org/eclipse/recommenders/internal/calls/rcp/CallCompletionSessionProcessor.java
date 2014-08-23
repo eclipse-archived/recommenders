@@ -173,7 +173,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private void calculateProposalRelevanceBoostMap() {
         recommendationsIndex = Maps.newHashMap();
-        int i = prefs.maxNumberOfProposals;
         for (Recommendation<IMethodName> r : recommendations) {
             double rel = r.getRelevance() * 100;
             int score = 0;

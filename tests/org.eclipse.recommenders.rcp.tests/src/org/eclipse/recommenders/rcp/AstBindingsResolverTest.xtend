@@ -12,15 +12,12 @@ package org.eclipse.recommenders.rcp
 
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.ITypeBinding
-import org.eclipse.jdt.core.dom.IVariableBinding
-import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.ParameterizedType
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.TypeParameter
 import org.eclipse.recommenders.rcp.utils.AstBindings
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Test
-import org.mockito.Mockito
 
 import static org.eclipse.jdt.core.dom.NodeFinder.*
 import static org.eclipse.recommenders.testing.CodeBuilder.*

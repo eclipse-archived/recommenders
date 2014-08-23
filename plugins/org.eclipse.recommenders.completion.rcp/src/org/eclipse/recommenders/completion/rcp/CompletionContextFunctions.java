@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-@SuppressWarnings({ "restriction", "rawtypes", "deprecation" })
+@SuppressWarnings({ "restriction", "rawtypes" })
 public class CompletionContextFunctions {
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
@@ -391,7 +391,7 @@ public class CompletionContextFunctions {
     }
 
     public static class JavaContentAssistInvocationContextFunction implements
-            ICompletionContextFunction<JavaContentAssistInvocationContext> {
+    ICompletionContextFunction<JavaContentAssistInvocationContext> {
 
         @Override
         public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,

@@ -31,13 +31,13 @@ public class LogsTest {
 
     @Test
     public void testNullMessage() {
-        Logs.toStatus(msg, null, null);
+        Logs.toStatus(msg, null, (Object[]) null);
     }
 
     @Test
     public void testNullArgumentsArray() {
         when(msg.message()).thenReturn("{0}");
-        IStatus actual = Logs.toStatus(msg, null, null);
+        IStatus actual = Logs.toStatus(msg, null, (Object[]) null);
         assertEquals("{0}", actual.getMessage());
     }
 
