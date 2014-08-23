@@ -21,7 +21,7 @@ public class LogMessages extends DefaultLogMessage {
     private static int code = 1;
 
     public static final LogMessages NO_INTERNET = new LogMessages(WARNING,
-            "Could not connect to server. Your IP is '{0}'");
+            "Could not connect to server. Your IP is ''{0}''");
 
     private static Bundle b = FrameworkUtil.getBundle(LogMessages.class);
 
