@@ -1,7 +1,7 @@
 package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
-import static org.eclipse.recommenders.testing.CodeBuilder.classbody;
+import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.names.VmMethodName.get;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -71,6 +71,9 @@ public class ProposalUtilsTest {
             .get("Ljava/lang/Boolean.compareTo(Ljava/lang/Boolean;)I");
     private static IMethodName COMPARE_TO_OBJECT = VmMethodName
             .get("Ljava/lang/Comparable.compareTo(Ljava/lang/Object;)I");
+
+    private static IMethodName OBJECT_HASH_CODE = VmMethodName.get("Ljava/lang/Object.hashCode()I");
+    private static IMethodName EXAMPLE_HASH_CODE = VmMethodName.get("LExample.hashCode()I");
 
     private final CharSequence code;
     private final IMethodName expectedMethod;
@@ -206,6 +209,13 @@ public class ProposalUtilsTest {
                 METHOD_VOID));
         scenarios.add(scenario(classbody("Example", "<T extends Throwable> void method() throws T { this.method$ }"),
                 METHOD_VOID));
+
+        scenarios.add(scenario(classbody("Example", "int hashCode() { hashCode$ }"), EXAMPLE_HASH_CODE));
+        scenarios.add(scenario(classbody("Example", "int hashCode() { this.hashCode$ }"), EXAMPLE_HASH_CODE));
+        scenarios.add(scenario(classbody("Example", "int hashCode() { super.hashCode$ }"), OBJECT_HASH_CODE));
+
+        scenarios
+                .add(scenario(method("new Object() { int hashCode() { return super.hashCode$ } };"), OBJECT_HASH_CODE));
 
         return scenarios;
     }
