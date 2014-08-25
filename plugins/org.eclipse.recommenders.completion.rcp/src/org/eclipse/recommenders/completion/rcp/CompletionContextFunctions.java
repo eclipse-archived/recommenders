@@ -41,6 +41,12 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
@@ -65,14 +71,17 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
+import org.eclipse.recommenders.rcp.utils.AstBindings;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
+import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 public class CompletionContextFunctions {
@@ -98,6 +107,7 @@ public class CompletionContextFunctions {
         res.put(VISIBLE_FIELDS, new VisibleFieldsContextFunction());
         res.put(VISIBLE_LOCALS, new VisibleLocalsContextFunction());
         res.put(SESSION_ID, new SessionIdFunction());
+        res.put(IMPORTED_PACKAGES, new ImportedPackagesFunction());
         return res;
     }
 
@@ -534,6 +544,56 @@ public class CompletionContextFunctions {
         @Override
         public UUID compute(IRecommendersCompletionContext context, CompletionContextKey<UUID> key) {
             UUID res = UUID.randomUUID();
+            context.set(key, res);
+            return res;
+        }
+    }
+
+    public static class ImportedPackagesFunction implements ICompletionContextFunction<Set<IPackageName>> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Set<IPackageName> compute(IRecommendersCompletionContext context,
+                CompletionContextKey<Set<IPackageName>> key) {
+            CompilationUnit ast = context.getAST();
+            List<ImportDeclaration> imports = ast.imports();
+            Set<IPackageName> res = Sets.newHashSet();
+            for (ImportDeclaration decl : imports) {
+                IBinding b = decl.resolveBinding();
+                if (b == null) {
+                    continue;
+                }
+                switch (b.getKind()) {
+                case IBinding.TYPE: {
+                    ITypeName type = AstBindings.toTypeName((ITypeBinding) b).orNull();
+                    if (type != null) {
+                        res.add(type.getPackage());
+                    }
+                    break;
+                }
+                case IBinding.PACKAGE: {
+                    IPackageName pkg = AstBindings.toPackageName((IPackageBinding) b).orNull();
+                    if (pkg != null) {
+                        res.add(pkg);
+                    }
+                    break;
+                }
+                case IBinding.METHOD: {
+                    ITypeName type = AstBindings.toTypeName(((IMethodBinding) b).getDeclaringClass()).orNull();
+                    if (type != null) {
+                        res.add(type.getPackage());
+                    }
+                    break;
+                }
+                case IBinding.VARIABLE: {
+                    ITypeName type = AstBindings.toTypeName(((IVariableBinding) b).getDeclaringClass()).orNull();
+                    if (type != null) {
+                        res.add(type.getPackage());
+                    }
+                    break;
+                }
+                }
+            }
             context.set(key, res);
             return res;
         }
