@@ -31,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.rcp.IAstProvider;
+import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 @SuppressWarnings("restriction")
@@ -66,6 +67,7 @@ public class CompletionContextKey<T> {
     public static final CompletionContextKey<List<IField>> VISIBLE_FIELDS = make();
     public static final CompletionContextKey<List<ILocalVariable>> VISIBLE_LOCALS = make();
     public static final CompletionContextKey<List<IMethod>> VISIBLE_METHODS = make();
+    public static final CompletionContextKey<Set<IPackageName>> IMPORTED_PACKAGES = make();
 
     private static <T> CompletionContextKey<T> make() {
         return new CompletionContextKey<T>();
