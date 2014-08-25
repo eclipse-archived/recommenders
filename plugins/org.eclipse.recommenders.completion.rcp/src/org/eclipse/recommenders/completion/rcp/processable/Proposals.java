@@ -25,8 +25,16 @@ import com.google.common.base.Optional;
 public class Proposals {
 
     public static void overlay(IProcessableProposal proposal, ImageDescriptor icon) {
+        overlay(proposal, icon, IDecoration.TOP_LEFT);
+    }
+
+    /**
+     * @param decorationCorner
+     *            e.g. {@link IDecoration#TOP_LEFT}
+     */
+    public static void overlay(IProcessableProposal proposal, ImageDescriptor icon, int decorationCorner) {
         Image originalImage = proposal.getImage();
-        DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, icon, IDecoration.TOP_LEFT);
+        DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, icon, decorationCorner);
         proposal.setImage(decorator.createImage());
     }
 
