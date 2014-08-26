@@ -30,6 +30,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -68,6 +69,7 @@ public class CompletionContextKey<T> {
     public static final CompletionContextKey<List<ILocalVariable>> VISIBLE_LOCALS = make();
     public static final CompletionContextKey<List<IMethod>> VISIBLE_METHODS = make();
     public static final CompletionContextKey<Set<IPackageName>> IMPORTED_PACKAGES = make();
+    public static final CompletionContextKey<Set<SessionProcessor>> ACTIVE_PROCESSORS = make();
 
     private static <T> CompletionContextKey<T> make() {
         return new CompletionContextKey<T>();

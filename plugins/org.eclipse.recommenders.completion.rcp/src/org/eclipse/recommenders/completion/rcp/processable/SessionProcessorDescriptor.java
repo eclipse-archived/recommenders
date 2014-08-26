@@ -94,6 +94,9 @@ public class SessionProcessorDescriptor {
     public synchronized SessionProcessor getProcessor() throws CoreException {
         if (processor == null) {
             processor = (SessionProcessor) config.createExecutableExtension("class"); //$NON-NLS-1$
+            if (Boolean.getBoolean("org.eclipse.recommenders.completion.rcp.measure")) { //$NON-NLS-1$
+                processor = new StopwatchSessionProcessor(processor);
+            }
         }
         return processor;
     }

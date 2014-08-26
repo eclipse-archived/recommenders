@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ACTIVE_PROCESSORS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
@@ -54,12 +55,13 @@ import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer implements
-ICompletionListener, ICompletionListenerExtension2 {
+        ICompletionListener, ICompletionListenerExtension2 {
 
     private final CompletionRcpPreferences preferences;
     private final IAstProvider astProvider;
@@ -125,7 +127,7 @@ ICompletionListener, ICompletionListenerExtension2 {
             List<ICompletionProposal> res = Lists.newLinkedList();
 
             registerCompletionListener();
-
+            crContext.set(ACTIVE_PROCESSORS, ImmutableSet.copyOf(activeProcessors));
             fireStartSession(crContext);
             for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
