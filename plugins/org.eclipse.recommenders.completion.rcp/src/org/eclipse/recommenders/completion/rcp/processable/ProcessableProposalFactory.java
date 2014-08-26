@@ -36,8 +36,8 @@ import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.rcp.utils.ReflectionUtils;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.recommenders.utils.Throws;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
-    private static Method proposalInfoMethod = ReflectionUtils.getDeclaredMethod(AbstractJavaCompletionProposal.class,
+    private static Method proposalInfoMethod = Reflections.getDeclaredMethod(AbstractJavaCompletionProposal.class,
             "getProposalInfo").orNull();
 
     static {
