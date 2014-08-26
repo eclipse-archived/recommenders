@@ -8,20 +8,18 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils;
 
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.eclipse.recommenders.internal.rcp.LogMessages;
-
 import com.google.common.base.Optional;
 
-public final class ReflectionUtils {
+public final class Reflections {
 
-    private ReflectionUtils() {
+    private Reflections() {
         throw new IllegalStateException("Not meant to be instantiated");
     }
 

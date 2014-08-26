@@ -15,9 +15,10 @@ package org.eclipse.recommenders.completion.rcp.utils;
 import static com.google.common.base.Optional.absent;
 import static java.lang.Math.min;
 import static org.eclipse.jdt.core.compiler.CharOperation.splitOn;
-import static org.eclipse.recommenders.rcp.utils.ReflectionUtils.getDeclaredField;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -31,7 +32,6 @@ import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.recommenders.internal.rcp.LogMessages;
 import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
@@ -58,7 +58,7 @@ public class ProposalUtils {
                 signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
             }
         } catch (Exception e) {
-            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
+            log(LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
         }
         return signature != null ? signature : proposal.getSignature();
     }

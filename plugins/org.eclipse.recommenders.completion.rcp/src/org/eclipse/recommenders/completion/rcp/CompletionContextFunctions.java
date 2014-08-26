@@ -15,9 +15,9 @@ import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
-import static org.eclipse.recommenders.rcp.utils.ReflectionUtils.getDeclaredField;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
 import java.util.Collections;

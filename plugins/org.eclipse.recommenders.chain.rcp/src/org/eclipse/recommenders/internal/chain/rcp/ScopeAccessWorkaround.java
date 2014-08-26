@@ -17,7 +17,7 @@ import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.rcp.utils.ReflectionUtils;
+import org.eclipse.recommenders.utils.Reflections;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
@@ -29,9 +29,9 @@ import com.google.common.base.Optional;
 @Beta
 public final class ScopeAccessWorkaround {
 
-    private static Field EXTENDED_CONTEXT = ReflectionUtils.getDeclaredField(InternalCompletionContext.class,
+    private static Field EXTENDED_CONTEXT = Reflections.getDeclaredField(InternalCompletionContext.class,
             "extendedContext").orNull(); //$NON-NLS-1$
-    private static Field ASSIST_SCOPE = ReflectionUtils.getDeclaredField(InternalExtendedCompletionContext.class,
+    private static Field ASSIST_SCOPE = Reflections.getDeclaredField(InternalExtendedCompletionContext.class,
             "assistScope").orNull(); //$NON-NLS-1$
 
     private ScopeAccessWorkaround() {
