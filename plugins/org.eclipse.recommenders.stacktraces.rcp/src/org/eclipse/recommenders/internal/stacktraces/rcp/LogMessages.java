@@ -23,6 +23,8 @@ public class LogMessages extends DefaultLogMessage {
     public static final LogMessages NO_INTERNET = new LogMessages(WARNING,
             "Could not connect to server. Your IP is ''{0}''");
 
+    public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
+            "Could not access \u2018{0}\u2019 using reflection.  Functionality may be limited.");
     private static Bundle b = FrameworkUtil.getBundle(LogMessages.class);
 
     public LogMessages(int severity, String message) {

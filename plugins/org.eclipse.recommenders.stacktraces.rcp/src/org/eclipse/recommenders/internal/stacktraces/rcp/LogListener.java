@@ -14,12 +14,16 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Stacktraces.createDto;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
+
+import java.lang.reflect.Method;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.Dialog;
@@ -35,6 +39,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
+
+    private static Method SET_EXCEPTION = ReflectionUtils.getDeclaredMethod(Status.class, "setException",
+            Throwable.class).orNull();
 
     private Cache<String, String> cache = CacheBuilder.newBuilder().maximumSize(10).build();
     private IEclipseContext ctx = (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class);
@@ -65,8 +72,23 @@ public class LogListener implements ILogListener, IStartup {
             return;
         }
         if (hasEclipsePluginId(status) || hasEclipseClassInStackFrames(status)) {
+            insertDebugStacktraceIfEmpty(status);
             checkAndSend(status);
             return;
+        }
+    }
+
+    @VisibleForTesting
+    public static void insertDebugStacktraceIfEmpty(final IStatus status) {
+        // TODO this code should probably go elsewhere later.
+        if (status.getException() == null && status instanceof Status && SET_EXCEPTION != null) {
+            Throwable syntetic = new RuntimeException("Debug stacktrace provided by Code Recommenders");
+            syntetic.fillInStackTrace();
+            try {
+                SET_EXCEPTION.invoke(status, syntetic);
+            } catch (Exception e) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, SET_EXCEPTION);
+            }
         }
     }
 
