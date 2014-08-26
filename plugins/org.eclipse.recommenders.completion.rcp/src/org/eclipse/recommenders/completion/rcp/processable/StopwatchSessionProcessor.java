@@ -27,6 +27,10 @@ public class StopwatchSessionProcessor extends SessionProcessor {
         this.delegate = delegate;
     }
 
+    public SessionProcessor getDelegate() {
+        return delegate;
+    }
+
     @Override
     public boolean startSession(IRecommendersCompletionContext context) {
         watch.reset();
