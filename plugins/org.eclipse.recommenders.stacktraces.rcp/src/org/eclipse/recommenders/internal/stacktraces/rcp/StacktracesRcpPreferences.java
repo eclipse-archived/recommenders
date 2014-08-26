@@ -19,16 +19,32 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.recommenders.utils.Logs;
+import org.eclipse.recommenders.utils.Nullable;
 import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
 public class StacktracesRcpPreferences {
 
-    public static final String MODE_IGNORE = "ignore";
+    public static enum Mode {
+        IGNORE,
+        ASK,
+        SILENT;
 
-    public static final String MODE_ASK = "ask";
+        @Nullable
+        public static Mode parse(String string, Mode fallback) {
+            try {
+                return Mode.valueOf(string);
+            } catch (Exception e) {
+                Logs.log(LogMessages.FAILED_TO_PARSE_SEND_MODE, string, fallback);
+                return fallback;
+            }
+        }
+    }
 
-    public static final String MODE_SILENT = "silent";
+    private static final Logger LOG = LoggerFactory.getLogger(StacktracesRcpPreferences.class);
 
     private static final String PROP_MODE = "mode";
 
@@ -36,68 +52,49 @@ public class StacktracesRcpPreferences {
 
     private static final String PROP_EMAIL = "email";
 
-    private static final String PROP_ANONYMIZE = "false";
+    private static final String PROP_ANONYMIZE = "anonymize stacktraces";
 
-    private static final String PROP_CLEAR_MSG = "false";
+    private static final String PROP_CLEAR_MESSAGES = "clear messages";
+
+    private static final Mode MODE_DEFAULT = Mode.ASK;
 
     @Inject
     @Preference
-    public IEclipsePreferences prefs;
+    private IEclipsePreferences prefs;
 
     @Inject
     @Preference(PROP_EMAIL)
-    public String email;
+    private String email;
 
     @Inject
     @Preference("server")
-    public String server;
+    private String server;
 
     @Inject
     @Preference(PROP_NAME)
-    public String name;
+    private String name;
 
-    @Inject
-    @Preference(PROP_MODE)
-    public String mode;
+    private Mode mode;
 
     @Inject
     @Preference(PROP_ANONYMIZE)
-    public String anonymize;
+    private boolean anonymize;
 
     @Inject
-    @Preference(PROP_CLEAR_MSG)
-    public String clearMsg;
-
-    public boolean modeSilent() {
-        return MODE_SILENT.equals(mode);
-    }
-
-    public boolean modeAsk() {
-        return MODE_ASK.equals(mode);
-    }
-
-    public boolean modeIgnore() {
-        return MODE_IGNORE.equals(mode);
-    }
-
-    public void setMode(String newMode) {
-        putString(PROP_MODE, newMode);
-    }
-
-    public void setName(String text) {
-        putString(PROP_NAME, text);
-    }
-
-    private void putString(String prop, String text) {
-        prefs.put(prop, text);
-        try {
-            prefs.flush();
-        } catch (BackingStoreException e) {
-        }
-    }
+    @Preference(PROP_CLEAR_MESSAGES)
+    private boolean clearMessages;
 
     public void setEmail(String text) {
         putString(PROP_EMAIL, text);
+    }
+
+    @Inject
+    protected void internal_SetMode(@Preference(PROP_MODE) String mode) {
+        this.mode = Mode.parse(mode, MODE_DEFAULT);
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public URI getServerUri() {
@@ -108,12 +105,54 @@ public class StacktracesRcpPreferences {
         }
     }
 
-    public void setAnonymize(String anonymize) {
-        this.anonymize = anonymize;
+    public void setName(String text) {
+        putString(PROP_NAME, text);
     }
 
-    public void setClearMsg(String clearMsg) {
-        this.clearMsg = clearMsg;
+    public String getName() {
+        return name;
+    }
+
+    public void setMode(Mode newMode) {
+        putString(PROP_MODE, newMode.name());
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setAnonymize(boolean anonymize) {
+        putBoolean(PROP_ANONYMIZE, anonymize);
+    }
+
+    public boolean shouldAnonymize() {
+        return anonymize;
+    }
+
+    public void setClearMessages(boolean clearMessages) {
+        putBoolean(PROP_CLEAR_MESSAGES, clearMessages);
+    }
+
+    public boolean shouldClearMessages() {
+        return clearMessages;
+    }
+
+    private void putString(String prop, String text) {
+        prefs.put(prop, text);
+        try {
+            prefs.flush();
+        } catch (BackingStoreException e) {
+            LOG.error("Failed to flush preferences", e); //$NON-NLS-1$
+        }
+    }
+
+    private void putBoolean(String prop, boolean value) {
+        prefs.putBoolean(prop, value);
+        try {
+            prefs.flush();
+        } catch (BackingStoreException e) {
+            LOG.error("Failed to flush preferences", e); //$NON-NLS-1$
+        }
     }
 
 }

@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class StackTraceElementDto {
 
     public static StackTraceElementDto from(StackTraceElement e) {
@@ -29,5 +32,15 @@ public class StackTraceElementDto {
     @Override
     public String toString() {
         return classname + "." + methodname + " (line: " + line + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

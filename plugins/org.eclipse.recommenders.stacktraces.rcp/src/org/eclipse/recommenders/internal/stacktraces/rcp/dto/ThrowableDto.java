@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.stacktraces.rcp.dto;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.utils.Nullable;
 
 import com.google.common.base.Joiner;
@@ -43,5 +45,15 @@ public class ThrowableDto {
     public String toString() {
         String s = classname + ": " + message + "\n\tat " + Joiner.on("\n\tat ").join(elements);
         return s;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
