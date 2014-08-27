@@ -74,11 +74,11 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     @Override
     public boolean startSession(IRecommendersCompletionContext context) {
-        if (preventsAutoComplete(context)) {
+        if (unseenTips.isEmpty()) {
             return false;
         }
 
-        if (unseenTips.isEmpty()) {
+        if (preventsAutoComplete(context)) {
             return false;
         }
 
