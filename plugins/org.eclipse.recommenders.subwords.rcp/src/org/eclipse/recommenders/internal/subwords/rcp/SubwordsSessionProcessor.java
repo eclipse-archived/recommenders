@@ -54,6 +54,9 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class SubwordsSessionProcessor extends SessionProcessor {
 
+    // Negative value ensures subsequence matches have a lower relevance than standard JDT or template proposals
+    private static final int SUBWORDS_RANGE_START = -10000;
+
     private final IAstProvider astProvider;
     private final SubwordsRcpPreferences prefs;
 
@@ -191,12 +194,12 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 }
                 if (startsWithIgnoreCase(matchingArea, prefix)) {
                     proposal.setTag(IS_PREFIX_MATCH, true);
-                    return 1 << 30;
+                    return 0;
                 } else {
                     int score = LCSS.scoreSubsequence(bestSequence);
                     proposal.setTag(IS_PREFIX_MATCH, false);
                     proposal.setTag(SUBWORDS_SCORE, score);
-                    return score;
+                    return score + SUBWORDS_RANGE_START;
                 }
             }
         });
