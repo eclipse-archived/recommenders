@@ -33,7 +33,7 @@ public class StackTraceElementDto {
 
     @Override
     public String toString() {
-        return classname + "." + methodname + " (line: " + line + ")";
+        return classname + "." + methodname + "(" + filename + ":" + line + ")";
     }
 
     @Override
