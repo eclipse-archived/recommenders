@@ -17,6 +17,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -54,6 +55,7 @@ public class Stacktraces {
     public static StackTraceEvent createDto(IStatus status, StacktracesRcpPreferences pref) {
         StackTraceEvent event = new StackTraceEvent();
         event.anonymousId = AnonymousId.getId();
+        event.eventId = UUID.randomUUID();
         event.name = pref.getName();
         event.email = pref.getEmail();
         event.severity = getSeverity(status);
@@ -78,7 +80,7 @@ public class Stacktraces {
             for (Throwable t : getCausalChain(status.getException())) {
                 exs.add(ThrowableDto.from(t));
             }
-            event.chain = toArray(exs, ThrowableDto.class);
+            event.trace = toArray(exs, ThrowableDto.class);
         }
 
         if (pref.shouldClearMessages()) {
@@ -92,14 +94,14 @@ public class Stacktraces {
 
     public static void clearMessages(StackTraceEvent event) {
         event.message = ANONYMIZED_TAG;
-        for (ThrowableDto dto : event.chain) {
+        for (ThrowableDto dto : event.trace) {
             dto.message = ANONYMIZED_TAG;
         }
     }
 
     public static void anonymizeStackTraceElements(StackTraceEvent event) {
-        if (event.chain != null) {
-            for (ThrowableDto dto : event.chain) {
+        if (event.trace != null) {
+            for (ThrowableDto dto : event.trace) {
                 anonymizeStackTraceElements(dto);
             }
         }

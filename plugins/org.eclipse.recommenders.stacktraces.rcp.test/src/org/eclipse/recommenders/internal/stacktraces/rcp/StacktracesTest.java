@@ -82,8 +82,8 @@ public class StacktracesTest {
 
         Stacktraces.clearMessages(event);
 
-        assertTrue(event.chain.length > 0);
-        for (ThrowableDto dto : event.chain) {
+        assertTrue(event.trace.length > 0);
+        for (ThrowableDto dto : event.trace) {
             assertThat(dto.message, is(ANONYMIZED_TAG));
         }
     }
