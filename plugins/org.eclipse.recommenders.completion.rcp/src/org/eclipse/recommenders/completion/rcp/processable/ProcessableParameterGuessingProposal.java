@@ -13,6 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethod;
 
 import java.util.Map;
 
@@ -65,11 +66,18 @@ import com.google.common.collect.Maps;
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableParameterGuessingProposal extends JavaMethodCompletionProposal implements IProcessableProposal {
 
+    /**
+     * Whether the method {@code canAutomaticallyAppendSemicolon} is available.
+     *
+     * The method in question is available in JDT 3.9 or later and hence missing in Eclipse Juno.
+     */
+    private static final boolean HAS_CAN_AUTOMATICALLY_APPEND_SEMICOLON = getDeclaredMethod(
+            JavaMethodCompletionProposal.class, "canAutomaticallyAppendSemicolon").isPresent();
+
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
-    private final boolean hasCanAutomaticallyAppendSemicolon;
 
     protected ProcessableParameterGuessingProposal(final CompletionProposal proposal,
             final JavaContentAssistInvocationContext context, final boolean fillBestGuess) {
@@ -77,19 +85,6 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
         coreProposal = proposal;
         fCoreContext = context.getCoreContext();
         fFillBestGuess = fillBestGuess;
-        // Method canAutomaticallyAppendSemicolon available in JDT 3.9+ only, missing in Eclipse Juno
-        hasCanAutomaticallyAppendSemicolon = hasMethod("canAutomaticallyAppendSemicolon");
-    }
-
-    private boolean hasMethod(String name) {
-        try {
-            getClass().getMethod(name);
-        } catch (NoSuchMethodException e) {
-            return false;
-        } catch (SecurityException e) {
-            return false; // Err on the side of caution
-        }
-        return true;
     }
 
     // JDT parts below
@@ -305,7 +300,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
         buffer.append(RPAREN);
 
-        if (hasCanAutomaticallyAppendSemicolon) {
+        if (HAS_CAN_AUTOMATICALLY_APPEND_SEMICOLON) {
             if (canAutomaticallyAppendSemicolon()) {
                 buffer.append(SEMICOLON);
             }
