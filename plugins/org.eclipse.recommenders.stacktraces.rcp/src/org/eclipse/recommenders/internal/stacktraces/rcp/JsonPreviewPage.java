@@ -30,8 +30,11 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.StacktraceWizard.Wizard
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 class JsonPreviewPage extends WizardPage {
 
@@ -40,6 +43,9 @@ class JsonPreviewPage extends WizardPage {
     private IObservableList errors;
     private StacktracesRcpPreferences stacktracesPreferences;
     private WizardPreferences wizardPreferences;
+
+    private static final Image ERROR_ICON = PlatformUI.getWorkbench().getSharedImages()
+            .getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 
     protected JsonPreviewPage(IObservableList errors, StacktracesRcpPreferences stacktracesPreferences,
             WizardPreferences wizardPreferences) {
@@ -54,17 +60,17 @@ class JsonPreviewPage extends WizardPage {
     @Override
     public void createControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
-        GridDataFactory.fillDefaults().minSize(300, 300).grab(true, true).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(true).applyTo(container);
 
         Composite tableComposite = createTableComposite(container);
-        GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).span(1, 2).grab(false, true).applyTo(tableComposite);
+        GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).minSize(150, SWT.DEFAULT).span(1, 3).grab(false, true)
+        .applyTo(tableComposite);
 
         Composite messageComposite = createMessageComposite(container);
-        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(messageComposite);
+        GridDataFactory.fillDefaults().span(2, 2).grab(true, true).applyTo(messageComposite);
 
         Composite commentComposite = createCommentComposite(container);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(commentComposite);
+        GridDataFactory.fillDefaults().span(2, 1).hint(400, SWT.DEFAULT).grab(true, false).applyTo(commentComposite);
         setControl(container);
     }
 
@@ -79,6 +85,11 @@ class JsonPreviewPage extends WizardPage {
             public String getText(Object element) {
                 IStatus event = (IStatus) element;
                 return event.getMessage();
+            }
+
+            @Override
+            public Image getImage(Object element) {
+                return ERROR_ICON;
             }
         });
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -104,23 +115,23 @@ class JsonPreviewPage extends WizardPage {
     private Composite createMessageComposite(Composite container) {
         Composite messageComposite = new Composite(container, SWT.NONE);
         GridLayoutFactory.fillDefaults().applyTo(messageComposite);
-        Label messageLabel = new Label(messageComposite, SWT.NONE);
+        Label messageLabel = new Label(messageComposite, SWT.FILL);
         messageLabel.setText("Message:");
         GridDataFactory.fillDefaults().applyTo(messageLabel);
         messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
         messageText.setEditable(false);
-        GridDataFactory.fillDefaults().hint(300, 300).grab(true, false).applyTo(messageText);
+        GridDataFactory.fillDefaults().minSize(150, 1).hint(300, 300).grab(true, true).applyTo(messageText);
         return messageComposite;
     }
 
     private Composite createCommentComposite(Composite container) {
-        Composite commentComposite = new Composite(container, SWT.NONE);
+        Composite commentComposite = new Composite(container, SWT.FILL);
         GridLayoutFactory.fillDefaults().applyTo(commentComposite);
         Label commentLabel = new Label(commentComposite, SWT.NONE);
         commentLabel.setText("Comment:");
         GridDataFactory.fillDefaults().applyTo(commentLabel);
         StyledText commentText = new StyledText(commentComposite, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
-        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 75).applyTo(commentText);
+        GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 75).applyTo(commentText);
         return commentComposite;
     }
 
