@@ -23,7 +23,6 @@ import org.eclipse.recommenders.completion.rcp.processable.IntelligentCompletion
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor;
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
@@ -164,14 +163,14 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         Integer completionIndex = Iterables.getOnlyElement(struct.getSecond());
 
         JavaContentAssistContextMock ctx = new JavaContentAssistContextMock(cu, completionIndex);
-        SessionProcessor processor = new SubwordsSessionProcessor(new CachingAstProvider(), preferences);
+        SessionProcessor processor = new SubwordsSessionProcessor(preferences);
         SessionProcessor baseRelevanceSessionProcessor = new BaseRelevanceSessionProcessor();
 
         CompletionRcpPreferences prefs = Mockito.mock(CompletionRcpPreferences.class);
         Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
                 ImmutableSet.of(new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
                         baseRelevanceSessionProcessor), new SessionProcessorDescriptor("subwords", "name", "desc",
-                        null, 0, true, "", processor)));
+                                null, 0, true, "", processor)));
 
         IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
         sut.sessionStarted();

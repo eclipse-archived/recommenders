@@ -32,6 +32,18 @@ public class StopwatchSessionProcessor extends SessionProcessor {
     }
 
     @Override
+    public void initializeContext(IRecommendersCompletionContext context) {
+        watch.reset();
+        watch.start();
+        try {
+            delegate.initializeContext(context);
+        } finally {
+            watch.stop();
+            System.out.println(delegate.getClass().getSimpleName() + "#initializeContext: " + elapsed());
+        }
+    }
+
+    @Override
     public boolean startSession(IRecommendersCompletionContext context) {
         watch.reset();
         watch.start();
@@ -39,6 +51,7 @@ public class StopwatchSessionProcessor extends SessionProcessor {
             return delegate.startSession(context);
         } finally {
             watch.stop();
+            System.out.println(delegate.getClass().getSimpleName() + "#startSession: " + elapsed());
         }
     }
 

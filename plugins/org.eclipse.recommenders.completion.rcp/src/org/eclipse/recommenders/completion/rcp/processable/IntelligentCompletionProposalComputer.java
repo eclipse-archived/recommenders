@@ -61,7 +61,7 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer implements
-        ICompletionListener, ICompletionListenerExtension2 {
+ICompletionListener, ICompletionListenerExtension2 {
 
     private final CompletionRcpPreferences preferences;
     private final IAstProvider astProvider;
@@ -125,9 +125,9 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             }
         } else {
             List<ICompletionProposal> res = Lists.newLinkedList();
-
             registerCompletionListener();
             crContext.set(ACTIVE_PROCESSORS, ImmutableSet.copyOf(activeProcessors));
+            fireInitializeContext(crContext);
             fireStartSession(crContext);
             for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
@@ -209,6 +209,16 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
     private void unregisterCompletionListener() {
         if (contentAssist != null) {
             contentAssist.removeCompletionListener(this);
+        }
+    }
+
+    protected void fireInitializeContext(IRecommendersCompletionContext crContext) {
+        for (SessionProcessor p : activeProcessors) {
+            try {
+                p.initializeContext(crContext);
+            } catch (Throwable e) {
+                Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+            }
         }
     }
 

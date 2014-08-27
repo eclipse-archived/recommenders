@@ -23,6 +23,14 @@ import com.google.common.annotations.Beta;
 public abstract class SessionProcessor {
 
     /**
+     * Allows session processors to alter the current session's completion context, specify default values or register
+     * specific context functions etc.
+     */
+    @Beta
+    public void initializeContext(IRecommendersCompletionContext context) {
+    }
+
+    /**
      * called after a new completion session was started. The given context already contains the initial jdt proposal.
      * SessionProcessors may add additional proposals here if required.
      */
@@ -47,7 +55,7 @@ public abstract class SessionProcessor {
     /**
      * Presents the final list of proposals to all interested parties. This list is not yet ordered as the final
      * ordering is determined by the {@link ProposalSorterRegistry#getCurrentSorter()} as part of the UI.
-     * 
+     *
      * @param proposals
      *            the final but unordered list
      */

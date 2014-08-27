@@ -12,17 +12,18 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
+import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
+@SuppressWarnings("restriction")
 public class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
 
-    @SuppressWarnings("restriction")
     public static final LogMessages EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
-            org.eclipse.recommenders.internal.completion.rcp.Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+            Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 

@@ -99,7 +99,6 @@ public class CompletionContextFunctions {
         res.put(EXPECTED_TYPENAMES, new ExpectedTypeNamesContextFunction());
         res.put(INTERNAL_COMPLETIONCONTEXT, new InternalCompletionContextFunction());
         res.put(JAVA_PROPOSALS, new InternalCompletionContextFunction());
-        res.put(JAVA_CONTENTASSIST_CONTEXT, new JavaContentAssistInvocationContextFunction());
         res.put(LOOKUP_ENVIRONMENT, new LookupEnvironmentContextFunction());
         res.put(RECEIVER_TYPEBINDING, new ReceiverTypeBindingContextFunction());
         res.put(RECEIVER_NAME, new ReceiverNameContextFunction());
@@ -397,18 +396,6 @@ public class CompletionContextFunctions {
             } else {
                 return proposals;
             }
-        }
-    }
-
-    public static class JavaContentAssistInvocationContextFunction implements
-    ICompletionContextFunction<JavaContentAssistInvocationContext> {
-
-        @Override
-        public JavaContentAssistInvocationContext compute(IRecommendersCompletionContext context,
-                CompletionContextKey<JavaContentAssistInvocationContext> key) {
-            JavaContentAssistInvocationContext res = context.getJavaContext();
-            context.set(key, res);
-            return res;
         }
     }
 

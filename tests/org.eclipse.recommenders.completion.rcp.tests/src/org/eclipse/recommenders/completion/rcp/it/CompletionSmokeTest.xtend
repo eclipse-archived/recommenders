@@ -476,7 +476,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
 class MockSubwordsSessionProcessor extends SubwordsSessionProcessor {
 
     new(IAstProvider astProvider) {
-        super(astProvider, new SubwordsRcpPreferences())
+        super(new SubwordsRcpPreferences())
     }
 
     override IEditorPart lookupEditor(ICompilationUnit cu) {
