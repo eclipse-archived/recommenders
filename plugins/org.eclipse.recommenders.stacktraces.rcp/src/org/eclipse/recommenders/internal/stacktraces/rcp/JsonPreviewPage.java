@@ -143,4 +143,9 @@ class JsonPreviewPage extends WizardPage {
         }
         super.setVisible(visible);
     }
+
+    @Override
+    public void performHelp() {
+        Browsers.openInExternalBrowser(StacktraceWizard.HELP_URL);
+    }
 }
