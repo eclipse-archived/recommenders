@@ -31,11 +31,15 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
+import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -50,6 +54,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -100,7 +105,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
-            .applyTo(tableViewer.getTable());
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override
@@ -137,6 +142,14 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new ArrayContentProvider());
+
+            tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+                @Override
+                public void doubleClick(DoubleClickEvent event) {
+                    openSessionProcessorPreferencePage(event.getSelection());
+                }
+            });
             return tableViewer;
         }
 
@@ -156,10 +169,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
             button.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
-                    SessionProcessorDescriptor descriptor = cast(selected.getFirstElement());
-                    String id = descriptor.getPreferencePage().orNull();
-                    PreferencesUtil.createPreferenceDialogOn(getShell(), id, null, null);
+                    openSessionProcessorPreferencePage(tableViewer.getSelection());
                 }
             });
 
@@ -180,6 +190,20 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
             IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
             SessionProcessorDescriptor descriptor = cast(selected.getFirstElement());
             configureBtn.setEnabled(descriptor.getPreferencePage().isPresent());
+        }
+
+        private void openSessionProcessorPreferencePage(ISelection selection) {
+            Optional<SessionProcessorDescriptor> optionalDescriptor = Selections
+                    .<SessionProcessorDescriptor>getFirstSelected(selection);
+            if (!optionalDescriptor.isPresent()) {
+                return;
+            }
+            SessionProcessorDescriptor descriptor = optionalDescriptor.get();
+            if (!descriptor.getPreferencePage().isPresent()) {
+                return;
+            }
+            String id = descriptor.getPreferencePage().get();
+            PreferencesUtil.createPreferenceDialogOn(getShell(), id, null, null);
         }
 
         @Override
