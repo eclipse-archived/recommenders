@@ -17,11 +17,9 @@ public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.subwords.rcp.messages"; //$NON-NLS-1$
 
     public static String PREFPAGE_TITLE_SUBWORDS;
-
-    public static String PREFPAGE_DESCRIPTION_SUBWORDS;
-
-    public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS;
-    public static String FIELD_LABEL_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES;
+    public static String PREFPAGE_DESCRIPTION_SUBWORDS_PREFIX_LENGTH;
+    public static String PREFPAGE_LABEL_PREFIX_LENGTH;
+    public static String PREFPAGE_TOOLTIP_PREFIX_LENGTH;
 
     public static String PROPOSAL_LABEL_ENABLE_SUBWORDS_COMPLETION;
     public static String PROPOSAL_TOOLTIP_ENABLE_SUBWORDS_COMPLETION;

@@ -20,4 +20,5 @@ public class Constants {
 
     public static final String PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS = "comprehensive_subword_matching_constructors"; //$NON-NLS-1$
     public static final String PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES = "comprehensive_subword_matching_types"; //$NON-NLS-1$
+    public static final String PREF_MIN_PREFIX_LENGTH_FOR_TYPES = "subwords_min_prefix_length_for_types"; //$NON-NLS-1$
 }
