@@ -10,32 +10,17 @@
  */
 package org.eclipse.recommenders.internal.subwords.rcp;
 
-import static org.eclipse.recommenders.internal.subwords.rcp.Constants.*;
+import static org.eclipse.recommenders.internal.subwords.rcp.Constants.PREF_MIN_PREFIX_LENGTH_FOR_TYPES;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 
-import com.google.common.annotations.VisibleForTesting;
-
 @SuppressWarnings("restriction")
 public class SubwordsRcpPreferences {
 
     @Inject
-    @Preference(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_TYPES)
-    public boolean computeAdditionalTypeProposals;
+    @Preference(PREF_MIN_PREFIX_LENGTH_FOR_TYPES)
+    public int minPrefixLengthForTypes;
 
-    @Inject
-    @Preference(PREF_COMPREHENSIVE_SUBWORDS_MATCHING_CONSTRUCTORS)
-    public boolean computeAdditionalConstructorProposals;
-
-    public SubwordsRcpPreferences() {
-        this(true, true);
-    }
-
-    @VisibleForTesting
-    public SubwordsRcpPreferences(boolean computeAdditionalTypeProposals, boolean computeAdditionalConstructorProposals) {
-        this.computeAdditionalTypeProposals = computeAdditionalTypeProposals;
-        this.computeAdditionalConstructorProposals = computeAdditionalConstructorProposals;
-    }
 }

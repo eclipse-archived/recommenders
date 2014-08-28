@@ -45,24 +45,19 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     private InternalCompletionContext compilerContext;
 
     public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx) {
-        this(ctx, false, false);
-    }
-
-    public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx,
-            boolean ignoreConstructors, boolean ignoreTypes) {
         super(false);
         checkNotNull(ctx);
         jdtuiContext = ctx;
-        initalizeCollector(ignoreConstructors, ignoreTypes);
+        initalizeCollector();
     }
 
-    private void initalizeCollector(boolean ignoreConstructors, boolean ignoreTypes) {
+    private void initalizeCollector() {
         if (shouldFillArgumentNames()) {
             collector = new FillArgumentNamesCompletionProposalCollector(jdtuiContext);
         } else {
             collector = new CompletionProposalCollector(jdtuiContext.getCompilationUnit(), false);
         }
-        configureInterestedProposalTypes(ignoreConstructors, ignoreTypes);
+        configureInterestedProposalTypes();
         adjustProposalReplacementLength();
     }
 
@@ -72,10 +67,10 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
      * Important: For this to work, this {@code CompletionRequestor} must then delegate all corresponding getters to
      * {@code collector}.
      */
-    private void configureInterestedProposalTypes(boolean ignoreConstructors, boolean ignoreTypes) {
+    private void configureInterestedProposalTypes() {
         collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
-        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, ignoreTypes);
-        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, ignoreConstructors);
+        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
+        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
         collector.setIgnored(FIELD_REF, false);
         collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, false);
         collector.setIgnored(KEYWORD, false);
@@ -84,12 +79,12 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.setIgnored(METHOD_DECLARATION, false);
         collector.setIgnored(METHOD_NAME_REFERENCE, false);
         collector.setIgnored(METHOD_REF, false);
-        collector.setIgnored(CONSTRUCTOR_INVOCATION, ignoreConstructors);
+        collector.setIgnored(CONSTRUCTOR_INVOCATION, false);
         collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, false);
         collector.setIgnored(PACKAGE_REF, false);
         collector.setIgnored(POTENTIAL_METHOD_DECLARATION, false);
         collector.setIgnored(VARIABLE_DECLARATION, false);
-        collector.setIgnored(TYPE_REF, ignoreTypes);
+        collector.setIgnored(TYPE_REF, false);
         collector.setIgnored(JAVADOC_BLOCK_TAG, false);
         collector.setIgnored(JAVADOC_FIELD_REF, false);
         collector.setIgnored(JAVADOC_INLINE_TAG, false);

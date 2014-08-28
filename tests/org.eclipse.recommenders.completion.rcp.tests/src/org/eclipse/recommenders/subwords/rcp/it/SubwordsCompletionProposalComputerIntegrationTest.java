@@ -48,7 +48,11 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     private static final int MIN_PREFIX_MATCH_RELEVANCE = 0;
     private static final int MAX_PREFIX_MATCH_RELEVANCE = Integer.MAX_VALUE;
 
-    private static final SubwordsRcpPreferences COMPREHENSIVE = new SubwordsRcpPreferences();
+    private static final SubwordsRcpPreferences COMPREHENSIVE = new SubwordsRcpPreferences() {
+        {
+            minPrefixLengthForTypes = 1;
+        }
+    };
 
     private final JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
 
@@ -170,7 +174,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
                 ImmutableSet.of(new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
                         baseRelevanceSessionProcessor), new SessionProcessorDescriptor("subwords", "name", "desc",
-                                null, 0, true, "", processor)));
+                        null, 0, true, "", processor)));
 
         IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
         sut.sessionStarted();

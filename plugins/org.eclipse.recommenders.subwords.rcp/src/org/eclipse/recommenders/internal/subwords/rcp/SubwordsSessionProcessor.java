@@ -111,13 +111,14 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             int length) {
         TreeSet<Integer> triggerlocations = Sets.newTreeSet();
         int emptyPrefix = offset - length;
+
+        // we always trigger with empty prefix to get all members at the current location:
         triggerlocations.add(emptyPrefix);
-        if (length == 0) {
-            triggerlocations.add(emptyPrefix);
-            return triggerlocations;
-        }
-        triggerlocations.add(emptyPrefix);
-        triggerlocations.add(emptyPrefix + 1);
+
+        // trigger a second time with the specified prefix OR the specified min length. Note that this is only effective
+        // for type and constructor completions, but cannot be filtered reliably.
+        int triggerOffset = Math.min(prefs.minPrefixLengthForTypes, length);
+        triggerlocations.add(emptyPrefix + triggerOffset);
         return triggerlocations;
     }
 
@@ -160,8 +161,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private ProposalCollectingCompletionRequestor computeProposals(ICompilationUnit cu,
             JavaContentAssistInvocationContext coreContext, int offset) {
-        ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext,
-                !prefs.computeAdditionalConstructorProposals, !prefs.computeAdditionalTypeProposals);
+        ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
         try {
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
         } catch (final Exception e) {
