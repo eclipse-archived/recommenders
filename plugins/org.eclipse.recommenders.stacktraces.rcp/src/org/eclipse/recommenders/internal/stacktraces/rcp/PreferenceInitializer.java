@@ -22,7 +22,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
-
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(PLUGIN_ID);
         s.put(PROP_SERVER, "http://recommenders.eclipse.org/stats/stacktraces/0.3.0/new/");
         // s.put(PROP_SERVER, "http://localhost:9002/new/");

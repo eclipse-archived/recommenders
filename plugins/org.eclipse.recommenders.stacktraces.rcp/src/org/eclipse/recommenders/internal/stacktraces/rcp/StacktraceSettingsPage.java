@@ -59,8 +59,8 @@ class StacktraceSettingsPage extends WizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        setTitle("An error has been logged. Help us fixing it.");
-        setDescription("Please provide any additional information\nthat may help us to reproduce the problem (optional).");
+        setTitle(Messages.SETTINGSPAGE_TITEL);
+        setDescription(Messages.SETTINGSPAGE_DESC);
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
 
@@ -68,12 +68,12 @@ class StacktraceSettingsPage extends WizardPage {
         GridDataFactory dataFactory = GridDataFactory.fillDefaults().grab(true, false);
         Group personalGroup = new Group(container, SWT.SHADOW_ETCHED_IN | SWT.SHADOW_ETCHED_OUT | SWT.SHADOW_IN
                 | SWT.SHADOW_OUT);
-        personalGroup.setText("Personal Information");
+        personalGroup.setText(Messages.SETTINGSPAGE_GROUPLABEL_PERSONAL);
         layoutFactory.applyTo(personalGroup);
         dataFactory.applyTo(personalGroup);
         FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(DEC_INFORMATION);
         {
-            new Label(personalGroup, SWT.NONE).setText("Name:");
+            new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_NAME);
             nameText = new Text(personalGroup, SWT.BORDER);
             nameText.setText(wizardPreferences.name);
             nameText.addModifyListener(new ModifyListener() {
@@ -85,10 +85,10 @@ class StacktraceSettingsPage extends WizardPage {
             dataFactory.applyTo(nameText);
             ControlDecoration dec = new ControlDecoration(nameText, SWT.TOP | SWT.LEFT);
             dec.setImage(infoDecoration.getImage());
-            dec.setDescriptionText("Optional. May be helpful for the team to see who reported the issue.");
+            dec.setDescriptionText(Messages.FIELD_DESC_NAME);
         }
         {
-            new Label(personalGroup, SWT.NONE).setText("Email:");
+            new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_EMAIL);
             emailText = new Text(personalGroup, SWT.BORDER);
             emailText.setText(wizardPreferences.email);
             emailText.addModifyListener(new ModifyListener() {
@@ -101,10 +101,10 @@ class StacktraceSettingsPage extends WizardPage {
             dataFactory.applyTo(emailText);
             ControlDecoration dec = new ControlDecoration(emailText, SWT.TOP | SWT.LEFT);
             dec.setImage(infoDecoration.getImage());
-            dec.setDescriptionText("Optional. Your email address allows us to get in touch with you when this issue has been fixed.");
+            dec.setDescriptionText(Messages.FIELD_DESC_EMAIL);
         }
         {
-            new Label(personalGroup, SWT.NONE).setText("Action:");
+            new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_ACTION);
             actionComboViewer = new ComboViewer(personalGroup, SWT.READ_ONLY);
             actionComboViewer.setContentProvider(ArrayContentProvider.getInstance());
             actionComboViewer.setInput(Lists.newArrayList(Mode.class.getEnumConstants()));
@@ -114,11 +114,11 @@ class StacktraceSettingsPage extends WizardPage {
                     Mode mode = (Mode) element;
                     switch (mode) {
                     case ASK:
-                        return "Report now but ask me again next time.";
+                        return Messages.FIELD_LABEL_ACTION_REPORT_ASK;
                     case IGNORE:
-                        return "Don't report and never ask me again.";
+                        return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
                     case SILENT:
-                        return "I love to help. Send all errors you see to the dev team immediately.";
+                        return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
                     default:
                         return super.getText(element);
                     }
@@ -143,7 +143,7 @@ class StacktraceSettingsPage extends WizardPage {
         }
         {
             anonymizeStacktracesButton = new Button(container, SWT.CHECK);
-            anonymizeStacktracesButton.setText("Anonymize stacktraces");
+            anonymizeStacktracesButton.setText(Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES);
             anonymizeStacktracesButton.setSelection(wizardPreferences.anonymize);
             anonymizeStacktracesButton.addSelectionListener(new SelectionAdapter() {
                 @Override
@@ -152,7 +152,7 @@ class StacktraceSettingsPage extends WizardPage {
                 }
             });
             clearMessagesButton = new Button(container, SWT.CHECK);
-            clearMessagesButton.setText("Clear messages");
+            clearMessagesButton.setText(Messages.FIELD_LABEL_CLEAR_MESSAGES);
             clearMessagesButton.setSelection(wizardPreferences.clearMessages);
             clearMessagesButton.addSelectionListener(new SelectionAdapter() {
                 @Override
@@ -169,7 +169,7 @@ class StacktraceSettingsPage extends WizardPage {
             {
                 Link feedbackLink = new Link(feedback, SWT.NONE);
                 dataFactory.align(SWT.BEGINNING, SWT.END).applyTo(feedbackLink);
-                feedbackLink.setText("<a>Learn more...</a>");
+                feedbackLink.setText(Messages.LINK_LEARN_MORE);
                 feedbackLink.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
@@ -181,7 +181,7 @@ class StacktraceSettingsPage extends WizardPage {
             {
                 Link feedbackLink = new Link(feedback, SWT.NONE);
                 dataFactory.align(SWT.END, SWT.END).applyTo(feedbackLink);
-                feedbackLink.setText("<a>Provide feedback...</a>");
+                feedbackLink.setText(Messages.LINK_PROVIDE_FEEDBACK);
                 feedbackLink.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {

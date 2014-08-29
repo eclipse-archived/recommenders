@@ -12,4 +12,13 @@
             class="org.eclipse.recommenders.internal.stacktraces.rcp.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.Workbench"
+            class="org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportingPreferencePage"
+            id="org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportingPreferencePage"
+            name="Error Reporting">
+      </page>
+   </extension>
 </plugin>
