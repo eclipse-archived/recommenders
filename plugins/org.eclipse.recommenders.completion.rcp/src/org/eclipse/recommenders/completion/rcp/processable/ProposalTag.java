@@ -39,6 +39,10 @@ public enum ProposalTag implements IProposalTag {
      */
     SUBWORDS_SCORE,
     /**
+     * Key to access a boolean value indicating whether the given proposal was a camel case match.
+     */
+    IS_CAMEL_CASE_MATCH,
+    /**
      * Key to access a boolean value indicating whether the given proposal was a pure prefix match.
      */
     IS_PREFIX_MATCH,
