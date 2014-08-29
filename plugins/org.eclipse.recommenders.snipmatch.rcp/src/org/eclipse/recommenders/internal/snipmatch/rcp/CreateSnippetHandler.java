@@ -31,10 +31,10 @@ import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditor;
-import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetEditorInput;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -91,7 +91,8 @@ public class CreateSnippetHandler extends AbstractHandler {
                     SnippetEditorInput input = new SnippetEditorInput(snippet, r);
                     IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
                     SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
-                    ed.setDirty(true);
+                    // mark the editor dirty when opening a newly created snippet
+                    ed.markDirtyUponSnippetCreation();
                     // if we could add the snippet somewhere, return. Otherwise report an error
                     return;
                 } catch (PartInitException e) {

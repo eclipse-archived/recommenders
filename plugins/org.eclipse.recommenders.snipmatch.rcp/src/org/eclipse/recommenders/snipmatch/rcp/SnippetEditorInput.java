@@ -9,7 +9,7 @@
  *     Stefan Prisca - initial API and implementation
  *     Olav Lenz - change to fileless approach.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
+package org.eclipse.recommenders.snipmatch.rcp;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.snipmatch.ISnippet;

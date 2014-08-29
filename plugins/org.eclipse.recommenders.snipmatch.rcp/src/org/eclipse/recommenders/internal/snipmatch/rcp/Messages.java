@@ -47,10 +47,9 @@ public class Messages extends NLS {
     public static String EDITOR_LABEL_SNIPPET_UUID;
     public static String EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS;
     public static String EDITOR_LABEL_SNIPPETS_TAG;
-    public static String EDITOR_LABEL_TITLE_METADATA;
 
-    public static String EDITOR_PAGE_NAME_METADATA;
-    public static String EDITOR_PAGE_NAME_SOURCE;
+    public static String EDITOR_TITLE_METADATA;
+    public static String EDITOR_TITLE_RAW_SOURCE;
 
     public static String ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;

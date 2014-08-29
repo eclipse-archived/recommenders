@@ -8,11 +8,14 @@
  * Contributors:
  *    Madhuranga Lakjeewa - initial API and implementation.
  *    Olav Lenz - change data structure of snippet
+ *    Stefan Prisca - add property change support
  */
 package org.eclipse.recommenders.snipmatch;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +33,8 @@ public class Snippet implements ISnippet {
 
     public static final String FORMAT_VERSION = "format-3";
 
+    private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
     @SerializedName("uuid")
     private UUID uuid;
     @SerializedName("name")
@@ -43,7 +48,8 @@ public class Snippet implements ISnippet {
     @SerializedName("code")
     private String code;
 
-    public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags, String code) {
+    public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
+            String code) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
@@ -92,23 +98,28 @@ public class Snippet implements ISnippet {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        firePropertyChange("code", this.code, this.code = code);
     }
 
     public void setName(String name) {
-        this.name = name;
+        firePropertyChange("name", this.name, this.name = name);
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        firePropertyChange("description", this.description, this.description = description);
     }
 
     public void setExtraSearchTerms(List<String> extraSearchTerms) {
+
+        firePropertyChange("extraSearchTerms", this.extraSearchTerms, extraSearchTerms);
         this.extraSearchTerms.clear();
         this.extraSearchTerms.addAll(extraSearchTerms);
+
     }
 
     public void setTags(List<String> tags) {
+
+        firePropertyChange("tags", this.tags, tags);
         this.tags.clear();
         this.tags.addAll(tags);
     }
@@ -130,5 +141,17 @@ public class Snippet implements ISnippet {
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
                 .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(propertyName, listener);
+    }
+
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 }

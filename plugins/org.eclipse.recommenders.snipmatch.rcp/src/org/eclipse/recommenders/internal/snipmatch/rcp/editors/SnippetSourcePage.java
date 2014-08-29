@@ -10,25 +10,26 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
-import static org.eclipse.core.databinding.beans.PojoProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
 
-import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -38,9 +39,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 public class SnippetSourcePage extends FormPage {
 
     private ISnippet snippet;
-    private Text txtCode;
-    private DataBindingContext ctx;
     private ScrolledForm form;
+    private Text textWidget;
+    private AbstractFormPart codePart;
+    private DataBindingContext context;
 
     public SnippetSourcePage(FormEditor editor, String id, String title) {
         super(editor, id, title);
@@ -49,60 +51,78 @@ public class SnippetSourcePage extends FormPage {
     @Override
     protected void createFormContent(IManagedForm managedForm) {
         FormToolkit toolkit = managedForm.getToolkit();
+
         form = managedForm.getForm();
-        form.setText(getTitle());
-        Composite body = form.getBody();
+        form.setText(Messages.EDITOR_TITLE_RAW_SOURCE);
         toolkit.decorateFormHeading(form.getForm());
+
+        Composite body = form.getBody();
         toolkit.paintBordersFor(body);
-        Composite formBody = managedForm.getForm().getBody();
-        formBody.setLayout(GridLayoutFactory.fillDefaults().create());
+        body.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        txtCode = managedForm.getToolkit().createText(formBody, "New Text", SWT.MULTI); //$NON-NLS-1$
-        txtCode.setEditable(true);
-        txtCode.setFont(JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT));
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(txtCode);
-
-        initDataBindings();
-        updateMessage();
-
-        form.reflow(true);
-    }
-
-    private void initDataBindings() {
-        ctx = new DataBindingContext();
-
-        // code
-        IObservableValue wpTxtCode = text(SWT.Modify).observe(txtCode);
-        IObservableValue ppCode = value(Snippet.class, "code", String.class).observe(snippet); //$NON-NLS-1$
-        ctx.bindValue(wpTxtCode, ppCode, null, null);
-
-        for (Object o : ctx.getValidationStatusProviders()) {
-            if (o instanceof Binding) {
-                ((Binding) o).getTarget().addChangeListener(new IChangeListener() {
-
-                    @Override
-                    public void handleChange(org.eclipse.core.databinding.observable.ChangeEvent event) {
-                        ((SnippetEditor) getEditor()).setDirty(true);
-                        updateMessage();
-                    }
-                });
+        codePart = new AbstractFormPart() {
+            @Override
+            public void initialize(IManagedForm managedForm) {
+                super.initialize(managedForm);
+                textWidget = managedForm.getToolkit().createText(managedForm.getForm().getBody(), snippet.getCode(),
+                        SWT.WRAP | SWT.MULTI);
             }
-        }
+
+            @Override
+            public void refresh() {
+                context.updateTargets();
+                super.refresh();
+                updateMessage();
+            }
+
+            @Override
+            public void commit(boolean onSave) {
+                if (onSave) {
+                    super.commit(onSave);
+                }
+            }
+
+            @Override
+            public void dispose() {
+                context.dispose();
+                super.dispose();
+            }
+        };
+        managedForm.addPart(codePart);
+        context = createDataBindingContext();
     }
 
     @Override
     public void init(IEditorSite site, IEditorInput input) {
         snippet = ((SnippetEditorInput) input).getSnippet();
+        registerEditorInputListener();
         super.init(site, input);
     }
 
-    public void update() {
-        ctx.dispose();
-        initDataBindings();
+    private void registerEditorInputListener() {
+
+        getEditor().addPropertyListener(new IPropertyListener() {
+
+            @Override
+            public void propertyChanged(Object source, int propId) {
+                if (propId == PROP_INPUT) {
+                    setInputWithNotify(getEditor().getEditorInput());
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void setInputWithNotify(IEditorInput input) {
+        snippet = ((SnippetEditorInput) input).getSnippet();
+        context.dispose();
+        context = createDataBindingContext();
+        super.setInputWithNotify(input);
     }
 
     private void updateMessage() {
-        String sourceValid = SnippetSourceValidator.isSourceValid(txtCode.getText());
+        String sourceValid = SnippetSourceValidator.isSourceValid(textWidget.getText());
         if (sourceValid.isEmpty()) {
             form.setMessage(null, IMessageProvider.NONE);
         } else {
@@ -110,13 +130,26 @@ public class SnippetSourcePage extends FormPage {
         }
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        // TODO: ctx is sometimes null. this is a workaround, see that ctx is
-        // always initialized.
-        if (ctx != null) {
-            ctx.dispose();
-        }
+    private DataBindingContext createDataBindingContext() {
+        DataBindingContext ctx = new DataBindingContext();
+
+        IObservableValue snippetBeanCode = BeanProperties.value(Snippet.class, "code", String.class).observe(snippet);
+        IObservableValue textWidgetCode = text(SWT.Modify).observe(textWidget);
+
+        ctx.bindValue(textWidgetCode, snippetBeanCode);
+
+        snippetBeanCode.addChangeListener(new IChangeListener() {
+
+            @Override
+            public void handleChange(ChangeEvent event) {
+                if (!textWidget.getText().equals(snippet.getCode())) {
+                    codePart.markStale();
+                } else {
+                    codePart.markDirty();
+                }
+                updateMessage();
+            }
+        });
+        return ctx;
     }
 }
