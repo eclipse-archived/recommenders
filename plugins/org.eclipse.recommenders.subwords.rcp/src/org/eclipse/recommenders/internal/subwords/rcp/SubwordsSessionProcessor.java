@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.subwords.rcp;
 
+import static java.lang.Math.min;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
@@ -20,7 +21,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.SortedSet;
 
 import javax.inject.Inject;
 
@@ -50,6 +51,7 @@ import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
@@ -91,7 +93,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
             ASTNode completionNode = compContext.getCompletionNode();
             ASTNode completionNodeParent = compContext.getCompletionNodeParent();
-            TreeSet<Integer> triggerlocations = computeTriggerLocations(offset, completionNode, completionNodeParent,
+            SortedSet<Integer> triggerlocations = computeTriggerLocations(offset, completionNode, completionNodeParent,
                     length);
 
             ITextViewer viewer = jdtContext.getViewer();
@@ -107,18 +109,23 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         }
     }
 
-    private TreeSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode, ASTNode completionNodeParent,
-            int length) {
-        TreeSet<Integer> triggerlocations = Sets.newTreeSet();
+    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode,
+            ASTNode completionNodeParent, int length) {
+        // It is important to trigger at higher locations first, as the base relevance assigned to a proposal by the JDT
+        // may depend on the prefix. Proposals which are made for both an empty prefix and a non-empty prefix are thus
+        // assigned a base relevance that is as close as possible to that the JDT would assign without subwords
+        // completion enabled.
+        SortedSet<Integer> triggerlocations = Sets.newTreeSet(Ordering.natural().reverse());
         int emptyPrefix = offset - length;
 
-        // we always trigger with empty prefix to get all members at the current location:
+        // Trigger first with either the specified prefix or the specified minimum prefix length. Note that this is only
+        // effective for type and constructor completions, but this situation cannot be detected reliably.
+        int triggerOffset = min(prefs.minPrefixLengthForTypes, length);
+        triggerlocations.add(emptyPrefix + triggerOffset);
+
+        // Always trigger with empty prefix to get all members at the current location:
         triggerlocations.add(emptyPrefix);
 
-        // trigger a second time with the specified prefix OR the specified min length. Note that this is only effective
-        // for type and constructor completions, but cannot be filtered reliably.
-        int triggerOffset = Math.min(prefs.minPrefixLengthForTypes, length);
-        triggerlocations.add(emptyPrefix + triggerOffset);
         return triggerlocations;
     }
 
