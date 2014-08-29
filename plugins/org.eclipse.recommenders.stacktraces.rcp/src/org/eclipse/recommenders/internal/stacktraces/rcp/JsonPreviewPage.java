@@ -11,6 +11,8 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.HELP_URL;
+
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -53,8 +55,8 @@ class JsonPreviewPage extends WizardPage {
         this.errors = errors;
         this.stacktracesPreferences = stacktracesPreferences;
         this.wizardPreferences = wizardPreferences;
-        setTitle("Review your data");
-        setDescription("This is what get's send to the team.");
+        setTitle(Messages.PREVIEWPAGE_TITLE);
+        setDescription(Messages.PREVIEWPAGE_DESC);
     }
 
     @Override
@@ -116,7 +118,7 @@ class JsonPreviewPage extends WizardPage {
         Composite messageComposite = new Composite(container, SWT.NONE);
         GridLayoutFactory.fillDefaults().applyTo(messageComposite);
         Label messageLabel = new Label(messageComposite, SWT.FILL);
-        messageLabel.setText("Message:");
+        messageLabel.setText(Messages.PREVIEWPAGE_LABEL_MESSAGE);
         GridDataFactory.fillDefaults().applyTo(messageLabel);
         messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
         messageText.setEditable(false);
@@ -128,7 +130,7 @@ class JsonPreviewPage extends WizardPage {
         Composite commentComposite = new Composite(container, SWT.FILL);
         GridLayoutFactory.fillDefaults().applyTo(commentComposite);
         Label commentLabel = new Label(commentComposite, SWT.NONE);
-        commentLabel.setText("Comment:");
+        commentLabel.setText(Messages.PREVIEWPAGE_LABEL_COMMENT);
         GridDataFactory.fillDefaults().applyTo(commentLabel);
         StyledText commentText = new StyledText(commentComposite, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
         GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 75).applyTo(commentText);
@@ -146,6 +148,6 @@ class JsonPreviewPage extends WizardPage {
 
     @Override
     public void performHelp() {
-        Browsers.openInExternalBrowser(StacktraceWizard.HELP_URL);
+        Browsers.openInExternalBrowser(HELP_URL);
     }
 }

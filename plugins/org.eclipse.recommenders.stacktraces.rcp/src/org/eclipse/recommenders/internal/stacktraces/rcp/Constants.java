@@ -18,4 +18,9 @@ public class Constants {
     static final String PROP_MODE = "mode";
     static final String PROP_NAME = "name";
     static final String PROP_SERVER = "server";
+
+    static final String HELP_URL = "https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub";
+    static final String FEEDBACK_FORM_URL = "https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform";
+
+    static final String SERVER_URL = "http://recommenders.eclipse.org/stats/stacktraces/0.3.0/new/";
 }

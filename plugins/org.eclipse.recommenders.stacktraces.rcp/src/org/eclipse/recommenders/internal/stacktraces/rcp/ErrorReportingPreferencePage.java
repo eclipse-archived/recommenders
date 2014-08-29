@@ -49,7 +49,9 @@ public class ErrorReportingPreferencePage extends FieldEditorPreferencePage impl
                 getFieldEditorParent()));
         addField(new BooleanFieldEditor(PROP_ANONYMIZE_STACKFRAMES, Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES,
                 getFieldEditorParent()));
-        addField(new BooleanFieldEditor(PROP_CLEAR_MESSAGES, Messages.FIELD_LABEL_CLEAR_MESSAGES, getFieldEditorParent()));
+
+        addField(new BooleanFieldEditor(PROP_CLEAR_MESSAGES, Messages.FIELD_LABEL_CLEAR_MESSAGES,
+                getFieldEditorParent()));
         addLinks(getFieldEditorParent());
     }
 
@@ -61,7 +63,7 @@ public class ErrorReportingPreferencePage extends FieldEditorPreferencePage impl
         learnMoreLink.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(StacktraceWizard.HELP_URL);
+                Browsers.openInExternalBrowser(HELP_URL);
             }
         });
 
@@ -70,7 +72,7 @@ public class ErrorReportingPreferencePage extends FieldEditorPreferencePage impl
         feedbackLink.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(StacktraceWizard.FEEDBACK_FORM_URL);
+                Browsers.openInExternalBrowser(FEEDBACK_FORM_URL);
             }
         });
     }

@@ -12,6 +12,7 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
@@ -44,7 +45,6 @@ import org.eclipse.swt.widgets.Text;
 import com.google.common.collect.Lists;
 
 class StacktraceSettingsPage extends WizardPage {
-
     private ComboViewer actionComboViewer;
     private Text emailText;
     private Text nameText;
@@ -173,7 +173,7 @@ class StacktraceSettingsPage extends WizardPage {
                 feedbackLink.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        Browsers.openInExternalBrowser(StacktraceWizard.HELP_URL);
+                        Browsers.openInExternalBrowser(HELP_URL);
                     }
                 });
             }
@@ -185,7 +185,7 @@ class StacktraceSettingsPage extends WizardPage {
                 feedbackLink.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        Browsers.openInExternalBrowser(StacktraceWizard.FEEDBACK_FORM_URL);
+                        Browsers.openInExternalBrowser(FEEDBACK_FORM_URL);
                     }
                 });
             }
@@ -196,6 +196,6 @@ class StacktraceSettingsPage extends WizardPage {
 
     @Override
     public void performHelp() {
-        Browsers.openInExternalBrowser(StacktraceWizard.HELP_URL);
+        Browsers.openInExternalBrowser(HELP_URL);
     }
 }

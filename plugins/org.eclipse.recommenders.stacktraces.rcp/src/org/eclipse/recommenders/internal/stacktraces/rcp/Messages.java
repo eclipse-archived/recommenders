@@ -30,6 +30,15 @@ public class Messages extends NLS {
     public static String SETTINGSPAGE_GROUPLABEL_PERSONAL;
     public static String LINK_LEARN_MORE;
     public static String LINK_PROVIDE_FEEDBACK;
+    public static String PREVIEWPAGE_DESC;
+    public static String PREVIEWPAGE_LABEL_COMMENT;
+    public static String PREVIEWPAGE_LABEL_MESSAGE;
+    public static String PREVIEWPAGE_TITLE;
+    public static String UPLOADJOB_BAD_RESPONSE;
+    public static String UPLOADJOB_FAILED_WITH_EXCEPTION;
+    public static String UPLOADJOB_NAME;
+    public static String UPLOADJOB_TASKNAME;
+    public static String UPLOADJOB_THANK_YOU;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
