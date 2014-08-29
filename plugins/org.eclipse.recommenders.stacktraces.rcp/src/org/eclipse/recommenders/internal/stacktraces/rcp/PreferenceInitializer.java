@@ -24,7 +24,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public void initializeDefaultPreferences() {
 
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(PLUGIN_ID);
-        s.put(PROP_SERVER, "http://recommenders.eclipse.org/stats/stacktraces/0.2.0/new/");
+        s.put(PROP_SERVER, "http://recommenders.eclipse.org/stats/stacktraces/0.3.0/new/");
         // s.put(PROP_SERVER, "http://localhost:9002/new/");
         s.put(PROP_NAME, SystemUtils.USER_NAME);
         s.put(PROP_EMAIL, "me@example.org");
