@@ -10,18 +10,31 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.dto;
 
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
-
 import java.io.Serializable;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
 
 public class StackTraceEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final StandardToStringStyle TO_STRING_STYLE;
+
+    static {
+        TO_STRING_STYLE = new StandardToStringStyle();
+        TO_STRING_STYLE.setFieldSeparator("\n");
+        TO_STRING_STYLE.setUseClassName(false);
+        TO_STRING_STYLE.setUseIdentityHashCode(false);
+        TO_STRING_STYLE.setArrayStart("");
+        TO_STRING_STYLE.setArraySeparator("\n");
+        TO_STRING_STYLE.setArrayEnd("");
+        TO_STRING_STYLE.setContentStart("");
+        TO_STRING_STYLE.setContentEnd("");
+    }
 
     public UUID anonymousId;
     public UUID eventId;
@@ -50,7 +63,13 @@ public class StackTraceEvent implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+
+        ReflectionToStringBuilder toStringBuilder = new ReflectionToStringBuilder(this, TO_STRING_STYLE);
+        toStringBuilder.setExcludeFieldNames("trace");
+        String string = toStringBuilder.toString() + "\n";
+        string += "trace= " + new ReflectionToStringBuilder(trace, TO_STRING_STYLE).toString();
+
+        return string;
     }
 
     @Override
