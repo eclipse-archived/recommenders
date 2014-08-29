@@ -21,11 +21,13 @@ public class StackTraceElementDto {
         res.methodname = e.getMethodName();
         res.line = e.getLineNumber();
         res.isNative = e.isNativeMethod();
+        res.filename = e.getFileName();
         return res;
     }
 
     public String classname;
     public String methodname;
+    public String filename;
     public int line;
     public boolean isNative;
 
