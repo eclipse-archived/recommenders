@@ -8,7 +8,7 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.models.rcp;
+package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.collect.ObjectArrays.concat;
 import static org.eclipse.jdt.core.IJavaElement.JAVA_PROJECT;
@@ -31,8 +31,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.recommenders.internal.models.rcp.Dependencies;
-import org.eclipse.recommenders.internal.models.rcp.EclipseDependencyListener;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootAdded;

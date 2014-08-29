@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.models;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.google.common.base.Optional;
@@ -31,5 +32,7 @@ public interface IModelIndex extends IModelArchiveCoordinateAdvisor {
     Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId);
 
     Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint);
+
+    void updateIndex(File index) throws IOException;
 
 }
