@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
@@ -34,6 +33,7 @@ public class XDSLWriter implements IBayesNetWriter {
 
     }
 
+    @Override
     public void write(BayesNet net) throws IOException {
         StringBuilder bldr = new StringBuilder();
         bldr.append(XML_HEADER);
@@ -41,29 +41,55 @@ public class XDSLWriter implements IBayesNetWriter {
 
         int offset = bldr.length();
         getVariableDefs(bldr, net);
-        XMLUtil.surround(offset, bldr, "nodes");
-        XMLUtil.surround(offset, bldr, "smile", "version", "1.0", ID, net.getName(), "numsamples", "1000",
-                "discsamples", "10000");
+        getGenieExtensions(bldr, net);
+        XMLUtil.surround(offset, bldr, "smile", "version", "1.0", ID, XMLUtil.escape(net.getName()), "numsamples",
+                "1000");
 
         out.write(bldr.toString());
         out.flush();
     }
 
-    private void getVariableDefs(StringBuilder bldr, BayesNet net) {
+    private void getGenieExtensions(StringBuilder bldr, BayesNet net) {
+        int offset = bldr.length();
         for (BayesNode node : net.getNodes()) {
-            int offset = bldr.length();
+            int nodeOffset = bldr.length();
+            bldr.append(XMLUtil.escape(node.getName()));
+            XMLUtil.surround(nodeOffset, bldr, "name");
+            bldr.append('\n');
+            int posOffset = bldr.length();
+            bldr.append("0 0 100 100");
+            XMLUtil.surround(posOffset, bldr, "position");
+            bldr.append('\n');
+            XMLUtil.emptyTag(bldr, "font", "color", "000000", "name", "Arial", "size", "8");
+            bldr.append('\n');
+            XMLUtil.emptyTag(bldr, "interior", "color", "e5f6f7");
+            bldr.append('\n');
+            XMLUtil.emptyTag(bldr, "outline", "color", "000000");
+            bldr.append('\n');
+            XMLUtil.surround(nodeOffset, bldr, "node", "id", XMLUtil.escape(node.getName()));
+        }
+        XMLUtil.surround(offset, bldr, "genie", "version", "1.0", "name", XMLUtil.escape(net.getName()));
+        XMLUtil.surround(offset, bldr, "extensions");
+
+    }
+
+    private void getVariableDefs(StringBuilder bldr, BayesNet net) {
+        int offset = bldr.length();
+        for (BayesNode node : net.getNodes()) {
+            int nodeOffset = bldr.length();
             encodeStates(bldr, node);
             encodeParents(bldr, node);
             bldr.append('\n');
             encodeProbabilities(bldr, node);
-            XMLUtil.surround(offset, bldr, CPT, ID, node.getName());
+            XMLUtil.surround(nodeOffset, bldr, CPT, ID, XMLUtil.escape(node.getName()));
             bldr.append('\n');
         }
+        XMLUtil.surround(offset, bldr, "nodes");
     }
 
     private void encodeStates(StringBuilder bldr, BayesNode node) {
         for (String outcome : node.getOutcomes()) {
-            XMLUtil.emptyTag(bldr, STATE, ID, StringEscapeUtils.escapeXml(outcome));
+            XMLUtil.emptyTag(bldr, STATE, ID, XMLUtil.escape(outcome));
             bldr.append('\n');
         }
     }
@@ -72,7 +98,7 @@ public class XDSLWriter implements IBayesNetWriter {
         int offset = bldr.length();
         for (BayesNode p : node.getParents()) {
             // XDSL can't handle names containing whitespaces!
-            bldr.append(p.getName().trim().replaceAll("\\s+", "_"));
+            bldr.append(XMLUtil.escape(p.getName()));
             bldr.append(' ');
         }
         if (!node.getParents().isEmpty()) {

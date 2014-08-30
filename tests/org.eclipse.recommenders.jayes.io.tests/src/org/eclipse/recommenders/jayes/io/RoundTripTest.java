@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Andreas Sewe - initial API and implementation
  ******************************************************************************/
@@ -118,6 +118,18 @@ public class RoundTripTest {
         b.addOutcomes("t", "f", "u");
         b.setParents(Arrays.asList(a));
         b.setProbabilities(0.4, 0.6, 0.0, 0.0, 0.7, 0.3, 0.1, 0.2, 0.7);
+
+        BayesNet netAfter = read(write(netBefore));
+
+        assertThat(netAfter, is(equalTo(netBefore)));
+    }
+
+    @Test
+    public void testEscapes() throws Exception {
+        BayesNet netBefore = new BayesNet();
+        BayesNode node1 = netBefore.createNode("i am spec/al");
+        node1.addOutcomes(" ", "/", "#", "+", "ü");
+        node1.setProbabilities(0.1, 0.1, 0.1, 0.1, 0.6);
 
         BayesNet netAfter = read(write(netBefore));
 

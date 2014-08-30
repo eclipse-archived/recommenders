@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -23,7 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.recommenders.internal.jayes.io.util.XMLUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.IBayesNetReader;
@@ -45,6 +45,7 @@ public class XDSLReader implements IBayesNetReader {
         this.str = str;
     }
 
+    @Override
     public BayesNet read() throws IOException {
         Document doc = obtainDocument(str);
 
@@ -77,7 +78,7 @@ public class XDSLReader implements IBayesNetReader {
 
         Node smileNode = doc.getElementsByTagName("smile").item(0);
         String networkName = getId(smileNode);
-        net.setName(networkName);
+        net.setName(XMLUtil.unescape(networkName));
 
         intializeNodes(doc, net);
         initializeNodeOutcomes(doc, net);
@@ -98,7 +99,7 @@ public class XDSLReader implements IBayesNetReader {
     }
 
     private String getId(Node node) {
-        return node.getAttributes().getNamedItem(ID).getTextContent();
+        return XMLUtil.unescape(node.getAttributes().getNamedItem(ID).getTextContent());
     }
 
     private void initializeNodeOutcomes(Document doc, BayesNet net) {
@@ -109,7 +110,7 @@ public class XDSLReader implements IBayesNetReader {
 
             BayesNode bNode = net.getNode(getId(node.getParentNode()));
 
-            bNode.addOutcome(StringEscapeUtils.unescapeXml(getId(node)));
+            bNode.addOutcome(getId(node));
 
         }
     }
@@ -128,7 +129,7 @@ public class XDSLReader implements IBayesNetReader {
 
             List<BayesNode> parents = newArrayList();
             for (String parentname : parentNames) {
-                parents.add(net.getNode(parentname));
+                parents.add(net.getNode(XMLUtil.unescape(parentname)));
             }
             bNode.setParents(parents);
         }
@@ -153,6 +154,7 @@ public class XDSLReader implements IBayesNetReader {
         }
     }
 
+    @Override
     public void close() throws IOException {
         str.close();
     }
