@@ -94,14 +94,15 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void hide() {
-                if (isFocussed(searchText) && state != AssistantControlState.ENABLE_HIDE) {
+                if (isFocused(searchText) && state != AssistantControlState.ENABLE_HIDE) {
                     // Ignore
                 } else {
                     super.hide();
+                    selectedProposal = null;
                 }
             }
 
-            private boolean isFocussed(Control control) {
+            private boolean isFocused(Control control) {
                 Control focusControl = Display.getCurrent().getFocusControl();
                 return control.equals(focusControl);
             }
@@ -110,6 +111,7 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void assistSessionEnded(ContentAssistEvent event) {
+                selectedProposal = null;
                 if (searchShell != null) {
                     searchShell.dispose();
                 }
@@ -117,6 +119,7 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+
                 if (proposal instanceof TemplateProposal) {
                     selectedProposal = (TemplateProposal) proposal;
                 } else {
@@ -190,7 +193,6 @@ public class SnipmatchCompletionEngine {
                     e.doit = false;
                     if (selectedProposal != null) {
                         state = AssistantControlState.ENABLE_HIDE;
-                        assistant.uninstall();
                         if (selectedProposal.isValidFor(ctx.getDocument(), ctx.getInvocationOffset())) {
                             if (selectedProposal instanceof SnippetProposal) {
                                 snippetApplied((SnippetProposal) selectedProposal);
@@ -204,12 +206,18 @@ public class SnipmatchCompletionEngine {
                             }
                         }
                     }
+                    assistant.uninstall();
                     return;
                 case SWT.TAB:
                     e.doit = false;
                     return;
                 }
 
+                // there is no navigation to support if no proposal is selected:
+                if (selectedProposal == null) {
+                    return;
+                }
+                // but if there is, let's navigate...
                 switch (e.keyCode) {
                 case SWT.ARROW_UP:
                     execute(ContentAssistant.SELECT_PREVIOUS_PROPOSAL_COMMAND_ID);
