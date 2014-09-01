@@ -23,8 +23,11 @@ public class LogMessages extends DefaultLogMessage {
     public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR,
             Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
 
-    public static final LogMessages SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
-            "An error occured while determining the leading whitespace characters.");
+    public static final LogMessages ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
+            Messages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
+
+    public static final LogMessages ERROR_SNIPPET_COULD_NOT_BE_EVALUATED = new LogMessages(ERROR,
+            Messages.ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 

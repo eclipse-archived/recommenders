@@ -103,6 +103,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
         }
         JavaContext ctx = new JavaContext(contextType, document, p, cu);
         ctx.setVariable("selection", selectedText); //$NON-NLS-1$
+        ctx.setForceEvaluation(true);
 
         for (Recommendation<ISnippet> recommendation : recommendations) {
             ISnippet snippet = recommendation.getProposal();

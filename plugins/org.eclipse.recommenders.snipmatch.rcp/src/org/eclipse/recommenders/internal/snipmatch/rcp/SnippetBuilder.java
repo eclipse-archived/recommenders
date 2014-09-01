@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.HashMap;
@@ -267,7 +267,7 @@ public class SnippetBuilder {
                 sb.append(clean).append(LINE_SEPARATOR);
             }
         } catch (BadLocationException e) {
-            log(SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED, e);
+            log(ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED, e);
         }
     }
 }
