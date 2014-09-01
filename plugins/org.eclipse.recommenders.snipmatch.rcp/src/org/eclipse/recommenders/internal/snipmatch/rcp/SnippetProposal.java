@@ -14,6 +14,8 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.ui.javaeditor.IndentUtil;
@@ -52,6 +54,7 @@ public class SnippetProposal extends TemplateProposal implements ICompletionProp
         } catch (Exception e) {
             context = new JavaContext(context.getContextType(), new Document(), new Position(0), null);
             context.evaluate(template);
+            log(ERROR_SNIPPET_COULD_NOT_BE_EVALUATED, e);
         }
         int relevance = (int) (recommendation.getRelevance() * 100);
         return new SnippetProposal(recommendation.getProposal(), relevance, template, context, region, image, valid);
