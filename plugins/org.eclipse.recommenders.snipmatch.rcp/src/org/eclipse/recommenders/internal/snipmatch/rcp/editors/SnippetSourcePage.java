@@ -17,7 +17,9 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
@@ -66,6 +68,7 @@ public class SnippetSourcePage extends FormPage {
                 super.initialize(managedForm);
                 textWidget = managedForm.getToolkit().createText(managedForm.getForm().getBody(), snippet.getCode(),
                         SWT.WRAP | SWT.MULTI);
+                textWidget.setFont(JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT));
             }
 
             @Override
