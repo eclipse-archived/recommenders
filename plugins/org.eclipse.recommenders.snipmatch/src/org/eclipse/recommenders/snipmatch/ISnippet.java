@@ -45,5 +45,5 @@ public interface ISnippet extends Uuidable {
      */
     List<String> getExtraSearchTerms();
 
-    LocationConstraint getLocationConstraint();
+    Location getLocation();
 }

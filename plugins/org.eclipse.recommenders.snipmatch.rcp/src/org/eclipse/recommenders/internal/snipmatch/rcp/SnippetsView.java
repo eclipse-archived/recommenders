@@ -45,8 +45,8 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.LocationConstraint;
-import org.eclipse.recommenders.snipmatch.SnipmatchContext;
+import org.eclipse.recommenders.snipmatch.Location;
+import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -287,7 +287,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                         if (!viewer.getControl().isDisposed()) {
                             Set<Recommendation<ISnippet>> snippets = Sets.newHashSet();
                             for (ISnippetRepository repo : repos) {
-                                snippets.addAll(repo.search(new SnipmatchContext(txtSearch.getText().trim())));
+                                snippets.addAll(repo.search(new SearchContext(txtSearch.getText().trim())));
                             }
                             viewer.setInput(snippets);
                         }
@@ -313,7 +313,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         try {
             ISnippet snippet = new Snippet(UUID.randomUUID(), "", "", Collections.<String>emptyList(), //$NON-NLS-1$ //$NON-NLS-2$
-                    Collections.<String>emptyList(), "", LocationConstraint.NONE); //$NON-NLS-1$
+                    Collections.<String>emptyList(), "", Location.NONE); //$NON-NLS-1$
 
             final SnippetEditorInput input = new SnippetEditorInput(snippet, repo);
             SnippetEditor editor = cast(page

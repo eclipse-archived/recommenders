@@ -17,7 +17,7 @@ import static org.eclipse.core.databinding.beans.BeanProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.Messages.*;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -32,7 +32,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -40,12 +40,19 @@ import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
-import org.eclipse.recommenders.snipmatch.LocationConstraint;
+import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.swt.SWT;
@@ -57,7 +64,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
@@ -78,8 +84,7 @@ import com.google.common.base.Optional;
 @SuppressWarnings("restriction")
 public class SnippetMetadataPage extends FormPage {
 
-    private static final String[] SNIPMATCH_LOCATION_CONSTRAINTS = { SNIPMATCH_CONTEXT_FILE, SNIPMATCH_CONTEXT_JAVA,
-        SNIPMATCH_CONTEXT_JAVA_STATEMENTS, SNIPMATCH_CONTEXT_JAVA_MEMBERS, SNIPMATCH_CONTEXT_JAVADOC };
+    private static final Location[] SNIPMATCH_LOCATIONS = { FILE, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS, JAVADOC };
 
     private ISnippet snippet;
 
@@ -87,7 +92,7 @@ public class SnippetMetadataPage extends FormPage {
 
     private Text txtName;
     private Text txtDescription;
-    private Combo comboContext;
+    private ComboViewer comboLocation;
     private Text txtUuid;
 
     private ListViewer listViewerExtraSearchTerms;
@@ -164,44 +169,71 @@ public class SnippetMetadataPage extends FormPage {
                 txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER)
                         .grab(true, false).span(2, 1).indent(horizontalIndent, 0).create());
 
-                Label lblContext = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
-                        Messages.EDITOR_LABEL_SNIPPET_CONTEXT, SWT.NONE);
-                lblContext.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+                Label lblLocation = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                        Messages.EDITOR_LABEL_SNIPPET_LOCATION, SWT.NONE);
+                lblLocation.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
-                comboContext = new Combo(managedForm.getForm().getBody(), SWT.DROP_DOWN | SWT.READ_ONLY);
-                managedForm.getToolkit().adapt(comboContext, true, true);
-                comboContext.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
-                        .span(2, 1).indent(horizontalIndent, 0).create());
+                comboLocation = new ComboViewer(managedForm.getForm().getBody(), SWT.DROP_DOWN | SWT.READ_ONLY);
 
-                final ControlDecoration contextErrorDecoration = new ControlDecoration(comboContext, SWT.LEFT);
-                contextErrorDecoration.setDescriptionText(Messages.ERROR_SNIPPET_CONTEXT_CANNOT_BE_EMPTY + "\n"
-                        + Messages.EDITOR_DESCRIPTION_CONTEXT);
-                contextErrorDecoration.setImage(decorationImage);
-                contextErrorDecoration.setMarginWidth(1);
+                managedForm.getToolkit().adapt(comboLocation.getCombo(), true, true);
+                comboLocation.setContentProvider(ArrayContentProvider.getInstance());
+                comboLocation.setInput(SNIPMATCH_LOCATIONS);
+                comboLocation.setLabelProvider(new LabelProvider() {
+                    @Override
+                    public String getText(Object element) {
+                        if (element instanceof Location) {
+                            Location location = (Location) element;
+                            switch (location) {
+                            case FILE:
+                                return Messages.SNIPMATCH_LOCATION_FILE;
+                            case JAVA:
+                                return Messages.SNIPMATCH_LOCATION_JAVA;
+                            case JAVA_STATEMENTS:
+                                return Messages.SNIPMATCH_LOCATION_JAVA_STATEMENTS;
+                            case JAVA_TYPE_MEMBERS:
+                                return Messages.SNIPMATCH_LOCATION_JAVA_MEMBERS;
+                            case JAVADOC:
+                                return Messages.SNIPMATCH_LOCATION_JAVADOC;
+                            default:
+                                break;
+                            }
+                        }
+                        return super.getText(element);
+                    }
+                });
+                comboLocation.getCombo().setLayoutData(
+                        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
+                                .indent(horizontalIndent, 0).create());
 
-                final ControlDecoration contextDescriptionDecoration = new ControlDecoration(comboContext, SWT.LEFT);
+                final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
+                        SWT.LEFT);
+                locationErrorDecoration.setDescriptionText(Messages.ERROR_SNIPPET_LOCATION_CANNOT_BE_EMPTY + "\n" //$NON-NLS-1$
+                        + Messages.EDITOR_DESCRIPTION_LOCATION);
+                locationErrorDecoration.setImage(decorationImage);
+                locationErrorDecoration.setMarginWidth(1);
+
+                final ControlDecoration locationDescriptionDecoration = new ControlDecoration(comboLocation.getCombo(),
+                        SWT.LEFT);
                 FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
                         DEC_INFORMATION);
-                contextDescriptionDecoration.setImage(infoDecoration.getImage());
-                contextDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_CONTEXT);
+                locationDescriptionDecoration.setImage(infoDecoration.getImage());
+                locationDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_LOCATION);
+                locationDescriptionDecoration.setMarginWidth(1);
 
-                comboContext.addModifyListener(new ModifyListener() {
-
+                comboLocation.addSelectionChangedListener(new ISelectionChangedListener() {
                     @Override
-                    public void modifyText(ModifyEvent e) {
-                        if (comboContext.getSelectionIndex() == -1) {
-                            contextErrorDecoration.show();
-                            contextDescriptionDecoration.hide();
+                    public void selectionChanged(SelectionChangedEvent event) {
+                        if (event.getSelection().isEmpty()) {
+                            locationErrorDecoration.show();
+                            locationDescriptionDecoration.hide();
                         } else {
-                            contextErrorDecoration.hide();
-                            contextDescriptionDecoration.show();
+                            locationErrorDecoration.hide();
+                            locationDescriptionDecoration.show();
                         }
                     }
 
                 });
-
-                comboContext.setItems(SNIPMATCH_LOCATION_CONSTRAINTS);
-                comboContext.select(snippet.getLocationConstraint().getIndex());
+                comboLocation.setSelection(new StructuredSelection(snippet.getLocation()));
 
                 Label lblExtraSearchTerms = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                         Messages.EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS, SWT.NONE);
@@ -211,6 +243,13 @@ public class SnippetMetadataPage extends FormPage {
                 List lstExtraSearchTerm = listViewerExtraSearchTerms.getList();
                 lstExtraSearchTerm.setLayoutData(GridDataFactory.fillDefaults().grab(true, false)
                         .indent(horizontalIndent, 0).create());
+
+                final ControlDecoration extraSearchTermsDescriptionDecoration = new ControlDecoration(
+                        listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
+                extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
+                extraSearchTermsDescriptionDecoration
+                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
                         managedForm.getForm().getBody(), SWT.NONE);
@@ -249,6 +288,12 @@ public class SnippetMetadataPage extends FormPage {
                 List lstTags = listViewerTags.getList();
                 lstTags.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0)
                         .create());
+
+                final ControlDecoration tagsDescriptionDecoration = new ControlDecoration(listViewerTags.getList(),
+                        SWT.TOP | SWT.LEFT);
+                tagsDescriptionDecoration.setImage(infoDecoration.getImage());
+                tagsDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_TAGS);
+                tagsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerTags = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
                 btnContainerTags.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -388,25 +433,15 @@ public class SnippetMetadataPage extends FormPage {
             }
         });
 
-        // context
-        IObservableValue wpTxtContext = WidgetProperties.singleSelectionIndex().observe(comboContext);
-        IObservableValue ppContext = value(Snippet.class, "locationConstraint", LocationConstraint.class).observe(snippet); //$NON-NLS-1$
-        context.bindValue(wpTxtContext, ppContext, new UpdateValueStrategy() {
-            @Override
-            public Object convert(Object value) {
-                return LocationConstraint.valueOf((Integer) value);
-            }
-        }, new UpdateValueStrategy() {
-            @Override
-            public Object convert(Object value) {
-                return ((LocationConstraint) value).getIndex();
-            }
-        });
-        ppContext.addChangeListener(new IChangeListener() {
+        // location
+        IObservableValue wpTxtLocation = ViewerProperties.singleSelection().observe(comboLocation);
+        IObservableValue ppLocation = value(Snippet.class, "location", Location.class).observe(snippet); //$NON-NLS-1$
+        context.bindValue(wpTxtLocation, ppLocation);
+        ppLocation.addChangeListener(new IChangeListener() {
             @Override
             public void handleChange(ChangeEvent event) {
-                if (!LocationConstraint.valueOf(comboContext.getSelectionIndex()).equals(
-                        snippet.getLocationConstraint())) {
+                IStructuredSelection selection = (IStructuredSelection) comboLocation.getSelection();
+                if (!selection.getFirstElement().equals(snippet.getLocation())) {
                     contentsPart.markStale();
                 } else {
                     contentsPart.markDirty();
@@ -497,7 +532,6 @@ public class SnippetMetadataPage extends FormPage {
 
     @Override
     protected void setInputWithNotify(IEditorInput input) {
-
         snippet = ((SnippetEditorInput) input).getSnippet();
         context.dispose();
         context = createDataBindingContext();

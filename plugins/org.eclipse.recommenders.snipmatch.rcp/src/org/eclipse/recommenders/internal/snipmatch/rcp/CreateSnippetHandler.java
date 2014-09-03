@@ -32,7 +32,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.LocationConstraint;
+import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -83,7 +83,7 @@ public class CreateSnippetHandler extends AbstractHandler {
         List<String> keywords = Lists.<String>newArrayList();
         List<String> tags = Lists.<String>newArrayList();
         return new Snippet(UUID.randomUUID(),
-                "<new snippet>", "<enter description>", keywords, tags, code, LocationConstraint.NONE); //$NON-NLS-1$ //$NON-NLS-2$
+                "<new snippet>", "<enter description>", keywords, tags, code, Location.NONE); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void openSnippetInEditor(Snippet snippet) {

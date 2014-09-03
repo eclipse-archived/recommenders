@@ -13,7 +13,7 @@ package org.eclipse.recommenders.snipmatch.rcp;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
-import static org.eclipse.recommenders.snipmatch.LocationConstraint.NONE;
+import static org.eclipse.recommenders.snipmatch.Location.NONE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 
 import java.io.IOException;
@@ -128,9 +128,9 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             return;
         }
 
-        if (snippet.getLocationConstraint() == null || snippet.getLocationConstraint() == NONE) {
-            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_INVALID_SNIPPET_CONTEXT,
-                    Messages.DIALOG_MESSAGE_INVALID_SNIPPET_CONTEXT);
+        if (snippet.getLocation() == null || snippet.getLocation() == NONE) {
+            MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_INVALID_SNIPPET_LOCATION,
+                    Messages.DIALOG_MESSAGE_INVALID_SNIPPET_LOCATION);
             monitor.setCanceled(true);
             return;
         }

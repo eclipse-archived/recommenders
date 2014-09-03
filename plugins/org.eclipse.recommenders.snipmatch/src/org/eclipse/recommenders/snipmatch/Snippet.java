@@ -12,7 +12,7 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
-import static org.eclipse.recommenders.snipmatch.LocationConstraint.FILE;
+import static org.eclipse.recommenders.snipmatch.Location.FILE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.beans.PropertyChangeListener;
@@ -48,29 +48,29 @@ public class Snippet implements ISnippet {
     private List<String> tags = Lists.newArrayList();
     @SerializedName("code")
     private String code;
-    @SerializedName("context")
-    private LocationConstraint locationConstraint = FILE;
+    @SerializedName("location")
+    private Location location = FILE;
 
     public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
-            String code, LocationConstraint locationConstraint) {
+            String code, Location location) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
         ensureIsNotNull(extraSearchTerms);
         ensureIsNotNull(tags);
         ensureIsNotNull(code);
-        ensureIsNotNull(locationConstraint);
+        ensureIsNotNull(location);
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.extraSearchTerms = extraSearchTerms;
         this.tags = tags;
         this.code = code;
-        this.locationConstraint = locationConstraint;
+        this.location = location;
     }
 
     protected Snippet() {
-        this.locationConstraint = FILE;
+        this.location = FILE;
     }
 
     @Override
@@ -104,8 +104,8 @@ public class Snippet implements ISnippet {
     }
 
     @Override
-    public LocationConstraint getLocationConstraint() {
-        return locationConstraint;
+    public Location getLocation() {
+        return location;
     }
 
     public void setCode(String code) {
@@ -120,12 +120,11 @@ public class Snippet implements ISnippet {
         firePropertyChange("description", this.description, this.description = description);
     }
 
-    public void setLocationConstraint(LocationConstraint locationConstraint) {
-        this.locationConstraint = locationConstraint;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public void setExtraSearchTerms(List<String> extraSearchTerms) {
-
         firePropertyChange("extraSearchTerms", this.extraSearchTerms, extraSearchTerms);
         this.extraSearchTerms.clear();
         this.extraSearchTerms.addAll(extraSearchTerms);
@@ -156,7 +155,7 @@ public class Snippet implements ISnippet {
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
                 .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode(),
-                snippet.getLocationConstraint() != null ? snippet.getLocationConstraint() : FILE);
+                snippet.getLocation() != null ? snippet.getLocation() : FILE);
     }
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {

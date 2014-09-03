@@ -10,9 +10,12 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
-public interface ISnipmatchContext {
+public enum Location {
 
-    String getUserQuery();
-
-    LocationConstraint getLocationConstraint();
+    NONE,
+    FILE,
+    JAVA,
+    JAVA_STATEMENTS,
+    JAVA_TYPE_MEMBERS,
+    JAVADOC;
 }

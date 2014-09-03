@@ -15,7 +15,7 @@ import static com.google.common.collect.ImmutableSet.copyOf;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
-import static org.eclipse.recommenders.snipmatch.LocationConstraint.*;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
@@ -91,7 +91,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_TAG = "tag";
     private static final String F_PATH = "path";
     private static final String F_UUID = "uuid";
-    private static final String F_CONTEXT = "context";
+    private static final String F_LOCATION = "location";
 
     private static final float NAME_BOOST = 4.0f;
     private static final float DESCRIPTION_BOOST = 2.0f;
@@ -237,12 +237,13 @@ public class FileSnippetRepository implements ISnippetRepository {
             doc.add(new Field(F_EXTRA_SEARCH_TERM, extraSearchTerm, Store.YES, Index.ANALYZED));
         }
 
-        LocationConstraint locationConstraint = snippet.getLocationConstraint();
-        if (locationConstraint != null) {
-            doc.add(new Field(F_CONTEXT, locationConstraint.toString(), Store.NO, Index.NOT_ANALYZED));
-        }
+        doc.add(new Field(F_LOCATION, getIndexString(snippet.getLocation()), Store.NO, Index.NOT_ANALYZED));
 
         writer.addDocument(doc);
+    }
+
+    private String getIndexString(Location location) {
+        return location.name().toLowerCase().replace('_', '-');
     }
 
     @VisibleForTesting
@@ -271,22 +272,22 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     @Override
-    public List<Recommendation<ISnippet>> search(ISnipmatchContext context) {
-        if (isBlank(context.getUserQuery()) && context.getLocationConstraint() == NONE) {
+    public List<Recommendation<ISnippet>> search(ISearchContext context) {
+        if (isBlank(context.getSearchText()) && context.getLocation() == NONE) {
             return ImmutableList.copyOf(getSnippets());
         }
         return doSearch(context, Integer.MAX_VALUE);
     }
 
     @Override
-    public List<Recommendation<ISnippet>> search(ISnipmatchContext context, int maxResults) {
-        if (isBlank(context.getUserQuery())) {
+    public List<Recommendation<ISnippet>> search(ISearchContext context, int maxResults) {
+        if (isBlank(context.getSearchText())) {
             return Collections.emptyList();
         }
         return doSearch(context, Math.min(maxResults, MAX_SEARCH_RESULTS));
     }
 
-    private List<Recommendation<ISnippet>> doSearch(ISnipmatchContext context, int maxResults) {
+    private List<Recommendation<ISnippet>> doSearch(ISearchContext context, int maxResults) {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
@@ -307,7 +308,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
-    private Map<File, Float> searchSnippetFiles(ISnipmatchContext context, int maxResults) {
+    private Map<File, Float> searchSnippetFiles(ISearchContext context, int maxResults) {
         Map<File, Float> results = Maps.newLinkedHashMap();
         IndexSearcher searcher = null;
         try {
@@ -335,40 +336,40 @@ public class FileSnippetRepository implements ISnippetRepository {
         return results;
     }
 
-    private String createLuceneQuery(ISnipmatchContext context) {
+    private String createLuceneQuery(ISearchContext context) {
         StringBuilder sb = new StringBuilder();
 
         // Remove trailing 'OR' & 'NOT' to prevent pairing with location constraint
-        String userQuery = context.getUserQuery().trim();
+        String userQuery = context.getSearchText().trim();
         userQuery = removeEnd(userQuery, " OR");
         userQuery = removeEnd(userQuery, " NOT");
         // Remove trailing ':' to prevent invalid lucene syntax
         userQuery = removeEnd(userQuery, ":");
         sb.append(userQuery);
 
-        if (context.getLocationConstraint() == NONE) {
+        if (context.getLocation() == NONE) {
             return sb.toString();
         }
 
         sb.append(" (");
-        sb.append(F_CONTEXT);
+        sb.append(F_LOCATION);
         sb.append(":");
-        sb.append(join(getLocationConstraints(context.getLocationConstraint()), " OR " + F_CONTEXT + ":"));
+        sb.append(join(getLocation(context.getLocation()), " OR " + F_LOCATION + ":"));
         sb.append(")");
 
         return sb.toString();
     }
 
-    private Collection<LocationConstraint> getLocationConstraints(LocationConstraint constraint) {
-        Collection<LocationConstraint> result = Sets.newHashSet(constraint);
+    private Collection<String> getLocation(Location location) {
+        Collection<String> result = Sets.newHashSet(getIndexString(location));
 
-        switch (constraint) {
+        switch (location) {
         case JAVA_STATEMENTS:
         case JAVA_TYPE_MEMBERS:
-            result.add(JAVA);
+            result.add(getIndexString(JAVA));
         case JAVA:
         case JAVADOC:
-            result.add(FILE);
+            result.add(getIndexString(FILE));
             return result;
         default:
             return result;
@@ -382,7 +383,6 @@ public class FileSnippetRepository implements ISnippetRepository {
             public Float apply(Float input) {
                 return input / maxScore;
             }
-
         });
     }
 
@@ -392,7 +392,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         try {
             Preconditions.checkState(isOpen());
 
-            return !searchSnippetFiles(new SnipmatchContext(F_UUID + ":" + uuid), Integer.MAX_VALUE).isEmpty();
+            return !searchSnippetFiles(new SearchContext(F_UUID + ":" + uuid), Integer.MAX_VALUE).isEmpty();
         } finally {
             readLock.unlock();
         }
@@ -403,7 +403,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         writeLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            Map<File, Float> snippetFiles = searchSnippetFiles(new SnipmatchContext(F_UUID + ":" + uuid),
+            Map<File, Float> snippetFiles = searchSnippetFiles(new SearchContext(F_UUID + ":" + uuid),
                     Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 return false;
@@ -455,7 +455,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
             File file;
             Map<File, Float> snippetFiles = searchSnippetFiles(
-                    new SnipmatchContext(F_UUID + ":" + importSnippet.getUuid()), Integer.MAX_VALUE);
+                    new SearchContext(F_UUID + ":" + importSnippet.getUuid()), Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 file = new File(snippetsdir, importSnippet.getUuid() + DOT_JSON);
             } else {

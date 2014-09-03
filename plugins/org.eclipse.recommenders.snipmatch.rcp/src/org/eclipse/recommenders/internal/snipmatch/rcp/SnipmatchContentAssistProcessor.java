@@ -81,7 +81,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             return new ICompletionProposal[0];
         }
 
-        SnipmatchRcpContext context = new SnipmatchRcpContext(terms, ctx);
+        JavaEditorSearchContext context = new JavaEditorSearchContext(terms, ctx);
 
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
         List<Recommendation<ISnippet>> recommendations = Lists.newArrayList();

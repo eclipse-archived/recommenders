@@ -15,41 +15,41 @@ import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.recommenders.snipmatch.LocationConstraint;
-import org.eclipse.recommenders.snipmatch.SnipmatchContext;
+import org.eclipse.recommenders.snipmatch.Location;
+import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SnipmatchRcpContext extends SnipmatchContext {
+public class JavaEditorSearchContext extends SearchContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SnipmatchRcpContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JavaEditorSearchContext.class);
 
-    public SnipmatchRcpContext(String userQuery, JavaContentAssistInvocationContext contentAssistContext) {
-        super(userQuery, getLocationConstraint(contentAssistContext));
+    public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext contentAssistContext) {
+        super(searchText, getLocation(contentAssistContext));
     }
 
-    private static LocationConstraint getLocationConstraint(JavaContentAssistInvocationContext context) {
+    private static Location getLocation(JavaContentAssistInvocationContext context) {
         try {
             String partition = TextUtilities.getContentType(context.getDocument(), IJavaPartitions.JAVA_PARTITIONING,
                     context.getInvocationOffset(), true);
             if (partition.equals(IJavaPartitions.JAVA_DOC)) {
-                return LocationConstraint.JAVADOC;
+                return Location.JAVADOC;
             } else {
                 CompletionContext coreContext = context.getCoreContext();
                 if (coreContext != null) {
                     int tokenLocation = coreContext.getTokenLocation();
                     if ((tokenLocation & CompletionContext.TL_MEMBER_START) != 0) {
-                        return LocationConstraint.JAVA_TYPE_MEMBERS;
+                        return Location.JAVA_TYPE_MEMBERS;
                     } else if ((tokenLocation & CompletionContext.TL_STATEMENT_START) != 0) {
-                        return LocationConstraint.JAVA_STATEMENTS;
+                        return Location.JAVA_STATEMENTS;
                     }
-                    return LocationConstraint.JAVA;
+                    return Location.JAVA;
                 }
             }
         } catch (BadLocationException e) {
-            LOG.error("Could not compute Snipmatch context type", e);
+            LOG.error("Could not compute location", e);
         }
-        return LocationConstraint.FILE;
+        return Location.FILE;
     }
 
 }
