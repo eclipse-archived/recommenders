@@ -1,0 +1,111 @@
+@GenModel(modelDirectory="/org.eclipse.recommenders.stacktraces.rcp/src-xcore", copyrightText="Copyright (c) 2014 Codetrails GmbH.\nAll rights reserved. This program and the accompanying materials\nare made available under the terms of the Eclipse Public License v1.0\nwhich accompanies this distribution, and is available at\nhttp://www.eclipse.org/legal/epl-v10.html\n\nContributors:\n    Marcel Bruch - initial API and implementation.")
+@GenModel(bundleManifest="false")
+package org.eclipse.recommenders.internal.stacktraces.rcp.model
+
+import java.util.UUID
+
+class ErrorReport {
+    UUID anonymousId
+    UUID eventId
+    String name
+    String email
+    String comment
+    String eclipseBuildId
+    String eclipseProduct
+    String javaRuntimeVersion
+    String osgiWs
+    String osgiOs
+    String osgiOsVersion
+    String osgiArch
+    contains Bundle[] presentBundles
+    contains Status status
+    op void accept(Visitor v) {
+        v.visit(this)
+        status.accept(v)
+    }
+}
+
+class Bundle{
+    String name
+    String version
+}
+
+class Status {
+    String pluginId
+    String pluginVersion
+    int code
+    int severity
+    String message
+    String fingerprint
+    contains Throwable exception
+    contains Status[] children
+    op void accept(Visitor v) {
+        v.visit(this)
+        exception.accept(v)
+        for (Status child : children) {
+            child.accept(v)
+        }
+    }
+}
+
+class Throwable{
+    String className
+    String message
+    contains Throwable cause
+    contains StackTraceElement[] stackTrace
+    op void accept(Visitor v) {
+        v.visit(this)
+        for (StackTraceElement element : stackTrace) {
+            element.accept(v)
+        }
+        if (cause != null) {
+            cause.accept(v)
+        }
+    }
+}
+
+class StackTraceElement{
+    String fileName
+    String className
+    String methodName
+    int lineNumber
+    boolean native
+    op void accept(Visitor v) {
+        v.visit(this)
+    }
+}
+
+class Visitor{
+    op void visit(ErrorReport report) {
+    }
+    op void visit(Status status) {
+    }
+    op void visit(Throwable throwable) {
+    }
+    op void visit(StackTraceElement element) {
+    }
+}
+
+class Settings {
+    String name
+    String email
+    boolean anonymizeStrackTraceElements
+    boolean anonymizeMessages
+    SendAction action
+    long pause
+    @GenModel(documentation="The remote address where error events are send to.")
+    String serverUrl
+    @GenModel(documentation="A list of prefixes a plug-in ID is matched against using String#startsWith (e.g., 'com.codetrails.'")
+    String[] whitelistedPluginIds
+    @GenModel(documentation="A list of prefixes a class name is matched against using String#startsWith (e.g., 'com.codetrails.'")
+    String[] whitelistedPackages
+}
+
+enum SendAction{
+    ASK
+    IGNORE
+    SILENT
+    PAUSE
+}
+
+type UUID wraps UUID

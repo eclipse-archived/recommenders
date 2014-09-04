@@ -39,7 +39,6 @@ public class StopwatchSessionProcessor extends SessionProcessor {
             delegate.initializeContext(context);
         } finally {
             watch.stop();
-            System.out.println(delegate.getClass().getSimpleName() + "#initializeContext: " + elapsed());
         }
     }
 
@@ -51,7 +50,6 @@ public class StopwatchSessionProcessor extends SessionProcessor {
             return delegate.startSession(context);
         } finally {
             watch.stop();
-            System.out.println(delegate.getClass().getSimpleName() + "#startSession: " + elapsed());
         }
     }
 

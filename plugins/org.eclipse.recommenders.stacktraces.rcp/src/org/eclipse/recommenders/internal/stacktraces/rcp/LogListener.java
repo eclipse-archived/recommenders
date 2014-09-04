@@ -12,11 +12,11 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.apache.commons.lang3.StringUtils.startsWith;
-import static org.eclipse.recommenders.internal.stacktraces.rcp.Stacktraces.createDto;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
@@ -24,12 +24,12 @@ import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
-import org.eclipse.recommenders.internal.stacktraces.rcp.dto.StackTraceEvent;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
@@ -46,23 +46,23 @@ public class LogListener implements ILogListener, IStartup {
             .orNull();
 
     private Cache<String, String> cache = CacheBuilder.newBuilder().maximumSize(10).build();
-    private IEclipseContext ctx = (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class);
-    private StacktracesRcpPreferences pref = ContextInjectionFactory.make(StacktracesRcpPreferences.class, ctx);
-
-    private IObservableList statusList;
+    private IObservableList errorReports;
     private volatile boolean isDialogOpen;
+
+    private Settings settings;
 
     public LogListener() {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                statusList = Properties.selfList(IStatus.class).observe(Lists.newArrayList());
+                errorReports = Properties.selfList(ErrorReport.class).observe(Lists.newArrayList());
             }
         });
     }
 
     @Override
     public void logging(final IStatus status, String nouse) {
+        readSettings();
         if (ignoreAllLogEvents()) {
             return;
         }
@@ -70,11 +70,15 @@ public class LogListener implements ILogListener, IStartup {
             return;
         }
         if (sentSimilarErrorBefore(status)) {
-            sendStatus(status);
+            sendStatus(ErrorReports.newErrorReport(status, settings));
             return;
         }
         insertDebugStacktraceIfEmpty(status);
         checkAndSend(status);
+    }
+
+    private void readSettings() {
+        settings = PreferenceInitializer.readSettings();
     }
 
     @VisibleForTesting
@@ -92,7 +96,7 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private boolean ignoreAllLogEvents() {
-        return pref.getMode() == Mode.IGNORE;
+        return settings.getAction() == SendAction.IGNORE;
     }
 
     private boolean isErrorSeverity(final IStatus status) {
@@ -120,13 +124,13 @@ public class LogListener implements ILogListener, IStartup {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                statusList.add(status);
+                errorReports.add(ErrorReports.newErrorReport(status, settings));
                 if (isDialogOpen) {
                     return;
                 }
-                if (pref.getMode() == Mode.ASK) {
+                if (settings.getAction() == SendAction.ASK) {
                     isDialogOpen = true;
-                    StacktraceWizard stacktraceWizard = new StacktraceWizard(pref, statusList);
+                    ErrorReportWizard stacktraceWizard = new ErrorReportWizard(settings, errorReports);
                     WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                             .getShell(), stacktraceWizard);
                     int open = wizardDialog.open();
@@ -146,26 +150,25 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private void clear() {
-        statusList.clear();
+        errorReports.clear();
         cache.invalidateAll();
     }
 
     private void sendList() {
-        for (Object entry : statusList) {
-            IStatus status = cast(entry);
-            sendStatus(status);
+        for (Object entry : errorReports) {
+            ErrorReport report = cast(entry);
+            sendStatus(report);
         }
     }
 
-    private void sendStatus(final IStatus status) {
+    private void sendStatus(final ErrorReport report) {
         if (ignoreAllLogEvents()) {
             // double safety. This is checked before elsewhere. But just to make sure...
             return;
         }
 
-        cache.put(status.toString(), status.toString());
-        StackTraceEvent event = createDto(status, pref);
-        new StacktraceUploadJob(event, pref.getServerUri()).schedule();
+        cache.put(report.toString(), report.toString());
+        new UploadJob(report, settings, URI.create(settings.getServerUrl())).schedule();
     }
 
     @Override

@@ -17,7 +17,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,9 +28,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public class ErrorReportingPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    public ErrorReportingPreferencePage() {
+    public PreferencePage() {
         super(GRID);
 
     }
@@ -45,12 +45,12 @@ public class ErrorReportingPreferencePage extends FieldEditorPreferencePage impl
         addField(new StringFieldEditor(PROP_SERVER, Messages.FIELD_LABEL_SERVER, getFieldEditorParent()));
         addField(new StringFieldEditor(PROP_NAME, Messages.FIELD_LABEL_NAME, getFieldEditorParent()));
         addField(new StringFieldEditor(PROP_EMAIL, Messages.FIELD_LABEL_EMAIL, getFieldEditorParent()));
-        addField(new ComboFieldEditor(PROP_MODE, Messages.FIELD_LABEL_ACTION, createModeLabelAndValues(),
+        addField(new ComboFieldEditor(PROP_SEND_ACTION, Messages.FIELD_LABEL_ACTION, createModeLabelAndValues(),
                 getFieldEditorParent()));
-        addField(new BooleanFieldEditor(PROP_ANONYMIZE_STACKFRAMES, Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES,
+        addField(new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES, Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES,
                 getFieldEditorParent()));
 
-        addField(new BooleanFieldEditor(PROP_CLEAR_MESSAGES, Messages.FIELD_LABEL_CLEAR_MESSAGES,
+        addField(new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES, Messages.FIELD_LABEL_ANONYMIZE_MESSAGES,
                 getFieldEditorParent()));
         addLinks(getFieldEditorParent());
     }
@@ -78,17 +78,17 @@ public class ErrorReportingPreferencePage extends FieldEditorPreferencePage impl
     }
 
     private static String[][] createModeLabelAndValues() {
-        Mode[] modes = Mode.values();
+        SendAction[] modes = SendAction.values();
         String[][] labelAndValues = new String[modes.length][2];
         for (int i = 0; i < modes.length; i++) {
-            Mode mode = modes[i];
+            SendAction mode = modes[i];
             labelAndValues[i][0] = descriptionForMode(mode);
             labelAndValues[i][1] = mode.name();
         }
         return labelAndValues;
     }
 
-    private static String descriptionForMode(Mode mode) {
+    private static String descriptionForMode(SendAction mode) {
         switch (mode) {
         case ASK:
             return Messages.FIELD_LABEL_ACTION_REPORT_ASK;

@@ -11,9 +11,14 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.emf.databinding.EMFProperties.value;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -21,17 +26,13 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.recommenders.internal.stacktraces.rcp.StacktraceWizard.WizardPreferences;
-import org.eclipse.recommenders.internal.stacktraces.rcp.StacktracesRcpPreferences.Mode;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,19 +43,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
-import com.google.common.collect.Lists;
-
-class StacktraceSettingsPage extends WizardPage {
+class SettingsWizardPage extends WizardPage {
     private ComboViewer actionComboViewer;
-    private Text emailText;
-    private Text nameText;
-    private Button anonymizeStacktracesButton;
-    private Button clearMessagesButton;
-    private WizardPreferences wizardPreferences;
+    private Text txtEmail;
+    private Text txtName;
+    private Button btnAnonymizeStacktraces;
+    private Button btnClearMessages;
+    private Settings settings;
 
-    protected StacktraceSettingsPage(WizardPreferences wizardPreferences) {
-        super(StacktraceSettingsPage.class.getName());
-        this.wizardPreferences = wizardPreferences;
+    protected SettingsWizardPage(Settings settings) {
+        super(SettingsWizardPage.class.getName());
+        this.settings = settings;
     }
 
     @Override
@@ -74,35 +73,19 @@ class StacktraceSettingsPage extends WizardPage {
         FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(DEC_INFORMATION);
         {
             new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_NAME);
-            nameText = new Text(personalGroup, SWT.BORDER);
-            nameText.setText(wizardPreferences.name);
-            nameText.setMessage(Messages.FIELD_MESSAGE_NAME);
-            nameText.addModifyListener(new ModifyListener() {
-                @Override
-                public void modifyText(ModifyEvent event) {
-                    wizardPreferences.name = nameText.getText();
-                }
-            });
-            dataFactory.applyTo(nameText);
-            ControlDecoration dec = new ControlDecoration(nameText, SWT.TOP | SWT.LEFT);
+            txtName = new Text(personalGroup, SWT.BORDER);
+            txtName.setMessage(Messages.FIELD_MESSAGE_NAME);
+            dataFactory.applyTo(txtName);
+            ControlDecoration dec = new ControlDecoration(txtName, SWT.TOP | SWT.LEFT);
             dec.setImage(infoDecoration.getImage());
             dec.setDescriptionText(Messages.FIELD_DESC_NAME);
         }
         {
             new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_EMAIL);
-            emailText = new Text(personalGroup, SWT.BORDER);
-            emailText.setText(wizardPreferences.email);
-            emailText
-            .setMessage(Messages.FIELD_MESSAGE_EMAIL);
-            emailText.addModifyListener(new ModifyListener() {
-
-                @Override
-                public void modifyText(ModifyEvent event) {
-                    wizardPreferences.email = emailText.getText();
-                }
-            });
-            dataFactory.applyTo(emailText);
-            ControlDecoration dec = new ControlDecoration(emailText, SWT.TOP | SWT.LEFT);
+            txtEmail = new Text(personalGroup, SWT.BORDER);
+            txtEmail.setMessage(Messages.FIELD_MESSAGE_EMAIL);
+            dataFactory.applyTo(txtEmail);
+            ControlDecoration dec = new ControlDecoration(txtEmail, SWT.TOP | SWT.LEFT);
             dec.setImage(infoDecoration.getImage());
             dec.setDescriptionText(Messages.FIELD_DESC_EMAIL);
         }
@@ -110,11 +93,11 @@ class StacktraceSettingsPage extends WizardPage {
             new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_ACTION);
             actionComboViewer = new ComboViewer(personalGroup, SWT.READ_ONLY);
             actionComboViewer.setContentProvider(ArrayContentProvider.getInstance());
-            actionComboViewer.setInput(Lists.newArrayList(Mode.class.getEnumConstants()));
+            actionComboViewer.setInput(SendAction.values());
             actionComboViewer.setLabelProvider(new LabelProvider() {
                 @Override
                 public String getText(Object element) {
-                    Mode mode = (Mode) element;
+                    SendAction mode = (SendAction) element;
                     switch (mode) {
                     case ASK:
                         return Messages.FIELD_LABEL_ACTION_REPORT_ASK;
@@ -122,48 +105,22 @@ class StacktraceSettingsPage extends WizardPage {
                         return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
                     case SILENT:
                         return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
+                    case PAUSE:
+                        return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
                     default:
                         return super.getText(element);
                     }
                 }
             });
-            actionComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-                @Override
-                public void selectionChanged(SelectionChangedEvent event) {
-                    if (!event.getSelection().isEmpty()) {
-                        IStructuredSelection selection = (IStructuredSelection) actionComboViewer.getSelection();
-                        Mode mode = (Mode) selection.getFirstElement();
-                        if (mode != null) {
-                            wizardPreferences.mode = mode;
-                        }
-                    }
-
-                }
-            });
-            actionComboViewer.setSelection(new StructuredSelection(wizardPreferences.mode));
+            actionComboViewer.setSelection(new StructuredSelection(settings.getAction()));
             dataFactory.applyTo(actionComboViewer.getControl());
         }
         {
-            anonymizeStacktracesButton = new Button(container, SWT.CHECK);
-            anonymizeStacktracesButton.setText(Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES);
-            anonymizeStacktracesButton.setSelection(wizardPreferences.anonymize);
-            anonymizeStacktracesButton.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    wizardPreferences.anonymize = anonymizeStacktracesButton.getSelection();
-                }
-            });
-            clearMessagesButton = new Button(container, SWT.CHECK);
-            clearMessagesButton.setText(Messages.FIELD_LABEL_CLEAR_MESSAGES);
-            clearMessagesButton.setSelection(wizardPreferences.clearMessages);
-            clearMessagesButton.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    wizardPreferences.clearMessages = clearMessagesButton.getSelection();
-                }
-            });
+            btnAnonymizeStacktraces = new Button(container, SWT.CHECK);
+            btnAnonymizeStacktraces.setText(Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES);
 
+            btnClearMessages = new Button(container, SWT.CHECK);
+            btnClearMessages.setText(Messages.FIELD_LABEL_ANONYMIZE_MESSAGES);
         }
         {
             Composite feedback = new Composite(container, SWT.NONE);
@@ -195,6 +152,35 @@ class StacktraceSettingsPage extends WizardPage {
 
         }
         setControl(container);
+        createDataBindingContext();
+    }
+
+    private DataBindingContext createDataBindingContext() {
+        DataBindingContext context = new DataBindingContext();
+
+        ModelPackage pkg = ModelPackage.eINSTANCE;
+
+        IObservableValue ovTxtName = text(SWT.Modify).observe(txtName);
+        IObservableValue ovSetName = value(pkg.getSettings_Name()).observe(settings);
+        context.bindValue(ovTxtName, ovSetName, null, null);
+
+        IObservableValue ovTxtEmail = text(SWT.Modify).observe(txtEmail);
+        IObservableValue ovSetEmail = value(pkg.getSettings_Email()).observe(settings);
+        context.bindValue(ovTxtEmail, ovSetEmail, null, null);
+
+        IObservableValue ovBtnAnonSt = selection().observe(btnAnonymizeStacktraces);
+        IObservableValue ovSetAnonSt = value(pkg.getSettings_AnonymizeStrackTraceElements()).observe(settings);
+        context.bindValue(ovBtnAnonSt, ovSetAnonSt, null, null);
+
+        IObservableValue ovBtnAnonMsg = selection().observe(btnClearMessages);
+        IObservableValue ovSetAnonMsg = value(pkg.getSettings_AnonymizeMessages()).observe(settings);
+        context.bindValue(ovBtnAnonMsg, ovSetAnonMsg, null, null);
+
+        IObservableValue ovVwrAction = ViewersObservables.observeSinglePostSelection(actionComboViewer);
+        IObservableValue ovSetAction = value(pkg.getSettings_Action()).observe(settings);
+        context.bindValue(ovVwrAction, ovSetAction, null, null);
+
+        return context;
     }
 
     @Override

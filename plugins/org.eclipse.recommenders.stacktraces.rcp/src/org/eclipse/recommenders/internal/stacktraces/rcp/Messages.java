@@ -20,7 +20,7 @@ public class Messages extends NLS {
     public static String FIELD_LABEL_ACTION_REPORT_NEVER;
     public static String FIELD_LABEL_ACTION_REPORT_ALWAYS;
     public static String FIELD_LABEL_ANONYMIZE_STACKTRACES;
-    public static String FIELD_LABEL_CLEAR_MESSAGES;
+    public static String FIELD_LABEL_ANONYMIZE_MESSAGES;
     public static String FIELD_LABEL_NAME;
     public static String FIELD_DESC_NAME;
     public static String FIELD_MESSAGE_NAME;
