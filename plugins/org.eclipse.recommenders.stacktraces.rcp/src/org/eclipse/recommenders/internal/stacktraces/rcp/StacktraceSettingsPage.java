@@ -76,6 +76,7 @@ class StacktraceSettingsPage extends WizardPage {
             new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_NAME);
             nameText = new Text(personalGroup, SWT.BORDER);
             nameText.setText(wizardPreferences.name);
+            nameText.setMessage(Messages.FIELD_MESSAGE_NAME);
             nameText.addModifyListener(new ModifyListener() {
                 @Override
                 public void modifyText(ModifyEvent event) {
@@ -91,6 +92,8 @@ class StacktraceSettingsPage extends WizardPage {
             new Label(personalGroup, SWT.NONE).setText(Messages.FIELD_LABEL_EMAIL);
             emailText = new Text(personalGroup, SWT.BORDER);
             emailText.setText(wizardPreferences.email);
+            emailText
+            .setMessage(Messages.FIELD_MESSAGE_EMAIL);
             emailText.addModifyListener(new ModifyListener() {
 
                 @Override

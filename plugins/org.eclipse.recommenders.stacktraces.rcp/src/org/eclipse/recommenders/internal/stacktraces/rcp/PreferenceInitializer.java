@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -24,10 +23,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(PLUGIN_ID);
         s.put(PROP_SERVER, SERVER_URL);
-        s.put(PROP_NAME, SystemUtils.USER_NAME);
-        s.put(PROP_EMAIL, "me@example.org");
+        s.put(PROP_NAME, "");
+        s.put(PROP_EMAIL, "");
         s.put(PROP_MODE, Mode.ASK.name());
-        s.putBoolean(PROP_ANONYMIZE_STACKFRAMES, false);
+        s.putBoolean(PROP_ANONYMIZE_STACKFRAMES, true);
         s.putBoolean(PROP_CLEAR_MESSAGES, false);
     }
 
