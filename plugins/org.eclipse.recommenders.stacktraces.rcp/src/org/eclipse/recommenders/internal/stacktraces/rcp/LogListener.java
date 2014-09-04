@@ -66,18 +66,15 @@ public class LogListener implements ILogListener, IStartup {
         if (ignoreAllLogEvents()) {
             return;
         }
-        if (!isErrorSeverity(status)) {
+        if (!isErrorSeverity(status) || !isEclipsePluginId(status)) {
             return;
         }
         if (sentSimilarErrorBefore(status)) {
             sendStatus(status);
             return;
         }
-        if (hasEclipsePluginId(status) || hasEclipseClassInStackFrames(status)) {
-            insertDebugStacktraceIfEmpty(status);
-            checkAndSend(status);
-            return;
-        }
+        insertDebugStacktraceIfEmpty(status);
+        checkAndSend(status);
     }
 
     @VisibleForTesting
@@ -106,25 +103,14 @@ public class LogListener implements ILogListener, IStartup {
         return cache.getIfPresent(status.toString()) != null;
     }
 
-    private boolean hasEclipsePluginId(IStatus status) {
+    private boolean isEclipsePluginId(IStatus status) {
         String pluginId = status.getPlugin();
         return startsWithRecommendersOrCodetrails(pluginId);
     }
 
+    // TODO: codetrails id for debugging:
     private boolean startsWithRecommendersOrCodetrails(String s) {
         return startsWith(s, "org.eclipse.") || startsWith(s, "com.codetrails");
-    }
-
-    private boolean hasEclipseClassInStackFrames(IStatus status) {
-        Throwable ex = status.getException();
-        if (ex != null) {
-            for (StackTraceElement ste : ex.getStackTrace()) {
-                if (startsWithRecommendersOrCodetrails(ste.getClassName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @VisibleForTesting

@@ -23,8 +23,10 @@ public class Messages extends NLS {
     public static String FIELD_LABEL_CLEAR_MESSAGES;
     public static String FIELD_LABEL_NAME;
     public static String FIELD_DESC_NAME;
+    public static String FIELD_MESSAGE_NAME;
     public static String FIELD_LABEL_EMAIL;
     public static String FIELD_DESC_EMAIL;
+    public static String FIELD_MESSAGE_EMAIL;
     public static String SETTINGSPAGE_TITEL;
     public static String SETTINGSPAGE_DESC;
     public static String SETTINGSPAGE_GROUPLABEL_PERSONAL;
