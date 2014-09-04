@@ -9,6 +9,9 @@
 	<feature id="org.eclipse.recommenders.snipmatch.rcp.feature" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.main"/>
 	</feature>
+    <feature id="org.eclipse.recommenders.stacktraces.rcp.feature" version="0.0.0">
+        <category name="org.eclipse.recommenders.repositories.categories.main"/>
+    </feature>
 	<feature id="org.eclipse.recommenders.rcp.feature.source" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
 	</feature>
@@ -18,6 +21,9 @@
 	<feature id="org.eclipse.recommenders.snipmatch.rcp.feature.source" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
 	</feature>
+    <feature id="org.eclipse.recommenders.stacktraces.rcp.feature.source" version="0.0.0">
+        <category name="org.eclipse.recommenders.repositories.categories.sources"/>
+    </feature>
 	<feature id="org.eclipse.recommenders.3rd.feature" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.deps"/>
 	</feature>
