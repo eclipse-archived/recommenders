@@ -12,6 +12,7 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import static org.eclipse.recommenders.snipmatch.Location.FILE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.beans.PropertyChangeListener;
@@ -31,7 +32,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Snippet implements ISnippet {
 
-    public static final String FORMAT_VERSION = "format-3";
+    public static final String FORMAT_VERSION = "format-4";
 
     private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
@@ -47,24 +48,29 @@ public class Snippet implements ISnippet {
     private List<String> tags = Lists.newArrayList();
     @SerializedName("code")
     private String code;
+    @SerializedName("location")
+    private Location location = FILE;
 
     public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
-            String code) {
+            String code, Location location) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
         ensureIsNotNull(extraSearchTerms);
         ensureIsNotNull(tags);
         ensureIsNotNull(code);
+        ensureIsNotNull(location);
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.extraSearchTerms = extraSearchTerms;
         this.tags = tags;
         this.code = code;
+        this.location = location;
     }
 
     protected Snippet() {
+        this.location = FILE;
     }
 
     @Override
@@ -97,6 +103,11 @@ public class Snippet implements ISnippet {
         return description;
     }
 
+    @Override
+    public Location getLocation() {
+        return location;
+    }
+
     public void setCode(String code) {
         firePropertyChange("code", this.code, this.code = code);
     }
@@ -109,8 +120,11 @@ public class Snippet implements ISnippet {
         firePropertyChange("description", this.description, this.description = description);
     }
 
-    public void setExtraSearchTerms(List<String> extraSearchTerms) {
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
+    public void setExtraSearchTerms(List<String> extraSearchTerms) {
         firePropertyChange("extraSearchTerms", this.extraSearchTerms, extraSearchTerms);
         this.extraSearchTerms.clear();
         this.extraSearchTerms.addAll(extraSearchTerms);
@@ -140,7 +154,8 @@ public class Snippet implements ISnippet {
 
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
-                .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode());
+                .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode(),
+                snippet.getLocation() != null ? snippet.getLocation() : FILE);
     }
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {

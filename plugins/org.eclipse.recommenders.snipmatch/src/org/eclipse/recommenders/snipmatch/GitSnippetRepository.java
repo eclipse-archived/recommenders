@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
 
 import java.io.File;
@@ -23,6 +24,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
+import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -40,6 +43,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 
 public class GitSnippetRepository extends FileSnippetRepository {
+
+    private static final String FORMAT = "format-";
 
     private static Logger LOG = LoggerFactory.getLogger(GitSnippetRepository.class);
 
@@ -74,7 +79,19 @@ public class GitSnippetRepository extends FileSnippetRepository {
                     initializeSnippetsRepo();
                 }
                 configureGit();
-                pullSnippets();
+                Git git = fetch();
+                String checkoutBranch = getCheckoutBranch(git);
+                if (isNullOrEmpty(checkoutBranch)) {
+                    throw new GitNoFormatBranchException(MessageFormat.format("Could not locate branch \"{0}\"",
+                            FORMAT_VERSION), null);
+                }
+                configureGitBranch(checkoutBranch);
+                pullSnippets(git, checkoutBranch);
+                if (!checkoutBranch.equals(FORMAT_VERSION)) {
+                    throw new GitNoCurrentFormatBranchException(checkoutBranch, MessageFormat.format(
+                            "Could not locate branch \"{0}\", working with older branch \"{1}\".", FORMAT_VERSION,
+                            checkoutBranch), null);
+                }
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
                 throw createException(updatePossible, MessageFormat.format(
@@ -110,6 +127,28 @@ public class GitSnippetRepository extends FileSnippetRepository {
         }
     }
 
+    @SuppressWarnings("serial")
+    public class GitNoCurrentFormatBranchException extends IOException {
+        private final String checkoutVersion;
+
+        public GitNoCurrentFormatBranchException(String checkoutVersion, String message, Throwable cause) {
+            super(message, cause);
+            this.checkoutVersion = checkoutVersion;
+        }
+
+        public String getCheckoutVersion() {
+            return checkoutVersion;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public class GitNoFormatBranchException extends IOException {
+
+        public GitNoFormatBranchException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     private boolean isUpdatePossible() throws IOException {
         if (RepositoryCache.FileKey.isGitRepository(gitFile, FS.DETECTED)) {
             Repository localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
@@ -124,7 +163,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     @SuppressWarnings("unused")
     private void initializeSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException,
-    IOException {
+            IOException {
         InitCommand init = Git.init();
         init.setBare(false);
         init.setDirectory(basedir);
@@ -137,29 +176,60 @@ public class GitSnippetRepository extends FileSnippetRepository {
         config.setString("remote", "origin", "url", getRepositoryLocation());
         config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
         config.setString("remote", "origin", "pushUrl", pushUrl);
-        String pushBranch = "HEAD:" + pushBranchPrefix + "/" + FORMAT_VERSION;
-        config.setString("remote", "origin", "push", pushBranch);
-
         // prevents trust anchor errors when pulling from eclipse.org
         config.setBoolean("http", null, "sslVerify", false);
-
-        config.setString("branch", FORMAT_VERSION, "remote", "origin");
-        String branch = "refs/heads/" + FORMAT_VERSION;
-        config.setString("branch", FORMAT_VERSION, "merge", branch);
         config.save();
     }
 
-    private void pullSnippets() throws IOException, InvalidRemoteException, TransportException, GitAPIException,
-    CoreException {
-        String remoteBranch = "origin/" + FORMAT_VERSION;
+    private Git fetch() throws GitAPIException, IOException {
         Repository localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
         Git git = new Git(localRepo);
-
         git.fetch().call();
+        return git;
+    }
+
+    private String getCheckoutBranch(Git git) throws IOException, GitAPIException {
+        ListBranchCommand branchList = git.branchList();
+        branchList.setListMode(ListMode.REMOTE);
+        List<Ref> branches = branchList.call();
+
+        String formatVersion = FORMAT_VERSION.substring(FORMAT.length());
+        int version = Integer.parseInt(formatVersion);
+
+        return getCheckoutBranch(branches, version);
+    }
+
+    private String getCheckoutBranch(List<Ref> branches, int version) {
+        String remoteBranch = "refs/remotes/origin/format-" + version;
+        for (Ref branch : branches) {
+            if (branch.getName().equals(remoteBranch)) {
+                return FORMAT + version;
+            }
+        }
+        if (version > 2) { // 2 == lowest, publicly available version
+            return getCheckoutBranch(branches, version - 1);
+        }
+        return "";
+    }
+
+    private void configureGitBranch(String remoteBranch) throws IOException {
+        Git git = Git.open(gitFile);
+        StoredConfig config = git.getRepository().getConfig();
+        String pushBranch = "HEAD:" + pushBranchPrefix + "/" + remoteBranch;
+        config.setString("remote", "origin", "push", pushBranch);
+
+        config.setString("branch", remoteBranch, "remote", "origin");
+        String branch = "refs/heads/" + remoteBranch;
+        config.setString("branch", remoteBranch, "merge", branch);
+        config.save();
+    }
+
+    private void pullSnippets(Git git, String checkoutBranch) throws IOException, InvalidRemoteException,
+            TransportException, GitAPIException, CoreException {
         CheckoutCommand checkout = git.checkout();
-        checkout.setName(FORMAT_VERSION);
-        checkout.setStartPoint(remoteBranch);
-        checkout.setCreateBranch(!branchExistsLocally(git, "refs/heads/" + FORMAT_VERSION));
+        checkout.setName(checkoutBranch);
+        checkout.setStartPoint("origin/" + checkoutBranch);
+        checkout.setCreateBranch(!branchExistsLocally(git, "refs/heads/" + checkoutBranch));
         checkout.call();
 
         PullCommand pull = git.pull();

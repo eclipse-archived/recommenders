@@ -14,9 +14,10 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.core.databinding.beans.BeanProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
+import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -31,17 +32,27 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
+import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.swt.SWT;
@@ -73,12 +84,15 @@ import com.google.common.base.Optional;
 @SuppressWarnings("restriction")
 public class SnippetMetadataPage extends FormPage {
 
+    private static final Location[] SNIPMATCH_LOCATIONS = { FILE, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS, JAVADOC };
+
     private ISnippet snippet;
 
     private AbstractFormPart contentsPart;
 
     private Text txtName;
     private Text txtDescription;
+    private ComboViewer comboLocation;
     private Text txtUuid;
 
     private ListViewer listViewerExtraSearchTerms;
@@ -130,18 +144,18 @@ public class SnippetMetadataPage extends FormPage {
                 txtName.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
                         .span(2, 1).indent(horizontalIndent, 0).create());
 
-                final ControlDecoration decor = new ControlDecoration(txtName, SWT.LEFT);
-                decor.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CAN_NOT_BE_EMPTY);
-                decor.setImage(decorationImage);
-                decor.setMarginWidth(1);
+                final ControlDecoration nameDecoration = new ControlDecoration(txtName, SWT.LEFT);
+                nameDecoration.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY);
+                nameDecoration.setImage(decorationImage);
+                nameDecoration.setMarginWidth(1);
 
                 txtName.addModifyListener(new ModifyListener() {
                     @Override
                     public void modifyText(ModifyEvent arg0) {
                         if (isNullOrEmpty(txtName.getText())) {
-                            decor.show();
+                            nameDecoration.show();
                         } else {
-                            decor.hide();
+                            nameDecoration.hide();
                         }
                     }
                 });
@@ -155,6 +169,72 @@ public class SnippetMetadataPage extends FormPage {
                 txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER)
                         .grab(true, false).span(2, 1).indent(horizontalIndent, 0).create());
 
+                Label lblLocation = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                        Messages.EDITOR_LABEL_SNIPPET_LOCATION, SWT.NONE);
+                lblLocation.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+
+                comboLocation = new ComboViewer(managedForm.getForm().getBody(), SWT.DROP_DOWN | SWT.READ_ONLY);
+
+                managedForm.getToolkit().adapt(comboLocation.getCombo(), true, true);
+                comboLocation.setContentProvider(ArrayContentProvider.getInstance());
+                comboLocation.setInput(SNIPMATCH_LOCATIONS);
+                comboLocation.setLabelProvider(new LabelProvider() {
+                    @Override
+                    public String getText(Object element) {
+                        if (element instanceof Location) {
+                            Location location = (Location) element;
+                            switch (location) {
+                            case FILE:
+                                return Messages.SNIPMATCH_LOCATION_FILE;
+                            case JAVA:
+                                return Messages.SNIPMATCH_LOCATION_JAVA;
+                            case JAVA_STATEMENTS:
+                                return Messages.SNIPMATCH_LOCATION_JAVA_STATEMENTS;
+                            case JAVA_TYPE_MEMBERS:
+                                return Messages.SNIPMATCH_LOCATION_JAVA_MEMBERS;
+                            case JAVADOC:
+                                return Messages.SNIPMATCH_LOCATION_JAVADOC;
+                            default:
+                                break;
+                            }
+                        }
+                        return super.getText(element);
+                    }
+                });
+                comboLocation.getCombo().setLayoutData(
+                        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
+                                .indent(horizontalIndent, 0).create());
+
+                final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
+                        SWT.LEFT);
+                locationErrorDecoration.setDescriptionText(Messages.ERROR_SNIPPET_LOCATION_CANNOT_BE_EMPTY + "\n" //$NON-NLS-1$
+                        + Messages.EDITOR_DESCRIPTION_LOCATION);
+                locationErrorDecoration.setImage(decorationImage);
+                locationErrorDecoration.setMarginWidth(1);
+
+                final ControlDecoration locationDescriptionDecoration = new ControlDecoration(comboLocation.getCombo(),
+                        SWT.LEFT);
+                FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                        DEC_INFORMATION);
+                locationDescriptionDecoration.setImage(infoDecoration.getImage());
+                locationDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_LOCATION);
+                locationDescriptionDecoration.setMarginWidth(1);
+
+                comboLocation.addSelectionChangedListener(new ISelectionChangedListener() {
+                    @Override
+                    public void selectionChanged(SelectionChangedEvent event) {
+                        if (event.getSelection().isEmpty()) {
+                            locationErrorDecoration.show();
+                            locationDescriptionDecoration.hide();
+                        } else {
+                            locationErrorDecoration.hide();
+                            locationDescriptionDecoration.show();
+                        }
+                    }
+
+                });
+                comboLocation.setSelection(new StructuredSelection(snippet.getLocation()));
+
                 Label lblExtraSearchTerms = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                         Messages.EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS, SWT.NONE);
                 lblExtraSearchTerms.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
@@ -163,6 +243,13 @@ public class SnippetMetadataPage extends FormPage {
                 List lstExtraSearchTerm = listViewerExtraSearchTerms.getList();
                 lstExtraSearchTerm.setLayoutData(GridDataFactory.fillDefaults().grab(true, false)
                         .indent(horizontalIndent, 0).create());
+
+                final ControlDecoration extraSearchTermsDescriptionDecoration = new ControlDecoration(
+                        listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
+                extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
+                extraSearchTermsDescriptionDecoration
+                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
                         managedForm.getForm().getBody(), SWT.NONE);
@@ -201,6 +288,12 @@ public class SnippetMetadataPage extends FormPage {
                 List lstTags = listViewerTags.getList();
                 lstTags.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0)
                         .create());
+
+                final ControlDecoration tagsDescriptionDecoration = new ControlDecoration(listViewerTags.getList(),
+                        SWT.TOP | SWT.LEFT);
+                tagsDescriptionDecoration.setImage(infoDecoration.getImage());
+                tagsDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_TAGS);
+                tagsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerTags = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(), SWT.NONE);
                 btnContainerTags.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -340,6 +433,22 @@ public class SnippetMetadataPage extends FormPage {
             }
         });
 
+        // location
+        IObservableValue wpTxtLocation = ViewerProperties.singleSelection().observe(comboLocation);
+        IObservableValue ppLocation = value(Snippet.class, "location", Location.class).observe(snippet); //$NON-NLS-1$
+        context.bindValue(wpTxtLocation, ppLocation);
+        ppLocation.addChangeListener(new IChangeListener() {
+            @Override
+            public void handleChange(ChangeEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) comboLocation.getSelection();
+                if (!selection.getFirstElement().equals(snippet.getLocation())) {
+                    contentsPart.markStale();
+                } else {
+                    contentsPart.markDirty();
+                }
+            }
+        });
+
         // Extra search terms
         ppExtraSearchTerms = BeanProperties.list(Snippet.class, "extraSearchTerms", String.class).observe(snippet); //$NON-NLS-1$
         ViewerSupport.bind(listViewerExtraSearchTerms, ppExtraSearchTerms, new SelfValueProperty(String.class));
@@ -423,7 +532,6 @@ public class SnippetMetadataPage extends FormPage {
 
     @Override
     protected void setInputWithNotify(IEditorInput input) {
-
         snippet = ((SnippetEditorInput) input).getSnippet();
         context.dispose();
         context = createDataBindingContext();

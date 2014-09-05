@@ -53,7 +53,7 @@ import com.google.common.collect.Lists;
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
 
     private final Set<ISnippetRepository> repos;
-    private final TemplateContextType contextType;
+    private final TemplateContextType snipmatchContextType;
     private final Image image;
 
     private JavaContentAssistInvocationContext ctx;
@@ -62,7 +62,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     @Inject
     public SnipmatchContentAssistProcessor(Set<ISnippetRepository> repos, SharedImages images) {
         this.repos = repos;
-        contextType = SnipmatchTemplateContextType.getInstance();
+        snipmatchContextType = SnipmatchTemplateContextType.getInstance();
         image = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
     }
 
@@ -72,18 +72,21 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
     public void setTerms(String query) {
         terms = query;
-
     }
 
     @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
+
         if (StringUtils.isEmpty(terms)) {
             return new ICompletionProposal[0];
         }
+
+        JavaEditorSearchContext context = new JavaEditorSearchContext(terms, ctx);
+
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
         List<Recommendation<ISnippet>> recommendations = Lists.newArrayList();
         for (ISnippetRepository repo : repos) {
-            recommendations.addAll(repo.search(terms));
+            recommendations.addAll(repo.search(context));
         }
         ICompilationUnit cu = ctx.getCompilationUnit();
         IEditorPart editor = EditorUtility.isOpenInEditor(cu);
@@ -101,7 +104,8 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             } catch (BadLocationException e) {
             }
         }
-        JavaContext ctx = new JavaContext(contextType, document, p, cu);
+
+        JavaContext ctx = new JavaContext(snipmatchContextType, document, p, cu);
         ctx.setVariable("selection", selectedText); //$NON-NLS-1$
         ctx.setForceEvaluation(true);
 
@@ -109,6 +113,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             ISnippet snippet = recommendation.getProposal();
             Template template = new Template(snippet.getName(), snippet.getDescription(), SNIPMATCH_CONTEXT_ID,
                     snippet.getCode(), true);
+
             try {
                 proposals.add(SnippetProposal.newSnippetProposal(recommendation, template, ctx, region, image));
             } catch (Exception e) {

@@ -27,5 +27,5 @@ public class Constants {
     public static final String PREF_SEARCH_BOX_BACKGROUND = "org.eclipse.recommenders.snipmatch.rcp.searchboxbackground"; //$NON-NLS-1$
 
     public static final String SNIPMATCH_CONTEXT_ID = "Snipmatch-Java-Context"; //$NON-NLS-1$
-    public static final String EXT_POINT_PAGE_FACTORIES = "org.eclipse.recommenders.snipmatch.rcp.pageFactories";
+    public static final String EXT_POINT_PAGE_FACTORIES = "org.eclipse.recommenders.snipmatch.rcp.pageFactories"; //$NON-NLS-1$
 }

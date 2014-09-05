@@ -18,7 +18,7 @@ public interface ISnippet extends Uuidable {
 
     /**
      * This will be displayed in Snipmatch search.
-     * 
+     *
      * @return a short (approximately 50 characters) description of the snippet. Examples are {@literal "Add Button"} or
      *         {@literal "Iterate over a Collection"}.
      */
@@ -44,4 +44,6 @@ public interface ISnippet extends Uuidable {
      * @return a list of keywords describing the snippet. Typically keywords are synonyms of common search terms.
      */
     List<String> getExtraSearchTerms();
+
+    Location getLocation();
 }
