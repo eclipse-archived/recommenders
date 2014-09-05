@@ -35,7 +35,7 @@ public class CompletionHandler extends AbstractHandler {
         if (editor instanceof JavaEditor) {
             JavaEditor ed = (JavaEditor) editor;
             ISourceViewer viewer = ed.getViewer();
-            int offset = viewer.getTextWidget().getCaretOffset();
+            int offset = viewer.getSelectedRange().x;
             JavaContentAssistInvocationContext ctx = new JavaContentAssistInvocationContext(viewer, offset, ed);
             if (engine == null) {
                 engine = request(SnipmatchCompletionEngine.class);
