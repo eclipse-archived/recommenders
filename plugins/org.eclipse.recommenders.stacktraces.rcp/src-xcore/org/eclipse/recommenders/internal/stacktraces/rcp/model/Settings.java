@@ -35,7 +35,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings()
- * @model
  * @generated
  */
 public interface Settings extends EObject {
@@ -50,7 +49,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Name</em>' attribute.
      * @see #setName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_Name()
-     * @model unique="false"
      * @generated
      */
     String getName();
@@ -76,7 +74,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Email</em>' attribute.
      * @see #setEmail(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_Email()
-     * @model unique="false"
      * @generated
      */
     String getEmail();
@@ -102,7 +99,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Anonymize Strack Trace Elements</em>' attribute.
      * @see #setAnonymizeStrackTraceElements(boolean)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_AnonymizeStrackTraceElements()
-     * @model unique="false"
      * @generated
      */
     boolean isAnonymizeStrackTraceElements();
@@ -128,7 +124,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Anonymize Messages</em>' attribute.
      * @see #setAnonymizeMessages(boolean)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_AnonymizeMessages()
-     * @model unique="false"
      * @generated
      */
     boolean isAnonymizeMessages();
@@ -156,7 +151,6 @@ public interface Settings extends EObject {
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction
      * @see #setAction(SendAction)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_Action()
-     * @model unique="false"
      * @generated
      */
     SendAction getAction();
@@ -183,7 +177,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Pause</em>' attribute.
      * @see #setPause(long)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_Pause()
-     * @model unique="false"
      * @generated
      */
     long getPause();
@@ -208,7 +201,6 @@ public interface Settings extends EObject {
      * @return the value of the '<em>Server Url</em>' attribute.
      * @see #setServerUrl(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_ServerUrl()
-     * @model unique="false"
      * @generated
      */
     String getServerUrl();
@@ -233,7 +225,6 @@ public interface Settings extends EObject {
      * <!-- end-model-doc -->
      * @return the value of the '<em>Whitelisted Plugin Ids</em>' attribute list.
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_WhitelistedPluginIds()
-     * @model unique="false"
      * @generated
      */
     EList<String> getWhitelistedPluginIds();
@@ -248,7 +239,6 @@ public interface Settings extends EObject {
      * <!-- end-model-doc -->
      * @return the value of the '<em>Whitelisted Packages</em>' attribute list.
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_WhitelistedPackages()
-     * @model unique="false"
      * @generated
      */
     EList<String> getWhitelistedPackages();

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model.impl;
 
+import com.google.common.base.Objects;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.UUID;
@@ -651,9 +652,14 @@ public class ErrorReportImpl extends MinimalEObjectImpl.Container implements Err
         v.visit(_this);
         ErrorReport _this_1 = this;
         Status _status = _this_1.getStatus();
-        _status.accept(v);
-        ErrorReport _this_2 = this;
-        EList<Bundle> _presentBundles = _this_2.getPresentBundles();
+        boolean _notEquals = (!Objects.equal(_status, null));
+        if (_notEquals) {
+            ErrorReport _this_2 = this;
+            Status _status_1 = _this_2.getStatus();
+            _status_1.accept(v);
+        }
+        ErrorReport _this_3 = this;
+        EList<Bundle> _presentBundles = _this_3.getPresentBundles();
         for (final Bundle b : _presentBundles) {
             b.accept(v);
         }

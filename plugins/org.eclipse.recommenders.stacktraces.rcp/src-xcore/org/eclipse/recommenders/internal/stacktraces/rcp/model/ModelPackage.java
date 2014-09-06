@@ -31,8 +31,6 @@ import org.eclipse.emf.ecore.EReference;
  * </ul>
  * <!-- end-user-doc -->
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory
- * @model kind="package"
- *        annotation="http://www.eclipse.org/emf/2002/GenModel modelDirectory='/org.eclipse.recommenders.stacktraces.rcp/src-xcore' copyrightText='Copyright (c) 2014 Codetrails GmbH.\nAll rights reserved. This program and the accompanying materials\nare made available under the terms of the Eclipse Public License v1.0\nwhich accompanies this distribution, and is available at\nhttp://www.eclipse.org/legal/epl-v10.html\n\nContributors:\n    Marcel Bruch - initial API and implementation.' bundleManifest='false' basePackage='org.eclipse.recommenders.internal.stacktraces.rcp'"
  * @generated
  */
 public interface ModelPackage extends EPackage {
@@ -1401,7 +1399,6 @@ public interface ModelPackage extends EPackage {
      * <!-- end-user-doc -->
      * @return the meta object for data type '<em>UUID</em>'.
      * @see java.util.UUID
-     * @model instanceClass="java.util.UUID"
      * @generated
      */
     EDataType getUUID();

@@ -19,15 +19,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getVisitor()
- * @model
  * @generated
  */
 public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model reportUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated
      */
     void visit(ErrorReport report);
@@ -35,8 +32,6 @@ public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model statusUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated
      */
     void visit(Status status);
@@ -44,8 +39,6 @@ public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model bundleUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated
      */
     void visit(Bundle bundle);
@@ -53,8 +46,6 @@ public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model throwableUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated
      */
     void visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable throwable);
@@ -62,8 +53,6 @@ public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model elementUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated
      */
     void visit(StackTraceElement element);

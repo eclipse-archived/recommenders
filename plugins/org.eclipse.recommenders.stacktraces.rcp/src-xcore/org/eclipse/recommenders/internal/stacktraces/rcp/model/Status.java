@@ -34,7 +34,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus()
- * @model
  * @generated
  */
 public interface Status extends EObject {
@@ -49,7 +48,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Plugin Id</em>' attribute.
      * @see #setPluginId(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_PluginId()
-     * @model unique="false"
      * @generated
      */
     String getPluginId();
@@ -75,7 +73,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Plugin Version</em>' attribute.
      * @see #setPluginVersion(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_PluginVersion()
-     * @model unique="false"
      * @generated
      */
     String getPluginVersion();
@@ -101,7 +98,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Code</em>' attribute.
      * @see #setCode(int)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Code()
-     * @model unique="false"
      * @generated
      */
     int getCode();
@@ -127,7 +123,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Severity</em>' attribute.
      * @see #setSeverity(int)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Severity()
-     * @model unique="false"
      * @generated
      */
     int getSeverity();
@@ -153,7 +148,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Message</em>' attribute.
      * @see #setMessage(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Message()
-     * @model unique="false"
      * @generated
      */
     String getMessage();
@@ -179,7 +173,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Fingerprint</em>' attribute.
      * @see #setFingerprint(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Fingerprint()
-     * @model unique="false"
      * @generated
      */
     String getFingerprint();
@@ -205,7 +198,6 @@ public interface Status extends EObject {
      * @return the value of the '<em>Exception</em>' containment reference.
      * @see #setException(org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Exception()
-     * @model containment="true"
      * @generated
      */
     org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable getException();
@@ -231,7 +223,6 @@ public interface Status extends EObject {
      * <!-- end-user-doc -->
      * @return the value of the '<em>Children</em>' containment reference list.
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStatus_Children()
-     * @model containment="true"
      * @generated
      */
     EList<Status> getChildren();
@@ -239,8 +230,6 @@ public interface Status extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _this = this;\nv.visit(_this);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _this_1 = this;\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _exception = _this_1.getException();\nboolean _notEquals = (!<%com.google.common.base.Objects%>.equal(_exception, null));\nif (_notEquals)\n{\n\t<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _this_2 = this;\n\t<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _exception_1 = _this_2.getException();\n\t_exception_1.accept(v);\n}\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _this_3 = this;\n<%org.eclipse.emf.common.util.EList%><<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%>> _children = _this_3.getChildren();\nfor (final <%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> child : _children)\n{\n\tchild.accept(v);\n}'"
      * @generated
      */
     void accept(Visitor v);

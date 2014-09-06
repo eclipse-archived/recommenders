@@ -30,7 +30,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getThrowable()
- * @model
  * @generated
  */
 public interface Throwable extends EObject {
@@ -45,7 +44,6 @@ public interface Throwable extends EObject {
      * @return the value of the '<em>Class Name</em>' attribute.
      * @see #setClassName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getThrowable_ClassName()
-     * @model unique="false"
      * @generated
      */
     String getClassName();
@@ -71,7 +69,6 @@ public interface Throwable extends EObject {
      * @return the value of the '<em>Message</em>' attribute.
      * @see #setMessage(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getThrowable_Message()
-     * @model unique="false"
      * @generated
      */
     String getMessage();
@@ -97,7 +94,6 @@ public interface Throwable extends EObject {
      * @return the value of the '<em>Cause</em>' containment reference.
      * @see #setCause(Throwable)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getThrowable_Cause()
-     * @model containment="true"
      * @generated
      */
     Throwable getCause();
@@ -123,7 +119,6 @@ public interface Throwable extends EObject {
      * <!-- end-user-doc -->
      * @return the value of the '<em>Stack Trace</em>' containment reference list.
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getThrowable_StackTrace()
-     * @model containment="true"
      * @generated
      */
     EList<StackTraceElement> getStackTrace();
@@ -131,8 +126,6 @@ public interface Throwable extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _this = this;\nv.visit(_this);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _this_1 = this;\n<%org.eclipse.emf.common.util.EList%><<%org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement%>> _stackTrace = _this_1.getStackTrace();\nfor (final <%org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement%> element : _stackTrace)\n{\n\telement.accept(v);\n}\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _this_2 = this;\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _cause = _this_2.getCause();\nboolean _notEquals = (!<%com.google.common.base.Objects%>.equal(_cause, null));\nif (_notEquals)\n{\n\t<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _this_3 = this;\n\t<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable%> _cause_1 = _this_3.getCause();\n\t_cause_1.accept(v);\n}'"
      * @generated
      */
     void accept(Visitor v);

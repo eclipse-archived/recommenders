@@ -29,7 +29,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement()
- * @model
  * @generated
  */
 public interface StackTraceElement extends EObject {
@@ -44,7 +43,6 @@ public interface StackTraceElement extends EObject {
      * @return the value of the '<em>File Name</em>' attribute.
      * @see #setFileName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement_FileName()
-     * @model unique="false"
      * @generated
      */
     String getFileName();
@@ -70,7 +68,6 @@ public interface StackTraceElement extends EObject {
      * @return the value of the '<em>Class Name</em>' attribute.
      * @see #setClassName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement_ClassName()
-     * @model unique="false"
      * @generated
      */
     String getClassName();
@@ -96,7 +93,6 @@ public interface StackTraceElement extends EObject {
      * @return the value of the '<em>Method Name</em>' attribute.
      * @see #setMethodName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement_MethodName()
-     * @model unique="false"
      * @generated
      */
     String getMethodName();
@@ -122,7 +118,6 @@ public interface StackTraceElement extends EObject {
      * @return the value of the '<em>Line Number</em>' attribute.
      * @see #setLineNumber(int)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement_LineNumber()
-     * @model unique="false"
      * @generated
      */
     int getLineNumber();
@@ -148,7 +143,6 @@ public interface StackTraceElement extends EObject {
      * @return the value of the '<em>Native</em>' attribute.
      * @see #setNative(boolean)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getStackTraceElement_Native()
-     * @model unique="false"
      * @generated
      */
     boolean isNative();
@@ -166,8 +160,6 @@ public interface StackTraceElement extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement%> _this = this;\nv.visit(_this);'"
      * @generated
      */
     void accept(Visitor v);

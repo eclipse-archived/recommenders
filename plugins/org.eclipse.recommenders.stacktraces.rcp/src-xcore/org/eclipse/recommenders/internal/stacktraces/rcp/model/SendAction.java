@@ -21,7 +21,6 @@ import org.eclipse.emf.common.util.Enumerator;
  * and utility methods for working with them.
  * <!-- end-user-doc -->
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSendAction()
- * @model
  * @generated
  */
 public enum SendAction implements Enumerator {
@@ -74,7 +73,6 @@ public enum SendAction implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #ASK
-     * @model
      * @generated
      * @ordered
      */
@@ -89,7 +87,6 @@ public enum SendAction implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #IGNORE
-     * @model
      * @generated
      * @ordered
      */
@@ -104,7 +101,6 @@ public enum SendAction implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #SILENT
-     * @model
      * @generated
      * @ordered
      */
@@ -119,7 +115,6 @@ public enum SendAction implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #PAUSE
-     * @model
      * @generated
      * @ordered
      */

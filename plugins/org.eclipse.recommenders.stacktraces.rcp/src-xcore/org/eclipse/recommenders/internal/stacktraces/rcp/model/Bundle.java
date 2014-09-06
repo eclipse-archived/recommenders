@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getBundle()
- * @model
  * @generated
  */
 public interface Bundle extends EObject {
@@ -41,7 +40,6 @@ public interface Bundle extends EObject {
      * @return the value of the '<em>Name</em>' attribute.
      * @see #setName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getBundle_Name()
-     * @model unique="false"
      * @generated
      */
     String getName();
@@ -67,7 +65,6 @@ public interface Bundle extends EObject {
      * @return the value of the '<em>Version</em>' attribute.
      * @see #setVersion(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getBundle_Version()
-     * @model unique="false"
      * @generated
      */
     String getVersion();
@@ -85,8 +82,6 @@ public interface Bundle extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%> _this = this;\nv.visit(_this);'"
      * @generated
      */
     void accept(Visitor v);

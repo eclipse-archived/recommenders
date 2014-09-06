@@ -41,7 +41,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport()
- * @model
  * @generated
  */
 public interface ErrorReport extends EObject {
@@ -56,7 +55,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Anonymous Id</em>' attribute.
      * @see #setAnonymousId(UUID)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_AnonymousId()
-     * @model unique="false" dataType="org.eclipse.recommenders.internal.stacktraces.rcp.model.UUID"
      * @generated
      */
     UUID getAnonymousId();
@@ -82,7 +80,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Event Id</em>' attribute.
      * @see #setEventId(UUID)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_EventId()
-     * @model unique="false" dataType="org.eclipse.recommenders.internal.stacktraces.rcp.model.UUID"
      * @generated
      */
     UUID getEventId();
@@ -108,7 +105,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Name</em>' attribute.
      * @see #setName(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_Name()
-     * @model unique="false"
      * @generated
      */
     String getName();
@@ -134,7 +130,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Email</em>' attribute.
      * @see #setEmail(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_Email()
-     * @model unique="false"
      * @generated
      */
     String getEmail();
@@ -160,7 +155,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Comment</em>' attribute.
      * @see #setComment(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_Comment()
-     * @model unique="false"
      * @generated
      */
     String getComment();
@@ -186,7 +180,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Eclipse Build Id</em>' attribute.
      * @see #setEclipseBuildId(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_EclipseBuildId()
-     * @model unique="false"
      * @generated
      */
     String getEclipseBuildId();
@@ -212,7 +205,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Eclipse Product</em>' attribute.
      * @see #setEclipseProduct(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_EclipseProduct()
-     * @model unique="false"
      * @generated
      */
     String getEclipseProduct();
@@ -238,7 +230,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Java Runtime Version</em>' attribute.
      * @see #setJavaRuntimeVersion(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_JavaRuntimeVersion()
-     * @model unique="false"
      * @generated
      */
     String getJavaRuntimeVersion();
@@ -264,7 +255,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Osgi Ws</em>' attribute.
      * @see #setOsgiWs(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_OsgiWs()
-     * @model unique="false"
      * @generated
      */
     String getOsgiWs();
@@ -290,7 +280,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Osgi Os</em>' attribute.
      * @see #setOsgiOs(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_OsgiOs()
-     * @model unique="false"
      * @generated
      */
     String getOsgiOs();
@@ -316,7 +305,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Osgi Os Version</em>' attribute.
      * @see #setOsgiOsVersion(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_OsgiOsVersion()
-     * @model unique="false"
      * @generated
      */
     String getOsgiOsVersion();
@@ -342,7 +330,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Osgi Arch</em>' attribute.
      * @see #setOsgiArch(String)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_OsgiArch()
-     * @model unique="false"
      * @generated
      */
     String getOsgiArch();
@@ -368,7 +355,6 @@ public interface ErrorReport extends EObject {
      * <!-- end-user-doc -->
      * @return the value of the '<em>Present Bundles</em>' containment reference list.
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_PresentBundles()
-     * @model containment="true"
      * @generated
      */
     EList<Bundle> getPresentBundles();
@@ -384,7 +370,6 @@ public interface ErrorReport extends EObject {
      * @return the value of the '<em>Status</em>' containment reference.
      * @see #setStatus(Status)
      * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getErrorReport_Status()
-     * @model containment="true"
      * @generated
      */
     Status getStatus();
@@ -402,8 +387,6 @@ public interface ErrorReport extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this = this;\nv.visit(_this);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this_1 = this;\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _status = _this_1.getStatus();\n_status.accept(v);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this_2 = this;\n<%org.eclipse.emf.common.util.EList%><<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%>> _presentBundles = _this_2.getPresentBundles();\nfor (final <%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%> b : _presentBundles)\n{\n\tb.accept(v);\n}'"
      * @generated
      */
     void accept(Visitor v);
