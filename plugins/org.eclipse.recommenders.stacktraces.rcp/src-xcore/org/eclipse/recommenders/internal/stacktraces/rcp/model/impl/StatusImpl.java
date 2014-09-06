@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model.impl;
 
+import com.google.common.base.Objects;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
@@ -396,9 +397,14 @@ public class StatusImpl extends MinimalEObjectImpl.Container implements Status {
         v.visit(_this);
         Status _this_1 = this;
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception = _this_1.getException();
-        _exception.accept(v);
-        Status _this_2 = this;
-        EList<Status> _children = _this_2.getChildren();
+        boolean _notEquals = (!Objects.equal(_exception, null));
+        if (_notEquals) {
+            Status _this_2 = this;
+            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception_1 = _this_2.getException();
+            _exception_1.accept(v);
+        }
+        Status _this_3 = this;
+        EList<Status> _children = _this_3.getChildren();
         for (final Status child : _children) {
             child.accept(v);
         }

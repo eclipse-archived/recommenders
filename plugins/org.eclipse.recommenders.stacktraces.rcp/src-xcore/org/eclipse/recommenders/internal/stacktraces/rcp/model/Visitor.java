@@ -44,6 +44,15 @@ public interface Visitor extends EObject {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @model bundleUnique="false"
+     *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
+     * @generated
+     */
+    void visit(Bundle bundle);
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @model throwableUnique="false"
      *        annotation="http://www.eclipse.org/emf/2002/GenModel body=''"
      * @generated

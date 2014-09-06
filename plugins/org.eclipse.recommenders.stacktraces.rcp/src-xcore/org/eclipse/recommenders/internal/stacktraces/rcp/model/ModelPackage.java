@@ -269,13 +269,22 @@ public interface ModelPackage extends EPackage {
     int BUNDLE_FEATURE_COUNT = 2;
 
     /**
+     * The operation id for the '<em>Accept</em>' operation.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BUNDLE___ACCEPT__VISITOR = 0;
+
+    /**
      * The number of operations of the '<em>Bundle</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int BUNDLE_OPERATION_COUNT = 0;
+    int BUNDLE_OPERATION_COUNT = 1;
 
     /**
      * The meta object id for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.VisitorImpl <em>Visitor</em>}' class.
@@ -585,7 +594,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int VISITOR___VISIT__THROWABLE = 2;
+    int VISITOR___VISIT__BUNDLE = 2;
 
     /**
      * The operation id for the '<em>Visit</em>' operation.
@@ -594,7 +603,16 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int VISITOR___VISIT__STACKTRACEELEMENT = 3;
+    int VISITOR___VISIT__THROWABLE = 3;
+
+    /**
+     * The operation id for the '<em>Visit</em>' operation.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int VISITOR___VISIT__STACKTRACEELEMENT = 4;
 
     /**
      * The number of operations of the '<em>Visitor</em>' class.
@@ -603,7 +621,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int VISITOR_OPERATION_COUNT = 4;
+    int VISITOR_OPERATION_COUNT = 5;
 
     /**
      * The meta object id for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl <em>Settings</em>}' class.
@@ -942,6 +960,16 @@ public interface ModelPackage extends EPackage {
     EAttribute getBundle_Version();
 
     /**
+     * Returns the meta object for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle#accept(org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor) <em>Accept</em>}' operation.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the '<em>Accept</em>' operation.
+     * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle#accept(org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor)
+     * @generated
+     */
+    EOperation getBundle__Accept__Visitor();
+
+    /**
      * Returns the meta object for class '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor <em>Visitor</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -970,6 +998,16 @@ public interface ModelPackage extends EPackage {
      * @generated
      */
     EOperation getVisitor__Visit__Status();
+
+    /**
+     * Returns the meta object for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor#visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle) <em>Visit</em>}' operation.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the '<em>Visit</em>' operation.
+     * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor#visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle)
+     * @generated
+     */
+    EOperation getVisitor__Visit__Bundle();
 
     /**
      * Returns the meta object for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor#visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable) <em>Visit</em>}' operation.
@@ -1548,6 +1586,14 @@ public interface ModelPackage extends EPackage {
         EAttribute BUNDLE__VERSION = eINSTANCE.getBundle_Version();
 
         /**
+         * The meta object literal for the '<em><b>Accept</b></em>' operation.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EOperation BUNDLE___ACCEPT__VISITOR = eINSTANCE.getBundle__Accept__Visitor();
+
+        /**
          * The meta object literal for the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.VisitorImpl <em>Visitor</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -1572,6 +1618,14 @@ public interface ModelPackage extends EPackage {
          * @generated
          */
         EOperation VISITOR___VISIT__STATUS = eINSTANCE.getVisitor__Visit__Status();
+
+        /**
+         * The meta object literal for the '<em><b>Visit</b></em>' operation.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EOperation VISITOR___VISIT__BUNDLE = eINSTANCE.getVisitor__Visit__Bundle();
 
         /**
          * The meta object literal for the '<em><b>Visit</b></em>' operation.

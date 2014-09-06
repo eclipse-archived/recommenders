@@ -403,7 +403,7 @@ public interface ErrorReport extends EObject {
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @model vUnique="false"
-     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this = this;\nv.visit(_this);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this_1 = this;\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _status = _this_1.getStatus();\n_status.accept(v);'"
+     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this = this;\nv.visit(_this);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this_1 = this;\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Status%> _status = _this_1.getStatus();\n_status.accept(v);\n<%org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport%> _this_2 = this;\n<%org.eclipse.emf.common.util.EList%><<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%>> _presentBundles = _this_2.getPresentBundles();\nfor (final <%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%> b : _presentBundles)\n{\n\tb.accept(v);\n}'"
      * @generated
      */
     void accept(Visitor v);

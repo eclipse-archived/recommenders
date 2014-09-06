@@ -652,6 +652,11 @@ public class ErrorReportImpl extends MinimalEObjectImpl.Container implements Err
         ErrorReport _this_1 = this;
         Status _status = _this_1.getStatus();
         _status.accept(v);
+        ErrorReport _this_2 = this;
+        EList<Bundle> _presentBundles = _this_2.getPresentBundles();
+        for (final Bundle b : _presentBundles) {
+            b.accept(v);
+        }
     }
 
     /**

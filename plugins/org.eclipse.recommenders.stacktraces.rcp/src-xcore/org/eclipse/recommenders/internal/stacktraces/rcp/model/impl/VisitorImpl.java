@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement;
@@ -76,6 +77,15 @@ public class VisitorImpl extends MinimalEObjectImpl.Container implements Visitor
      * <!-- end-user-doc -->
      * @generated
      */
+    public void visit(final Bundle bundle) {
+        
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public void visit(final org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable throwable) {
         
     }
@@ -102,6 +112,9 @@ public class VisitorImpl extends MinimalEObjectImpl.Container implements Visitor
                 return null;
             case ModelPackage.VISITOR___VISIT__STATUS:
                 visit((Status)arguments.get(0));
+                return null;
+            case ModelPackage.VISITOR___VISIT__BUNDLE:
+                visit((Bundle)arguments.get(0));
                 return null;
             case ModelPackage.VISITOR___VISIT__THROWABLE:
                 visit((org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable)arguments.get(0));

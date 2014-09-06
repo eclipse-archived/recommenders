@@ -82,4 +82,13 @@ public interface Bundle extends EObject {
      */
     void setVersion(String value);
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model vUnique="false"
+     *        annotation="http://www.eclipse.org/emf/2002/GenModel body='<%org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle%> _this = this;\nv.visit(_this);'"
+     * @generated
+     */
+    void accept(Visitor v);
+
 } // Bundle

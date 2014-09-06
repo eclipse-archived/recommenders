@@ -10,8 +10,10 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -19,6 +21,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Visitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -141,6 +144,16 @@ public class BundleImpl extends MinimalEObjectImpl.Container implements Bundle {
      * <!-- end-user-doc -->
      * @generated
      */
+    public void accept(final Visitor v) {
+        Bundle _this = this;
+        v.visit(_this);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
@@ -202,6 +215,21 @@ public class BundleImpl extends MinimalEObjectImpl.Container implements Bundle {
                 return VERSION_EDEFAULT == null ? version != null : !VERSION_EDEFAULT.equals(version);
         }
         return super.eIsSet(featureID);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+        switch (operationID) {
+            case ModelPackage.BUNDLE___ACCEPT__VISITOR:
+                accept((Visitor)arguments.get(0));
+                return null;
+        }
+        return super.eInvoke(operationID, arguments);
     }
 
     /**

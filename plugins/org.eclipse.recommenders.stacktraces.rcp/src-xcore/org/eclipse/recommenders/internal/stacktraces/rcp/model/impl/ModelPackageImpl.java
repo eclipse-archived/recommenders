@@ -339,6 +339,15 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
+    public EOperation getBundle__Accept__Visitor() {
+        return bundleEClass.getEOperations().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getVisitor() {
         return visitorEClass;
     }
@@ -366,7 +375,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EOperation getVisitor__Visit__Throwable() {
+    public EOperation getVisitor__Visit__Bundle() {
         return visitorEClass.getEOperations().get(2);
     }
 
@@ -375,8 +384,17 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EOperation getVisitor__Visit__StackTraceElement() {
+    public EOperation getVisitor__Visit__Throwable() {
         return visitorEClass.getEOperations().get(3);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EOperation getVisitor__Visit__StackTraceElement() {
+        return visitorEClass.getEOperations().get(4);
     }
 
     /**
@@ -742,6 +760,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
         bundleEClass = createEClass(BUNDLE);
         createEAttribute(bundleEClass, BUNDLE__NAME);
         createEAttribute(bundleEClass, BUNDLE__VERSION);
+        createEOperation(bundleEClass, BUNDLE___ACCEPT__VISITOR);
 
         statusEClass = createEClass(STATUS);
         createEAttribute(statusEClass, STATUS__PLUGIN_ID);
@@ -772,6 +791,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
         visitorEClass = createEClass(VISITOR);
         createEOperation(visitorEClass, VISITOR___VISIT__ERRORREPORT);
         createEOperation(visitorEClass, VISITOR___VISIT__STATUS);
+        createEOperation(visitorEClass, VISITOR___VISIT__BUNDLE);
         createEOperation(visitorEClass, VISITOR___VISIT__THROWABLE);
         createEOperation(visitorEClass, VISITOR___VISIT__STACKTRACEELEMENT);
 
@@ -849,6 +869,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
         initEAttribute(getBundle_Name(), theEcorePackage.getEString(), "name", null, 0, 1, Bundle.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getBundle_Version(), theEcorePackage.getEString(), "version", null, 0, 1, Bundle.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+        op = initEOperation(getBundle__Accept__Visitor(), null, "accept", 0, 1, !IS_UNIQUE, IS_ORDERED);
+        addEParameter(op, this.getVisitor(), "v", 0, 1, !IS_UNIQUE, IS_ORDERED);
+
         initEClass(statusEClass, Status.class, "Status", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getStatus_PluginId(), theEcorePackage.getEString(), "pluginId", null, 0, 1, Status.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getStatus_PluginVersion(), theEcorePackage.getEString(), "pluginVersion", null, 0, 1, Status.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -888,6 +911,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
         op = initEOperation(getVisitor__Visit__Status(), null, "visit", 0, 1, !IS_UNIQUE, IS_ORDERED);
         addEParameter(op, this.getStatus(), "status", 0, 1, !IS_UNIQUE, IS_ORDERED);
+
+        op = initEOperation(getVisitor__Visit__Bundle(), null, "visit", 0, 1, !IS_UNIQUE, IS_ORDERED);
+        addEParameter(op, this.getBundle(), "bundle", 0, 1, !IS_UNIQUE, IS_ORDERED);
 
         op = initEOperation(getVisitor__Visit__Throwable(), null, "visit", 0, 1, !IS_UNIQUE, IS_ORDERED);
         addEParameter(op, this.getThrowable(), "throwable", 0, 1, !IS_UNIQUE, IS_ORDERED);

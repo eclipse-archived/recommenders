@@ -22,12 +22,18 @@ class ErrorReport {
     op void accept(Visitor v) {
         v.visit(this)
         status.accept(v)
+        for (Bundle b : presentBundles) {
+            b.accept(v)
+        }
     }
 }
 
 class Bundle{
     String name
     String version
+    op void accept(Visitor v) {
+        v.visit(this)
+    }
 }
 
 class Status {
@@ -41,7 +47,9 @@ class Status {
     contains Status[] children
     op void accept(Visitor v) {
         v.visit(this)
-        exception.accept(v)
+        if (exception != null) {
+            exception.accept(v)
+        }
         for (Status child : children) {
             child.accept(v)
         }
@@ -79,6 +87,8 @@ class Visitor{
     op void visit(ErrorReport report) {
     }
     op void visit(Status status) {
+    }
+    op void visit(Bundle bundle) {
     }
     op void visit(Throwable throwable) {
     }
