@@ -25,6 +25,7 @@
 		<module>org.eclipse.recommenders.rcp.tests</module>
 		<module>org.eclipse.recommenders.snipmatch.tests</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp.tests</module>
+		<module>org.eclipse.recommenders.stacktraces.rcp.tests</module>
 		<module>org.eclipse.recommenders.testing.tests</module>
 		<module>org.eclipse.recommenders.utils.tests</module>
 	</modules>
