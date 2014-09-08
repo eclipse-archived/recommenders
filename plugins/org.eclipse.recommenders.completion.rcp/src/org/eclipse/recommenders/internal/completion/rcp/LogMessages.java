@@ -26,6 +26,9 @@ public class LogMessages extends DefaultLogMessage {
     public static final LogMessages LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
 
+    public static final LogMessages LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
+            Messages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING);
+
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 
     private LogMessages(int severity, String message) {
