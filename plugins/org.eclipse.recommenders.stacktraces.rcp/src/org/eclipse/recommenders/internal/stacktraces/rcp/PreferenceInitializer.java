@@ -34,8 +34,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.put(PROP_SERVER, SERVER_URL);
         s.put(PROP_NAME, "");
         s.put(PROP_EMAIL, "");
-        s.put(PROP_WHITELISTED_PLUGINS, "org.eclipse.;com.codetrails.;");
-        s.put(PROP_WHITELISTED_PACKAGES, "org.eclipse.;org.apache.;java.;javax.;javafx.;sun.;com.sun.;com.codetrails.");
+        s.put(PROP_WHITELISTED_PLUGINS, "org.eclipse.;com.codetrails.;org.osgi");
+        s.put(PROP_WHITELISTED_PACKAGES,
+                "org.eclipse.;org.apache.;java.;javax.;javafx.;sun.;com.sun.;com.codetrails.;org.osgi.;com.google.;");
         s.put(PROP_SEND_ACTION, SendAction.ASK.name());
         s.putBoolean(PROP_ANONYMIZE_STACKTRACES, true);
         s.putBoolean(PROP_ANONYMIZE_MESSAGES, false);
