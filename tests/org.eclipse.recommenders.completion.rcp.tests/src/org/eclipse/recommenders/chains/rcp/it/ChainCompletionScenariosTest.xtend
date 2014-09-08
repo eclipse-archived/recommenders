@@ -7,19 +7,20 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposal
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposalComputer
+import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 
-import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.SmokeTestScenarios.*
-import org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
+import static org.junit.Assert.*
+
 @SuppressWarnings("unchecked")
 class ChainCompletionScenariosTest {
 

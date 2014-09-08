@@ -14,11 +14,11 @@ import java.util.List
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent
 import org.junit.Test
 
-import static junit.framework.Assert.*
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.*
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.*
 import static org.eclipse.recommenders.testing.XtendUtils.*
 import static org.eclipse.recommenders.testing.jdt.AstUtils.*
+import static org.junit.Assert.*
 
 class JavaElementSelectionsLocationTest {
 

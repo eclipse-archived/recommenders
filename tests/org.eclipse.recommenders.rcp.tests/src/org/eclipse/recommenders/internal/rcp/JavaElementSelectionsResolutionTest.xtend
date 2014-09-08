@@ -19,8 +19,8 @@ import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Ignore
 import org.junit.Test
 
-import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.XtendUtils.*
+import static org.junit.Assert.*
 
 class JavaElementSelectionsResolutionTest {
 

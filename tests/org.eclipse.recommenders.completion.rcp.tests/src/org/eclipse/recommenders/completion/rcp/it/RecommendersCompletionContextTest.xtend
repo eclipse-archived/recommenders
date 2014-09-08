@@ -10,13 +10,13 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.junit.Test
 
 import static com.google.common.base.Optional.*
-import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.CodeBuilder.*
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
+import static org.junit.Assert.*
 
 class RecommendersCompletionContextTest {
 

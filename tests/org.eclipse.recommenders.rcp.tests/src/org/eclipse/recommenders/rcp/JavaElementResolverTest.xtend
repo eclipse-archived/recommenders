@@ -19,8 +19,8 @@ import org.eclipse.recommenders.utils.names.VmMethodName
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.junit.Test
 
-import static junit.framework.Assert.*
 import static org.eclipse.recommenders.testing.CodeBuilder.*
+import static org.junit.Assert.*
 
 class JavaElementResolverTest {
 
