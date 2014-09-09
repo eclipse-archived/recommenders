@@ -5,11 +5,11 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.recommenders.stacktraces.rcp.test.actionSet"
-            label="Sample Action Set"
+            label="Error Reports Set"
             visible="true">
          <menu
                id="sampleMenu"
-               label="Sample &amp;Menu">
+               label="Error Reporting">
             <separator
                   name="sampleGroup">
             </separator>
@@ -18,7 +18,7 @@
                class="org.eclipse.recommenders.stacktraces.rcp.actions.SampleAction"
                icon="icons/sample.gif"
                id="org.eclipse.recommenders.stacktraces.rcp.test.actions.SampleAction"
-               label="&amp;Sample Action"
+               label="Log error(s)"
                menubarPath="sampleMenu/sampleGroup"
                toolbarPath="sampleGroup"
                tooltip="Hello, Eclipse world">
