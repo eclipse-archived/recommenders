@@ -1,19 +1,5 @@
-## no archives
-*.jar
-*.zip
-*.gz
-
-## no derived resources
-*.class
-bin/
+## No derived resources
 target/
-workspace/
-.recommenders/
-aggregators/
-screenshots/
-
-## jrebel project config files
-rebel.xml
 
 ## No Eclipse settings
 .project
@@ -22,6 +8,9 @@ rebel.xml
 
 ## No Checkstyle plugin settings
 .checkstyle
+
+## No JRebel project config files
+rebel.xml
 
 ## various other file types we don't want to have in the repository:
 .DS_Store
