@@ -106,7 +106,7 @@ class SettingsWizardPage extends WizardPage {
                     case SILENT:
                         return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
                     case PAUSE:
-                        return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
+                        return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE;
                     default:
                         return super.getText(element);
                     }
