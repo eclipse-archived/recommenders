@@ -648,18 +648,14 @@ public class ErrorReportImpl extends MinimalEObjectImpl.Container implements Err
      * @generated
      */
     public void accept(final Visitor v) {
-        ErrorReport _this = this;
-        v.visit(_this);
-        ErrorReport _this_1 = this;
-        Status _status = _this_1.getStatus();
+        v.visit(this);
+        Status _status = this.getStatus();
         boolean _notEquals = (!Objects.equal(_status, null));
         if (_notEquals) {
-            ErrorReport _this_2 = this;
-            Status _status_1 = _this_2.getStatus();
+            Status _status_1 = this.getStatus();
             _status_1.accept(v);
         }
-        ErrorReport _this_3 = this;
-        EList<Bundle> _presentBundles = _this_3.getPresentBundles();
+        EList<Bundle> _presentBundles = this.getPresentBundles();
         for (final Bundle b : _presentBundles) {
             b.accept(v);
         }

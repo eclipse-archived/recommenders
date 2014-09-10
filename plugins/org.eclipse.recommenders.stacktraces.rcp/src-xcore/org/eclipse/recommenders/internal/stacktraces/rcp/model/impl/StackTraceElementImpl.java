@@ -268,8 +268,7 @@ public class StackTraceElementImpl extends MinimalEObjectImpl.Container implemen
      * @generated
      */
     public void accept(final Visitor v) {
-        StackTraceElement _this = this;
-        v.visit(_this);
+        v.visit(this);
     }
 
     /**
