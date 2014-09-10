@@ -1,9 +1,10 @@
-@GenModel(modelDirectory="/org.eclipse.recommenders.stacktraces.rcp/src-xcore", copyrightText="Copyright (c) 2014 Codetrails GmbH.\nAll rights reserved. This program and the accompanying materials\nare made available under the terms of the Eclipse Public License v1.0\nwhich accompanies this distribution, and is available at\nhttp://www.eclipse.org/legal/epl-v10.html\n\nContributors:\n    Marcel Bruch - initial API and implementation.", suppressEMFModelTags="true")
+@GenModel(copyrightText="Copyright (c) 2014 Codetrails GmbH.\nAll rights reserved. This program and the accompanying materials\nare made available under the terms of the Eclipse Public License v1.0\nwhich accompanies this distribution, and is available at\nhttp://www.eclipse.org/legal/epl-v10.html\n\nContributors:\n    Marcel Bruch - initial API and implementation.", language="", redirection="", templateDirectory="")
+@GenModel(modelDirectory="org.eclipse.recommenders.stacktraces.model/target/generated-sources/xcore")
 @GenModel(bundleManifest="false")
+@GenModel(complianceLevel="6.0")
 package org.eclipse.recommenders.internal.stacktraces.rcp.model
 
 import java.util.UUID
-
 class ErrorReport {
     UUID anonymousId
     UUID eventId
@@ -101,9 +102,9 @@ class Visitor{
 class Settings {
     String name
     String email
-    boolean skipSimilarErrors
     boolean anonymizeStrackTraceElements
     boolean anonymizeMessages
+    boolean skipSimilarErrors
     SendAction action
     long pause
     @GenModel(documentation="The remote address where error events are send to.")

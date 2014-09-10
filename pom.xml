@@ -419,6 +419,19 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.eclipse.xtext</groupId>
+										<artifactId>xtext-maven-plugin</artifactId>
+										<versionRange>[0,)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>org.jacoco</groupId>
 										<artifactId>jacoco-maven-plugin</artifactId>
 										<versionRange>[0,)</versionRange>

@@ -1,13 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Stacktraces & Error Reporting Models
 Bundle-SymbolicName: org.eclipse.recommenders.stacktraces.model;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
-Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.xtext.xbase.lib;visibility:=reexport,
- org.eclipse.emf.ecore.xcore.lib;visibility:=reexport
+Bundle-Version: 2.1.9.qualifier
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xcore.lib,
+ org.eclipse.xtext.xbase.lib
+Export-Package: org.eclipse.recommenders.internal.stacktraces.rcp.model,
+ org.eclipse.recommenders.internal.stacktraces.rcp.model.impl,
+ org.eclipse.recommenders.internal.stacktraces.rcp.model.util

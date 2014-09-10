@@ -15,9 +15,9 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
+            id="org.eclipse.recommenders.stacktraces.rcp.preferencePages.errorReporting"
             category="org.eclipse.ui.preferencePages.Workbench"
             class="org.eclipse.recommenders.internal.stacktraces.rcp.PreferencePage"
-            id="org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportingPreferencePage"
             name="Error Reporting">
       </page>
    </extension>
