@@ -145,8 +145,7 @@ public class BundleImpl extends MinimalEObjectImpl.Container implements Bundle {
      * @generated
      */
     public void accept(final Visitor v) {
-        Bundle _this = this;
-        v.visit(_this);
+        v.visit(this);
     }
 
     /**

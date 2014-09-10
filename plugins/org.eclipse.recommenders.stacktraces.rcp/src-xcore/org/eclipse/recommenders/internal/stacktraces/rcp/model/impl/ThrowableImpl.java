@@ -225,19 +225,15 @@ public class ThrowableImpl extends MinimalEObjectImpl.Container implements org.e
      * @generated
      */
     public void accept(final Visitor v) {
-        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _this = this;
-        v.visit(_this);
-        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _this_1 = this;
-        EList<StackTraceElement> _stackTrace = _this_1.getStackTrace();
+        v.visit(this);
+        EList<StackTraceElement> _stackTrace = this.getStackTrace();
         for (final StackTraceElement element : _stackTrace) {
             element.accept(v);
         }
-        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _this_2 = this;
-        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _cause = _this_2.getCause();
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _cause = this.getCause();
         boolean _notEquals = (!Objects.equal(_cause, null));
         if (_notEquals) {
-            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _this_3 = this;
-            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _cause_1 = _this_3.getCause();
+            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _cause_1 = this.getCause();
             _cause_1.accept(v);
         }
     }

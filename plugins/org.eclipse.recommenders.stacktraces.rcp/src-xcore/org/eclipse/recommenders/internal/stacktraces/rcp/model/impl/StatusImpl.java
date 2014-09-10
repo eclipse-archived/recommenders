@@ -393,18 +393,14 @@ public class StatusImpl extends MinimalEObjectImpl.Container implements Status {
      * @generated
      */
     public void accept(final Visitor v) {
-        Status _this = this;
-        v.visit(_this);
-        Status _this_1 = this;
-        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception = _this_1.getException();
+        v.visit(this);
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception = this.getException();
         boolean _notEquals = (!Objects.equal(_exception, null));
         if (_notEquals) {
-            Status _this_2 = this;
-            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception_1 = _this_2.getException();
+            org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable _exception_1 = this.getException();
             _exception_1.accept(v);
         }
-        Status _this_3 = this;
-        EList<Status> _children = _this_3.getChildren();
+        EList<Status> _children = this.getChildren();
         for (final Status child : _children) {
             child.accept(v);
         }
