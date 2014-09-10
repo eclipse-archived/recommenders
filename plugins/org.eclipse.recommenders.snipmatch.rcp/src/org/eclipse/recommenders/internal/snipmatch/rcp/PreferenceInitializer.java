@@ -19,7 +19,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String REPO_FETCH_URL = "https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"; //$NON-NLS-1$
+    private static final String REPO_FETCH_URL = "http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"; //$NON-NLS-1$
     private static final String REPO_PUSH_URL = "https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"; //$NON-NLS-1$
     private static final String REPO_PUSH_BRANCH = "refs/for"; //$NON-NLS-1$
 
