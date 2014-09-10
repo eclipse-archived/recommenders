@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
@@ -45,7 +46,8 @@ public class LogListener implements ILogListener, IStartup {
     private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
             .orNull();
 
-    private Cache<String, String> cache = CacheBuilder.newBuilder().maximumSize(10).build();
+    private Cache<String, String> cache = CacheBuilder.newBuilder().maximumSize(30)
+            .expireAfterAccess(30, TimeUnit.MINUTES).build();
     private IObservableList errorReports;
     private volatile boolean isDialogOpen;
 
@@ -70,7 +72,6 @@ public class LogListener implements ILogListener, IStartup {
             return;
         }
         if (sentSimilarErrorBefore(status)) {
-            sendStatus(ErrorReports.newErrorReport(status, settings));
             return;
         }
         insertDebugStacktraceIfEmpty(status);
