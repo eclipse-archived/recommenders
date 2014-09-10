@@ -50,6 +50,7 @@ public class Messages extends NLS {
 
     public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
     public static String LOG_ERROR_SESSION_PROCESSOR_FAILED;
+    public static String LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
 
     static {
         // initialize resource bundle
