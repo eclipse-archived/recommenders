@@ -24,8 +24,11 @@ public class JavaEditorSearchContext extends SearchContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(JavaEditorSearchContext.class);
 
-    public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext contentAssistContext) {
-        super(searchText, getLocation(contentAssistContext));
+    private final JavaContentAssistInvocationContext invocationContext;
+
+    public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext invocationContext) {
+        super(searchText, getLocation(invocationContext));
+        this.invocationContext = invocationContext;
     }
 
     private static Location getLocation(JavaContentAssistInvocationContext context) {
@@ -50,6 +53,10 @@ public class JavaEditorSearchContext extends SearchContext {
             LOG.error("Could not compute location", e);
         }
         return Location.FILE;
+    }
+
+    public JavaContentAssistInvocationContext getInvocationContext() {
+        return invocationContext;
     }
 
 }
