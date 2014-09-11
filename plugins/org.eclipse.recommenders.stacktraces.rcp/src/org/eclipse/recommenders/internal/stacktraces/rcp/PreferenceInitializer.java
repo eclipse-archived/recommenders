@@ -34,6 +34,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.put(PROP_SERVER, SERVER_URL);
         s.put(PROP_NAME, "");
         s.put(PROP_EMAIL, "");
+        s.putBoolean(PROP_SKIP_SIMILAR_ERRORS, true);
         s.put(PROP_WHITELISTED_PLUGINS, "org.eclipse.;com.codetrails.;");
         s.put(PROP_WHITELISTED_PACKAGES,
                 "org.eclipse.;;;org.apache.;java.;javax.;javafx.;sun.;com.sun.;com.codetrails.;org.osgi.;com.google.;ch.qos.;org.slf4j.;");
@@ -47,6 +48,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         Settings settings = ModelFactory.eINSTANCE.createSettings();
         settings.setName(s.getString(PROP_NAME));
         settings.setEmail(s.getString(PROP_EMAIL));
+        settings.setSkipSimilarErrors(s.getBoolean(PROP_SKIP_SIMILAR_ERRORS));
         settings.setServerUrl(s.getString(PROP_SERVER));
         settings.getWhitelistedPluginIds().addAll(parseWhitelist(s.getString(PROP_WHITELISTED_PLUGINS)));
         settings.getWhitelistedPackages().addAll(parseWhitelist(s.getString(PROP_WHITELISTED_PACKAGES)));
@@ -62,6 +64,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, PLUGIN_ID);
         s.setValue(PROP_NAME, settings.getName());
         s.setValue(PROP_EMAIL, settings.getEmail());
+        s.setValue(PROP_SKIP_SIMILAR_ERRORS, settings.isSkipSimilarErrors());
         s.setValue(PROP_ANONYMIZE_STACKTRACES, settings.isAnonymizeStrackTraceElements());
         s.setValue(PROP_ANONYMIZE_MESSAGES, settings.isAnonymizeMessages());
         s.setValue(PROP_SEND_ACTION, settings.getAction().name());

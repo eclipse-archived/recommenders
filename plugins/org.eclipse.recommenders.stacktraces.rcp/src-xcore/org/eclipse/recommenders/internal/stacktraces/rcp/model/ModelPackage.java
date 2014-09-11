@@ -650,13 +650,22 @@ public interface ModelPackage extends EPackage {
     int SETTINGS__EMAIL = 1;
 
     /**
+     * The feature id for the '<em><b>Skip Similar Errors</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int SETTINGS__SKIP_SIMILAR_ERRORS = 2;
+
+    /**
      * The feature id for the '<em><b>Anonymize Strack Trace Elements</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS = 2;
+    int SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS = 3;
 
     /**
      * The feature id for the '<em><b>Anonymize Messages</b></em>' attribute.
@@ -665,7 +674,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__ANONYMIZE_MESSAGES = 3;
+    int SETTINGS__ANONYMIZE_MESSAGES = 4;
 
     /**
      * The feature id for the '<em><b>Action</b></em>' attribute.
@@ -674,7 +683,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__ACTION = 4;
+    int SETTINGS__ACTION = 5;
 
     /**
      * The feature id for the '<em><b>Pause</b></em>' attribute.
@@ -683,7 +692,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__PAUSE = 5;
+    int SETTINGS__PAUSE = 6;
 
     /**
      * The feature id for the '<em><b>Server Url</b></em>' attribute.
@@ -692,7 +701,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__SERVER_URL = 6;
+    int SETTINGS__SERVER_URL = 7;
 
     /**
      * The feature id for the '<em><b>Whitelisted Plugin Ids</b></em>' attribute list.
@@ -701,7 +710,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__WHITELISTED_PLUGIN_IDS = 7;
+    int SETTINGS__WHITELISTED_PLUGIN_IDS = 8;
 
     /**
      * The feature id for the '<em><b>Whitelisted Packages</b></em>' attribute list.
@@ -710,7 +719,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS__WHITELISTED_PACKAGES = 8;
+    int SETTINGS__WHITELISTED_PACKAGES = 9;
 
     /**
      * The number of structural features of the '<em>Settings</em>' class.
@@ -719,7 +728,7 @@ public interface ModelPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int SETTINGS_FEATURE_COUNT = 9;
+    int SETTINGS_FEATURE_COUNT = 10;
 
     /**
      * The number of operations of the '<em>Settings</em>' class.
@@ -1307,6 +1316,17 @@ public interface ModelPackage extends EPackage {
     EAttribute getSettings_Email();
 
     /**
+     * Returns the meta object for the attribute '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isSkipSimilarErrors <em>Skip Similar Errors</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Skip Similar Errors</em>'.
+     * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isSkipSimilarErrors()
+     * @see #getSettings()
+     * @generated
+     */
+    EAttribute getSettings_SkipSimilarErrors();
+
+    /**
      * Returns the meta object for the attribute '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isAnonymizeStrackTraceElements <em>Anonymize Strack Trace Elements</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -1855,6 +1875,14 @@ public interface ModelPackage extends EPackage {
          * @generated
          */
         EAttribute SETTINGS__EMAIL = eINSTANCE.getSettings_Email();
+
+        /**
+         * The meta object literal for the '<em><b>Skip Similar Errors</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute SETTINGS__SKIP_SIMILAR_ERRORS = eINSTANCE.getSettings_SkipSimilarErrors();
 
         /**
          * The meta object literal for the '<em><b>Anonymize Strack Trace Elements</b></em>' attribute feature.

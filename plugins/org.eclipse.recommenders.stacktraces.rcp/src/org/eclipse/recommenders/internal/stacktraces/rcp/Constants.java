@@ -17,6 +17,7 @@ public class Constants {
     static final String PROP_ANONYMIZE_STACKTRACES = "anonymize-stacktraces";
     static final String PROP_ANONYMIZE_MESSAGES = "anonymize-messages";
     static final String PROP_SEND_ACTION = "send-action";
+    static final String PROP_SKIP_SIMILAR_ERRORS = "skip-similar-errors";
     static final String PROP_WHITELISTED_PLUGINS = "whitelisted-plugins";
     static final String PROP_WHITELISTED_PACKAGES = "whitelisted-packages";
     static final String PROP_SERVER = "server-url";

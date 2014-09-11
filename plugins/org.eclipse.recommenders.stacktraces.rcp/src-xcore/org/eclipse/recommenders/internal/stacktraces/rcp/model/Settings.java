@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#getEmail <em>Email</em>}</li>
+ *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isSkipSimilarErrors <em>Skip Similar Errors</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isAnonymizeStrackTraceElements <em>Anonymize Strack Trace Elements</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isAnonymizeMessages <em>Anonymize Messages</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#getAction <em>Action</em>}</li>
@@ -87,6 +88,31 @@ public interface Settings extends EObject {
      * @generated
      */
     void setEmail(String value);
+
+    /**
+     * Returns the value of the '<em><b>Skip Similar Errors</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Skip Similar Errors</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Skip Similar Errors</em>' attribute.
+     * @see #setSkipSimilarErrors(boolean)
+     * @see org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage#getSettings_SkipSimilarErrors()
+     * @generated
+     */
+    boolean isSkipSimilarErrors();
+
+    /**
+     * Sets the value of the '{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings#isSkipSimilarErrors <em>Skip Similar Errors</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Skip Similar Errors</em>' attribute.
+     * @see #isSkipSimilarErrors()
+     * @generated
+     */
+    void setSkipSimilarErrors(boolean value);
 
     /**
      * Returns the value of the '<em><b>Anonymize Strack Trace Elements</b></em>' attribute.

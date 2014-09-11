@@ -52,6 +52,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
         addField(new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES, Messages.FIELD_LABEL_ANONYMIZE_MESSAGES,
                 getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PROP_SKIP_SIMILAR_ERRORS, Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS,
+                getFieldEditorParent()));
         addLinks(getFieldEditorParent());
     }
 

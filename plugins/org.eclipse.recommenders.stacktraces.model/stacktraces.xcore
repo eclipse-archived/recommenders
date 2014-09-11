@@ -101,6 +101,7 @@ class Visitor{
 class Settings {
     String name
     String email
+    boolean skipSimilarErrors
     boolean anonymizeStrackTraceElements
     boolean anonymizeMessages
     SendAction action

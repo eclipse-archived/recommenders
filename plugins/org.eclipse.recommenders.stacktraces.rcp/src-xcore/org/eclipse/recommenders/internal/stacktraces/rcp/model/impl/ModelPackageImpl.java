@@ -636,7 +636,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_AnonymizeStrackTraceElements() {
+    public EAttribute getSettings_SkipSimilarErrors() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(2);
     }
 
@@ -645,7 +645,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_AnonymizeMessages() {
+    public EAttribute getSettings_AnonymizeStrackTraceElements() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(3);
     }
 
@@ -654,7 +654,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_Action() {
+    public EAttribute getSettings_AnonymizeMessages() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(4);
     }
 
@@ -663,7 +663,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_Pause() {
+    public EAttribute getSettings_Action() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(5);
     }
 
@@ -672,7 +672,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_ServerUrl() {
+    public EAttribute getSettings_Pause() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(6);
     }
 
@@ -681,7 +681,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_WhitelistedPluginIds() {
+    public EAttribute getSettings_ServerUrl() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(7);
     }
 
@@ -690,8 +690,17 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getSettings_WhitelistedPackages() {
+    public EAttribute getSettings_WhitelistedPluginIds() {
         return (EAttribute)settingsEClass.getEStructuralFeatures().get(8);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getSettings_WhitelistedPackages() {
+        return (EAttribute)settingsEClass.getEStructuralFeatures().get(9);
     }
 
     /**
@@ -798,6 +807,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
         settingsEClass = createEClass(SETTINGS);
         createEAttribute(settingsEClass, SETTINGS__NAME);
         createEAttribute(settingsEClass, SETTINGS__EMAIL);
+        createEAttribute(settingsEClass, SETTINGS__SKIP_SIMILAR_ERRORS);
         createEAttribute(settingsEClass, SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS);
         createEAttribute(settingsEClass, SETTINGS__ANONYMIZE_MESSAGES);
         createEAttribute(settingsEClass, SETTINGS__ACTION);
@@ -924,6 +934,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
         initEClass(settingsEClass, Settings.class, "Settings", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getSettings_Name(), theEcorePackage.getEString(), "name", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getSettings_Email(), theEcorePackage.getEString(), "email", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getSettings_SkipSimilarErrors(), theEcorePackage.getEBoolean(), "skipSimilarErrors", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getSettings_AnonymizeStrackTraceElements(), theEcorePackage.getEBoolean(), "anonymizeStrackTraceElements", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getSettings_AnonymizeMessages(), theEcorePackage.getEBoolean(), "anonymizeMessages", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getSettings_Action(), this.getSendAction(), "action", null, 0, 1, Settings.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -30,6 +30,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
  * <ul>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#getEmail <em>Email</em>}</li>
+ *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#isSkipSimilarErrors <em>Skip Similar Errors</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#isAnonymizeStrackTraceElements <em>Anonymize Strack Trace Elements</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#isAnonymizeMessages <em>Anonymize Messages</em>}</li>
  *   <li>{@link org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.SettingsImpl#getAction <em>Action</em>}</li>
@@ -82,6 +83,26 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
      * @ordered
      */
     protected String email = EMAIL_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #isSkipSimilarErrors() <em>Skip Similar Errors</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSkipSimilarErrors()
+     * @generated
+     * @ordered
+     */
+    protected static final boolean SKIP_SIMILAR_ERRORS_EDEFAULT = false;
+
+    /**
+     * The cached value of the '{@link #isSkipSimilarErrors() <em>Skip Similar Errors</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSkipSimilarErrors()
+     * @generated
+     * @ordered
+     */
+    protected boolean skipSimilarErrors = SKIP_SIMILAR_ERRORS_EDEFAULT;
 
     /**
      * The default value of the '{@link #isAnonymizeStrackTraceElements() <em>Anonymize Strack Trace Elements</em>}' attribute.
@@ -269,6 +290,27 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
      * <!-- end-user-doc -->
      * @generated
      */
+    public boolean isSkipSimilarErrors() {
+        return skipSimilarErrors;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setSkipSimilarErrors(boolean newSkipSimilarErrors) {
+        boolean oldSkipSimilarErrors = skipSimilarErrors;
+        skipSimilarErrors = newSkipSimilarErrors;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.SETTINGS__SKIP_SIMILAR_ERRORS, oldSkipSimilarErrors, skipSimilarErrors));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public boolean isAnonymizeStrackTraceElements() {
         return anonymizeStrackTraceElements;
     }
@@ -405,6 +447,8 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
                 return getName();
             case ModelPackage.SETTINGS__EMAIL:
                 return getEmail();
+            case ModelPackage.SETTINGS__SKIP_SIMILAR_ERRORS:
+                return isSkipSimilarErrors();
             case ModelPackage.SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS:
                 return isAnonymizeStrackTraceElements();
             case ModelPackage.SETTINGS__ANONYMIZE_MESSAGES:
@@ -437,6 +481,9 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
                 return;
             case ModelPackage.SETTINGS__EMAIL:
                 setEmail((String)newValue);
+                return;
+            case ModelPackage.SETTINGS__SKIP_SIMILAR_ERRORS:
+                setSkipSimilarErrors((Boolean)newValue);
                 return;
             case ModelPackage.SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS:
                 setAnonymizeStrackTraceElements((Boolean)newValue);
@@ -479,6 +526,9 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
             case ModelPackage.SETTINGS__EMAIL:
                 setEmail(EMAIL_EDEFAULT);
                 return;
+            case ModelPackage.SETTINGS__SKIP_SIMILAR_ERRORS:
+                setSkipSimilarErrors(SKIP_SIMILAR_ERRORS_EDEFAULT);
+                return;
             case ModelPackage.SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS:
                 setAnonymizeStrackTraceElements(ANONYMIZE_STRACK_TRACE_ELEMENTS_EDEFAULT);
                 return;
@@ -516,6 +566,8 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
                 return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
             case ModelPackage.SETTINGS__EMAIL:
                 return EMAIL_EDEFAULT == null ? email != null : !EMAIL_EDEFAULT.equals(email);
+            case ModelPackage.SETTINGS__SKIP_SIMILAR_ERRORS:
+                return skipSimilarErrors != SKIP_SIMILAR_ERRORS_EDEFAULT;
             case ModelPackage.SETTINGS__ANONYMIZE_STRACK_TRACE_ELEMENTS:
                 return anonymizeStrackTraceElements != ANONYMIZE_STRACK_TRACE_ELEMENTS_EDEFAULT;
             case ModelPackage.SETTINGS__ANONYMIZE_MESSAGES:
@@ -548,6 +600,8 @@ public class SettingsImpl extends MinimalEObjectImpl.Container implements Settin
         result.append(name);
         result.append(", email: ");
         result.append(email);
+        result.append(", skipSimilarErrors: ");
+        result.append(skipSimilarErrors);
         result.append(", anonymizeStrackTraceElements: ");
         result.append(anonymizeStrackTraceElements);
         result.append(", anonymizeMessages: ");

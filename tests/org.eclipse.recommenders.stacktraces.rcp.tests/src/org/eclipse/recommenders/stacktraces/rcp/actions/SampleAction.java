@@ -23,10 +23,12 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.osgi.framework.FrameworkUtil;
 
 public class SampleAction implements IWorkbenchWindowActionDelegate {
+    private int counter;
 
     @Override
     public void run(IAction action) {
         Job job = new Job("test exceptions") {
+
             @Override
             public IStatus run(IProgressMonitor monitor) {
                 for (int i = 0; i < 1; i++) {
@@ -38,7 +40,7 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
                     exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("foo.bar.Class",
                             "barMethod", null, 42) });
                     log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp",
-                            "status error message", exception));
+                            "status error message " + ++counter, exception));
                     try {
                         Thread.sleep(750);
                     } catch (InterruptedException e) {
