@@ -209,19 +209,20 @@ public class ErrorReports {
             mStatus.setPluginVersion(bundle.getVersion().toString());
         }
 
-        if (status.getException() != null) {
-            Throwable mException = newThrowable(status.getException());
-            mStatus.setException(mException);
-            ThrowableFingerprintComputer fingerprint = new ThrowableFingerprintComputer(
-                    settings.getWhitelistedPackages());
-            mException.accept(fingerprint);
-            mStatus.setFingerprint(fingerprint.hash());
-        }
-
         List<Status> mChildren = mStatus.getChildren();
         for (IStatus child : status.getChildren()) {
             mChildren.add(newStatus(child, settings));
         }
+
+        if (status.getException() != null) {
+            Throwable mException = newThrowable(status.getException());
+            mStatus.setException(mException);
+        }
+
+        ThrowableFingerprintComputer fingerprint = new ThrowableFingerprintComputer(settings.getWhitelistedPackages());
+        mStatus.accept(fingerprint);
+        mStatus.setFingerprint(fingerprint.hash());
+
         return mStatus;
     }
 

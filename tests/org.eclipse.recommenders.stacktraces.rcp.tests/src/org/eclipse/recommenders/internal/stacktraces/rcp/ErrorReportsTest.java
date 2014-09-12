@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
@@ -25,6 +26,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ErrorReportsTest {
@@ -44,8 +46,7 @@ public class ErrorReportsTest {
     private static Settings settings;
 
     private static ErrorReport createTestEvent() {
-        RuntimeException cause = new RuntimeException("cause");
-        cause.fillInStackTrace();
+        RuntimeException cause = newRuntimeException("cause");
         Exception exception = new RuntimeException("exception message", cause);
         exception.fillInStackTrace();
         IStatus status = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message",
@@ -128,4 +129,49 @@ public class ErrorReportsTest {
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getMethodName(), is(WHITELISTED_METHODNAME_2));
     }
+
+    @Test
+    public void testFingerprint() {
+
+        Exception cause = newRuntimeException("cause");
+        Exception r1 = newRuntimeException("exception message");
+
+        r1.fillInStackTrace();
+        Exception r2 = new RuntimeException("exception message", cause);
+        r2.fillInStackTrace();
+
+        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", r1);
+        IStatus s2 = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", r2);
+
+        settings = ModelFactory.eINSTANCE.createSettings();
+        settings.getWhitelistedPackages().add("org.");
+
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status noCause = ErrorReports.newStatus(s1, settings);
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status withCause = ErrorReports.newStatus(s2, settings);
+
+        Assert.assertNotEquals(noCause.getFingerprint(), withCause.getFingerprint());
+    }
+
+    @Test
+    public void testFingerprintNested() {
+        Exception root = newRuntimeException("root");
+        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", root);
+        IStatus s2 = new MultiStatus("org.eclipse.recommenders.stacktraces", 0, new IStatus[] { s1 },
+                "some error message", root);
+
+        settings = ModelFactory.eINSTANCE.createSettings();
+        settings.getWhitelistedPackages().add("org.");
+
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status normal = ErrorReports.newStatus(s1, settings);
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status multi = ErrorReports.newStatus(s2, settings);
+
+        Assert.assertNotEquals(normal.getFingerprint(), multi.getFingerprint());
+    }
+
+    private static RuntimeException newRuntimeException(String message) {
+        RuntimeException cause = new RuntimeException(message);
+        cause.fillInStackTrace();
+        return cause;
+    }
+
 }
