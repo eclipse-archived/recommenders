@@ -43,6 +43,8 @@ import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
 
+    private static final String STAND_IN_MESSAGE = "Stand-In Stacktrace supplied by Eclipse Stacktraces & Error Reporting Tool";
+
     private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
             .orNull();
 
@@ -88,7 +90,7 @@ public class LogListener implements ILogListener, IStartup {
     public static void insertDebugStacktraceIfEmpty(final IStatus status) {
         // TODO this code should probably go elsewhere later.
         if (status.getException() == null && status instanceof Status && SET_EXCEPTION != null) {
-            Throwable syntetic = new RuntimeException("Debug stacktrace provided by Code Recommenders");
+            Throwable syntetic = new RuntimeException(STAND_IN_MESSAGE);
             syntetic.fillInStackTrace();
             try {
                 SET_EXCEPTION.invoke(status, syntetic);
