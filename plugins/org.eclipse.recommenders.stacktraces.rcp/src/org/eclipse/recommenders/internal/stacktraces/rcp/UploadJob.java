@@ -27,9 +27,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.utils.gson.GsonUtil;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.progress.IProgressConstants;
 
 /**
  * Responsible to anonymize (if requested) and send an error report.
@@ -61,6 +66,15 @@ public class UploadJob extends Job {
             if (code >= 400) {
                 return new Status(WARNING, PLUGIN_ID, format(Messages.UPLOADJOB_BAD_RESPONSE, details));
             }
+            final ReportState state = GsonUtil.deserialize(details, ReportState.class);
+            setProperty(IProgressConstants.KEEP_PROPERTY, Boolean.TRUE);
+            setProperty(IProgressConstants.ACTION_PROPERTY, new Action() {
+                @Override
+                public void run() {
+                    Shell activeShell = Display.getCurrent().getActiveShell();
+                    new ThankYouDialog(activeShell, state).open();
+                }
+            });
             return new Status(IStatus.INFO, PLUGIN_ID, format(Messages.UPLOADJOB_THANK_YOU, details));
         } catch (Exception e) {
             return new Status(WARNING, PLUGIN_ID, Messages.UPLOADJOB_FAILED_WITH_EXCEPTION, e);

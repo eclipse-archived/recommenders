@@ -21,11 +21,4 @@
             name="Error Reporting">
       </page>
    </extension>
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated stacktraces -->
-      <package
-            uri="org.eclipse.recommenders.internal.stacktraces.rcp.model"
-            class="org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage"/>
-   </extension>
-
 </plugin>
