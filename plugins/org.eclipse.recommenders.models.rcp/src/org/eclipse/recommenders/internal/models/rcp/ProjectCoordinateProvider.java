@@ -11,11 +11,11 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForJre;
-import static org.eclipse.recommenders.models.DependencyType.JAR;
+import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.models.DependencyType.*;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -33,7 +33,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.UniqueMethodName;
@@ -51,6 +50,7 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableMap;
 
 public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IRcpService {
 
@@ -180,7 +180,8 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
 
     private Optional<DependencyInfo> extractDependencyInfo(IJavaProject javaProject) {
         File location = getLocation(javaProject).orNull();
-        DependencyInfo request = new DependencyInfo(location, DependencyType.PROJECT);
+        DependencyInfo request = new DependencyInfo(location, PROJECT, ImmutableMap.of(PROJECT_NAME,
+                javaProject.getElementName()));
         return of(request);
     }
 
