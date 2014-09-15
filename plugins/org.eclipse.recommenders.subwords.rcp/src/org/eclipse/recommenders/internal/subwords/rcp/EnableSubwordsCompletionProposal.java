@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.ITextViewer;
@@ -101,9 +102,10 @@ public class EnableSubwordsCompletionProposal extends AbstractCompletionTipPropo
         @Override
         protected void createContent(Composite parent) {
             Link link = new Link(parent, SWT.NONE);
+            Dialog.applyDialogFont(link);
+            link.setForeground(parent.getForeground());
             link.setBackground(parent.getBackground());
             link.setText(INFO);
-
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
