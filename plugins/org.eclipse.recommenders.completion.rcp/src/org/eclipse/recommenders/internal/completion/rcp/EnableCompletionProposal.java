@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -121,9 +122,10 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
         @Override
         protected void createContent(Composite parent) {
             Link link = new Link(parent, SWT.NONE);
+            Dialog.applyDialogFont(link);
+            link.setForeground(parent.getForeground());
             link.setBackground(parent.getBackground());
             link.setText(INFO);
-
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {

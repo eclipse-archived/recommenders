@@ -22,6 +22,7 @@ import org.eclipse.equinox.internal.p2.discovery.compatibility.RemoteBundleDisco
 import org.eclipse.equinox.internal.p2.ui.discovery.util.WorkbenchUtil;
 import org.eclipse.equinox.internal.p2.ui.discovery.wizards.CatalogConfiguration;
 import org.eclipse.equinox.internal.p2.ui.discovery.wizards.DiscoveryWizard;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.ITextViewer;
@@ -32,10 +33,8 @@ import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
@@ -99,10 +98,10 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
         @Override
         protected void createContent(Composite parent) {
-            Display display = parent.getDisplay();
-            Color bg = display.getSystemColor(SWT.COLOR_INFO_BACKGROUND);
             Link link = new Link(parent, SWT.NONE);
-            link.setBackground(bg);
+            Dialog.applyDialogFont(link);
+            link.setForeground(parent.getForeground());
+            link.setBackground(parent.getBackground());
             link.setText(Messages.PROPOSAL_TOOLTIP_DISCOVER_EXTENSIONS);
         }
     }
