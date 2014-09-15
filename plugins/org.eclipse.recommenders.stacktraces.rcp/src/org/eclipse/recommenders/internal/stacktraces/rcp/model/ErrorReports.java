@@ -77,13 +77,19 @@ public class ErrorReports {
 
         private StringBuilder content = new StringBuilder();
         private List<String> whitelist;
+        private int maxframes;
 
-        public ThrowableFingerprintComputer(List<String> whitelist) {
+        public ThrowableFingerprintComputer(List<String> whitelist, int maxframes) {
             this.whitelist = whitelist;
+            this.maxframes = maxframes;
         }
 
         @Override
         public void visit(StackTraceElement element) {
+            if (maxframes < 0) {
+                return;
+            }
+            maxframes--;
             if (isWhitelisted(element.getClassName(), whitelist)) {
                 content.append(element.getClassName()).append(element.getMethodName());
             }
@@ -219,7 +225,8 @@ public class ErrorReports {
             mStatus.setException(mException);
         }
 
-        ThrowableFingerprintComputer fingerprint = new ThrowableFingerprintComputer(settings.getWhitelistedPackages());
+        ThrowableFingerprintComputer fingerprint = new ThrowableFingerprintComputer(settings.getWhitelistedPackages(),
+                1024);
         mStatus.accept(fingerprint);
         mStatus.setFingerprint(fingerprint.hash());
 

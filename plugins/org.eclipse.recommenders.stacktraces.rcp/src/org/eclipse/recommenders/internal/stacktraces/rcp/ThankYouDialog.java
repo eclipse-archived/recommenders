@@ -81,20 +81,21 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
         if (state.isCreated()) {
             text.append("Your report is now tracked at: \n\n    <a>")
-                    .append(state.getBugUrl().or("invalid server response")).append("</a>.").append("\n\n")
-                    .append("To be kept informed please add yourself to cc list of the bug report.");
+            .append(state.getBugUrl().or("invalid server response")).append("</a>.").append("\n\n")
+            .append("To be kept informed please add yourself to cc list of the bug report.");
         } else {
             boolean needsinfo = ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO);
-            String status = state.getStatus().or(UNCONFIMRED);
-            if (equals(status) || equals(NEW, status) || equals(ASSIGNED, status)) {
+            String status = state.getStatus().or(UNCONFIRMED);
+            if (equals(UNCONFIRMED, status) || equals(NEW, status) || equals(ASSIGNED, status)) {
                 if (needsinfo) {
                     text.append(
                             "Your report has been matched against an existing bug report and needs further information. ")
                             .append("Please take a moment to visit the bug and see whether you can provide more details:\n\n")
                             .append("    <a>").append(state.getBugUrl().or("invalid server response")).append("</a>.");
                 } else {
-                    text.append("Your report has been matched against an existing bug report.").append(
-                            "To be kept informed please add yourself to cc list of the bug report.");
+                    text.append("Your report has been matched against an existing bug report. ")
+                    .append("To be kept informed please add yourself to cc list of the bug report:\n\n")
+                    .append("    <a>").append(state.getBugUrl().or("invalid server response")).append("</a>.");
                 }
             } else if (equals(RESOLVED, status) || equals(CLOSED, status)) {
 
@@ -128,7 +129,7 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
                             "The log event you sent has been marked as a '"
                                     + resolution
                                     + "'. If you think your report actually is an error, please comment on its bug report:\n\n")
-                            .append("    <a>").append(state.getBugUrl().or("invalid server response")).append("</a>.");
+                                    .append("    <a>").append(state.getBugUrl().or("invalid server response")).append("</a>.");
                 }
             } else {
                 text.append("Received an unknown server response. PLease raise a bug against the current version of this error reporter.");
