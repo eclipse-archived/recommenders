@@ -29,13 +29,17 @@ public final class Messages extends NLS {
     public static String JOB_INITIALIZE_PROJECTS;
 
     public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;
-    public static String LOG_ERROR_EXCEPTION_IN_SERVICE_HOOK;
+    public static String LOG_ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK;
     public static String LOG_ERROR_PREFERENCES_NOT_SAVED;
-    public static String LOG_ERROR;
-    public static String LOG_WARNING;
-    public static String LOG_INFO;
-    public static String LOG_OK;
-    public static String LOG_CANCEL;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_SELECTION;
+    public static String LOG_ERROR_EXCEPTION_WHILE_CHECKING_OFFSETS;
+    public static String LOG_ERROR_ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_METHOD;
+    public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
+    public static String LOG_ERROR_AN_ERROR_OCCURRED;
+    public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
+    public static String LOG_ERROR_FAILED_TO_CREATE_METHODNAME;
 
     public static String DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE;
     public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE;

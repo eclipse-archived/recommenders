@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.completion.rcp;
 
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.PREF_SESSIONPROCESSORS;
-import static org.eclipse.recommenders.internal.completion.rcp.Messages.FIELD_LABEL_SESSION_PROCESSORS;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.List;
@@ -78,7 +77,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
     @Override
     protected void createFieldEditors() {
-        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, FIELD_LABEL_SESSION_PROCESSORS,
+        addField(new SessionProcessorEditor(PREF_SESSIONPROCESSORS, Messages.FIELD_LABEL_SESSION_PROCESSORS,
                 getFieldEditorParent()));
         addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement", //$NON-NLS-1$
                 getFieldEditorParent()));
@@ -105,7 +104,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
-                    .applyTo(tableViewer.getTable());
+            .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override

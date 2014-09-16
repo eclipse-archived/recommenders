@@ -29,9 +29,9 @@ import com.google.common.base.Optional;
 @SuppressWarnings("restriction")
 public class Proxies {
 
-    private static final String DOUBLEBACKSLASH = "\\\\";
-    private static final String ENV_USERDOMAIN = "USERDOMAIN";
-    private static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain";
+    private static final String DOUBLEBACKSLASH = "\\\\"; //$NON-NLS-1$
+    private static final String ENV_USERDOMAIN = "USERDOMAIN"; //$NON-NLS-1$
+    private static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain"; //$NON-NLS-1$
 
     /**
      * Returns the domain of the current machine- if any.

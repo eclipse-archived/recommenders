@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static java.text.MessageFormat.format;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.Messages.*;
 
 import java.text.MessageFormat;
 
@@ -28,23 +27,24 @@ import org.eclipse.swt.widgets.Shell;
 
 public class BranchCheckoutFailureDialog extends MessageDialog {
 
-    private static final String RECOMMENDERS_FAQ_URL = "http://www.eclipse.org/recommenders/manual/#snippet-repository-update-guide";
+    private static final String RECOMMENDERS_FAQ_URL = "http://www.eclipse.org/recommenders/manual/#snippet-repository-update-guide"; //$NON-NLS-1$
 
     public BranchCheckoutFailureDialog(Shell parentShell, String repository, String failedVersion,
             String substituteVersion) {
-        super(parentShell, DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE, null, format(DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE,
-                repository, failedVersion, substituteVersion), MessageDialog.ERROR,
-                new String[] { IDialogConstants.OK_LABEL }, 0);
+        super(parentShell, Messages.DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE, null, format(
+                Messages.DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE, repository, failedVersion, substituteVersion),
+                MessageDialog.ERROR, new String[] { IDialogConstants.OK_LABEL }, 0);
     }
 
     public BranchCheckoutFailureDialog(Shell parentShell, String repository, String failedVersion) {
-        super(parentShell, DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE, null, format(DIALOG_MESSAGE_NO_FORMAT_BRANCH_FAILURE,
-                repository, failedVersion), MessageDialog.ERROR, new String[] { IDialogConstants.OK_LABEL }, 0);
+        super(parentShell, Messages.DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE, null, format(
+                Messages.DIALOG_MESSAGE_NO_FORMAT_BRANCH_FAILURE, repository, failedVersion), MessageDialog.ERROR,
+                new String[] { IDialogConstants.OK_LABEL }, 0);
     }
 
     @Override
     protected Control createCustomArea(Composite parent) {
-        addLink(parent, DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE_LINK, RECOMMENDERS_FAQ_URL);
+        addLink(parent, Messages.DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE_LINK, RECOMMENDERS_FAQ_URL);
         return parent;
     }
 

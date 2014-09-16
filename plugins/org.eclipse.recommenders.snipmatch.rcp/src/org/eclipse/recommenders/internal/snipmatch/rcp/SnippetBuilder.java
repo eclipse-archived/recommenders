@@ -105,9 +105,9 @@ public class SnippetBuilder {
                             sb.append(name.getIdentifier());
                         } else {
                             if (vb.isField()) {
-                                appendVarReference(uniqueVariableName, vb, "field");
+                                appendVarReference(uniqueVariableName, vb, "field"); //$NON-NLS-1$
                             } else {
-                                appendVarReference(uniqueVariableName, vb, "var");
+                                appendVarReference(uniqueVariableName, vb, "var"); //$NON-NLS-1$
                             }
                         }
                         i += name.getLength() - 1;
@@ -118,7 +118,7 @@ public class SnippetBuilder {
             sb.append(ch);
         }
 
-        sb.append("\n");
+        sb.append('\n');
         appendImports();
         appendCursor();
         replaceLeadingWhitespaces();
@@ -186,43 +186,43 @@ public class SnippetBuilder {
 
     private void appendNewName(String name, IVariableBinding vb) {
         ITypeBinding type = vb.getType();
-        sb.append("${").append(name).append(":").append("newName").append("(");
+        sb.append('$').append('{').append(name).append(':').append("newName").append('('); //$NON-NLS-1$
         if (type.isArray()) {
-            sb.append("'").append(type.getErasure().getQualifiedName()).append("'");
+            sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
         } else {
             sb.append(type.getErasure().getQualifiedName());
         }
-        sb.append(")").append("}");
+        sb.append(')').append('}');
 
         addImport(type);
     }
 
     private StringBuilder appendTemplateVariableReference(String name) {
-        return sb.append("${").append(name).append("}");
+        return sb.append('$').append('{').append(name).append('}');
     }
 
     private void appendVarReference(String name, IVariableBinding vb, String kind) {
         ITypeBinding type = vb.getType();
-        sb.append("${").append(name).append(":").append(kind).append("(");
+        sb.append('$').append('{').append(name).append(':').append(kind).append('(');
         if (type.isArray()) {
-            sb.append("'").append(type.getErasure().getQualifiedName()).append("'");
+            sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
         } else {
             sb.append(type.getErasure().getQualifiedName());
         }
-        sb.append(")").append("}");
+        sb.append(')').append('}');
 
         addImport(type);
     }
 
     private void appendImports() {
         if (!imports.isEmpty()) {
-            String joinedTypes = Joiner.on(", ").join(imports);
-            sb.append("${:import(").append(joinedTypes).append(")}");
+            String joinedTypes = Joiner.on(", ").join(imports); //$NON-NLS-1$
+            sb.append("${:import(").append(joinedTypes).append(")}"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
     private void appendCursor() {
-        sb.append("${cursor}");
+        sb.append("${cursor}"); //$NON-NLS-1$
     }
 
     private void addImport(ITypeBinding type) {
@@ -234,7 +234,7 @@ public class SnippetBuilder {
         if (type.isPrimitive()) {
             return;
         }
-        if (type.getPackage().getName().equals("java.lang")) {
+        if (type.getPackage().getName().equals("java.lang")) { //$NON-NLS-1$
             return;
         }
         String name = type.getErasure().getQualifiedName();
@@ -260,7 +260,7 @@ public class SnippetBuilder {
             String wsPrefix = line.substring(0, index);
 
             // rewrite the buffer and try to remove the leading whitespace. This is a simple heuristic only...
-            String[] code = sb.toString().split("\\r?\\n");
+            String[] code = sb.toString().split("\\r?\\n"); //$NON-NLS-1$
             sb.setLength(0);
             for (String l : code) {
                 String clean = StringUtils.removeStart(l, wsPrefix);

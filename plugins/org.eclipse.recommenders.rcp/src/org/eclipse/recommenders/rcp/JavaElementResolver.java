@@ -270,7 +270,7 @@ public class JavaElementResolver {
             final ITypeParameter[] typeParameters) throws JavaModelException {
         final int arrayCount = Signature.getArrayCount(unresolvedType);
         String toResolve = unresolvedType.substring(arrayCount);
-        if (typeParameters != null && toResolve.startsWith("Q")) {
+        if (typeParameters != null && toResolve.startsWith("Q")) { //$NON-NLS-1$
             String typeName = toResolve.substring(1, toResolve.length() - 1);
             for (ITypeParameter typeParameter : typeParameters) {
                 if (!typeParameter.getElementName().equals(typeName)) {

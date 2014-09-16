@@ -21,13 +21,13 @@ public class LogMessages extends DefaultLogMessage {
     private static int code = 1;
 
     public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR,
-            Messages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
-
+            Messages.LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
     public static final LogMessages ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
-            Messages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
-
+            Messages.LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
     public static final LogMessages ERROR_SNIPPET_COULD_NOT_BE_EVALUATED = new LogMessages(ERROR,
-            Messages.ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
+            Messages.LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
+    public static final LogMessages ERROR_CANNOT_COMPUTE_LOCATION = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_COMPUTE_LOCATION);
 
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 

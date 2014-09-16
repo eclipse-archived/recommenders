@@ -62,7 +62,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private static final int SUBWORDS_RANGE_START = -10000;
 
     private static Field CORE_CONTEXT = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
-            "fCoreContext").orNull();
+            "fCoreContext").orNull(); //$NON-NLS-1$
 
     private final SubwordsRcpPreferences prefs;
 
@@ -132,7 +132,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private String getPrefix(JavaContentAssistInvocationContext jdtContext) throws BadLocationException {
         CharSequence prefix = jdtContext.computeIdentifierPrefix();
-        return prefix == null ? "" : prefix.toString();
+        return prefix == null ? "" : prefix.toString(); //$NON-NLS-1$
     }
 
     private Map<IJavaCompletionProposal, CompletionProposal> getNewProposals(ITextViewer viewer, IEditorPart editor,

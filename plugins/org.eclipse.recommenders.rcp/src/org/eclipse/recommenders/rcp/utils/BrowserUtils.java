@@ -19,7 +19,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 public final class BrowserUtils {
 
     private BrowserUtils() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
     }
 
     /**

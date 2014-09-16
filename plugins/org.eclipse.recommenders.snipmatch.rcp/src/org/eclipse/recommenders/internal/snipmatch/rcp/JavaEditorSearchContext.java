@@ -17,6 +17,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.SearchContext;
+import org.eclipse.recommenders.utils.Logs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class JavaEditorSearchContext extends SearchContext {
                 }
             }
         } catch (BadLocationException e) {
-            LOG.error("Could not compute location", e);
+            Logs.log(LogMessages.ERROR_CANNOT_COMPUTE_LOCATION, e);
         }
         return Location.FILE;
     }

@@ -62,7 +62,7 @@ public class EnableCompletionProposal extends AbstractJavaCompletionProposal {
         setImage(image);
         setRelevance(RELEVANCE);
         setCursorPosition(offset);
-        setReplacementString("");
+        setReplacementString(""); //$NON-NLS-1$
     }
 
     @Override

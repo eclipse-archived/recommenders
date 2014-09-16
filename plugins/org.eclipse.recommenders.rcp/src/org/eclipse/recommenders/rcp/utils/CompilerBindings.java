@@ -30,7 +30,7 @@ import com.google.common.base.Optional;
 public final class CompilerBindings {
 
     private CompilerBindings() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
     }
 
     /**
@@ -113,7 +113,7 @@ public final class CompilerBindings {
 
         @Override
         public StringBuffer print(int indent, StringBuffer output) {
-            output.append("UNKNOWN");
+            output.append("UNKNOWN"); //$NON-NLS-1$
             return output;
         }
     }

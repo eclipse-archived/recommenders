@@ -42,14 +42,14 @@ import com.google.common.base.Preconditions;
 @SuppressWarnings("restriction")
 public class ProposalUtils {
 
-    private static final char[] INIT = "<init>".toCharArray();
+    private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
 
     /**
      * Workaround needed to handle proposals with generic signatures properly.
      *
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203"Bug 380203</a>.
      */
-    private static Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class, "originalSignature")
+    private static Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class, "originalSignature") //$NON-NLS-1$
             .orNull();
 
     private static char[] getSignature(CompletionProposal proposal) {

@@ -171,7 +171,7 @@ public class AstBindings {
         if (declared == null || type == null) {
             return absent();
         }
-        IFieldName res = VmFieldName.get(declared.getIdentifier() + "." + name + ";" + type.getIdentifier());
+        IFieldName res = VmFieldName.get(declared.getIdentifier() + '.' + name + ';' + type.getIdentifier());
         return of(res);
     }
 

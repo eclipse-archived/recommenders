@@ -13,7 +13,9 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
+
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.messages"; //$NON-NLS-1$
+
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
 
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
@@ -68,9 +70,11 @@ public class Messages extends NLS {
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
     public static String EDITOR_DESCRIPTION_TAGS;
 
-    public static String ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
-    public static String ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
-    public static String ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+    public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
+    public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
+    public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+    public static String LOG_ERROR_CANNOT_COMPUTE_LOCATION;
+
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_NO_FORMAT_BRANCH;
     public static String ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY;

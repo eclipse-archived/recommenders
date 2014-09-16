@@ -38,13 +38,13 @@ public class SessionProcessorDescriptor {
         this.config = config;
         this.id = config.getAttribute("id"); //$NON-NLS-1$
         this.name = config.getAttribute("name"); //$NON-NLS-1$
-        this.description = firstNonNull(config.getAttribute("description"), ""); //$NON-NLS-1$
+        this.description = firstNonNull(config.getAttribute("description"), ""); //$NON-NLS-1$ //$NON-NLS-2$
         this.icon = createIcon(config);
         String priorityString = config.getAttribute("priority"); //$NON-NLS-1$
         this.priority = priorityString == null ? 10 : Integer.parseInt(priorityString);
         String enabledByDefaultString = config.getAttribute("enabledByDefault"); //$NON-NLS-1$
         this.enabledByDefault = enabledByDefaultString == null ? true : Boolean.parseBoolean(enabledByDefaultString);
-        this.preferencePage = config.getAttribute("preferencePage");
+        this.preferencePage = config.getAttribute("preferencePage"); //$NON-NLS-1$
     }
 
     @VisibleForTesting

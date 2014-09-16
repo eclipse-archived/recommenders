@@ -64,74 +64,74 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
     private static Method proposalInfoMethod = Reflections.getDeclaredMethod(AbstractJavaCompletionProposal.class,
-            "getProposalInfo").orNull();
+            "getProposalInfo").orNull(); //$NON-NLS-1$
 
     static {
         // No all versions of JDT offer all kinds of CompletionProposal. Probe using reflection.
         try {
             javaMethodCompletionProposalClass = JavaMethodCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             javaFieldWithCastedReceiverCompletionProposalClass = JavaFieldWithCastedReceiverCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             overrideCompletionProposalClass = OverrideCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             anonymousTypeCompletionProposalClass = AnonymousTypeCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             javaCompletionProposalClass = JavaCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             lazyGenericTypeProposalClass = LazyGenericTypeProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             lazyJavaTypeCompletionProposalClass = LazyJavaTypeCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             filledArgumentNamesMethodProposalClass = FilledArgumentNamesMethodProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             parameterGuessingProposalClass = ParameterGuessingProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             lazyPackageCompletionProposalClass = LazyPackageCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
         try {
             getterSetterCompletionProposalClass = GetterSetterCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e);
+            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
         }
     }
 
@@ -220,7 +220,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             ProposalInfo info = (ProposalInfo) proposalInfoMethod.invoke(uiProposal);
             crProposal.setProposalInfo(info);
         } catch (Exception e) {
-            LOG.warn("Failed to set proposal info to '{}'). Returning proposal without additional info.", crProposal);
+            LOG.warn("Failed to set proposal info to '{}'). Returning proposal without additional info.", crProposal); //$NON-NLS-1$
         }
     }
 
@@ -261,7 +261,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
-            throws JavaModelException {
+                    throws JavaModelException {
         return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context));
     }
 

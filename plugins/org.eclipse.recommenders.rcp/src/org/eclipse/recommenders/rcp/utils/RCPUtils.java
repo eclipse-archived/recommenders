@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
 public final class RCPUtils {
 
     private RCPUtils() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
     }
 
     public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {

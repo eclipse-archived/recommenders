@@ -22,11 +22,11 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchTemplateContextT
 @SuppressWarnings("restriction")
 public class SnippetSourceValidator {
 
-    private static final String VALID_SNIPPET = "";
+    private static final String VALID_SNIPPET = ""; //$NON-NLS-1$
 
     public static String isSourceValid(String source) {
         TemplateContextType contextType = SnipmatchTemplateContextType.getInstance();
-        Template template = new Template("name", "description", SNIPMATCH_CONTEXT_ID, source, true); //$NON-NLS-1$
+        Template template = new Template("name", "description", SNIPMATCH_CONTEXT_ID, source, true); //$NON-NLS-1$ //$NON-NLS-2$
         JavaContext context = new JavaContext(contextType, new Document(), new Position(0), null);
         context.setForceEvaluation(true);
         try {

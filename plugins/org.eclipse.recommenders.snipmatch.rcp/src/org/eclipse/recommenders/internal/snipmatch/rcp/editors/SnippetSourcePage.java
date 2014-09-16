@@ -136,7 +136,7 @@ public class SnippetSourcePage extends FormPage {
     private DataBindingContext createDataBindingContext() {
         DataBindingContext ctx = new DataBindingContext();
 
-        IObservableValue snippetBeanCode = BeanProperties.value(Snippet.class, "code", String.class).observe(snippet);
+        IObservableValue snippetBeanCode = BeanProperties.value(Snippet.class, "code", String.class).observe(snippet); //$NON-NLS-1$
         IObservableValue textWidgetCode = text(SWT.Modify).observe(textWidget);
 
         ctx.bindValue(textWidgetCode, snippetBeanCode);

@@ -48,8 +48,8 @@ import com.google.common.collect.Collections2;
  */
 public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
 
-    private static final String RECOMMENDERS_FAQ_URL = "http://www.eclipse.org/recommenders/faq/";
-    private static final String BUGZILLA_URL = "https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders&version={0}&bug_severity=enhancement&short_desc=Your%20short%20description&comment=A%20longer%20description%0D%0DUnresolved bundles:%0D{1}&component=Core&rep_platform=All";
+    private static final String RECOMMENDERS_FAQ_URL = "http://www.eclipse.org/recommenders/faq/"; //$NON-NLS-1$
+    private static final String BUGZILLA_URL = "https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders&version={0}&bug_severity=enhancement&short_desc=Your%20short%20description&comment=A%20longer%20description%0D%0DUnresolved bundles:%0D{1}&component=Core&rep_platform=All"; //$NON-NLS-1$
 
     private static final String PROP_VM = "eclipse.vm"; //$NON-NLS-1$
     private static final String PROP_VMARGS = "eclipse.vmargs"; //$NON-NLS-1$
@@ -95,7 +95,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
                         return input.getSymbolicName();
                     }
                 });
-        String version = recommendersVersion.getMajor() + "." + recommendersVersion.getMinor() + "."
+        String version = recommendersVersion.getMajor() + "." + recommendersVersion.getMinor() + "." //$NON-NLS-1$ //$NON-NLS-2$
                 + recommendersVersion.getMicro();
         String bugLinkUrl = MessageFormat.format(BUGZILLA_URL, version, StringUtils.join(unresolvedBundleNames, '\n'));
         addLink(parent, Messages.DIALOG_MESSAGE_BUNDLE_RESOLUTION_FILE_A_BUG, bugLinkUrl);
@@ -166,7 +166,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             result.append(vmargs);
         }
 
-        result.append("-clean");
+        result.append("-clean"); //$NON-NLS-1$
         result.append(NEW_LINE);
 
         // append the rest of the args, replacing or adding -data as required

@@ -127,7 +127,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         icon = null;
         if (bundle != null) {
             ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
-                    "icons/view16/templates-dots.gif");
+                    "icons/view16/templates-dots.gif"); //$NON-NLS-1$
             icon = desc.createImage();
         }
     }
@@ -310,8 +310,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private boolean findCompletionMode() {
-        variableName = "";
-        methodPrefix = "";
+        variableName = ""; //$NON-NLS-1$
+        methodPrefix = ""; //$NON-NLS-1$
         mode = null;
 
         ASTNode n = rCtx.getCompletionNode().orNull();

@@ -35,7 +35,7 @@ public final class ScopeAccessWorkaround {
             "assistScope").orNull(); //$NON-NLS-1$
 
     private ScopeAccessWorkaround() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
     }
 
     public static Optional<Scope> resolveScope(final IRecommendersCompletionContext ctx) {

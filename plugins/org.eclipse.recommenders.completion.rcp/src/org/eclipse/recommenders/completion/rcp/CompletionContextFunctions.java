@@ -499,9 +499,9 @@ public class CompletionContextFunctions {
     public static class LookupEnvironmentContextFunction implements ICompletionContextFunction<LookupEnvironment> {
 
         private static final Field EXTENDED_CONTEXT = getDeclaredField(InternalCompletionContext.class,
-                "extendedContext").orNull();
+                "extendedContext").orNull(); //$NON-NLS-1$
         private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(InternalExtendedCompletionContext.class,
-                "lookupEnvironment").orNull();
+                "lookupEnvironment").orNull(); //$NON-NLS-1$
 
         @Override
         public LookupEnvironment compute(IRecommendersCompletionContext context,

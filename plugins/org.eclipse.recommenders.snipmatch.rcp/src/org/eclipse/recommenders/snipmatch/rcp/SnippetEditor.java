@@ -84,15 +84,15 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
                 .onResultOf(new Function<IConfigurationElement, Integer>() {
                     @Override
                     public Integer apply(IConfigurationElement element) {
-                        String priorityString = element.getAttribute("priority");
+                        String priorityString = element.getAttribute("priority"); //$NON-NLS-1$
                         return priorityString == null ? 100 : Integer.valueOf(priorityString);
                     }
                 }).sortedCopy(asList(elements))) {
             try {
-                String id = element.getAttribute("id");
-                String name = element.getAttribute("name");
+                String id = element.getAttribute("id"); //$NON-NLS-1$
+                String name = element.getAttribute("name"); //$NON-NLS-1$
                 ISnippetEditorPageFactory pageFactory;
-                pageFactory = (ISnippetEditorPageFactory) element.createExecutableExtension("class");
+                pageFactory = (ISnippetEditorPageFactory) element.createExecutableExtension("class"); //$NON-NLS-1$
                 IFormPage page = pageFactory.createPage(editor, id, name);
                 pages.add(page);
             } catch (CoreException e) {

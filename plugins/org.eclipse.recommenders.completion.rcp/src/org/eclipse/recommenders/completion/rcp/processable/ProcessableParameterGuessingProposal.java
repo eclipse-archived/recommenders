@@ -72,7 +72,7 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
      * The method in question is available in JDT 3.9 or later and hence missing in Eclipse Juno.
      */
     private static final boolean HAS_CAN_AUTOMATICALLY_APPEND_SEMICOLON = getDeclaredMethod(
-            JavaMethodCompletionProposal.class, "canAutomaticallyAppendSemicolon").isPresent();
+            JavaMethodCompletionProposal.class, "canAutomaticallyAppendSemicolon").isPresent(); //$NON-NLS-1$
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;

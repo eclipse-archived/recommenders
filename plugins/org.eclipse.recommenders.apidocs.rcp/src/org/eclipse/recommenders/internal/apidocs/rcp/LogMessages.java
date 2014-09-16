@@ -21,13 +21,12 @@ public class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
 
-    public static final LogMessages FAILED_TO_DETERMINE_STATIC_MEMEBERS = new LogMessages(ERROR,
-            "Failed to determine static members for ''{0}''");
+    public static final LogMessages FAILED_TO_DETERMINE_STATIC_MEMBERS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS);
     public static final LogMessages ERROR_DURING_JAVADOC_SELECTION = new LogMessages(ERROR,
-            "Error during javadoc selection ''{0}''");
+            Messages.LOG_ERROR_DURING_JAVADOC_SELECTION);
     public static final ILogMessage FAILED_TO_INSTANTIATE_PROVIDER = new LogMessages(ERROR,
-            "failed to instantiate provider ''{0}'': {1}");
-
+            Messages.LOG_ERROR_FAILED_TO_INSTANTIATE_PROVIDER);
     public static final ILogMessage FAILED_TO_CLEAR_PREFERENCES = new LogMessages(ERROR,
             Messages.LOG_ERROR_CLEAR_PREFERENCES);
     public static final ILogMessage FAILED_TO_READ_PREFERENCES = new LogMessages(ERROR,

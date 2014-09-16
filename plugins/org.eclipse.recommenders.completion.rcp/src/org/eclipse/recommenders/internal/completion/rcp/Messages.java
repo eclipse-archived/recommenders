@@ -25,10 +25,6 @@ public class Messages extends NLS {
 
     public static String PROPOSAL_CATEGORY_CODE_RECOMMENDERS;
 
-    public static String BROWSER_LABEL_PROJECT_WEBSITE;
-
-    public static String BROWSER_TOOLTIP_PROJECT_WEBSITE;
-
     public static String PREFPAGE_TITLE_COMPLETIONS;
 
     public static String PREFPAGE_DESCRIPTION_COMPLETIONS;
@@ -38,7 +34,6 @@ public class Messages extends NLS {
     public static String BUTTON_LABEL_CONFIGURE;
 
     public static String FIELD_LABEL_SESSION_PROCESSORS;
-
     public static String FIELD_LABEL_ENABLE_COMPLETION;
 
     public static String FIELD_TOOLTIP_ENABLE_COMPLETION;
