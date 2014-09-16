@@ -17,5 +17,6 @@ public enum Location {
     JAVA,
     JAVA_STATEMENTS,
     JAVA_TYPE_MEMBERS,
-    JAVADOC;
+    JAVADOC,
+    UNKNOWN;
 }

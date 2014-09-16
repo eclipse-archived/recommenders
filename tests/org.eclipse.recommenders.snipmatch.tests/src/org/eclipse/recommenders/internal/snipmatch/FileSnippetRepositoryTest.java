@@ -330,6 +330,17 @@ public class FileSnippetRepositoryTest {
 
         sut.open();
 
+        List<Recommendation<ISnippet>> noneSearch = sut.search(new SearchContext("", NONE));
+        assertThat(noneSearch, hasItem(recommendation(fileSnippet, 0.0)));
+        assertThat(noneSearch, hasItem(recommendation(javaSnippet, 0.0)));
+        assertThat(noneSearch, hasItem(recommendation(javaStatementsSnippet, 0.0)));
+        assertThat(noneSearch, hasItem(recommendation(javaTypeMembersSnippet, 0.0)));
+        assertThat(noneSearch, hasItem(recommendation(javadocSnippet, 0.0)));
+        assertThat(noneSearch.size(), is(5));
+
+        List<Recommendation<ISnippet>> unknownSearch = sut.search(new SearchContext("", UNKNOWN));
+        assertThat(unknownSearch.isEmpty(), is(true));
+
         List<Recommendation<ISnippet>> fileSearch = sut.search(new SearchContext("", FILE));
         assertThat(fileSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(fileSearch.size(), is(1));

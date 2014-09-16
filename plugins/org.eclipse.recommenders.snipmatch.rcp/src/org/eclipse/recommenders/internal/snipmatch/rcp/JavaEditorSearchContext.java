@@ -46,7 +46,7 @@ public class JavaEditorSearchContext extends SearchContext {
                     } else if ((tokenLocation & CompletionContext.TL_STATEMENT_START) != 0) {
                         return Location.JAVA_STATEMENTS;
                     }
-                    return Location.JAVA;
+                    return Location.UNKNOWN;
                 }
             }
         } catch (BadLocationException e) {
