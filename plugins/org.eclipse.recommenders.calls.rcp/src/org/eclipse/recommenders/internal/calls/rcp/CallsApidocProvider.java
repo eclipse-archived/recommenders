@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static java.text.MessageFormat.format;
-import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.PARAM;
+import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_BODY;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.resolveMethod;
@@ -124,6 +124,19 @@ public final class CallsApidocProvider extends ApidocProvider {
             // In the case of parameters we replace the defining method with the overridesContext
             if (PARAM == kind) {
                 definingMethod = overrideContext;
+            }
+
+            if (kind == DefinitionKind.UNKNOWN) {
+                // if the ast resolver could not find a definition of the
+                // variable, it's a method return value? Ask
+                // the context and try.
+                if (definingMethod == null) {
+                    kind = FIELD;
+                } else if (definingMethod.isInit()) {
+                    kind = DefinitionKind.NEW;
+                } else {
+                    kind = RETURN;
+                }
             }
 
             model.setObservedOverrideContext(overrideContext);
