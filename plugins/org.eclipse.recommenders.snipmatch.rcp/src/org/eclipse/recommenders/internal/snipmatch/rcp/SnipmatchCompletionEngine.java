@@ -35,8 +35,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Caret;
@@ -72,11 +70,9 @@ public class SnipmatchCompletionEngine {
     private final ContentAssistant assistant;
 
     private Shell searchShell;
-    private JavaContentAssistInvocationContext ctx;
+    private JavaContentAssistInvocationContext context;
     private TemplateProposal selectedProposal;
     private StyledText searchText;
-    private Color searchBg;
-    private Font searchFont;
     private AssistantControlState state;
 
     @Inject
@@ -145,19 +141,17 @@ public class SnipmatchCompletionEngine {
         return assistant;
     }
 
-    public void show(final JavaContentAssistInvocationContext ctx) {
-        this.ctx = ctx;
-        processor.setContext(ctx);
-        assistant.install(ctx.getViewer());
+    public void show(final JavaContentAssistInvocationContext context) {
+        this.context = context;
+        processor.setContext(context);
+        assistant.install(context.getViewer());
         state = AssistantControlState.KEEP_OPEN;
         createSearchPopup();
     }
 
     private void createSearchPopup() {
-        Shell parentShell = ctx.getViewer().getTextWidget().getShell();
+        Shell parentShell = context.getViewer().getTextWidget().getShell();
         searchShell = new Shell(parentShell, SWT.ON_TOP);
-        searchBg = colorRegistry.get(PREF_SEARCH_BOX_BACKGROUND);
-        searchFont = fontRegistry.get("org.eclipse.recommenders.snipmatch.rcp.searchTextFont"); //$NON-NLS-1$
         searchShell.setLayout(new FillLayout());
         searchShell.addListener(SWT.Traverse, new Listener() {
 
@@ -169,8 +163,10 @@ public class SnipmatchCompletionEngine {
                 }
             }
         });
-        searchText = new StyledText(searchShell, SWT.BORDER);
 
+        searchText = new StyledText(searchShell, SWT.SINGLE);
+        searchText.setFont(fontRegistry.get("org.eclipse.recommenders.snipmatch.rcp.searchTextFont")); //$NON-NLS-1$
+        searchText.setBackground(colorRegistry.get(PREF_SEARCH_BOX_BACKGROUND));
         searchText.addFocusListener(new FocusAdapter() {
 
             @Override
@@ -182,8 +178,6 @@ public class SnipmatchCompletionEngine {
                 }
             }
         });
-        searchText.setBackground(searchBg);
-        searchText.setFont(searchFont);
         searchText.addVerifyKeyListener(new VerifyKeyListener() {
 
             @Override
@@ -193,16 +187,17 @@ public class SnipmatchCompletionEngine {
                     e.doit = false;
                     if (selectedProposal != null) {
                         state = AssistantControlState.ENABLE_HIDE;
-                        if (selectedProposal.isValidFor(ctx.getDocument(), ctx.getInvocationOffset())) {
+                        if (selectedProposal.isValidFor(context.getDocument(), context.getInvocationOffset())) {
                             if (selectedProposal instanceof SnippetProposal) {
                                 snippetApplied((SnippetProposal) selectedProposal);
                             }
-                            selectedProposal.apply(ctx.getViewer(), (char) 0, SWT.NONE, ctx.getInvocationOffset());
+                            selectedProposal.apply(context.getViewer(), (char) 0, SWT.NONE,
+                                    context.getInvocationOffset());
 
-                            Point selection = selectedProposal.getSelection(ctx.getDocument());
+                            Point selection = selectedProposal.getSelection(context.getDocument());
                             if (selection != null) {
-                                ctx.getViewer().setSelectedRange(selection.x, selection.y);
-                                ctx.getViewer().revealRange(selection.x, selection.y);
+                                context.getViewer().setSelectedRange(selection.x, selection.y);
+                                context.getViewer().revealRange(selection.x, selection.y);
                             }
                         }
                     }
@@ -247,25 +242,25 @@ public class SnipmatchCompletionEngine {
             }
         });
 
-        Point anchor = computeSearchShellPosition();
-        searchShell.setLocation(anchor.x, anchor.y);
-        configureShellSize();
+        placeShell();
+
         searchShell.open();
         searchShell.setFocus();
     }
 
-    private void configureShellSize() {
+    private void placeShell() {
         // Pack the shell so that it is high enough for the text field.
         searchShell.pack();
-        // Set the width of the shell. Height is kept.
-        searchShell.setSize(SEARCH_BOX_WIDTH, searchShell.getSize().y);
-    }
 
-    private Point computeSearchShellPosition() {
-        StyledText styledText = ctx.getViewer().getTextWidget();
-        Caret caret = styledText.getCaret();
+        int searchBoxHeight = searchShell.getSize().y;
+        StyledText editorText = context.getViewer().getTextWidget();
+        Caret caret = editorText.getCaret();
+        int lineHeight = caret.getSize().y;
         Point location = caret.getLocation();
-        return styledText.toDisplay(location.x, location.y - 2);
+        Point anchor = editorText.toDisplay(location.x, location.y + lineHeight - searchBoxHeight);
+
+        searchShell.setLocation(anchor.x, anchor.y);
+        searchShell.setSize(SEARCH_BOX_WIDTH, searchBoxHeight);
     }
 
     private void snippetApplied(SnippetProposal proposal) {
