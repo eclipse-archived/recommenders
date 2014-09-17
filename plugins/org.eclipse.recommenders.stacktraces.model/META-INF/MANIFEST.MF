@@ -6,9 +6,9 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.xcore.lib,
- org.eclipse.xtext.xbase.lib
+Require-Bundle: org.eclipse.emf.ecore;bundle-version="[2.10.0,2.12.0)",
+ org.eclipse.emf.ecore.xcore.lib;bundle-version="[1.1.0,1.3.0)",
+ org.eclipse.xtext.xbase.lib;bundle-version="[2.7.0,2.8.0)"
 Export-Package: org.eclipse.recommenders.internal.stacktraces.rcp.model,
  org.eclipse.recommenders.internal.stacktraces.rcp.model.impl,
  org.eclipse.recommenders.internal.stacktraces.rcp.model.util
