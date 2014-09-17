@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
-	<version>2.1.9-SNAPSHOT</version>
+	<version>2.1.9</version>
 	<packaging>pom</packaging>
 	<organization>
 		<name>Eclipse Foundation</name>
@@ -46,7 +46,7 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<properties>
-		<recommenders-version>2.1.9-SNAPSHOT</recommenders-version>
+		<recommenders-version>2.1.9</recommenders-version>
 		<javaVersion>1.6</javaVersion>
 		<tychoVersion>0.21.0</tychoVersion>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->

@@ -5,9 +5,10 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>tests</artifactId>
-		<version>2.1.9-SNAPSHOT</version>
+		<version>2.1.9</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.eclipse.recommenders.stacktraces.rcp.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+<version>2.1.9-SNAPSHOT</version>
 </project>
