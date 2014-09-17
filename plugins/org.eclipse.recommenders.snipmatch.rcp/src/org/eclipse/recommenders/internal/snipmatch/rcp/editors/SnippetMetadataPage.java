@@ -14,12 +14,23 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.core.databinding.beans.BeanProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
-import static org.eclipse.recommenders.snipmatch.Location.*;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.JavaEditorSearchContext.resolve;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
+import static org.eclipse.recommenders.snipmatch.Location.FILE;
+import static org.eclipse.recommenders.snipmatch.Location.JAVA;
+import static org.eclipse.recommenders.snipmatch.Location.JAVADOC;
+import static org.eclipse.recommenders.snipmatch.Location.JAVA_STATEMENTS;
+import static org.eclipse.recommenders.snipmatch.Location.JAVA_TYPE_MEMBERS;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -30,10 +41,22 @@ import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
+import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.databinding.observable.set.ISetChangeListener;
+import org.eclipse.core.databinding.observable.set.SetChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.property.INativePropertyListener;
+import org.eclipse.core.databinding.property.ISimplePropertyListener;
+import org.eclipse.core.databinding.property.value.SimpleValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -42,13 +65,19 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.models.IDependencyListener;
+import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -65,6 +94,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
@@ -72,6 +102,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -80,6 +111,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class SnippetMetadataPage extends FormPage {
@@ -95,17 +128,23 @@ public class SnippetMetadataPage extends FormPage {
     private ComboViewer comboLocation;
     private Text txtUuid;
 
+    private ListViewer listViewerDependencies;
     private ListViewer listViewerExtraSearchTerms;
     private ListViewer listViewerTags;
 
+    private Composite btnContainerDependencies;
     private Composite btnContainerExtraSearchTerms;
     private Composite btnContainerTags;
 
+    private Button btnAddDependency;
     private Button btnAddExtraSearchTerm;
     private Button btnAddTag;
+
+    private Button btnRemoveDependency;
     private Button btnRemoveExtraSearchTerm;
     private Button btnRemoveTag;
 
+    private IObservableSet ppDependencies;
     private IObservableList ppExtraSearchTerms;
     private IObservableList ppTags;
     private DataBindingContext context;
@@ -248,7 +287,7 @@ public class SnippetMetadataPage extends FormPage {
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
                 extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
                 extraSearchTermsDescriptionDecoration
-                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                        .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
@@ -323,6 +362,60 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 btnRemoveTag.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
+                Label lblDependencies = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
+                        Messages.EDITOR_LABEL_SNIPPET_DEPENENCIES, SWT.NONE);
+                lblDependencies.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+
+                listViewerDependencies = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
+                List lstDependencies = listViewerDependencies.getList();
+                lstDependencies.setLayoutData(GridDataFactory.fillDefaults().grab(true, true)
+                        .indent(horizontalIndent, 0).create());
+
+                final ControlDecoration dependencyDescriptionDecoration = new ControlDecoration(
+                        listViewerDependencies.getList(), SWT.TOP | SWT.LEFT);
+                dependencyDescriptionDecoration.setImage(infoDecoration.getImage());
+                dependencyDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_DEPENDENCIES);
+                dependencyDescriptionDecoration.setMarginWidth(1);
+
+                btnContainerDependencies = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(),
+                        SWT.NONE);
+                btnContainerDependencies.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+                managedForm.getToolkit().paintBordersFor(btnContainerDependencies);
+                btnContainerDependencies.setLayout(new GridLayout(1, false));
+
+                btnAddDependency = managedForm.getToolkit().createButton(btnContainerDependencies,
+                        Messages.EDITOR_BUTTON_ADD_DEPENDENCY, SWT.NONE);
+                btnAddDependency.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Shell shell = btnContainerDependencies.getShell();
+                        ProjectCoordinateSelectionDialog dialog = new ProjectCoordinateSelectionDialog(shell);
+                        dialog.setInitialPattern(""); //$NON-NLS-1$
+                        dialog.open();
+
+                        Object[] result = dialog.getResult();
+                        if (result != null) {
+                            for (Object object : result) {
+                                ppDependencies.add((ProjectCoordinate) object);
+                            }
+                        }
+                    }
+                });
+                btnAddDependency.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+                btnRemoveDependency = managedForm.getToolkit().createButton(btnContainerDependencies,
+                        Messages.EDITOR_BUTTON_REMOVE_TAGS, SWT.NONE);
+                btnRemoveDependency.setEnabled(false);
+                btnRemoveDependency.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Optional<String> o = Selections.getFirstSelected(listViewerDependencies);
+                        if (o.isPresent()) {
+                            ppDependencies.remove(o.get());
+                        }
+                    }
+                });
+                btnRemoveDependency.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
                 Label lblUuid = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                         Messages.EDITOR_LABEL_SNIPPET_UUID, SWT.NONE);
                 lblUuid.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
@@ -350,6 +443,162 @@ public class SnippetMetadataPage extends FormPage {
 
         managedForm.addPart(contentsPart);
         context = createDataBindingContext();
+    }
+
+    class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDialog {
+
+        private Collection<ProjectCoordinate> pcs;
+        private final SharedImages images;
+        private LabelProvider labelProvider;
+
+        public ProjectCoordinateSelectionDialog(Shell shell) {
+            super(shell, true);
+            setTitle(Messages.DIALOG_TITLE_SELECT_DEPENDENCY);
+
+            IDependencyListener dependencyListener = InjectionService.getInstance().requestInstance(
+                    IDependencyListener.class);
+
+            images = InjectionService.getInstance().requestInstance(SharedImages.class);
+
+            ImmutableSet<DependencyInfo> dependencies = dependencyListener.getDependencies();
+            this.pcs = changeVersionsToZero(resolve(dependencies));
+
+            labelProvider = new LabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    if (element == null) {
+                        return "";
+                    }
+                    if (element instanceof ProjectCoordinate) {
+                        return getStringForDependency((ProjectCoordinate) element);
+                    }
+                    return element.toString();
+                }
+
+                @Override
+                public Image getImage(Object element) {
+                    return images.getImage(OBJ_JAR);
+                }
+
+            };
+            setListLabelProvider(labelProvider);
+            setDetailsLabelProvider(labelProvider);
+        }
+
+        @Override
+        protected Control createContents(Composite parent) {
+            Control control = super.createContents(parent);
+
+            // final Text text = cast(getPatternControl());
+            //
+            // final IInputValidator validator = new IInputValidator() {
+            //
+            // @Override
+            // public String isValid(String newText) {
+            // if (isNullOrEmpty(newText)) {
+            //                        return ""; //$NON-NLS-1$
+            // }
+            // ProjectCoordinate pc = ProjectCoordinate.valueOf(newText);
+            // if (snippet.getNeededDependencies().contains(pc)) {
+            // return Messages.DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
+            // }
+            //
+            // return null;
+            // }
+            // };
+            //
+            // text.addModifyListener(new ModifyListener() {
+            //
+            // @Override
+            // public void modifyText(ModifyEvent e) {
+            // if (getResult().length == 0) {
+            // if (validator.isValid(text.getText()) != null) {
+            // getOkButton().setEnabled(true);
+            // } else {
+            // getOkButton().setEnabled(false);
+            // }
+            // }
+            // }
+            // });
+
+            return control;
+        }
+
+        private Collection<ProjectCoordinate> changeVersionsToZero(Set<ProjectCoordinate> resolved) {
+            Set<ProjectCoordinate> result = Sets.newHashSet();
+            for (ProjectCoordinate projectCoordinate : resolved) {
+                result.add(new ProjectCoordinate(projectCoordinate.getGroupId(), projectCoordinate.getArtifactId(),
+                        "0.0.0")); //$NON-NLS-1$
+            }
+            return result;
+        }
+
+        @Override
+        protected Control createExtendedContentArea(Composite parent) {
+            return null;
+        }
+
+        private static final String DIALOG_SETTINGS = "ProjectCoordinateSelectionDialog"; //$NON-NLS-1$
+
+        @Override
+        protected IDialogSettings getDialogSettings() {
+            IDialogSettings settings = JavaPlugin.getDefault().getDialogSettings().getSection(DIALOG_SETTINGS);
+
+            if (settings == null) {
+                settings = JavaPlugin.getDefault().getDialogSettings().addNewSection(DIALOG_SETTINGS);
+            }
+
+            return settings;
+        }
+
+        @Override
+        protected IStatus validateItem(Object item) {
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        protected ItemsFilter createFilter() {
+            return new ItemsFilter() {
+                public boolean matchItem(Object item) {
+                    return matches(item.toString());
+                }
+
+                @Override
+                public String getPattern() {
+                    String pattern = super.getPattern();
+                    if (pattern.equals("")) { //$NON-NLS-1$
+                        return "?"; //$NON-NLS-1$
+                    }
+                    return pattern;
+                }
+
+                public boolean isConsistentItem(Object item) {
+                    return true;
+                }
+            };
+        }
+
+        @Override
+        protected Comparator getItemsComparator() {
+            return new Comparator() {
+                public int compare(Object arg0, Object arg1) {
+                    return arg0.toString().compareTo(arg1.toString());
+                }
+            };
+        }
+
+        @Override
+        protected void fillContentProvider(AbstractContentProvider contentProvider, ItemsFilter itemsFilter,
+                IProgressMonitor progressMonitor) throws CoreException {
+            for (ProjectCoordinate pc : pcs) {
+                contentProvider.add(pc, itemsFilter);
+            }
+        }
+
+        @Override
+        public String getElementName(Object item) {
+            return labelProvider.getText(item);
+        }
     }
 
     private InputDialog createExtraSearchTermInputDialog(Shell shell) {
@@ -395,6 +644,32 @@ public class SnippetMetadataPage extends FormPage {
             @Override
             protected void okPressed() {
                 ppTags.add(getValue());
+                super.okPressed();
+            }
+        };
+    }
+
+    private InputDialog createDependencyInputDialog(Shell shell) {
+        IInputValidator validator = new IInputValidator() {
+
+            @Override
+            public String isValid(String newText) {
+                if (isNullOrEmpty(newText)) {
+                    return ""; //$NON-NLS-1$
+                }
+                ProjectCoordinate pc = ProjectCoordinate.valueOf(newText);
+                if (snippet.getNeededDependencies().contains(pc)) {
+                    return Messages.DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
+                }
+
+                return null;
+            }
+        };
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_DEPENDENCY,
+                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) { //$NON-NLS-2$ 
+            @Override
+            protected void okPressed() {
+                ppDependencies.add(ProjectCoordinate.valueOf(getValue()));
                 super.okPressed();
             }
         };
@@ -480,6 +755,56 @@ public class SnippetMetadataPage extends FormPage {
             }
         });
 
+        // dependencies
+        ppDependencies = BeanProperties
+                .set(Snippet.class, "neededDependencies", ProjectCoordinate.class).observe(snippet); //$NON-NLS-1$
+        ViewerSupport.bind(listViewerDependencies, ppDependencies, new SimpleValueProperty() {
+
+            @Override
+            public Object getValueType() {
+                return ProjectCoordinate.class;
+            }
+
+            @Override
+            protected Object doGetValue(Object source) {
+                ProjectCoordinate pc = cast(source);
+                if (pc == null) {
+                    System.out.println("");
+                }
+                return getStringForDependency(pc);
+            }
+
+            @Override
+            protected void doSetValue(Object source, Object value) {
+            }
+
+            @Override
+            public INativePropertyListener adaptListener(ISimplePropertyListener listener) {
+                return null;
+            }
+
+        });
+        ppDependencies.addSetChangeListener(new ISetChangeListener() {
+
+            @Override
+            public void handleSetChange(SetChangeEvent event) {
+                Set<ProjectCoordinate> pcs = convert(listViewerDependencies.getList().getItems());
+                if (!pcs.equals(snippet.getNeededDependencies())) {
+                    contentsPart.markStale();
+                } else {
+                    contentsPart.markDirty();
+                }
+            }
+
+            private Set<ProjectCoordinate> convert(String[] strings) {
+                Set<ProjectCoordinate> result = Sets.newHashSet();
+                for (String projectCoordinate : strings) {
+                    result.add(ProjectCoordinate.valueOf(projectCoordinate + ":0.0.0")); //$NON-NLS-1$
+                }
+                return result;
+            }
+        });
+
         // uuid
         IObservableValue wpUuidText = text(SWT.Modify).observe(txtUuid);
         IObservableValue ppUuid = value(Snippet.class, "uuid", UUID.class).observe(snippet); //$NON-NLS-1$
@@ -507,7 +832,15 @@ public class SnippetMetadataPage extends FormPage {
         IObservableValue wpBtnRemoveTagsEnable = enabled().observe(btnRemoveTag);
         context.bindValue(vpTagSelection, wpBtnRemoveTagsEnable, strategy, null);
 
+        IObservableValue vpDependencySelection = singleSelection().observe(listViewerDependencies);
+        IObservableValue wpBtnRemoveDependenciesEnable = enabled().observe(btnRemoveDependency);
+        context.bindValue(vpDependencySelection, wpBtnRemoveDependenciesEnable, strategy, null);
+
         return context;
+    }
+
+    private String getStringForDependency(ProjectCoordinate pc) {
+        return pc.getGroupId() + ":" + pc.getArtifactId(); //$NON-NLS-1$
     }
 
     @Override

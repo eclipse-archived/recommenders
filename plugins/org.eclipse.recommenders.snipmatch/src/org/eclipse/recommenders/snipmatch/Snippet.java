@@ -18,13 +18,17 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -32,7 +36,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Snippet implements ISnippet {
 
-    public static final String FORMAT_VERSION = "format-4";
+    public static final String FORMAT_VERSION = "format-5";
 
     private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
@@ -50,9 +54,16 @@ public class Snippet implements ISnippet {
     private String code;
     @SerializedName("location")
     private Location location = FILE;
+    @SerializedName("dependencies")
+    private Set<ProjectCoordinate> neededDependencies = Sets.newHashSet();
 
     public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
             String code, Location location) {
+        this(uuid, name, description, extraSearchTerms, tags, code, location, Sets.<ProjectCoordinate>newHashSet());
+    }
+
+    public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
+            String code, Location location, Set<ProjectCoordinate> neededDependencies) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
@@ -60,6 +71,7 @@ public class Snippet implements ISnippet {
         ensureIsNotNull(tags);
         ensureIsNotNull(code);
         ensureIsNotNull(location);
+        ensureIsNotNull(neededDependencies);
         this.uuid = uuid;
         this.name = name;
         this.description = description;
@@ -67,6 +79,7 @@ public class Snippet implements ISnippet {
         this.tags = tags;
         this.code = code;
         this.location = location;
+        this.neededDependencies = neededDependencies;
     }
 
     protected Snippet() {
@@ -108,6 +121,11 @@ public class Snippet implements ISnippet {
         return location;
     }
 
+    @Override
+    public Set<ProjectCoordinate> getNeededDependencies() {
+        return ImmutableSet.copyOf(neededDependencies);
+    }
+
     public void setCode(String code) {
         firePropertyChange("code", this.code, this.code = code);
     }
@@ -118,6 +136,10 @@ public class Snippet implements ISnippet {
 
     public void setDescription(String description) {
         firePropertyChange("description", this.description, this.description = description);
+    }
+
+    public void setNeededDependencies(Set<ProjectCoordinate> neededDependencies) {
+        firePropertyChange("dependencies", this.neededDependencies, this.neededDependencies = neededDependencies);
     }
 
     public void setLocation(Location location) {
@@ -155,7 +177,7 @@ public class Snippet implements ISnippet {
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
                 .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode(),
-                snippet.getLocation() != null ? snippet.getLocation() : FILE);
+                snippet.getLocation() != null ? snippet.getLocation() : FILE, snippet.getNeededDependencies());
     }
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {

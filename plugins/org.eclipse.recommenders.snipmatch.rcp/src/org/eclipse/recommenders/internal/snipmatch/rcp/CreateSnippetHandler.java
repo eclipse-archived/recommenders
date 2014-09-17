@@ -15,9 +15,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.EDITOR_I
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -32,7 +30,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -43,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class CreateSnippetHandler extends AbstractHandler {
@@ -52,7 +48,6 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private Set<ISnippetRepository> repos;
 
-    //
     private ExecutionEvent event;
 
     @Inject
@@ -78,12 +73,7 @@ public class CreateSnippetHandler extends AbstractHandler {
         IDocument doc = viewer.getDocument();
         ITextSelection textSelection = cast(viewer.getSelectionProvider().getSelection());
 
-        String code = new SnippetBuilder(ast, doc, textSelection).build();
-
-        List<String> keywords = Lists.<String>newArrayList();
-        List<String> tags = Lists.<String>newArrayList();
-        return new Snippet(UUID.randomUUID(),
-                "<new snippet>", "<enter description>", keywords, tags, code, Location.NONE); //$NON-NLS-1$ //$NON-NLS-2$
+        return new SnippetBuilder(ast, doc, textSelection).build("<new snippet>", "<enter description>"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void openSnippetInEditor(Snippet snippet) {

@@ -18,6 +18,8 @@ public class Messages extends NLS {
 
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
 
+    public static String DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY;
+
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
@@ -33,22 +35,32 @@ public class Messages extends NLS {
     public static String DIALOG_OPTION_SAVE;
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
+    public static String DIALOG_TITLE_ENTER_NEW_DEPENDENCY;
+
     public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
     public static String DIALOG_TITLE_INVALID_SNIPPET_LOCATION;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
+
+    public static String DIALOG_TITLE_SELECT_DEPENDENCY;
     public static String DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE;
 
+    public static String DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
+
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
+
+    public static String EDITOR_BUTTON_ADD_DEPENDENCY;
 
     public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
     public static String EDITOR_BUTTON_ADD_TAGS;
     public static String EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM;
     public static String EDITOR_BUTTON_REMOVE_TAGS;
+
+    public static String EDITOR_LABEL_SNIPPET_DEPENENCIES;
 
     public static String EDITOR_LABEL_SNIPPET_DESCRIPTION;
     public static String EDITOR_LABEL_SNIPPET_NAME;
@@ -66,8 +78,9 @@ public class Messages extends NLS {
     public static String EDITOR_TITLE_METADATA;
     public static String EDITOR_TITLE_RAW_SOURCE;
 
-    public static String EDITOR_DESCRIPTION_LOCATION;
+    public static String EDITOR_DESCRIPTION_DEPENDENCIES;
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
+    public static String EDITOR_DESCRIPTION_LOCATION;
     public static String EDITOR_DESCRIPTION_TAGS;
 
     public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;

@@ -61,6 +61,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
@@ -95,11 +96,13 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_PATH = "path";
     private static final String F_UUID = "uuid";
     private static final String F_LOCATION = "location";
+    private static final String F_DEPENDENCY = "dependency";
 
     private static final float NAME_BOOST = 4.0f;
     private static final float DESCRIPTION_BOOST = 2.0f;
     private static final float EXTRA_SEARCH_TERM_BOOST = DESCRIPTION_BOOST;
     private static final float TAG_BOOST = 1.0f;
+    private static final float DEPENDENCY_BOOST = 1.0f;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -154,15 +157,16 @@ public class FileSnippetRepository implements ISnippetRepository {
         analyzers.put(F_EXTRA_SEARCH_TERM, standardAnalyzer);
         analyzers.put(F_TAG, standardAnalyzer);
         analyzers.put(F_UUID, new KeywordAnalyzer());
+        analyzers.put(F_DEPENDENCY, standardAnalyzer);
         return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzers);
     }
 
     private QueryParser createParser() {
-        String[] searchFields = new String[] { F_NAME, F_DESCRIPTION, F_EXTRA_SEARCH_TERM, F_TAG };
+        String[] searchFields = new String[] { F_NAME, F_DESCRIPTION, F_EXTRA_SEARCH_TERM, F_TAG, F_DEPENDENCY };
         Map<String, Float> boosts = ImmutableMap.of(F_NAME, NAME_BOOST, F_DESCRIPTION, DESCRIPTION_BOOST,
-                F_EXTRA_SEARCH_TERM, EXTRA_SEARCH_TERM_BOOST, F_TAG, TAG_BOOST);
+                F_EXTRA_SEARCH_TERM, EXTRA_SEARCH_TERM_BOOST, F_TAG, TAG_BOOST, F_DEPENDENCY, DEPENDENCY_BOOST);
         QueryParser parser = new MultiFieldPrefixQueryParser(Version.LUCENE_35, searchFields, analyzer, boosts, F_NAME,
-                F_DESCRIPTION, F_EXTRA_SEARCH_TERM);
+                F_DESCRIPTION, F_EXTRA_SEARCH_TERM, F_DEPENDENCY);
         parser.setDefaultOperator(AND);
         return parser;
     }
@@ -246,7 +250,15 @@ public class FileSnippetRepository implements ISnippetRepository {
 
         doc.add(new Field(F_LOCATION, getIndexString(snippet.getLocation()), Store.NO, Index.NOT_ANALYZED));
 
+        for (ProjectCoordinate pc : snippet.getNeededDependencies()) {
+            doc.add(new Field(F_DEPENDENCY, getDependencyString(pc), Store.YES, Index.ANALYZED));
+        }
+
         writer.addDocument(doc);
+    }
+
+    private String getDependencyString(ProjectCoordinate pc) {
+        return pc.getGroupId() + ":" + pc.getArtifactId();
     }
 
     private String getIndexString(Location location) {
@@ -262,7 +274,8 @@ public class FileSnippetRepository implements ISnippetRepository {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            // TODO MB: this is a costly operation that works only well with small repos.
+            // TODO MB: this is a costly operation that works only well with
+            // small repos.
             Set<Recommendation<ISnippet>> res = Sets.newHashSet();
             for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
                 try {
@@ -307,6 +320,7 @@ public class FileSnippetRepository implements ISnippetRepository {
                 Map<File, Float> snippetFiles = searchSnippetFiles(context, maxResults);
                 for (Entry<File, Float> entry : snippetFiles.entrySet()) {
                     ISnippet snippet = snippetCache.get(entry.getKey());
+
                     results.add(Recommendation.newRecommendation(snippet, entry.getValue()));
                 }
             } catch (Exception e) {
@@ -329,6 +343,9 @@ public class FileSnippetRepository implements ISnippetRepository {
             float maxScore = 0;
             for (ScoreDoc hit : searcher.search(q, null, maxResults).scoreDocs) {
                 Document doc = searcher.doc(hit.doc);
+                if (!snippetApplicable(doc, context)) {
+                    continue;
+                }
                 results.put(new File(doc.get(F_PATH)), hit.score);
                 if (hit.score > maxScore) {
                     maxScore = hit.score;
@@ -336,7 +353,8 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
             return normalizeValues(results, maxScore);
         } catch (ParseException e) {
-            // While typing, a user can easily create unparsable queries (temporarily)
+            // While typing, a user can easily create unparsable queries
+            // (temporarily)
             log.info("Failed to parse query", e);
         } catch (Exception e) {
             log.error("Exception occurred while searching the snippet index.", e);
@@ -346,10 +364,38 @@ public class FileSnippetRepository implements ISnippetRepository {
         return results;
     }
 
+    private boolean snippetApplicable(Document doc, ISearchContext context) {
+        if (context.getDependencies().isEmpty()) {
+            return true;
+        }
+
+        String[] snippetDependencies = doc.getValues(F_DEPENDENCY);
+        for (String snippetDependency : snippetDependencies) {
+            boolean applicable = false;
+
+            for (ProjectCoordinate workspaceDependency : context.getDependencies()) {
+                if (applicable(workspaceDependency, snippetDependency)) {
+                    applicable = true;
+                    break;
+                }
+            }
+
+            if (!applicable) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean applicable(ProjectCoordinate pc, String dependency) {
+        return getDependencyString(pc).equals(dependency);
+    }
+
     private String createLuceneQuery(ISearchContext context) {
         StringBuilder sb = new StringBuilder();
 
-        // Remove trailing 'OR' & 'NOT' to prevent pairing with location constraint
+        // Remove trailing 'OR' & 'NOT' to prevent pairing with location
+        // constraint
         String userQuery = context.getSearchText().trim();
         userQuery = removeEnd(userQuery, " OR");
         userQuery = removeEnd(userQuery, " NOT");

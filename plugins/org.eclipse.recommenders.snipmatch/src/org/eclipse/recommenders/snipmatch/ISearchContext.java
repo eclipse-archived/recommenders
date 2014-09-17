@@ -10,9 +10,15 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import java.util.Set;
+
+import org.eclipse.recommenders.models.ProjectCoordinate;
+
 public interface ISearchContext {
 
     String getSearchText();
 
     Location getLocation();
+
+    Set<ProjectCoordinate> getDependencies();
 }

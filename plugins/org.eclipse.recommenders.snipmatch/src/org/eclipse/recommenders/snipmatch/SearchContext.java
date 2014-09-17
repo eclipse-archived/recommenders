@@ -12,14 +12,26 @@ package org.eclipse.recommenders.snipmatch;
 
 import static org.eclipse.recommenders.snipmatch.Location.NONE;
 
+import java.util.Set;
+
+import org.eclipse.recommenders.models.ProjectCoordinate;
+
+import com.google.common.collect.Sets;
+
 public class SearchContext implements ISearchContext {
 
     private final String searchText;
     private final Location location;
+    private final Set<ProjectCoordinate> pcs;
 
-    public SearchContext(String searchText, Location location) {
+    public SearchContext(String searchText, Location location, Set<ProjectCoordinate> pcs) {
         this.searchText = searchText;
         this.location = location;
+        this.pcs = pcs;
+    }
+
+    public SearchContext(String searchText, Location location) {
+        this(searchText, location, Sets.<ProjectCoordinate>newHashSet());
     }
 
     public SearchContext(String searchText) {
@@ -34,6 +46,11 @@ public class SearchContext implements ISearchContext {
     @Override
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public Set<ProjectCoordinate> getDependencies() {
+        return pcs;
     }
 
 }
