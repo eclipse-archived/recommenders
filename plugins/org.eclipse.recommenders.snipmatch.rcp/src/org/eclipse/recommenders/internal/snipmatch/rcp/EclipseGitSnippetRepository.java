@@ -158,7 +158,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
                             LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
                             Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat.format(
                                     Messages.ERROR_FAILURE_TO_CLONE_REPOSITORY, delegate.getRepositoryLocation(),
-                                    e.getMessage()), e);
+                                    timesOpened, e.getMessage()), e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.CANCEL_STATUS;
                         } finally {
