@@ -28,7 +28,7 @@ public class ReportState {
     public static final String CLOSED = "CLOSED";
     public static final String RESOLVED = "RESOLVED";
     public static final String NEW = "NEW";
-    public static final String UNCONFIMRED = "UNCONFIMRED";
+    public static final String UNCONFIRMED = "UNCONFIRMED";
 
     private boolean created;
     private String bugId;
