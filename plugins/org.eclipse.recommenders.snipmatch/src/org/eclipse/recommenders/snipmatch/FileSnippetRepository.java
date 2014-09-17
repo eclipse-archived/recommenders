@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.channels.OverlappingFileLockException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -187,6 +189,10 @@ public class FileSnippetRepository implements ISnippetRepository {
         try {
             File[] snippetFiles = snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON));
             doIndex(snippetFiles);
+        } catch (OverlappingFileLockException e) {
+            throw new IOException(MessageFormat.format(
+                    "Failure while creating index at \u2018{0}\u2019. Repository was opened {1} times.", indexdir,
+                    timesOpened), e);
         } finally {
             writeLock.unlock();
         }
@@ -216,7 +222,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
-    IOException {
+            IOException {
         Document doc = new Document();
 
         doc.add(new Field(F_PATH, path, Store.YES, Index.NO));
