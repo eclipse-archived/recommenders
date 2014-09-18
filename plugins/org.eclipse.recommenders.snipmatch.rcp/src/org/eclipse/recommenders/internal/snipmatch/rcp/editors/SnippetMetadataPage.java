@@ -17,6 +17,8 @@ import static org.eclipse.core.databinding.beans.BeanProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.HELP_URL;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.SnippetEditorDiscoveryUtils.openDiscoveryDialog;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -41,6 +43,7 @@ import org.eclipse.core.databinding.property.INativePropertyListener;
 import org.eclipse.core.databinding.property.ISimplePropertyListener;
 import org.eclipse.core.databinding.property.value.SimpleValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -57,10 +60,13 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateSelectionDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -143,8 +149,8 @@ public class SnippetMetadataPage extends FormPage {
     protected void createFormContent(IManagedForm managedForm) {
         FormToolkit toolkit = managedForm.getToolkit();
         ScrolledForm form = managedForm.getForm();
-        form.setText(Messages.EDITOR_TITLE_METADATA);
-        EditorUtils.addHelpActionToForm(form);
+
+        createHeader(form);
 
         Composite body = form.getBody();
         toolkit.decorateFormHeading(form.getForm());
@@ -453,6 +459,30 @@ public class SnippetMetadataPage extends FormPage {
         };
         managedForm.addPart(contentsPart);
         context = createDataBindingContext();
+    }
+
+    private ScrolledForm createHeader(ScrolledForm form) {
+        form.setText(Messages.EDITOR_TITLE_METADATA);
+        SharedImages sharedImages = InjectionService.getInstance().getInjector().getInstance(SharedImages.class);
+
+        Action openDiscoveryAction = new Action(Messages.EDITOR_EXTENSIONS_HEADER_EXT_LINK,
+                sharedImages.getDescriptor(SharedImages.Images.ELCL_INSTALL_EXTENSIONS)) {
+            @Override
+            public void run() {
+                openDiscoveryDialog();
+            };
+        };
+        EditorUtils.addActionToForm(form, openDiscoveryAction, Messages.EDITOR_EXTENSIONS_HEADER_EXT_LINK);
+
+        Action showHelpAction = new Action(Messages.EDITOR_TOOLBAR_ITEM_HELP,
+                sharedImages.getDescriptor(SharedImages.Images.ELCL_HELP)) {
+            @Override
+            public void run() {
+                BrowserUtils.openInExternalBrowser(HELP_URL);
+            };
+        };
+        EditorUtils.addActionToForm(form, showHelpAction, Messages.EDITOR_TOOLBAR_ITEM_HELP);
+        return form;
     }
 
     private Collection<String> fetchDependencyListItems() {

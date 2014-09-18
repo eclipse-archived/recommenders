@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+  <extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+    <connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.incubation" description="Incubation projects at Code Recommenders. Note that these incubators may not be production ready." name="Code Recommenders Incubation Projects" relevance="10">
+      <icon
+            image48="images/incubation-48.png"/>
+    </connectorCategory>
+  </extension>
+  <extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+   <connectorDescriptor
+          categoryId="org.eclipse.recommenders.rcp.discovery.category.incubation"
+          description="Install this feature to add an advanced source editor with syntax&#x2010;highlighting capabilities to your Snippet Editor."
+          id="org.eclipse.recommenders.templates.snipmatch.rcp.feature"
+          license="EPL"
+          name="Code Recommenders Snipmatch Editor Extension (Incubator)"
+          provider="Eclipse Code Recommenders"
+          siteUrl="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/milestones/">
+       <iu id="org.eclipse.recommenders.templates.snipmatch.rcp.feature.feature.group"/>
+    </connectorDescriptor>
+  </extension>
+</plugin>

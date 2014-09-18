@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.HELP_URL;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -18,9 +19,13 @@ import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -53,10 +58,9 @@ public class SnippetSourcePage extends FormPage {
     @Override
     protected void createFormContent(IManagedForm managedForm) {
         FormToolkit toolkit = managedForm.getToolkit();
-
         form = managedForm.getForm();
-        form.setText(Messages.EDITOR_TITLE_RAW_SOURCE);
-        EditorUtils.addHelpActionToForm(form);
+
+        createHeader(form);
 
         toolkit.decorateFormHeading(form.getForm());
 
@@ -95,6 +99,20 @@ public class SnippetSourcePage extends FormPage {
         };
         managedForm.addPart(codePart);
         context = createDataBindingContext();
+    }
+
+    private void createHeader(ScrolledForm form) {
+        form.setText(Messages.EDITOR_TITLE_RAW_SOURCE);
+        SharedImages sharedImages = InjectionService.getInstance().getInjector().getInstance(SharedImages.class);
+
+        Action showHelpAction = new Action(Messages.EDITOR_TOOLBAR_ITEM_HELP,
+                sharedImages.getDescriptor(SharedImages.Images.ELCL_HELP)) {
+            @Override
+            public void run() {
+                BrowserUtils.openInExternalBrowser(HELP_URL);
+            };
+        };
+        EditorUtils.addActionToForm(form, showHelpAction, Messages.EDITOR_TOOLBAR_ITEM_HELP);
     }
 
     @Override

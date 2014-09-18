@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 @SuppressWarnings("restriction")
 public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
-    private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/directory.xml"; //$NON-NLS-1$
+    private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/completion/directory.xml"; //$NON-NLS-1$
 
     @Inject
     public DiscoveryCompletionProposal(SharedImages images) {

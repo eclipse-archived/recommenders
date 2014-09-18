@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Constants;
+import org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SelectRepositoryDialog;
@@ -37,6 +38,7 @@ import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -92,7 +94,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
                 addPage(page);
             }
         } catch (PartInitException e) {
-            LOG.error("Exception while adding editor pages.", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_LOAD_EDITOR_PAGE, e);
         }
     }
 
@@ -220,8 +222,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
                         ((AbstractFormPart) part).markDirty();
                     }
                 }
-
             }
         }
     }
+
 }

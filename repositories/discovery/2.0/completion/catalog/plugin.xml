@@ -11,18 +11,18 @@
     </connectorCategory>
   </extension>
   <extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
-    <connectorDescriptor siteUrl="http://download.codetrails.com/updates/connect/" id="com.codetrails.connect.hippie.rcp.feature" description="Connect is powered by 39 million completion events collected from developers working on open source projects. Install it to leverage the power of crowdsourcing." categoryId="org.eclipse.recommenders.rcp.discovery.category.codetrails" name="Codetrails Connect, Community Ed." provider="Codetrails" license="Codetrails Community License">
+    <connectorDescriptor siteUrl="http://download.codetrails.com/updates/connect/stable/" id="com.codetrails.connect.hippie.rcp.feature" description="Connect is powered by 39 million completion events collected from developers working on open source projects. Install it to leverage the power of crowdsourcing." categoryId="org.eclipse.recommenders.rcp.discovery.category.codetrails" name="Codetrails Connect, Community Ed." provider="Codetrails" license="Codetrails Community License">
       <iu id="com.codetrails.connect.hippie.rcp.feature.feature.group" />
-      <overview summary="Codetrails Connect  also gives your the opportunity to have private repositories where you can share knowledge for your private APIs only with selected people." url="http://codetrails.com/connect/" />
+      <overview summary="Codetrails Connect also gives your the opportunity to have private repositories where you can share knowledge for your private APIs only with selected people." url="http://codetrails.com/connect/" />
     </connectorDescriptor>
     <connectorDescriptor
           categoryId="org.eclipse.recommenders.rcp.discovery.category.incubation"
-          description="Install this feature to get access to dozens of code snippets showing how to use popular APIs like SWT and the Java standard library."
+          description="Install this feature if you want to insert complex code snippets with just a few keystrokes."
           id="org.eclipse.recommenders.snipmatch.rcp.feature"
           license="EPL"
-          name="Snipmatch - A crowdsourced snippet completion engine"
+          name="Snipmatch &#x2013; a Crowdsourced Snippet&#x2010;completion Engine"
           provider="Eclipse Code Recommenders"
-          siteUrl="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/milestones/">
+          siteUrl="http://download.eclipse.org/recommenders/updates/stable/">
        <iu id="org.eclipse.recommenders.snipmatch.rcp.feature.feature.group"/>
     </connectorDescriptor>
   </extension>

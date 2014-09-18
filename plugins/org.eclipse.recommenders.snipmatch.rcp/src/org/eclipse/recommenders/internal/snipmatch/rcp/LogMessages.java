@@ -31,6 +31,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
     public static final LogMessages ERROR_CANNOT_COMPUTE_LOCATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_COMPUTE_LOCATION);
+    public static final LogMessages ERROR_FAILED_TO_LOAD_EDITOR_PAGE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_LOAD_EDITOR_PAGES);
 
     public static final ILogMessage ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID = new LogMessages(ERROR,
             Messages.LOG_ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID);
