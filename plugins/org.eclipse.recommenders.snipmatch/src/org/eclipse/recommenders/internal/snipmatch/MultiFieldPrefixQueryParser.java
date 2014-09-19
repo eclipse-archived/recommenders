@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.snipmatch;
+package org.eclipse.recommenders.internal.snipmatch;
 
 import java.util.Map;
 import java.util.Set;

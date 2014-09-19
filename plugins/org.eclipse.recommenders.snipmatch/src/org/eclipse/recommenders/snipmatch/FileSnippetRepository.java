@@ -60,6 +60,7 @@ import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
