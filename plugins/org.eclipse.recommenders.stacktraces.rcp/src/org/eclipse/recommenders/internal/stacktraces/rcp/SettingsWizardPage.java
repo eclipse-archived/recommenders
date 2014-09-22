@@ -17,6 +17,7 @@ import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMAT
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -105,8 +106,10 @@ class SettingsWizardPage extends WizardPage {
                         return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
                     case SILENT:
                         return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
-                    case PAUSE:
-                        return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE;
+                    case PAUSE_DAY:
+                        return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_DAY;
+                    case PAUSE_RESTART:
+                        return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_RESTART;
                     default:
                         return super.getText(element);
                     }
@@ -178,7 +181,20 @@ class SettingsWizardPage extends WizardPage {
 
         IObservableValue ovVwrAction = ViewersObservables.observeSinglePostSelection(actionComboViewer);
         IObservableValue ovSetAction = value(pkg.getSettings_Action()).observe(settings);
+        IObservableValue ovPause = value(pkg.getSettings_PausePeriodStart()).observe(settings);
         context.bindValue(ovVwrAction, ovSetAction, null, null);
+        context.bindValue(ovVwrAction, ovPause, new UpdateValueStrategy() {
+
+            @Override
+            public Object convert(Object value) {
+                if (value == SendAction.PAUSE_DAY) {
+                    return System.currentTimeMillis();
+                } else {
+                    return 0;
+                }
+            }
+
+        }, null);
 
         return context;
     }

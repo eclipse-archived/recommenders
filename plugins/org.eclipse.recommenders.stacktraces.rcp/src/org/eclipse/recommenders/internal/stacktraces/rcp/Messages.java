@@ -19,7 +19,8 @@ public class Messages extends NLS {
     public static String FIELD_LABEL_ACTION_REPORT_ASK;
     public static String FIELD_LABEL_ACTION_REPORT_NEVER;
     public static String FIELD_LABEL_ACTION_REPORT_ALWAYS;
-    public static String FIELD_LABEL_ACTION_REPORT_PAUSE;
+    public static String FIELD_LABEL_ACTION_REPORT_PAUSE_DAY;
+    public static String FIELD_LABEL_ACTION_REPORT_PAUSE_RESTART;
     public static String FIELD_LABEL_SKIP_SIMILAR_ERRORS;
     public static String FIELD_LABEL_ANONYMIZE_STACKTRACES;
     public static String FIELD_LABEL_ANONYMIZE_MESSAGES;
