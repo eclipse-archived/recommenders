@@ -11,8 +11,11 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
+import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -27,6 +30,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
+
+    private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
 
     @Override
     public void initializeDefaultPreferences() {
@@ -54,7 +59,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         settings.getWhitelistedPackages().addAll(parseWhitelist(s.getString(PROP_WHITELISTED_PACKAGES)));
         settings.setAnonymizeMessages(s.getBoolean(PROP_ANONYMIZE_MESSAGES));
         settings.setAnonymizeStrackTraceElements(s.getBoolean(PROP_ANONYMIZE_STACKTRACES));
-        settings.setAction(parseSendAction(s.getString(PROP_SEND_ACTION)));
+        settings.setAction(parseSendAction(s.getString(PROP_SEND_ACTION), s.getLong(PROP_PAUSE_PERIOD_START)));
         return settings;
     }
 
@@ -68,6 +73,12 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.setValue(PROP_ANONYMIZE_STACKTRACES, settings.isAnonymizeStrackTraceElements());
         s.setValue(PROP_ANONYMIZE_MESSAGES, settings.isAnonymizeMessages());
         s.setValue(PROP_SEND_ACTION, settings.getAction().name());
+        s.setValue(PROP_PAUSE_PERIOD_START, settings.getPausePeriodStart());
+        try {
+            s.save();
+        } catch (IOException e) {
+            log(LogMessages.SAVE_PREFERENCES_FAILED, e);
+        }
     }
 
     static ArrayList<String> parseWhitelist(String s) {
@@ -77,16 +88,27 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     static boolean flagFirstAccess = true;
 
-    static SendAction parseSendAction(String mode) {
+    static SendAction parseSendAction(String mode, long pauseTimestamp) {
         try {
             SendAction value = SendAction.valueOf(mode);
-            if (flagFirstAccess && value == SendAction.PAUSE) {
+            if (isPausePeriodElapsed(pauseTimestamp, value)) {
                 value = SendAction.ASK;
+                log(LogMessages.PAUSE_PERIOD_ELAPSED);
             }
             flagFirstAccess = false;
             return value;
         } catch (Exception e) {
             return SendAction.ASK;
         }
+    }
+
+    private static boolean isPausePeriodElapsed(long pauseTimestamp, SendAction value) {
+        if (value == SendAction.PAUSE_RESTART && flagFirstAccess) {
+            return true;
+        } else if (value == SendAction.PAUSE_DAY) {
+            long elapsedTime = System.currentTimeMillis() - pauseTimestamp;
+            return elapsedTime >= MS_PER_DAY;
+        }
+        return false;
     }
 }

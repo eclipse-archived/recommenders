@@ -106,7 +106,7 @@ class Settings {
     boolean anonymizeMessages
     boolean skipSimilarErrors
     SendAction action
-    long pause
+    long pausePeriodStart
     @GenModel(documentation="The remote address where error events are send to.")
     String serverUrl
     @GenModel(documentation="A list of prefixes a plug-in ID is matched against using String#startsWith (e.g., 'com.codetrails.'")
@@ -119,7 +119,8 @@ enum SendAction{
     ASK
     IGNORE
     SILENT
-    PAUSE
+    PAUSE_DAY
+    PAUSE_RESTART
 }
 
 type UUID wraps UUID

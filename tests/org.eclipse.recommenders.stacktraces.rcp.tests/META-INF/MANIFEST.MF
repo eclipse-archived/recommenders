@@ -11,4 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
  org.hamcrest,
- org.junit
+ org.junit,
+ org.mockito
