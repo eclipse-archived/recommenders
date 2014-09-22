@@ -9,7 +9,7 @@
 <unit id="org.eclipse.ecf.provider.filetransfer" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M1-201408062000/"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M2-201409180330/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
@@ -18,9 +18,13 @@
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/releases/mars"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtend.sdk.feature.group" version="2.7.0.v201409021032"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/"/>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/modeling/emf/emf/updates/milestones/"/>
+</location><location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtend.sdk.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
@@ -56,7 +60,7 @@
 </location>
 <!-- List of source bundles needs to be maintained manually; includeSources="true" not supported yet. -->
 <!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=411664 -->
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8272 -->
 <unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
 <unit id="ch.qos.logback.classic.source" version="1.0.7.v20121108-1250"/>
