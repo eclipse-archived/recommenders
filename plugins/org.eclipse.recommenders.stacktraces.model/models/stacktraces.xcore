@@ -22,11 +22,11 @@ class ErrorReport {
     contains Status status
     op void accept(Visitor v) {
         v.visit(this)
-        if (status != null) {
-            status.accept(v)
-        }
         for (Bundle b : presentBundles) {
             b.accept(v)
+        }
+        if (status != null) {
+            status.accept(v)
         }
     }
 }

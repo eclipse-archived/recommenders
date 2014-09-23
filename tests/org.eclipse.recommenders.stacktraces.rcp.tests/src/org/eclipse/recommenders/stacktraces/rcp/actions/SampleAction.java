@@ -37,8 +37,11 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
                     cause.fillInStackTrace();
                     Exception exception = new RuntimeException("exception message", cause);
                     exception.fillInStackTrace();
-                    exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("foo.bar.Class",
-                            "barMethod", null, 42) });
+                    for (int j = 3; j >= 0; j--) {
+                        Exception e = new RuntimeException("exception " + j, exception);
+                        e.fillInStackTrace();
+                        exception = e;
+                    }
                     log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp",
                             "status error message " + ++counter, exception));
                     try {

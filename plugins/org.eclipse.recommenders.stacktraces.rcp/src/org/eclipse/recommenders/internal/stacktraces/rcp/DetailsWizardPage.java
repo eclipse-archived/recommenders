@@ -18,6 +18,7 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -45,12 +46,12 @@ class DetailsWizardPage extends WizardPage {
     private TableViewer tableViewer;
     private StyledText messageText;
     private IObservableList errors;
-    private Settings settings;
     private ErrorReport activeSelection;
 
     private static final Image ERROR_ICON = PlatformUI.getWorkbench().getSharedImages()
             .getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
     private StyledText commentText;
+    private Settings settings;
 
     protected DetailsWizardPage(IObservableList errors, Settings settings) {
         super(DetailsWizardPage.class.getName());
@@ -67,7 +68,7 @@ class DetailsWizardPage extends WizardPage {
 
         Composite tableComposite = createTableComposite(container);
         GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).minSize(150, SWT.DEFAULT).span(1, 3).grab(false, true)
-        .applyTo(tableComposite);
+                .applyTo(tableComposite);
 
         Composite messageComposite = createMessageComposite(container);
         GridDataFactory.fillDefaults().span(2, 2).grab(true, true).applyTo(messageComposite);
@@ -107,11 +108,15 @@ class DetailsWizardPage extends WizardPage {
                 if (!event.getSelection().isEmpty()) {
                     IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
                     activeSelection = (ErrorReport) selection.getFirstElement();
-                    messageText.setText(ErrorReports.toJson(activeSelection, settings, true));
+                    ErrorReport copy = ErrorReports.copy(activeSelection);
+                    copy.setName(settings.getName());
+                    copy.setEmail(settings.getEmail());
+                    messageText.setText(ErrorReports.prettyPrint(copy));
                     String comment = activeSelection.getComment();
                     commentText.setText(comment == null ? "" : comment);
                 }
             }
+
         });
         return tableComposite;
     }
@@ -124,6 +129,7 @@ class DetailsWizardPage extends WizardPage {
         GridDataFactory.fillDefaults().applyTo(messageLabel);
         messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
         messageText.setEditable(false);
+        messageText.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         GridDataFactory.fillDefaults().minSize(150, 1).hint(300, 300).grab(true, true).applyTo(messageText);
         return messageComposite;
     }

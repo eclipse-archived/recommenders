@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.VisitorImpl;
 import org.eclipse.recommenders.utils.AnonymousId;
@@ -115,6 +117,73 @@ public class ErrorReports {
             String pkg = replace(substringBeforeLast(element.getClassName(), "."), ".internal.", ".");
             packages.add(pkg);
         }
+    }
+
+    public static class PrettyPrintVisitor extends VisitorImpl {
+        private static final int RIGHT_PADDING = 20;
+        public StringBuilder builder = new StringBuilder();
+        private boolean firstThrowable = true;
+        private boolean firstBundle = true;
+
+        private void appendAttributes(EObject object, StringBuilder builder) {
+            for (EAttribute attribute : object.eClass().getEAllAttributes()) {
+                String line = String.format("%-" + RIGHT_PADDING + "s", attribute.getName() + ":")
+                        + object.eGet(attribute) + "\n";
+                builder.append(line);
+            }
+            builder.append("\n");
+        }
+
+        private void appendHeadline(String headline, StringBuilder builder) {
+            String line = headline.replaceAll(".", "_") + "\n\n";
+            builder.append(line);
+            builder.append(headline + "\n");
+            builder.append(line);
+        }
+
+        @Override
+        public void visit(ErrorReport report) {
+            appendHeadline("REPORT", builder);
+            appendAttributes(report, builder);
+            super.visit(report);
+        }
+
+        @Override
+        public void visit(Status status) {
+            appendHeadline("STATUS", builder);
+            appendAttributes(status, builder);
+            super.visit(status);
+        }
+
+        @Override
+        public void visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle bundle) {
+            if (firstBundle) {
+                appendHeadline("BUNDLES", builder);
+                firstBundle = false;
+            }
+            appendAttributes(bundle, builder);
+            super.visit(bundle);
+        }
+
+        @Override
+        public void visit(Throwable throwable) {
+            if (firstThrowable) {
+                appendHeadline("STACKTRACE", builder);
+                firstThrowable = false;
+            } else {
+                builder.append("Caused by: ");
+            }
+            builder.append(throwable.getClassName() + ": " + throwable.getMessage() + "\n");
+            super.visit(throwable);
+        }
+
+        @Override
+        public void visit(StackTraceElement element) {
+            builder.append("\t at " + element.getClassName() + "." + element.getMethodName() + "("
+                    + element.getFileName() + ":" + element.getLineNumber() + ")\n");
+            super.visit(element);
+        }
+
     }
 
     static boolean isWhitelisted(String className, List<String> whitelist) {
@@ -262,5 +331,11 @@ public class ErrorReports {
 
     public static void anonymizeStackTrace(ErrorReport report, final Settings settings) {
         report.accept(new AnonymizeStacktraceVisitor(settings.getWhitelistedPackages()));
+    }
+
+    public static String prettyPrint(ErrorReport report) {
+        PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
+        report.accept(prettyPrintVisitor);
+        return prettyPrintVisitor.builder.toString();
     }
 }
