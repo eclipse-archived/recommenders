@@ -162,8 +162,7 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testSkipSimilarErrors() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+    public void testSkipSimilarErrorsSetting() {
         Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
 
             @Override
@@ -175,15 +174,14 @@ public class LogListenerTest {
 
         });
 
-        sut.logging(status, "");
-        sut.logging(status, "");
+        sut.logging(createErrorStatus(), "");
+        sut.logging(createErrorStatus(), "");
 
         verify(sut, times(1)).checkAndSend(Mockito.any(ErrorReport.class));
     }
 
     @Test
-    public void testNoSkippingSimilarErrors() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+    public void testNoSkippingSimilarErrorsSetting() {
         Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
 
             @Override
@@ -195,9 +193,15 @@ public class LogListenerTest {
 
         });
 
-        sut.logging(status, "");
-        sut.logging(status, "");
+        sut.logging(createErrorStatus(), "");
+        sut.logging(createErrorStatus(), "");
 
         verify(sut, times(2)).checkAndSend(Mockito.any(ErrorReport.class));
+    }
+
+    public Status createErrorStatus() {
+        Exception e1 = new RuntimeException();
+        e1.fillInStackTrace();
+        return new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message", e1);
     }
 }
