@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -64,7 +64,7 @@ public class SepsetComputer {
         while (leftSepSets.size() < vertexCount - 1) {
             final Pair<OrderIgnoringPair<Integer>, List<Integer>> sep = pq.poll();
             final boolean bothEndsInSameTree = sets[sep.getFirst().getFirst()].find() == sets[sep.getFirst()
-                    .getSecond()].find();
+                                                                                              .getSecond()].find();
             if (!bothEndsInSameTree) {
                 sets[sep.getFirst().getFirst()].merge(sets[sep.getFirst().getSecond()]);
                 leftSepSets.add(sep);
@@ -74,7 +74,7 @@ public class SepsetComputer {
         return leftSepSets;
     }
 
-    private final class SepsetComparator implements Comparator<Pair<OrderIgnoringPair<Integer>, List<Integer>>> {
+    private static final class SepsetComparator implements Comparator<Pair<OrderIgnoringPair<Integer>, List<Integer>>> {
 
         private final BayesNet net;
 

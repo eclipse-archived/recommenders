@@ -40,7 +40,7 @@ public class Version implements Comparable<Version> {
     }
 
     public Version(String major, String minor, String patch) {
-        this(Integer.valueOf(major), Integer.valueOf(minor), Integer.valueOf(patch));
+        this(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patch));
     }
 
     public int getMajor() {

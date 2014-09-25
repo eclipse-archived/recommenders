@@ -11,22 +11,13 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.presentInstances;
-import static com.google.common.collect.Iterables.get;
-import static com.google.common.collect.Iterables.getFirst;
-import static com.google.common.collect.Iterables.getLast;
-import static com.google.common.collect.Iterables.isEmpty;
+import static com.google.common.base.Optional.*;
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_CLEAR;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.ELCL_REFRESH;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
+import static org.eclipse.recommenders.models.DependencyInfo.*;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
@@ -206,9 +197,9 @@ public class ProjectCoordinatesView extends ViewPart {
         };
 
         TableSortConfigurator.newConfigurator(tableViewer, refreshAction)
-                .add(locationColumn.getColumn(), COMPARE_LOCATION)
-                .add(coordinateColumn.getColumn(), COMPARE_COORDINATE).initialize(locationColumn.getColumn(), SWT.UP)
-                .configure();
+        .add(locationColumn.getColumn(), COMPARE_LOCATION)
+        .add(coordinateColumn.getColumn(), COMPARE_COORDINATE).initialize(locationColumn.getColumn(), SWT.UP)
+        .configure();
 
         addFilterFunctionality();
         addClearCacheButton();

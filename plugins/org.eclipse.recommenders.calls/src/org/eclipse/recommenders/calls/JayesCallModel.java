@@ -135,7 +135,7 @@ public class JayesCallModel implements ICallModel {
         return absent();
     }
 
-    private final class StringToMethodNameFunction implements Function<String, IMethodName> {
+    private static final class StringToMethodNameFunction implements Function<String, IMethodName> {
         @Override
         public IMethodName apply(final String input) {
             return VmMethodName.get(input);

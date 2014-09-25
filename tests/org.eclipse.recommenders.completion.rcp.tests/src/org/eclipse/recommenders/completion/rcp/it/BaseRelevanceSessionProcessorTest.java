@@ -39,7 +39,7 @@ public class BaseRelevanceSessionProcessorTest {
         assertEquals(200, p.getRelevance());
     }
 
-    private final class FakeProcessableProposal implements IProcessableProposal {
+    private static final class FakeProcessableProposal implements IProcessableProposal {
         private int relevance;
         private StyledString styledDisplayString;
         private ProposalProcessorManager mgr;
