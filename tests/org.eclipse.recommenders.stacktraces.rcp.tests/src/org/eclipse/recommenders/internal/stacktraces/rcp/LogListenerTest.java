@@ -23,6 +23,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -224,6 +225,30 @@ public class LogListenerTest {
         sut.logging(createErrorStatus(), "");
 
         verify(sut, times(2)).sendStatus(Mockito.any(ErrorReport.class));
+
+    }
+
+    @Test
+    public void testNoReportOfSourceFiles() {
+        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
+
+            @Override
+            public Settings answer(InvocationOnMock invocation) throws Throwable {
+                Settings settings = (Settings) invocation.callRealMethod();
+                settings.setAction(SendAction.SILENT);
+                return settings;
+            }
+
+        });
+        String sourceDataMessage = "Exception occurred during compilation unit conversion:\n"
+                + "----------------------------------- SOURCE BEGIN -------------------------------------\n"
+                + "package some.package;\n" + "\n" + "import static some.import.method;\n"
+                + "import static some.other.import;\n";
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, sourceDataMessage, new RuntimeException());
+        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
+        sut.logging(status, "");
+        verify(sut).sendStatus(captor.capture());
+        Assert.assertEquals("source file contents removed", captor.getValue().getStatus().getMessage());
     }
 
     public Status createErrorStatus() {

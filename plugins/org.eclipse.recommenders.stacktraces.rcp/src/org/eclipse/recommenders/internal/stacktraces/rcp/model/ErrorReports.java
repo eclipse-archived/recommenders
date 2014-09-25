@@ -197,6 +197,8 @@ public class ErrorReports {
 
     private static final String HIDDEN = "HIDDEN";
     private static ModelFactory factory = ModelFactory.eINSTANCE;
+    private static final String SOURCE_BEGIN_MESSAGE = "----------------------------------- SOURCE BEGIN -------------------------------------";
+    private static final String SOURCE_FILE_REMOVED = "source file contents removed";
 
     public static ErrorReport copy(ErrorReport org) {
         return EcoreUtil.copy(org);
@@ -274,7 +276,7 @@ public class ErrorReports {
 
     public static Status newStatus(IStatus status, Settings settings) {
         Status mStatus = factory.createStatus();
-        mStatus.setMessage(status.getMessage());
+        mStatus.setMessage(removeSourceFileContents(status.getMessage()));
         mStatus.setSeverity(status.getSeverity());
         mStatus.setCode(status.getCode());
         mStatus.setPluginId(status.getPlugin());
@@ -300,6 +302,14 @@ public class ErrorReports {
         mStatus.setFingerprint(fingerprint.hash());
 
         return mStatus;
+    }
+
+    private static String removeSourceFileContents(String message) {
+        if (message.contains(SOURCE_BEGIN_MESSAGE)) {
+            return SOURCE_FILE_REMOVED;
+        } else {
+            return message;
+        }
     }
 
     public static Throwable newThrowable(java.lang.Throwable throwable) {
