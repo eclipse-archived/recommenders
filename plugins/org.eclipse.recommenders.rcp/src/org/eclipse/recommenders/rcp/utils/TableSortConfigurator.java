@@ -138,9 +138,7 @@ class TableComparator extends ViewerComparator {
             return 0;
         }
 
-        int result = comparator.compare(o1, o2);
-
-        return (direction == SWT.DOWN) ? -result : result;
+        return direction == SWT.DOWN ? comparator.compare(o2, o1) : comparator.compare(o1, o2);
     }
 }
 

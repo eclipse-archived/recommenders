@@ -423,6 +423,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         case JAVA_STATEMENTS:
         case JAVA_TYPE_MEMBERS:
             result.add(getIndexString(JAVA));
+            // fall-through
         case JAVA:
         case JAVADOC:
             result.add(getIndexString(FILE));

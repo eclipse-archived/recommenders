@@ -14,17 +14,12 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.core.databinding.beans.BeanProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.enabled;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.text;
+import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.JavaEditorSearchContext.resolve;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
-import static org.eclipse.recommenders.snipmatch.Location.FILE;
-import static org.eclipse.recommenders.snipmatch.Location.JAVA;
-import static org.eclipse.recommenders.snipmatch.Location.JAVADOC;
-import static org.eclipse.recommenders.snipmatch.Location.JAVA_STATEMENTS;
-import static org.eclipse.recommenders.snipmatch.Location.JAVA_TYPE_MEMBERS;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Arrays;
@@ -65,7 +60,6 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -242,7 +236,7 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 comboLocation.getCombo().setLayoutData(
                         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
-                                .indent(horizontalIndent, 0).create());
+                        .indent(horizontalIndent, 0).create());
 
                 final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
@@ -287,7 +281,7 @@ public class SnippetMetadataPage extends FormPage {
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
                 extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
                 extraSearchTermsDescriptionDecoration
-                        .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
@@ -396,7 +390,7 @@ public class SnippetMetadataPage extends FormPage {
                         Object[] result = dialog.getResult();
                         if (result != null) {
                             for (Object object : result) {
-                                ppDependencies.add((ProjectCoordinate) object);
+                                ppDependencies.add(object);
                             }
                         }
                     }
@@ -559,6 +553,7 @@ public class SnippetMetadataPage extends FormPage {
         @Override
         protected ItemsFilter createFilter() {
             return new ItemsFilter() {
+                @Override
                 public boolean matchItem(Object item) {
                     return matches(item.toString());
                 }
@@ -572,6 +567,7 @@ public class SnippetMetadataPage extends FormPage {
                     return pattern;
                 }
 
+                @Override
                 public boolean isConsistentItem(Object item) {
                     return true;
                 }
@@ -581,6 +577,7 @@ public class SnippetMetadataPage extends FormPage {
         @Override
         protected Comparator getItemsComparator() {
             return new Comparator() {
+                @Override
                 public int compare(Object arg0, Object arg1) {
                     return arg0.toString().compareTo(arg1.toString());
                 }
@@ -666,7 +663,7 @@ public class SnippetMetadataPage extends FormPage {
             }
         };
         return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_DEPENDENCY,
-                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) { //$NON-NLS-2$ 
+                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) {
             @Override
             protected void okPressed() {
                 ppDependencies.add(ProjectCoordinate.valueOf(getValue()));

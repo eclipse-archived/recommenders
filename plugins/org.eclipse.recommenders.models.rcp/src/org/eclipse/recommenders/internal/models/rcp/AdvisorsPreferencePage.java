@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.List;
@@ -56,10 +55,11 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     protected void createFieldEditors() {
-        addField(new AdvisorEditor(Constants.PREF_ADVISOR_LIST_SORTED, Messages.FIELD_LABEL_ADVISORS, getFieldEditorParent()));
+        addField(new AdvisorEditor(Constants.PREF_ADVISOR_LIST_SORTED, Messages.FIELD_LABEL_ADVISORS,
+                getFieldEditorParent()));
     }
 
-    private final class AdvisorEditor extends FieldEditor {
+    private static final class AdvisorEditor extends FieldEditor {
 
         private CheckboxTableViewer tableViewer;
         private Composite buttonBox;
@@ -81,7 +81,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
-                    .applyTo(tableViewer.getTable());
+            .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override

@@ -167,7 +167,7 @@ public class SparseFactor extends AbstractFactor implements Cloneable {
 
             @Override
             public int compare(Integer o1, Integer o2) {
-                return -Double.compare(key[o1], key[o2]);
+                return Double.compare(key[o2], key[o1]);
             }
 
         });

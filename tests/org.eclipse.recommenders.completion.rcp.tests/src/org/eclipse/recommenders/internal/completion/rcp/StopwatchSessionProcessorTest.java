@@ -34,7 +34,8 @@ public class StopwatchSessionProcessorTest {
         assertThat(sut.elapsed(), greaterThan(12L));
     }
 
-    private final class DelayedAnswer implements Answer<Void> {
+    private static final class DelayedAnswer implements Answer<Void> {
+
         @Override
         public Void answer(InvocationOnMock invocation) throws Throwable {
             Thread.sleep(5);

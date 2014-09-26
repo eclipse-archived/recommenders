@@ -11,8 +11,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
-import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_URL_LIST;
+import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -47,10 +46,11 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
 
     @Override
     protected void createFieldEditors() {
-        repoEditor = new ModelRepositoryListEditor(PREF_REPOSITORY_URL_LIST, Messages.FIELD_LABEL_REPOSITORY_URIS, getFieldEditorParent());
+        repoEditor = new ModelRepositoryListEditor(PREF_REPOSITORY_URL_LIST, Messages.FIELD_LABEL_REPOSITORY_URIS,
+                getFieldEditorParent());
         addField(repoEditor);
-        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD,
-                getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD,
+                Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD, getFieldEditorParent()));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         return super.performOk();
     }
 
-    private final class ModelRepositoryListEditor extends ListEditor {
+    private static final class ModelRepositoryListEditor extends ListEditor {
 
         private ModelRepositoryListEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);

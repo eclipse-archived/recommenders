@@ -68,7 +68,7 @@ class DetailsWizardPage extends WizardPage {
 
         Composite tableComposite = createTableComposite(container);
         GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).minSize(150, SWT.DEFAULT).span(1, 3).grab(false, true)
-                .applyTo(tableComposite);
+        .applyTo(tableComposite);
 
         Composite messageComposite = createMessageComposite(container);
         GridDataFactory.fillDefaults().span(2, 2).grab(true, true).applyTo(messageComposite);

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.jayes.factor.arraywrapper;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.eclipse.recommenders.internal.jayes.util.ArrayUtils;
 
@@ -163,8 +164,11 @@ public class FloatArrayWrapper implements IArrayWrapper {
 
             @Override
             public Number next() {
-                index++;
-                return array[index - 1];
+                if (index >= array.length) {
+                    throw new NoSuchElementException();
+                }
+
+                return array[index++];
             }
 
             @Override

@@ -325,7 +325,8 @@ public class RcpModule extends AbstractModule implements Module {
         }
     }
 
-    private final class ActivePageFinder implements Callable<IWorkbenchPage> {
+    private static final class ActivePageFinder implements Callable<IWorkbenchPage> {
+
         private IWorkbench workbench;
         private IWorkbenchWindow activeWorkbenchWindow;
         private IWorkbenchPage activePage;

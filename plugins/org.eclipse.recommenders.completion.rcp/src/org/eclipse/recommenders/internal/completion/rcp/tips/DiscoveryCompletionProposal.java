@@ -84,7 +84,7 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
         return new ConfigureContentAssistInformationControl(parent, statusLineText);
     }
 
-    private final class ConfigureContentAssistInformationControl extends AbstractInformationControl {
+    private static final class ConfigureContentAssistInformationControl extends AbstractInformationControl {
 
         private ConfigureContentAssistInformationControl(Shell parent, String statusLineText) {
             super(parent, statusLineText);

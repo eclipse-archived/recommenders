@@ -11,9 +11,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL_CLASSIFIER;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAVA_PROJECT;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JRE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,9 +71,9 @@ public class DependencyOverviewView extends ViewPart {
     private TreeViewer treeViewer;
 
     @Inject
-    public DependencyOverviewView(final EventBus workspaceBus,
-            final IDependencyListener dependencyListener, final IProjectCoordinateProvider pcProvider,
-            final IModelIndex modelIndex, final EclipseModelRepository modelRepository, SharedImages images,
+    public DependencyOverviewView(final EventBus workspaceBus, final IDependencyListener dependencyListener,
+            final IProjectCoordinateProvider pcProvider, final IModelIndex modelIndex,
+            final EclipseModelRepository modelRepository, SharedImages images,
             @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers) {
         bus = workspaceBus;
         this.dependencyListener = dependencyListener;
@@ -122,8 +120,8 @@ public class DependencyOverviewView extends ViewPart {
                 IStructuredSelection selection = Checks.cast(treeViewer.getSelection());
                 Set<DependencyInfo> deps = extractSelectedDependencies(selection);
                 if (!deps.isEmpty()) {
-                    menuManager.add(new TriggerModelDownloadForDependencyInfosAction(Messages.MENUITEM_DOWNLOAD_MODELS, deps,
-                            modelClassifiers, pcProvider, modelIndex, modelRepository, bus));
+                    menuManager.add(new TriggerModelDownloadForDependencyInfosAction(Messages.MENUITEM_DOWNLOAD_MODELS,
+                            deps, modelClassifiers, pcProvider, modelIndex, modelRepository, bus));
                 }
             }
         });
@@ -199,7 +197,8 @@ public class DependencyOverviewView extends ViewPart {
         refreshData();
     }
 
-    public class Project {
+    public static final class Project {
+
         List<Dependency> dependencies;
         DependencyInfo info;
 
@@ -213,7 +212,8 @@ public class DependencyOverviewView extends ViewPart {
         }
     }
 
-    public class Dependency {
+    public static final class Dependency {
+
         public DependencyInfo info;
         public Project parent;
 
@@ -292,7 +292,7 @@ public class DependencyOverviewView extends ViewPart {
         }
     }
 
-    public class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
+    public static final class ContentProvider extends ArrayContentProvider implements ITreeContentProvider {
 
         @Override
         public Object[] getChildren(Object parentElement) {

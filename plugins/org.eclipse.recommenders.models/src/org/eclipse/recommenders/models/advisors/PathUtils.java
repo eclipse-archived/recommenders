@@ -23,7 +23,7 @@ public final class PathUtils {
         int separators = countMatches(suffixPattern, "/") + 1;
         int separatorIndex = path.length();
         while (separators > 0) {
-            separatorIndex = path.lastIndexOf("/", separatorIndex - 1);
+            separatorIndex = path.lastIndexOf('/', separatorIndex - 1);
             separators--;
         }
         String substring = path.substring(separatorIndex + 1);

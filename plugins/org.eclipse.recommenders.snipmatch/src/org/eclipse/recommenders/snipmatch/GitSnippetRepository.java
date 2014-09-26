@@ -113,7 +113,8 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     @SuppressWarnings("serial")
-    public class GitUpdateException extends IOException {
+    public static class GitUpdateException extends IOException {
+
         public GitUpdateException(String message, Throwable cause) {
             super(message, cause);
         }
@@ -128,7 +129,8 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     @SuppressWarnings("serial")
-    public class GitNoCurrentFormatBranchException extends IOException {
+    public static final class GitNoCurrentFormatBranchException extends IOException {
+
         private final String checkoutVersion;
 
         public GitNoCurrentFormatBranchException(String checkoutVersion, String message, Throwable cause) {
@@ -142,7 +144,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     @SuppressWarnings("serial")
-    public class GitNoFormatBranchException extends IOException {
+    public static final class GitNoFormatBranchException extends IOException {
 
         public GitNoFormatBranchException(String message, Throwable cause) {
             super(message, cause);
@@ -163,11 +165,11 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     @SuppressWarnings("unused")
     private void initializeSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException,
-            IOException {
+    IOException {
         InitCommand init = Git.init();
         init.setBare(false);
         init.setDirectory(basedir);
-        Git git = init.call();
+        init.call();
     }
 
     private void configureGit() throws IOException {
@@ -225,7 +227,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     private void pullSnippets(Git git, String checkoutBranch) throws IOException, InvalidRemoteException,
-            TransportException, GitAPIException, CoreException {
+    TransportException, GitAPIException, CoreException {
         CheckoutCommand checkout = git.checkout();
         checkout.setName(checkoutBranch);
         checkout.setStartPoint("origin/" + checkoutBranch);
