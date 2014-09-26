@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.absent;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PROJECT_COORDINATES;
 
 import java.io.File;
@@ -93,7 +94,7 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     }
 
     private LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> createCache() {
-        return CacheBuilder.newBuilder().maximumSize(200)
+        return CacheBuilder.newBuilder().expireAfterAccess(30, MINUTES)
                 .build(new CacheLoader<DependencyInfo, Optional<ProjectCoordinate>>() {
 
                     @Override
