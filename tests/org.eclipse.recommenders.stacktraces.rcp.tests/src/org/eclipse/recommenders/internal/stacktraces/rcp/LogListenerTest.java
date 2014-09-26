@@ -33,6 +33,17 @@ public class LogListenerTest {
     private static final String TEST_PLUGIN_ID = "org.eclipse.recommenders.stacktraces.rcp.tests";
     private static final String ANY_THIRD_PARTY_PLUGIN_ID = "any.third.party.plugin.id";
     private LogListener sut;
+    private SettingsOverrider settingsOverrider;
+
+    private static Status createErrorStatus() {
+        Exception e1 = new RuntimeException();
+        e1.fillInStackTrace();
+        return new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message", e1);
+    }
+
+    private interface SettingsOverrider {
+        void override(Settings settings);
+    }
 
     @Before
     public void init() {
@@ -40,35 +51,116 @@ public class LogListenerTest {
         doNothing().when(sut).checkAndSend(Mockito.any(ErrorReport.class));
         // safety: do not send errors during tests
         doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
+        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
+            @Override
+            public Settings answer(InvocationOnMock invocation) throws Throwable {
+                Settings settings = (Settings) invocation.callRealMethod();
+                if (settingsOverrider != null) {
+                    settingsOverrider.override(settings);
+                }
+                return settings;
+            }
+        });
     }
 
     @Test
-    public void testInsertDebugStacktrace() {
-        Status empty = new Status(IStatus.ERROR, "debug", "has no stacktrace");
+    public void testInsertDebugStacktraceOnAskMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.ASK);
+            }
+        };
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
         Assert.assertThat(empty.getException(), nullValue());
 
-        LogListener.insertDebugStacktraceIfEmpty(empty);
+        sut.logging(empty, "");
 
         assertThat(empty.getException(), notNullValue());
         assertThat(empty.getException().getStackTrace().length, greaterThan(0));
     }
 
     @Test
+    public void testInsertDebugStacktraceOnSilentMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.SILENT);
+            }
+        };
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+        Assert.assertThat(empty.getException(), nullValue());
+
+        sut.logging(empty, "");
+
+        assertThat(empty.getException(), notNullValue());
+        assertThat(empty.getException().getStackTrace().length, greaterThan(0));
+    }
+
+    @Test
+    public void testNoInsertDebugStacktraceOnIgnoreMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.IGNORE);
+            }
+        };
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+        Assert.assertThat(empty.getException(), nullValue());
+
+        sut.logging(empty, "");
+
+        assertThat(empty.getException(), nullValue());
+    }
+
+    @Test
+    public void testNoInsertDebugStacktraceOnPauseDayMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.PAUSE_DAY);
+            }
+        };
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+        Assert.assertThat(empty.getException(), nullValue());
+
+        sut.logging(empty, "");
+
+        assertThat(empty.getException(), nullValue());
+    }
+
+    @Test
+    public void testNoInsertDebugStacktraceOnPauseRestartMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.PAUSE_RESTART);
+            }
+        };
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+        Assert.assertThat(empty.getException(), nullValue());
+
+        sut.logging(empty, "");
+
+        assertThat(empty.getException(), nullValue());
+    }
+
+    @Test
     public void testIgnoreInfo() {
-        Status status = new Status(IStatus.INFO, ANY_THIRD_PARTY_PLUGIN_ID, "a message");
+        Status status = new Status(IStatus.INFO, TEST_PLUGIN_ID, "a message");
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
     public void testIgnoreCancel() {
-        Status status = new Status(IStatus.CANCEL, ANY_THIRD_PARTY_PLUGIN_ID, "a message");
+        Status status = new Status(IStatus.CANCEL, TEST_PLUGIN_ID, "a message");
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -77,7 +169,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -86,11 +178,47 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
-    public void testEclipsePluginsHandled() {
+    public void testSendIfSilentMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.SILENT);
+            }
+        };
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+
+        sut.logging(status, "");
+
+        verify(sut, times(1)).sendStatus(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testNoCheckIfSilentMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.SILENT);
+            }
+        };
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+
+        sut.logging(status, "");
+
+        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testCheckIfAskMode() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.ASK);
+            }
+        };
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
 
         sut.logging(status, "");
@@ -100,26 +228,28 @@ public class LogListenerTest {
 
     @Test
     public void testUnknownPluginsIgnored() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.SILENT);
+            }
+        };
         Status status = new Status(IStatus.ERROR, ANY_THIRD_PARTY_PLUGIN_ID, "any message");
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
     public void testIgnore() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
+            public void override(Settings settings) {
                 settings.setAction(SendAction.IGNORE);
-                return settings;
             }
-
-        });
+        };
 
         sut.logging(status, "");
 
@@ -127,18 +257,14 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testPauseDay() {
+    public void testNoCheckOnPauseDay() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
+            public void override(Settings settings) {
                 settings.setAction(SendAction.PAUSE_DAY);
-                return settings;
             }
-
-        });
+        };
 
         sut.logging(status, "");
 
@@ -146,18 +272,29 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testPauseRestart() {
+    public void testNoSendOnPauseDay() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
-                settings.setAction(SendAction.PAUSE_RESTART);
-                return settings;
+            public void override(Settings settings) {
+                settings.setAction(SendAction.PAUSE_DAY);
             }
+        };
 
-        });
+        sut.logging(status, "");
+
+        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testNoCheckPauseRestart() {
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setAction(SendAction.PAUSE_RESTART);
+            }
+        };
 
         sut.logging(status, "");
 
@@ -165,17 +302,28 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testSkipSimilarErrorsSetting() {
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+    public void testNoSendOnPauseRestart() {
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
-                settings.setSkipSimilarErrors(true);
-                return settings;
+            public void override(Settings settings) {
+                settings.setAction(SendAction.PAUSE_RESTART);
             }
+        };
 
-        });
+        sut.logging(status, "");
+
+        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testSkipSimilarErrors() {
+        settingsOverrider = new SettingsOverrider() {
+            @Override
+            public void override(Settings settings) {
+                settings.setSkipSimilarErrors(true);
+            }
+        };
 
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
@@ -184,17 +332,13 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testNoSkippingSimilarErrorsSetting() {
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+    public void testNoSkippingSimilarErrors() {
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
+            public void override(Settings settings) {
                 settings.setSkipSimilarErrors(false);
-                return settings;
             }
-
-        });
+        };
 
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
@@ -204,22 +348,13 @@ public class LogListenerTest {
 
     @Test
     public void testSilentSendsErrors() {
-        sut = spy(new LogListener());
-        // checkAndSend included instead to default sut
-        // safety: do not send errors during tests
-        doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
-
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
+            public void override(Settings settings) {
                 settings.setAction(SendAction.SILENT);
                 settings.setSkipSimilarErrors(false);
-                return settings;
             }
-
-        });
+        };
 
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
@@ -230,30 +365,22 @@ public class LogListenerTest {
 
     @Test
     public void testNoReportOfSourceFiles() {
-        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
-
+        settingsOverrider = new SettingsOverrider() {
             @Override
-            public Settings answer(InvocationOnMock invocation) throws Throwable {
-                Settings settings = (Settings) invocation.callRealMethod();
+            public void override(Settings settings) {
                 settings.setAction(SendAction.SILENT);
-                return settings;
             }
-
-        });
+        };
         String sourceDataMessage = "Exception occurred during compilation unit conversion:\n"
                 + "----------------------------------- SOURCE BEGIN -------------------------------------\n"
                 + "package some.package;\n" + "\n" + "import static some.import.method;\n"
                 + "import static some.other.import;\n";
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, sourceDataMessage, new RuntimeException());
-        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
+
         sut.logging(status, "");
+
+        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
         verify(sut).sendStatus(captor.capture());
         Assert.assertEquals("source file contents removed", captor.getValue().getStatus().getMessage());
-    }
-
-    public Status createErrorStatus() {
-        Exception e1 = new RuntimeException();
-        e1.fillInStackTrace();
-        return new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message", e1);
     }
 }
