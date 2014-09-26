@@ -21,11 +21,13 @@ import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -70,13 +72,15 @@ public class OsgiManifestAdvisor extends AbstractProjectCoordinateAdvisor {
         File metaInfFolder = new File(projectFolder, "META-INF");
         File manifestFile = new File(metaInfFolder, "MANIFEST.MF");
         if (manifestFile.exists()) {
+            InputStream in = null;
             try {
-                FileInputStream fileInputStream = new FileInputStream(manifestFile);
-                Manifest manifest = new Manifest(fileInputStream);
-                fileInputStream.close();
+                in = new FileInputStream(manifestFile);
+                Manifest manifest = new Manifest(in);
                 return of(manifest);
             } catch (IOException e) {
                 return absent();
+            } finally {
+                IOUtils.closeQuietly(in);
             }
         }
         return absent();

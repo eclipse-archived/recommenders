@@ -16,6 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -38,10 +39,9 @@ public class MultimapTypeAdapter implements JsonSerializer<Multimap>, JsonDeseri
     public Multimap deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
             throws JsonParseException {
         final Multimap multimap = HashMultimap.create();
-        final Map map = context.deserialize(json, createMapType(typeOfT));
-        for (final Object key : map.keySet()) {
-            final Collection values = (Collection) map.get(key);
-            multimap.putAll(key, values);
+        final Map<Object, Collection> map = context.deserialize(json, createMapType(typeOfT));
+        for (Entry<Object, Collection> entry : map.entrySet()) {
+            multimap.putAll(entry.getKey(), entry.getValue());
         }
 
         return multimap;

@@ -28,14 +28,16 @@ import com.google.common.collect.Maps;
 public class ProcessableLazyJavaTypeCompletionProposal extends LazyJavaTypeCompletionProposal implements
 IProcessableProposal {
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
     private String lastPrefix;
 
     protected ProcessableLazyJavaTypeCompletionProposal(final CompletionProposal coreProposal,
             final JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
+        this.coreProposal = coreProposal;
     }
 
     // ===========
