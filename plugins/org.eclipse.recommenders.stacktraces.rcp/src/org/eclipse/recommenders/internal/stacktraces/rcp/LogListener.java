@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
@@ -51,7 +52,6 @@ public class LogListener implements ILogListener, IStartup {
             .expireAfterAccess(10, TimeUnit.MINUTES).build();
     private IObservableList errorReports;
     private volatile boolean isDialogOpen;
-
     private Settings settings;
 
     public LogListener() {
@@ -64,18 +64,21 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     @Override
+    public void earlyStartup() {
+        Platform.addLogListener(this);
+    }
+
+    @Override
     public void logging(final IStatus status, String nouse) {
         if (!isErrorSeverity(status)) {
             return;
         }
         settings = readSettings();
-        if (!isMonitoredPluginId(status)) {
+        if (!hasPluginIdWhitelistedPrefix(status, settings.getWhitelistedPluginIds())) {
             return;
         }
-        if (ignoreAllLogEvents()) {
-            return;
-        }
-        if (isPaused()) {
+        SendAction sendAction = settings.getAction();
+        if (!isSendingAllowedOnAction(sendAction)) {
             return;
         }
         insertDebugStacktraceIfEmpty(status);
@@ -83,23 +86,16 @@ public class LogListener implements ILogListener, IStartup {
         if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
             return;
         }
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                errorReports.add(report);
-            }
-        });
-        putIntoCache(report);
-        if (settings.getAction() == SendAction.ASK) {
-            checkAndSend(report);
-        } else if (settings.getAction() == SendAction.SILENT) {
-            sendList();
-            clear();
+        addForSending(report);
+        if (sendAction == SendAction.ASK) {
+            checkAndSendWithDialog(report);
+        } else if (sendAction == SendAction.SILENT) {
+            sendAndClear();
         }
     }
 
-    private boolean isPaused() {
-        return settings.getAction() == SendAction.PAUSE_DAY || settings.getAction() == SendAction.PAUSE_RESTART;
+    private boolean isErrorSeverity(final IStatus status) {
+        return status.matches(IStatus.ERROR);
     }
 
     @VisibleForTesting
@@ -107,8 +103,21 @@ public class LogListener implements ILogListener, IStartup {
         return PreferenceInitializer.readSettings();
     }
 
-    @VisibleForTesting
-    public static void insertDebugStacktraceIfEmpty(final IStatus status) {
+    private static boolean hasPluginIdWhitelistedPrefix(IStatus status, List<String> whitelistedIdPrefixes) {
+        String pluginId = status.getPlugin();
+        for (String id : whitelistedIdPrefixes) {
+            if (pluginId.startsWith(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSendingAllowedOnAction(SendAction sendAction) {
+        return sendAction == SendAction.ASK || sendAction == SendAction.SILENT;
+    }
+
+    private static void insertDebugStacktraceIfEmpty(final IStatus status) {
         // TODO this code should probably go elsewhere later.
         if (status.getException() == null && status instanceof Status && SET_EXCEPTION != null) {
             Throwable syntetic = new RuntimeException(STAND_IN_MESSAGE);
@@ -121,14 +130,6 @@ public class LogListener implements ILogListener, IStartup {
         }
     }
 
-    private boolean ignoreAllLogEvents() {
-        return settings.getAction() == SendAction.IGNORE;
-    }
-
-    private boolean isErrorSeverity(final IStatus status) {
-        return status.matches(IStatus.ERROR);
-    }
-
     private boolean sentSimilarErrorBefore(final ErrorReport report) {
         return cache.getIfPresent(computeCacheKey(report)) != null;
     }
@@ -137,28 +138,23 @@ public class LogListener implements ILogListener, IStartup {
         return report.getStatus().getFingerprint();
     }
 
-    private void putIntoCache(ErrorReport report) {
+    private void addForSending(final ErrorReport report) {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                errorReports.add(report);
+            }
+        });
         cache.put(computeCacheKey(report), report);
     }
 
-    private boolean isMonitoredPluginId(IStatus status) {
-        String pluginId = status.getPlugin();
-        for (String id : settings.getWhitelistedPluginIds()) {
-            if (pluginId.startsWith(id)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @VisibleForTesting
-    protected void checkAndSend(final ErrorReport report) {
+    protected void checkAndSendWithDialog(final ErrorReport report) {
         // run on UI-thread to ensure that the observable list is not modified from another thread
         // and that the wizard is created on the UI-thread.
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-
                 if (isDialogOpen) {
                     return;
                 }
@@ -171,24 +167,19 @@ public class LogListener implements ILogListener, IStartup {
                 if (open != Dialog.OK) {
                     clear();
                     return;
-                } else if (ignoreAllLogEvents() || isPaused()) {
+                } else if (settings.getAction() == SendAction.IGNORE || settings.getAction() == SendAction.PAUSE_DAY
+                        || settings.getAction() == SendAction.PAUSE_RESTART) {
                     // the user may have chosen to not to send events in the wizard. Respect this preference:
                     return;
                 }
-                sendList();
-                clear();
+                sendAndClear();
             }
-
         });
     }
 
-    private void clear() {
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                errorReports.clear();
-            }
-        });
+    private void sendAndClear() {
+        sendList();
+        clear();
     }
 
     private void sendList() {
@@ -206,14 +197,19 @@ public class LogListener implements ILogListener, IStartup {
     @VisibleForTesting
     protected void sendStatus(final ErrorReport report) {
         // double safety. This is checked before elsewhere. But just to make sure...
-        if (ignoreAllLogEvents() || isPaused()) {
+        if (settings.getAction() == SendAction.IGNORE || settings.getAction() == SendAction.PAUSE_DAY
+                || settings.getAction() == SendAction.PAUSE_RESTART) {
             return;
         }
         new UploadJob(report, settings, URI.create(settings.getServerUrl())).schedule();
     }
 
-    @Override
-    public void earlyStartup() {
-        Platform.addLogListener(this);
+    private void clear() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                errorReports.clear();
+            }
+        });
     }
 }

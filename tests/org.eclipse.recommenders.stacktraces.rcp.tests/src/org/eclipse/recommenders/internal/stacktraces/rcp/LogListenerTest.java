@@ -48,7 +48,7 @@ public class LogListenerTest {
     @Before
     public void init() {
         sut = spy(new LogListener());
-        doNothing().when(sut).checkAndSend(Mockito.any(ErrorReport.class));
+        doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
         // safety: do not send errors during tests
         doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
         Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
@@ -208,7 +208,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, times(1)).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, times(1)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -253,7 +253,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -298,7 +298,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -328,7 +328,7 @@ public class LogListenerTest {
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
 
-        verify(sut, times(1)).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, times(1)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -343,7 +343,7 @@ public class LogListenerTest {
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
 
-        verify(sut, times(2)).checkAndSend(Mockito.any(ErrorReport.class));
+        verify(sut, times(2)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 
     @Test
