@@ -68,7 +68,7 @@ class DetailsWizardPage extends WizardPage {
 
         Composite tableComposite = createTableComposite(container);
         GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).minSize(150, SWT.DEFAULT).span(1, 3).grab(false, true)
-        .applyTo(tableComposite);
+                .applyTo(tableComposite);
 
         Composite messageComposite = createMessageComposite(container);
         GridDataFactory.fillDefaults().span(2, 2).grab(true, true).applyTo(messageComposite);
@@ -129,6 +129,8 @@ class DetailsWizardPage extends WizardPage {
         GridDataFactory.fillDefaults().applyTo(messageLabel);
         messageText = new StyledText(messageComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
         messageText.setEditable(false);
+        messageText.setMargins(5, messageText.getTopMargin(), messageText.getRightMargin(),
+                messageText.getBottomMargin());
         messageText.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
         GridDataFactory.fillDefaults().minSize(150, 1).hint(300, 300).grab(true, true).applyTo(messageText);
         return messageComposite;
