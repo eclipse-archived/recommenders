@@ -79,12 +79,23 @@ public class LogListener implements ILogListener, IStartup {
             return;
         }
         insertDebugStacktraceIfEmpty(status);
-        ErrorReport report = newErrorReport(status, settings);
+        final ErrorReport report = newErrorReport(status, settings);
         if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
             return;
         }
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                errorReports.add(report);
+            }
+        });
         putIntoCache(report);
-        checkAndSend(report);
+        if (settings.getAction() == SendAction.ASK) {
+            checkAndSend(report);
+        } else if (settings.getAction() == SendAction.SILENT) {
+            sendList();
+            clear();
+        }
     }
 
     private boolean isPaused() {
@@ -147,43 +158,53 @@ public class LogListener implements ILogListener, IStartup {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                errorReports.add(report);
+
                 if (isDialogOpen) {
                     return;
                 }
-                if (settings.getAction() == SendAction.ASK) {
-                    isDialogOpen = true;
-                    ErrorReportWizard stacktraceWizard = new ErrorReportWizard(settings, errorReports);
-                    WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                            .getShell(), stacktraceWizard);
-                    int open = wizardDialog.open();
-                    isDialogOpen = false;
-                    if (open != Dialog.OK) {
-                        clear();
-                        return;
-                    } else if (ignoreAllLogEvents() || isPaused()) {
-                        // the user may have chosen to not to send events in the wizard. Respect this preference:
-                        return;
-                    }
-                    sendList();
+                isDialogOpen = true;
+                ErrorReportWizard stacktraceWizard = new ErrorReportWizard(settings, errorReports);
+                WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                        .getShell(), stacktraceWizard);
+                int open = wizardDialog.open();
+                isDialogOpen = false;
+                if (open != Dialog.OK) {
                     clear();
+                    return;
+                } else if (ignoreAllLogEvents() || isPaused()) {
+                    // the user may have chosen to not to send events in the wizard. Respect this preference:
+                    return;
+                }
+                sendList();
+                clear();
+            }
+
+        });
+    }
+
+    private void clear() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                errorReports.clear();
+            }
+        });
+    }
+
+    private void sendList() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                for (Object entry : errorReports) {
+                    ErrorReport report = cast(entry);
+                    sendStatus(report);
                 }
             }
         });
     }
 
-    private void clear() {
-        errorReports.clear();
-    }
-
-    private void sendList() {
-        for (Object entry : errorReports) {
-            ErrorReport report = cast(entry);
-            sendStatus(report);
-        }
-    }
-
-    private void sendStatus(final ErrorReport report) {
+    @VisibleForTesting
+    protected void sendStatus(final ErrorReport report) {
         // double safety. This is checked before elsewhere. But just to make sure...
         if (ignoreAllLogEvents() || isPaused()) {
             return;

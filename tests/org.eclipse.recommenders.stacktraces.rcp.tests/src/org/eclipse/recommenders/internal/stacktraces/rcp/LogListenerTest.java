@@ -37,6 +37,8 @@ public class LogListenerTest {
     public void init() {
         sut = spy(new LogListener());
         doNothing().when(sut).checkAndSend(Mockito.any(ErrorReport.class));
+        // safety: do not send errors during tests
+        doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
@@ -197,6 +199,31 @@ public class LogListenerTest {
         sut.logging(createErrorStatus(), "");
 
         verify(sut, times(2)).checkAndSend(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testSilentSendsErrors() {
+        sut = spy(new LogListener());
+        // checkAndSend included instead to default sut
+        // safety: do not send errors during tests
+        doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
+
+        Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
+
+            @Override
+            public Settings answer(InvocationOnMock invocation) throws Throwable {
+                Settings settings = (Settings) invocation.callRealMethod();
+                settings.setAction(SendAction.SILENT);
+                settings.setSkipSimilarErrors(false);
+                return settings;
+            }
+
+        });
+
+        sut.logging(createErrorStatus(), "");
+        sut.logging(createErrorStatus(), "");
+
+        verify(sut, times(2)).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     public Status createErrorStatus() {
