@@ -135,7 +135,7 @@ public class ErrorReports {
         }
 
         private void appendHeadline(String headline, StringBuilder builder) {
-            String line = headline.replaceAll(".", "_") + "\n\n";
+            String line = headline.replaceAll(".", "-") + "\n";
             builder.append(line);
             builder.append(headline + "\n");
             builder.append(line);
