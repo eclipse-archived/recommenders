@@ -98,6 +98,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
             return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
         case SILENT:
             return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
+        case PAUSE_DAY:
+            return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_DAY;
+        case PAUSE_RESTART:
+            return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_RESTART;
         default:
             return mode.name();
         }
