@@ -7,9 +7,6 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Fragment-Host: org.eclipse.recommenders.stacktraces.rcp
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.junit,
- org.hamcrest,
+Require-Bundle: org.hamcrest,
  org.junit,
  org.mockito

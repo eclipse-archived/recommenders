@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="142">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="143">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.source.feature.group" version="0.0.0"/>
@@ -41,10 +41,6 @@
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/releases/luna"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtend.sdk.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201409160908/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -89,6 +85,7 @@
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8272 -->
 <unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
 <unit id="ch.qos.logback.slf4j.source" version="1.0.7.v20121108-1250"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7760 -->
 <unit id="com.google.gson" version="2.2.4.v201311231704"/>
 <unit id="com.google.gson.source" version="2.2.4.v201311231704"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
@@ -112,12 +109,6 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4790 -->
 <unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
 <unit id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8217 -->
-<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8216 -->
-<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
 <unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
 <unit id="org.apache.commons.lang3.source" version="3.1.0.v201403281430"/>
@@ -130,6 +121,12 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8217 -->
+<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8216 -->
+<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
@@ -159,7 +156,15 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
 <unit id="org.slf4j.api.source" version="1.7.2.v20121108-1250"/>
+<!-- This location points to the latest integration Orbit build. -->
+<!-- Once Luna SR2 is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-I"/>
+</location>
+<!-- Needed for the code generated with Xtend 2.7.2 -->
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.xbase.lib" version="2.7.2.v201409160908"/>
+<unit id="org.eclipse.xtext.xbase.lib.source" version="2.7.2.v201409160908"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201409160908/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
