@@ -27,7 +27,7 @@ public class WhitelistTest {
     public void testWhitelistPlugins() throws Exception {
         Collection<String> sut = s.getWhitelistedPluginIds();
         Assert.assertThat(sut, not(hasItems("")));
-        Assert.assertThat(sut, hasItems("org.eclipse.", "com.codetrails."));
+        Assert.assertThat(sut, hasItems("org.eclipse.", "org.apache.log4j.", "com.codetrails."));
 
     }
 
