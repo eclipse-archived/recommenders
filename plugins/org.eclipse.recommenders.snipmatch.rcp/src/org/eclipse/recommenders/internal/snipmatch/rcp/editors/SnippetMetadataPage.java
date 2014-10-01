@@ -180,6 +180,8 @@ public class SnippetMetadataPage extends FormPage {
                         .span(2, 1).indent(horizontalIndent, 0).create());
                 txtName.setData(SnippetsView.SWT_ID, TEXT_SNIPPETNAME);
 
+                txtName.setMessage(Messages.EDITOR_TEXT_MESSAGE_SNIPPET_NAME);
+
                 final ControlDecoration nameDecoration = new ControlDecoration(txtName, SWT.LEFT);
                 nameDecoration.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY);
                 nameDecoration.setImage(decorationImage);
@@ -204,6 +206,7 @@ public class SnippetMetadataPage extends FormPage {
                         snippet.getDescription(), SWT.NONE);
                 txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER)
                         .grab(true, false).span(2, 1).indent(horizontalIndent, 0).create());
+                txtDescription.setMessage(Messages.EDITOR_TEXT_MESSAGE_SNIPPET_DESCRIPTION);
 
                 Label lblLocation = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
                         Messages.EDITOR_LABEL_SNIPPET_LOCATION, SWT.NONE);
@@ -464,7 +467,7 @@ public class SnippetMetadataPage extends FormPage {
                 @Override
                 public String getText(Object element) {
                     if (element == null) {
-                        return "";
+                        return ""; //$NON-NLS-1$
                     }
                     if (element instanceof ProjectCoordinate) {
                         return getStringForDependency((ProjectCoordinate) element);
@@ -666,7 +669,7 @@ public class SnippetMetadataPage extends FormPage {
             }
         };
         return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_DEPENDENCY,
-                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) {
+                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
                 ppDependencies.add(ProjectCoordinate.valueOf(getValue()));

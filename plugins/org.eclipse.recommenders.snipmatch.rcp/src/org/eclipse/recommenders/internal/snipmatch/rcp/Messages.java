@@ -85,6 +85,9 @@ public class Messages extends NLS {
     public static String EDITOR_LABEL_SNIPPETS_TAG;
     public static String EDITOR_LABEL_SNIPPET_LOCATION;
 
+    public static String EDITOR_TEXT_MESSAGE_SNIPPET_DESCRIPTION;
+    public static String EDITOR_TEXT_MESSAGE_SNIPPET_NAME;
+
     public static String SNIPMATCH_LOCATION_FILE;
     public static String SNIPMATCH_LOCATION_JAVA;
     public static String SNIPMATCH_LOCATION_JAVA_STATEMENTS;
@@ -98,6 +101,7 @@ public class Messages extends NLS {
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
     public static String EDITOR_DESCRIPTION_LOCATION;
     public static String EDITOR_DESCRIPTION_TAGS;
+
 
     public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;

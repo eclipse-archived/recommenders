@@ -69,11 +69,11 @@ public class SnippetBuilder {
         this.textSelection = textSelection;
     }
 
-    public Snippet build(String name, String description) {
+    public Snippet build() {
         String code = createCode();
         List<String> keywords = Lists.<String>newArrayList();
         List<String> tags = Lists.<String>newArrayList();
-        return new Snippet(UUID.randomUUID(), name, description, keywords, tags, code, Location.NONE, dependencies);
+        return new Snippet(UUID.randomUUID(), "", "", keywords, tags, code, Location.NONE, dependencies); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private String createCode() {
