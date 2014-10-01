@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.number.OrderingComparisons.greaterThan;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
