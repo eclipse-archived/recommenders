@@ -343,7 +343,13 @@ public class ErrorReports {
         report.accept(new AnonymizeStacktraceVisitor(settings.getWhitelistedPackages()));
     }
 
-    public static String prettyPrint(ErrorReport report) {
+    public static String prettyPrint(ErrorReport report, Settings settings) {
+        if (settings.isAnonymizeStrackTraceElements()) {
+            anonymizeStackTrace(report, settings);
+        }
+        if (settings.isAnonymizeMessages()) {
+            clearMessages(report);
+        }
         PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
         report.accept(prettyPrintVisitor);
         return prettyPrintVisitor.builder.toString();
