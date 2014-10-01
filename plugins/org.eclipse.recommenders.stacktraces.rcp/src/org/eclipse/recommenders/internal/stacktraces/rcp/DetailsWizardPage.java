@@ -111,7 +111,7 @@ class DetailsWizardPage extends WizardPage {
                     ErrorReport copy = ErrorReports.copy(activeSelection);
                     copy.setName(settings.getName());
                     copy.setEmail(settings.getEmail());
-                    messageText.setText(ErrorReports.prettyPrint(copy));
+                    messageText.setText(ErrorReports.prettyPrint(copy, settings));
                     String comment = activeSelection.getComment();
                     commentText.setText(comment == null ? "" : comment);
                 }
