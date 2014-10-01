@@ -80,17 +80,31 @@ Oomph will setup an up-to-date Eclipse IDE, install required and useful plugins,
 ![Selecting an Eclipse Product to install](../plain/CONTRIBUTING/oomph-product-selection.png)
 
 To get started with Oomph, [download the installer](https://wiki.eclipse.org/Eclipse_Oomph_Installer#Installation) and execute it.
-Select the Eclipse product and version you wish to install, e. g. `Eclipse Standard/SKDK` or `Eclipse IDE for Java Developers`.
+Select the Eclipse product and version you wish to install, e. g. `Eclipse IDE for Java Developers`.
 From the list of preconfigured projects double-click `Code Recommenders/Core` and click on `Next`.
 
 ![Setting up Eclipse for work on Code Recommenders with Oomph](../plain/CONTRIBUTING/oomph-recommenders.png)
 
-Follow the instructions that ask you for your login data to Eclipse servers.
+You will need to supply Oomph with some information to setup an Eclipse installation for you.
+Some of these settings, like folder locations or names are entirely up to you.
+Leave `Target Platform:` at `None`.
+For the `Recommenders Git or Gerrit Repository:` you can choose `SSH (read-write, Gerrit)`.
+You need to [add your SSH public key](https://git.eclipse.org/r/#/settings/ssh-keys) to your Eclipse Gerrit account.
+Alternatively, you can choose `HTTPS (read-write, Gerrit)`.
+In that case, you need to [generate a HTTP password](https://git.eclipse.org/r/#/settings/http-password) for authentication.
+The `Eclipse user ID for Bugzilla/Hudson:` is the e-mail address of your eclipse.org account.
+The `Debug Port:` allows you to [remotely debug](http://javarevisited.blogspot.de/2011/02/how-to-setup-remote-debugging-in.html) the installed Eclipse.
+**Important:** No two Eclipse instances can run with the same debug port simultaneously; ensure that each instance uses its own port.
+The `Eclipse Git/Gerrit user ID:` is the username of your eclipse.org account.
+When you are done, press `Next`.
+
+![Setting up Eclipse for work on Code Recommenders with Oomph](../plain/CONTRIBUTING/oomph-variables.png)
+
 The installation may take several minutes.
 The freshly installed Eclipse will open during installation and automatically configure itself to let you work on Code Recommenders.
 
 You are now set up to contribute code of your own to Eclipse Code Recommenders.
-To test your contributions, just start an Eclipse runtime via the `tools/ide.product` product configuration file residing in the `org.eclipse.recommenders` project.
+To test your contributions, just start an Eclipse runtime via the `tools/sdk.product` product configuration file residing in the `org.eclipse.recommenders` project.
 
 Once you have done some changes to the code, you can submit your changes to Gerrit, where Code Recommenders committers can review your change.
 To do so, right click on the `org.eclipse.recommenders` project and select `Team/Commit…`.
