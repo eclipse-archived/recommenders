@@ -42,6 +42,8 @@ public interface ISnippetRepository extends Openable, Closeable {
      */
     List<Recommendation<ISnippet>> search(ISearchContext context, int maxResults);
 
+    int getId();
+
     String getRepositoryLocation();
 
     boolean hasSnippet(UUID uuid);
@@ -53,4 +55,6 @@ public interface ISnippetRepository extends Openable, Closeable {
     void importSnippet(ISnippet snippet) throws IOException;
 
     boolean isImportSupported();
+
+    boolean delete();
 }

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.injection;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,6 +18,7 @@ import org.eclipse.recommenders.internal.injection.InjectionDescriptor;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 
 public final class InjectionService {
@@ -59,6 +61,10 @@ public final class InjectionService {
 
     public <T> T requestInstance(final Class<T> clazz) {
         return getInjector().getInstance(clazz);
+    }
+
+    public <T> T requestAnnotatedInstance(final Class<T> clazz, Annotation annotation) {
+        return getInjector().getInstance(Key.get(clazz, annotation));
     }
 
 }

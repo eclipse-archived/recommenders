@@ -19,6 +19,6 @@ public class BranchInputValidator implements IInputValidator {
         if (newText.matches("[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*(/[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*)*")) { //$NON-NLS-1$
             return null;
         }
-        return Messages.PREFPAGE_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
+        return Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
     }
 }

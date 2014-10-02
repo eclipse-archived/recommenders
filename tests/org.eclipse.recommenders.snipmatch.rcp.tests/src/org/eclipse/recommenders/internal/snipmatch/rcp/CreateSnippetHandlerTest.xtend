@@ -479,7 +479,7 @@ class CreateSnippetHandlerTest {
         val end = struct.second.last;
         val editor = EditorUtility.openInEditor(cu) as CompilationUnitEditor;
         editor.selectionProvider.selection = new TextSelection(start, end - start)
-        val sut = new CreateSnippetHandler(newHashSet())
+        val sut = new CreateSnippetHandler()
         actual = sut.createSnippet(editor)
     }
 }

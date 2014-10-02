@@ -15,10 +15,6 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.EDITOR_I
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -29,7 +25,6 @@ import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -46,14 +41,7 @@ public class CreateSnippetHandler extends AbstractHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSnippetHandler.class);
 
-    private Set<ISnippetRepository> repos;
-
     private ExecutionEvent event;
-
-    @Inject
-    public CreateSnippetHandler(Set<ISnippetRepository> repos) {
-        this.repos = repos;
-    }
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -77,23 +65,17 @@ public class CreateSnippetHandler extends AbstractHandler {
     }
 
     private void openSnippetInEditor(Snippet snippet) {
-        for (ISnippetRepository r : repos) {
-            if (r.isImportSupported()) {
-                try {
-                    SnippetEditorInput input = new SnippetEditorInput(snippet, r);
-                    IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
-                    SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
-                    // mark the editor dirty when opening a newly created snippet
-                    ed.markDirtyUponSnippetCreation();
-                    // if we could add the snippet somewhere, return. Otherwise report an error
-                    return;
-                } catch (PartInitException e) {
-                    LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
-                }
-            }
+        IWorkbenchPage page = getActiveWorkbenchWindow(event).getActivePage();
+
+        try {
+            SnippetEditorInput input = new SnippetEditorInput(snippet);
+            SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
+            ed.markDirtyUponSnippetCreation();
+        } catch (PartInitException e) {
+            LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
+            openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
+                    Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
         }
-        openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
-                Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
     }
 
 }

@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -22,16 +20,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.recommenders.rcp.IRcpService;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitNoCurrentFormatBranchException;
 import org.eclipse.recommenders.snipmatch.GitSnippetRepository.GitNoFormatBranchException;
@@ -40,6 +36,9 @@ import org.eclipse.recommenders.snipmatch.ISearchContext;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Display;
@@ -49,15 +48,13 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 
-public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpService {
+public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private static Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
 
     private final EventBus bus;
-    private final SnipmatchRcpPreferences prefs;
-    private final File basedir;
 
     private volatile int timesOpened;
     private ISnippetRepository delegate;
@@ -68,28 +65,19 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
 
     private volatile Job openJob = null;
 
-    @Inject
-    public EclipseGitSnippetRepository(@Named(SNIPPET_REPOSITORY_BASEDIR) File basedir, SnipmatchRcpPreferences prefs,
+    public EclipseGitSnippetRepository(int id, File basedir, String remoteUri, String pushUrl, String pushBranchPrefix,
             EventBus bus) {
         this.bus = bus;
-        this.prefs = prefs;
-        this.basedir = basedir;
 
-        setupDelegate();
+        delegate = new GitSnippetRepository(id, new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
+                pushBranchPrefix);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readLock = readWriteLock.readLock();
         writeLock = readWriteLock.writeLock();
     }
 
-    private void setupDelegate() {
-        String remoteUri = prefs.getFetchUrl();
-        delegate = new GitSnippetRepository(new File(basedir, Urls.mangle(remoteUri)), remoteUri, prefs.getPushUrl(),
-                prefs.getPushBranch());
-    }
-
     @Override
-    @PostConstruct
     public void open() {
         writeLock.lock();
         try {
@@ -179,7 +167,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Override
-    @PreDestroy
     public void close() throws IOException {
         writeLock.lock();
         try {
@@ -236,18 +223,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     @Subscribe
     public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws IOException {
         close();
-        setupDelegate();
         open();
-    }
-
-    /**
-     * Triggered when a snippet repository URL was changed (most likely in the a preference page).
-     * <p>
-     * Clients of this event should be an instance of {@link ISnippetRepository}. Other clients should have a look at
-     * {@link SnippetRepositoryClosedEvent} and {@link SnippetRepositoryClosedEvent}. Clients of this event may consider
-     * refreshing themselves whenever they receive this event. Clients get notified in a background process.
-     */
-    public static class SnippetRepositoryConfigurationChangedEvent {
     }
 
     /**
@@ -315,6 +291,16 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     }
 
     @Override
+    public int getId() {
+        readLock.lock();
+        try {
+            return delegate.getId();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
     public boolean hasSnippet(UUID uuid) {
         readLock.lock();
         try {
@@ -368,5 +354,50 @@ public class EclipseGitSnippetRepository implements ISnippetRepository, IRcpServ
     @Override
     public boolean isImportSupported() {
         return delegate.isImportSupported();
+    }
+
+    public static ISnippetRepository createRepositoryInstance(EclipseGitSnippetRepositoryConfiguration config) {
+        EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);
+        File basedir = InjectionService.getInstance().requestAnnotatedInstance(File.class,
+                Names.named(SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR));
+
+        return new EclipseGitSnippetRepository(config.getId(), basedir, config.getUrl(), config.getPushUrl(),
+                config.getPushBranchPrefix(), bus);
+    }
+
+    public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {
+        BasicEList<SnippetRepositoryConfiguration> result = new BasicEList<SnippetRepositoryConfiguration>();
+
+        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
+                .createEclipseGitSnippetRepositoryConfiguration();
+        configuration.setName(Messages.DEFAULT_REPO_NAME);
+        configuration.setDescription(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION);
+        configuration.setEnabled(true);
+        configuration
+                .setUrl("https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
+        configuration
+                .setPushUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
+        configuration.setPushBranchPrefix("refs/for"); //$NON-NLS-1$
+
+        result.add(configuration);
+        return result;
+    }
+
+    @Override
+    public boolean delete() {
+        writeLock.lock();
+        try {
+            try {
+                close();
+                delegate.delete();
+                return true;
+            } catch (IOException e) {
+                LOG.error("Exception while deleting files on disk.", e); //$NON-NLS-1$
+                return false;
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
     }
 }

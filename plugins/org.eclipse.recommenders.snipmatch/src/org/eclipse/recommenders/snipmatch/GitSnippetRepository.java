@@ -54,8 +54,10 @@ public class GitSnippetRepository extends FileSnippetRepository {
     private final String pushUrl;
     private final String pushBranchPrefix;
 
-    public GitSnippetRepository(File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
-        super(basedir);
+    private Repository localRepo;
+
+    public GitSnippetRepository(int id, File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
+        super(id, basedir);
         this.basedir = basedir;
         this.fetchUrl = fetchUrl;
         this.pushUrl = pushUrl;
@@ -163,9 +165,8 @@ public class GitSnippetRepository extends FileSnippetRepository {
         return false;
     }
 
-    @SuppressWarnings("unused")
     private void initializeSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException,
-    IOException {
+            IOException {
         InitCommand init = Git.init();
         init.setBare(false);
         init.setDirectory(basedir);
@@ -184,7 +185,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     private Git fetch() throws GitAPIException, IOException {
-        Repository localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
+        localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
         Git git = new Git(localRepo);
         git.fetch().call();
         return git;
@@ -227,7 +228,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     private void pullSnippets(Git git, String checkoutBranch) throws IOException, InvalidRemoteException,
-    TransportException, GitAPIException, CoreException {
+            TransportException, GitAPIException, CoreException {
         CheckoutCommand checkout = git.checkout();
         checkout.setName(checkoutBranch);
         checkout.setStartPoint("origin/" + checkoutBranch);
@@ -255,4 +256,23 @@ public class GitSnippetRepository extends FileSnippetRepository {
     public String getRepositoryLocation() {
         return fetchUrl;
     }
+
+    @Override
+    public void close() {
+        localRepo.close();
+        super.close();
+    };
+
+    @Override
+    public boolean delete() {
+        close();
+        try {
+            FileUtils.deleteDirectory(basedir);
+            return true;
+        } catch (IOException e) {
+            LOG.error("Exception while deleting files on disk.", e);
+            return false;
+        }
+    }
+
 }

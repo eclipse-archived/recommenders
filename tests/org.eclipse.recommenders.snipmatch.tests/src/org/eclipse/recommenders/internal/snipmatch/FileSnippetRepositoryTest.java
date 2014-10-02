@@ -65,7 +65,7 @@ public class FileSnippetRepositoryTest {
         File baseDir = tempFolder.newFolder();
         snippetsDir = new File(baseDir, "snippets");
         snippetsDir.mkdirs();
-        sut = new FileSnippetRepository(baseDir);
+        sut = new FileSnippetRepository(1, baseDir);
     }
 
     @Test

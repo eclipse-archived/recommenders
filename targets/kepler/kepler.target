@@ -2,6 +2,17 @@
 <?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3)" sequenceNumber="143">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.swtbot.junit4_x" version="0.0.0"/>
+<unit id="org.eclipse.swtbot.eclipse.core" version="0.0.0"/>
+<unit id="org.eclipse.swtbot.eclipse.finder" version="0.0.0"/>
+<repository location="http://download.eclipse.org/technology/swtbot/releases/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+<unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jgit.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.epp.package.standard.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -10,6 +21,10 @@
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <!-- Stable repository for Kepler SR2. -->
 <repository location="http://download.eclipse.org/releases/kepler/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.xbase.feature.group" version="2.5.4.v201404100756"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/maintenance/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.api" version="0.0.0"/>
@@ -106,6 +121,9 @@
 <repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
+<unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject.multibindings.source" version="3.0.0.v201402270930"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <unit id="com.google.guava.source" version="15.0.0.v201403281430"/>

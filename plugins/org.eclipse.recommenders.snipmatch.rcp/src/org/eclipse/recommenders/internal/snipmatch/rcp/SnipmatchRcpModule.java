@@ -10,19 +10,15 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.inject.Scopes.SINGLETON;
-
 import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Singleton;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.recommenders.snipmatch.ISnippetRepository;
+import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.themes.ITheme;
@@ -33,35 +29,36 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.multibindings.Multibinder;
+import com.google.inject.Scopes;
 import com.google.inject.name.Named;
 
 public class SnipmatchRcpModule extends AbstractModule {
 
     public static final String SNIPPET_REPOSITORY_BASEDIR = "SNIPPET_REPOSITORY_BASEDIR"; //$NON-NLS-1$
+    public static final String SNIPPET_REPOSITORY_PROVIDERS = "SNIPPET_REPOSITORY_PROVIDERS"; //$NON-NLS-1$
+    public static final String REPOSITORY_CONFIGURATION_FILE = "REPOSITORY_CONFIGURATION_FILE"; //$NON-NLS-1$
+    private static final String SNIPMATCH_ROOT_FOLDER = "SNIPMATCH_ROOT_FOLDER"; //$NON-NLS-1$
 
     private static final Logger LOG = LoggerFactory.getLogger(SnipmatchRcpModule.class);
 
     @Override
     protected void configure() {
-        Multibinder<ISnippetRepository> uriBinder = Multibinder.newSetBinder(binder(), ISnippetRepository.class);
-        uriBinder.addBinding().to(EclipseGitSnippetRepository.class);
-        bind(EclipseGitSnippetRepository.class).in(SINGLETON);
+        bind(Repositories.class).in(Scopes.SINGLETON);
     }
 
     @Provides
     @Singleton
-    public SnipmatchRcpPreferences provide(IWorkbench wb) {
-        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
-        return ContextInjectionFactory.make(SnipmatchRcpPreferences.class, context);
+    @Named(SNIPMATCH_ROOT_FOLDER)
+    public File provideSnipmatchRoot(IWorkspaceRoot root) {
+        File recommendersRoot = new File(root.getLocation().toFile(), ".recommenders"); //$NON-NLS-1$
+        File snipmatchRoot = new File(recommendersRoot, "snipmatch"); //$NON-NLS-1$
+        return snipmatchRoot;
     }
 
     @Provides
     @Singleton
     @Named(SNIPPET_REPOSITORY_BASEDIR)
-    public File provideBasedir(IWorkspaceRoot root) {
-        File recommendersRoot = new File(root.getLocation().toFile(), ".recommenders"); //$NON-NLS-1$
-        File snipmatchRoot = new File(recommendersRoot, "snipmatch"); //$NON-NLS-1$
+    public File provideBasedir(IWorkspaceRoot root, @Named(SNIPMATCH_ROOT_FOLDER) File snipmatchRoot) {
         File snippetRepositoryBasedir = new File(snipmatchRoot, "repositories"); //$NON-NLS-1$
         try {
             Files.createParentDirs(snippetRepositoryBasedir);
@@ -69,6 +66,23 @@ public class SnipmatchRcpModule extends AbstractModule {
             LOG.error("Failed to bind file name {}.", snippetRepositoryBasedir, e); //$NON-NLS-1$
         }
         return snippetRepositoryBasedir;
+    }
+
+    @Provides
+    @Singleton
+    @Named(REPOSITORY_CONFIGURATION_FILE)
+    public File provideConfigurationFile(IWorkspaceRoot root, @Named(SNIPMATCH_ROOT_FOLDER) File snipmatchRoot) {
+        return new File(snipmatchRoot, "repositoryconfigurations.config"); //$NON-NLS-1$
+    }
+
+    @Provides
+    @Singleton
+    public SnippetRepositoryConfigurations provideRepositoryConfigurations(@Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
+        SnippetRepositoryConfigurations configurations = RepositoryConfigurations.loadConfigurations(repositoryConfigurationFile);
+        if (configurations.getRepos().isEmpty()) {
+            configurations.getRepos().addAll(RepositoryConfigurations.fetchDefaultConfigurations());
+        }
+        return configurations;
     }
 
     @Provides

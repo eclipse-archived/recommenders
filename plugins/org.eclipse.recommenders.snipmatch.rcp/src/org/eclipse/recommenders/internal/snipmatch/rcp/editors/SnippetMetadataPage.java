@@ -68,6 +68,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -112,6 +113,7 @@ import com.google.common.collect.Sets;
 public class SnippetMetadataPage extends FormPage {
 
     private static final Location[] SNIPMATCH_LOCATIONS = { FILE, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS, JAVADOC };
+    public static final String TEXT_SNIPPETNAME = "org.eclipse.recommenders.snipmatch.rcp.snippetmetadatapage.snippetname"; //$NON-NLS-1$
 
     private ISnippet snippet;
 
@@ -176,6 +178,7 @@ public class SnippetMetadataPage extends FormPage {
                         SWT.NONE);
                 txtName.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
                         .span(2, 1).indent(horizontalIndent, 0).create());
+                txtName.setData(SnippetsView.SWT_ID, TEXT_SNIPPETNAME);
 
                 final ControlDecoration nameDecoration = new ControlDecoration(txtName, SWT.LEFT);
                 nameDecoration.setDescriptionText(Messages.ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY);
@@ -236,7 +239,7 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 comboLocation.getCombo().setLayoutData(
                         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
-                        .indent(horizontalIndent, 0).create());
+                                .indent(horizontalIndent, 0).create());
 
                 final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
@@ -281,7 +284,7 @@ public class SnippetMetadataPage extends FormPage {
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
                 extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
                 extraSearchTermsDescriptionDecoration
-                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                        .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(

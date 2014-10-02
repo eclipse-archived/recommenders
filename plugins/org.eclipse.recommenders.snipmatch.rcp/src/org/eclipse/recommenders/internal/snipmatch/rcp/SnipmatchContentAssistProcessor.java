@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -52,15 +51,16 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
 
-    private final Set<ISnippetRepository> repos;
     private final TemplateContextType snipmatchContextType;
+    private final Repositories repos;
+
     private final Image image;
 
     private JavaContentAssistInvocationContext ctx;
     private String terms;
 
     @Inject
-    public SnipmatchContentAssistProcessor(Set<ISnippetRepository> repos, SharedImages images) {
+    public SnipmatchContentAssistProcessor(Repositories repos, SharedImages images) {
         this.repos = repos;
         snipmatchContextType = SnipmatchTemplateContextType.getInstance();
         image = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
@@ -85,7 +85,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
         List<Recommendation<ISnippet>> recommendations = Lists.newArrayList();
-        for (ISnippetRepository repo : repos) {
+        for (ISnippetRepository repo : repos.getRepositories()) {
             recommendations.addAll(repo.search(context));
         }
         ICompilationUnit cu = ctx.getCompilationUnit();

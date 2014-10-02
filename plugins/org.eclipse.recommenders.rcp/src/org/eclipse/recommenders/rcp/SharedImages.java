@@ -90,14 +90,19 @@ public final class SharedImages implements IDisposable {
 
     public static enum Images implements ImageResource {
         // @formatter:off
+        ELCL_ADD_REPOSITORY(elcl16("add_repository.png")), //$NON-NLS-1$
+        ELCL_ADD_SNIPPET(elcl16("add_snippet.png")), //$NON-NLS-1$
+        ELCL_CLEAR(elcl16("clear.gif")), //$NON-NLS-1$
         ELCL_COLLAPSE_ALL(elcl16("collapseall.gif")), //$NON-NLS-1$
         ELCL_DELETE(elcl16("delete.gif")), //$NON-NLS-1$
+        ELCL_EDIT_REPOSITORY(elcl16("edit_repository.png")), //$NON-NLS-1$
+        ELCL_EDIT_SNIPPET(elcl16("edit_snippet.png")), //$NON-NLS-1$
         ELCL_EXPAND_ALL(elcl16("expandall.gif")), //$NON-NLS-1$
         ELCL_REFRESH(elcl16("refresh_tab.gif")), //$NON-NLS-1$
+        ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.png")), //$NON-NLS-1$
+        ELCL_REMOVE_REPOSITORY_DISABLED(elcl16("remove_repository_disabled.png")), //$NON-NLS-1$
+        ELCL_REMOVE_SNIPPET(elcl16("remove_snippet.png")), //$NON-NLS-1$
         ELCL_SYNCED(elcl16("synced.gif")), //$NON-NLS-1$
-        ELCL_ADD_REPOSITORY(elcl16("add_repository.gif")), //$NON-NLS-1$
-        ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.gif")), //$NON-NLS-1$
-        ELCL_CLEAR(elcl16("clear.gif")), //$NON-NLS-1$
         OBJ_BIRD_BLUE(obj16("bird_blue_16.png")), //$NON-NLS-1$
         OBJ_BULLET_BLUE(obj16("bullet_blue.png")), //$NON-NLS-1$
         OBJ_BULLET_GREEN(obj16("bullet_green.png")), //$NON-NLS-1$

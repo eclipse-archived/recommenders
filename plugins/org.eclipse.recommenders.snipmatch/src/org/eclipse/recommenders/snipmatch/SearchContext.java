@@ -14,6 +14,8 @@ import static org.eclipse.recommenders.snipmatch.Location.NONE;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 
 import com.google.common.collect.Sets;
@@ -51,6 +53,16 @@ public class SearchContext implements ISearchContext {
     @Override
     public Set<ProjectCoordinate> getDependencies() {
         return pcs;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(obj, this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
 }

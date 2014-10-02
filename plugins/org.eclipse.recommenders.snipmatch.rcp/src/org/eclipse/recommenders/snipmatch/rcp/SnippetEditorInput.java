@@ -24,6 +24,10 @@ public class SnippetEditorInput implements IEditorInput {
     private ISnippet oldSnippet;
     private ISnippetRepository snippetRepository;
 
+    public SnippetEditorInput(ISnippet snippet) {
+        this(snippet, null);
+    }
+
     public SnippetEditorInput(ISnippet snippet, ISnippetRepository snippetRepository) {
         this.oldSnippet = snippet;
         this.snippet = Snippet.copy(snippet);
@@ -40,6 +44,10 @@ public class SnippetEditorInput implements IEditorInput {
 
     public ISnippetRepository getRepository() {
         return snippetRepository;
+    }
+
+    public void setRepository(ISnippetRepository repository) {
+        snippetRepository = repository;
     }
 
     @Override
