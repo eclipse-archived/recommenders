@@ -6,12 +6,13 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.apache.lucene.core;bundle-version="[3.5.0,4.0.0)",
+ org.eclipse.core.runtime,
  org.eclipse.jgit,
- org.eclipse.recommenders.utils,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.ecore.xmi,
- org.apache.lucene.core;bundle-version="[3.5.0,4.0.0)"
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.models
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.cache;version="[15.0.0,16.0.0)",
@@ -21,10 +22,8 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  org.apache.commons.io.filefilter;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)",
- org.eclipse.recommenders.models,
  org.slf4j;version="[1.7.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.snipmatch; uses:="org.eclipse.recommenders.utils,  org.apache.lucene.analysis,  org.apache.lucene.index,  org.apache.lucene.queryParser,  org.apache.lucene.search,  org.apache.lucene.util",
- org.eclipse.recommenders.snipmatch,
+Export-Package: org.eclipse.recommenders.snipmatch,
  org.eclipse.recommenders.snipmatch.model,
  org.eclipse.recommenders.snipmatch.model.impl,
  org.eclipse.recommenders.snipmatch.model.util
