@@ -37,6 +37,9 @@ import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryClosedEvent;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryContentChangedEvent;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -224,56 +227,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws IOException {
         close();
         open();
-    }
-
-    /**
-     * Triggered when the snippet repository was closed to inform clients that the snippet repository is currently not
-     * available.
-     */
-    public static class SnippetRepositoryClosedEvent {
-        private final ISnippetRepository repo;
-
-        public SnippetRepositoryClosedEvent(ISnippetRepository repo) {
-            this.repo = repo;
-        }
-
-        public ISnippetRepository getRepository() {
-            return repo;
-        }
-    }
-
-    /**
-     * Triggered when the snippet repository was opened to inform clients that the snippet repository is available.
-     * <p>
-     * Clients of this event may consider refreshing themselves whenever they receive this event. Clients get notified
-     * in a background process.
-     */
-    public static class SnippetRepositoryOpenedEvent {
-
-        private final ISnippetRepository repo;
-
-        public SnippetRepositoryOpenedEvent(ISnippetRepository repo) {
-            this.repo = repo;
-        }
-
-        public ISnippetRepository getRepository() {
-            return repo;
-        }
-    }
-
-    /**
-     * Triggered when a snippet was imported.
-     */
-    public static class SnippetRepositoryContentChangedEvent {
-        private final ISnippetRepository repo;
-
-        public SnippetRepositoryContentChangedEvent(ISnippetRepository repo) {
-            this.repo = repo;
-        }
-
-        public ISnippetRepository getRepository() {
-            return repo;
-        }
     }
 
     @Override
