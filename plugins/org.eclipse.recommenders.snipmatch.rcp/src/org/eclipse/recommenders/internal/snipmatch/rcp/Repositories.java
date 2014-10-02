@@ -20,10 +20,10 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.eclipse.recommenders.internal.snipmatch.rcp.EclipseGitSnippetRepository.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Openable;
 
