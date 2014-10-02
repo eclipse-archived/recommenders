@@ -38,6 +38,9 @@
 					<configuration>
 						<!-- Use ${tycho.testArgLine} as set by jacoco-maven-plugin. -->
 						<argLine>${tycho.testArgLine}</argLine>
+						<systemProperties>
+							<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
+						</systemProperties>
 					</configuration>
 				</plugin>
 			</plugins>
