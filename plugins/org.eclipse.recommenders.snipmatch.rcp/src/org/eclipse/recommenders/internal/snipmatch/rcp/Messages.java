@@ -35,6 +35,7 @@ public class Messages extends NLS {
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
+    public static String DIALOG_MESSAGE_NO_MESSAGE_EXCEPTION;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_LOCATION;
     public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;

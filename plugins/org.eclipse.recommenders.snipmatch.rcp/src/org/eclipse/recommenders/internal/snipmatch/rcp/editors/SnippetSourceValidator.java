@@ -12,11 +12,14 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchTemplateContextType;
 
 @SuppressWarnings("restriction")
@@ -32,6 +35,9 @@ public class SnippetSourceValidator {
         try {
             context.evaluate(template);
         } catch (Exception e) {
+            if (e.getMessage() == null) {
+                return MessageFormat.format(Messages.DIALOG_MESSAGE_NO_MESSAGE_EXCEPTION, e.getClass().getName());
+            }
             return e.getMessage();
         }
         return VALID_SNIPPET;
