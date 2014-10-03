@@ -5,6 +5,7 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp.model
 
 import java.util.UUID
+
 class ErrorReport {
     UUID anonymousId
     UUID eventId

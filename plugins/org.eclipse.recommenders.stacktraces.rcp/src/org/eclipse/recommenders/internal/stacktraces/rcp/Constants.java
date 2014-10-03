@@ -29,6 +29,6 @@ public class Constants {
 
     private static String getServerUrl() {
         return System.getProperty(PLUGIN_ID + "." + PROP_SERVER,
-                "http://recommenders.eclipse.org/stats/stacktraces/0.5.0/new/");
+                "https://dev.eclipse.org/recommenders/community/confess/0.5/reports/");
     }
 }
