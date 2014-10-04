@@ -767,11 +767,11 @@ public class SnippetMetadataPage extends FormPage {
 
             @Override
             protected Object doGetValue(Object source) {
-                ProjectCoordinate pc = cast(source);
-                if (pc == null) {
-                    System.out.println("");
+                if (source != null) {
+                    ProjectCoordinate pc = cast(source);
+                    return getStringForDependency(pc);
                 }
-                return getStringForDependency(pc);
+                return "";
             }
 
             @Override
