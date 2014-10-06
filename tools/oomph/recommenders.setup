@@ -1445,6 +1445,8 @@
       <requirement
           name="org.sonatype.tycho.m2e.feature.feature.group"/>
       <requirement
+          name="com.coderplus.m2e.remoteresourcesfeature.feature.group"/>
+      <requirement
           name="org.eclipse.emf.sdk.feature.group"/>
       <requirement
           name="org.eclipse.mylyn.java_feature.feature.group"/>
@@ -1462,7 +1464,9 @@
           name="org.eclipse.emf.ecore.xcore.sdk.feature.group"
           versionRange="[1.2.1,2.0.0)"/>
       <repository
-          url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
+          url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
+      <repository
+          url="http://coderplus.com/m2e-update-sites/maven-remote-resources-plugin/"/>
       <repository
           url="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
       <repository
