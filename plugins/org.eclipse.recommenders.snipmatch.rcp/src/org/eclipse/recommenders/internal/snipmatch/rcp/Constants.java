@@ -28,4 +28,6 @@ public class Constants {
 
     public static final String SNIPMATCH_CONTEXT_ID = "Snipmatch-Java-Context"; //$NON-NLS-1$
     public static final String EXT_POINT_PAGE_FACTORIES = "org.eclipse.recommenders.snipmatch.rcp.pageFactories"; //$NON-NLS-1$
+    public static final String EXT_POINT_DEFAULT_CONFIGURATIONS = "org.eclipse.recommenders.snipmatch.rcp.defaultConfigurations"; //$NON-NLS-1$
+    public static final String EXT_POINT_DEFAULT_CONFIGURATIONS_ATTRIBUTE_KEY = "key"; //$NON-NLS-1$
 }

@@ -3,6 +3,7 @@
 <plugin>
 	<extension-point id="configurationwizards" name="Configuration wizards" schema="schema/configurationwizards.exsd"/>
 	<extension-point id="pageFactories" name="Snippet Editor Page Factory" schema="schema/pageFactories.exsd"/>
+	<extension-point id="defaultConfigurations" name="Snippet Repository Default Configurations" schema="schema/defaultConfigurations.exsd"/>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.snipmatch.rcp.SnippetEditor"
@@ -94,5 +95,8 @@
 			name="%wizards.git-based-repo.name"
 			wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
 		</configurationwizard>
+	</extension>
+	<extension point="org.eclipse.recommenders.snipmatch.rcp.defaultConfigurations">
+		<defaultConfiguration key="org.eclipse.recommenders.snipmatch.rcp"/>
 	</extension>
 </plugin>
