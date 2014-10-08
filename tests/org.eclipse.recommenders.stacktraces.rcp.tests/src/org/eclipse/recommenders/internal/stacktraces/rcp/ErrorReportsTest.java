@@ -10,12 +10,14 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
@@ -53,7 +55,7 @@ public class ErrorReportsTest {
                 exception);
 
         settings = ModelFactory.eINSTANCE.createSettings();
-        return ErrorReports.newErrorReport(status, settings);
+        return newErrorReport(status, settings);
     }
 
     private static Throwable createThrowable(String className) {
@@ -166,6 +168,24 @@ public class ErrorReportsTest {
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status multi = ErrorReports.newStatus(s2, settings);
 
         Assert.assertNotEquals(normal.getFingerprint(), multi.getFingerprint());
+    }
+
+    @Test
+    public void testCoreExceptionHandling() {
+        IStatus causingStatus = new Status(IStatus.ERROR, "the.causing.plugin", "first message");
+        java.lang.Throwable causingException = new CoreException(causingStatus);
+        IStatus causedStatus = new Status(IStatus.WARNING, "some.calling.plugin", "any other message", causingException);
+        java.lang.Throwable rootException = new CoreException(causedStatus);
+        IStatus rootEvent = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "someErrorMessage",
+                rootException);
+        settings = ModelFactory.eINSTANCE.createSettings();
+
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status rootStatus = ErrorReports.newStatus(rootEvent, settings);
+
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status child = rootStatus.getChildren().get(0);
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status leaf = child.getChildren().get(0);
+        assertThat(child.getPluginId(), is("some.calling.plugin"));
+        assertThat(leaf.getPluginId(), is("the.causing.plugin"));
     }
 
     private static RuntimeException newRuntimeException(String message) {
