@@ -233,8 +233,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     text.append(format(Messages.TABLE_CELL_SUFFIX_SNIPPETS, fetchNumberOfSnippets(config)),
                             StyledString.COUNTER_STYLER);
                     cell.setImage(images.getImage(Images.OBJ_REPOSITORY));
-                }
-                if (element instanceof KnownSnippet) {
+                } else if (element instanceof KnownSnippet) {
                     KnownSnippet knownSnippet = (KnownSnippet) element;
                     text.append(toStringRepresentation.apply(knownSnippet));
                 }

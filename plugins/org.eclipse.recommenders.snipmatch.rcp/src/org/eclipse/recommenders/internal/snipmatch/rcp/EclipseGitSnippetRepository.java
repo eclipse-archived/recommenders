@@ -41,7 +41,6 @@ import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryContentChangedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Display;
@@ -320,19 +319,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {
         BasicEList<SnippetRepositoryConfiguration> result = new BasicEList<SnippetRepositoryConfiguration>();
-
-        EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
-                .createEclipseGitSnippetRepositoryConfiguration();
-        configuration.setName(Messages.DEFAULT_REPO_NAME);
-        configuration.setDescription(Messages.ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION);
-        configuration.setEnabled(true);
-        configuration
-                .setUrl("https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
-        configuration
-                .setPushUrl("https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"); //$NON-NLS-1$
-        configuration.setPushBranchPrefix("refs/for"); //$NON-NLS-1$
-
-        result.add(configuration);
+        result.addAll(DefaultGitSnippetRepositoryConfigurations.fetchDefaultConfigurations());
         return result;
     }
 

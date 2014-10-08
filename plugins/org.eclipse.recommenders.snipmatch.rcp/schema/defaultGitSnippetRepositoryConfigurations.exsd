@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.recommenders.snipmatch.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.recommenders.snipmatch.rcp" id="defaultConfigurations" name="Snippet Repository Default Configurations"/>
+         <meta.schema plugin="org.eclipse.recommenders.snipmatch.rcp" id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -17,9 +17,9 @@
          </appInfo>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="defaultConfiguration"/>
-         </sequence>
+         <choice>
+            <element ref="defaultGitSnippetRepositoryConfiguration" minOccurs="1" maxOccurs="unbounded"/>
+         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -47,9 +47,44 @@
       </complexType>
    </element>
 
-   <element name="defaultConfiguration">
+   <element name="defaultGitSnippetRepositoryConfiguration">
       <complexType>
-         <attribute name="key" type="string" use="required">
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="enabled" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="url" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pushUrl" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pushBranchPrefix" type="string" use="required">
             <annotation>
                <documentation>
                   

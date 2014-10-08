@@ -34,14 +34,11 @@ import org.eclipse.recommenders.snipmatch.model.SnipmatchModelPackage;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.Lists;
 
 public class RepositoryConfigurations {
-
-    private static Logger LOG = LoggerFactory.getLogger(RepositoryConfigurations.class);
 
     public static SnippetRepositoryConfigurations loadConfigurations(File file) {
         SnippetRepositoryConfigurations configurations = SnipmatchRcpModelFactory.eINSTANCE
@@ -58,7 +55,7 @@ public class RepositoryConfigurations {
                 configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);
             }
         } catch (IOException e) {
-            LOG.error("Exception while loading repository configurations.", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_LOADING_REPO_CONFIGURATION, file, e);
         }
 
         return configurations;
@@ -81,7 +78,7 @@ public class RepositoryConfigurations {
         try {
             resource.save(Collections.EMPTY_MAP);
         } catch (IOException e) {
-            LOG.error("Exception while storing repository configurations.", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_STORING_REPO_CONFIGURATION, file, e);
         }
     }
 
@@ -89,14 +86,14 @@ public class RepositoryConfigurations {
         List<SnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
 
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                EXT_POINT_DEFAULT_CONFIGURATIONS);
+                EXT_POINT_REGISTERED_EMF_PACKAGE);
         for (IConfigurationElement element : elements) {
             try {
-                String key = element.getAttribute(EXT_POINT_DEFAULT_CONFIGURATIONS_ATTRIBUTE_KEY);
-                if (key == null) {
+                String uri = element.getAttribute(EXT_POINT_REGISTERED_EMF_PACKAGE_URI);
+                if (uri == null) {
                     continue;
                 }
-                EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(key);
+                EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(uri);
                 if (ePackage == null) {
                     continue;
                 }
@@ -104,11 +101,11 @@ public class RepositoryConfigurations {
                         SnipmatchModelPackage.Literals.DEFAULT_SNIPPET_REPOSITORY_CONFIGURATION_PROVIDER);
                 for (EClass eClass : subtypes) {
                     DefaultSnippetRepositoryConfigurationProvider configurationProvider = cast(EPackage.Registry.INSTANCE
-                            .getEFactory(key).create(eClass));
+                            .getEFactory(uri).create(eClass));
                     defaultConfigurations.addAll(configurationProvider.getDefaultConfiguration());
                 }
             } catch (Exception e) {
-                LOG.error("Exception while loading default configurations", e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_LOADING_DEFAULT_REPO_CONFIGURATION, e);
             }
         }
 
