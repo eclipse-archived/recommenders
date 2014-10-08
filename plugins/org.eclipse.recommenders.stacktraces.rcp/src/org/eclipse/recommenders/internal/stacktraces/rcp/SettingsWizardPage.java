@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
@@ -121,9 +122,12 @@ class SettingsWizardPage extends WizardPage {
         {
             btnAnonymizeStacktraces = new Button(container, SWT.CHECK);
             btnAnonymizeStacktraces.setText(Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES);
-
+            DefaultToolTip anonymizeStacktracesToolTip = new DefaultToolTip(btnAnonymizeStacktraces);
+            anonymizeStacktracesToolTip.setText(Messages.TOOLTIP_ANONYMIZE_STACKTRACES);
             btnClearMessages = new Button(container, SWT.CHECK);
             btnClearMessages.setText(Messages.FIELD_LABEL_ANONYMIZE_MESSAGES);
+            DefaultToolTip clearMessagesToolTip = new DefaultToolTip(btnClearMessages);
+            clearMessagesToolTip.setText(Messages.TOOLTIP_CLEAR_MESSAGES);
         }
         {
             Composite feedback = new Composite(container, SWT.NONE);

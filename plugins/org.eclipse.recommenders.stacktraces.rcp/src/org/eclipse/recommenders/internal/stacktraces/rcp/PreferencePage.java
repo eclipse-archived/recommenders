@@ -17,6 +17,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -47,13 +48,28 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         addField(new StringFieldEditor(PROP_EMAIL, Messages.FIELD_LABEL_EMAIL, getFieldEditorParent()));
         addField(new ComboFieldEditor(PROP_SEND_ACTION, Messages.FIELD_LABEL_ACTION, createModeLabelAndValues(),
                 getFieldEditorParent()));
-        addField(new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES, Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES,
-                getFieldEditorParent()));
 
-        addField(new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES, Messages.FIELD_LABEL_ANONYMIZE_MESSAGES,
-                getFieldEditorParent()));
-        addField(new BooleanFieldEditor(PROP_SKIP_SIMILAR_ERRORS, Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS,
-                getFieldEditorParent()));
+        BooleanFieldEditor anonymizeStacktracesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES,
+                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, getFieldEditorParent());
+        DefaultToolTip anonymizeStacktracesToolTip = new DefaultToolTip(
+                anonymizeStacktracesFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        anonymizeStacktracesToolTip.setText(Messages.TOOLTIP_ANONYMIZE_STACKTRACES);
+        addField(anonymizeStacktracesFieldEditor);
+
+        BooleanFieldEditor clearMessagesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES,
+                Messages.FIELD_LABEL_ANONYMIZE_MESSAGES, getFieldEditorParent());
+        DefaultToolTip clearMessagesToolTip = new DefaultToolTip(
+                clearMessagesFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        clearMessagesToolTip.setText(Messages.TOOLTIP_CLEAR_MESSAGES);
+        addField(clearMessagesFieldEditor);
+
+        BooleanFieldEditor skipSimilarErrorsFieldEditor = new BooleanFieldEditor(PROP_SKIP_SIMILAR_ERRORS,
+                Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS, getFieldEditorParent());
+        DefaultToolTip skipSimilarErrorsToolTip = new DefaultToolTip(
+                skipSimilarErrorsFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        skipSimilarErrorsToolTip.setText(Messages.TOOLTIP_SKIP_SIMILAR);
+        addField(skipSimilarErrorsFieldEditor);
+
         addLinks(getFieldEditorParent());
     }
 
