@@ -22,7 +22,6 @@ import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.Dependencies;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IDependencyListener;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.snipmatch.Location;
@@ -56,7 +55,7 @@ public class JavaEditorSearchContext extends SearchContext {
         return resolve(availableDependencies);
     }
 
-    public static Set<ProjectCoordinate> resolve(Set<DependencyInfo> dependencyInfos) {
+    private static Set<ProjectCoordinate> resolve(Set<DependencyInfo> dependencyInfos) {
         Set<ProjectCoordinate> result = Sets.newHashSet();
         IProjectCoordinateProvider pcAdvisor = InjectionService.getInstance().requestInstance(
                 IProjectCoordinateProvider.class);
