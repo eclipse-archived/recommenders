@@ -13,9 +13,7 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Logs.log;
 
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,13 +23,11 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
-import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
@@ -43,16 +39,12 @@ import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
 
-    private static final String STAND_IN_MESSAGE = "Stand-In Stacktrace supplied by Eclipse Stacktraces & Error Reporting Tool";
-
-    private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
-            .orNull();
-
     private Cache<String, ErrorReport> cache = CacheBuilder.newBuilder().maximumSize(30)
             .expireAfterAccess(10, TimeUnit.MINUTES).build();
     private IObservableList errorReports;
     private volatile boolean isDialogOpen;
     private Settings settings;
+    private StandInStacktraceProvider stacktraceProvider = new StandInStacktraceProvider();
 
     public LogListener() {
         Display.getDefault().syncExec(new Runnable() {
@@ -81,7 +73,7 @@ public class LogListener implements ILogListener, IStartup {
         if (!isSendingAllowedOnAction(sendAction)) {
             return;
         }
-        insertDebugStacktraceIfEmpty(status);
+        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
         final ErrorReport report = newErrorReport(status, settings);
         if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
             return;
@@ -115,19 +107,6 @@ public class LogListener implements ILogListener, IStartup {
 
     private boolean isSendingAllowedOnAction(SendAction sendAction) {
         return sendAction == SendAction.ASK || sendAction == SendAction.SILENT;
-    }
-
-    private static void insertDebugStacktraceIfEmpty(final IStatus status) {
-        // TODO this code should probably go elsewhere later.
-        if (status.getException() == null && status instanceof Status && SET_EXCEPTION != null) {
-            Throwable syntetic = new RuntimeException(STAND_IN_MESSAGE);
-            syntetic.fillInStackTrace();
-            try {
-                SET_EXCEPTION.invoke(status, syntetic);
-            } catch (Exception e) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, SET_EXCEPTION);
-            }
-        }
     }
 
     private boolean sentSimilarErrorBefore(final ErrorReport report) {
