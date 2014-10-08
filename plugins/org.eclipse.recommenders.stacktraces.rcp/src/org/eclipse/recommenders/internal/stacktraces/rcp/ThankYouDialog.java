@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.common.annotations.VisibleForTesting;
+
 class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
     public static Image TITLE_IMAGE = ErrorReportWizard.TITLE_IMAGE_DESC.createImage();
@@ -79,21 +81,31 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
         container.setLayout(GridLayoutFactory.swtDefaults().create());
         container.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
 
+        String text = buildText();
+
+        Link link = new Link(container, SWT.WRAP);
+        link.setText(text);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Browsers.openInExternalBrowser(state.getBugUrl().get());
+            }
+        });
+        GridDataFactory.defaultsFor(link).align(GridData.FILL, GridData.BEGINNING).applyTo(link);
+        return container;
+    }
+
+    @VisibleForTesting
+    protected String buildText() {
         StringBuilder text = new StringBuilder();
 
         if (state.isCreated()) {
             String message = MessageFormat.format(Messages.THANKYOUDIALOG_TRACKED_PLEASE_ADD_TO_CC, getBugURL());
             text.append(message);
         } else {
-            boolean needsinfo = ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO);
             String status = state.getStatus().or(UNCONFIRMED);
             if (equals(UNCONFIRMED, status) || equals(NEW, status) || equals(ASSIGNED, status)) {
-                if (needsinfo) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION,
-                            getBugURL()));
-                } else {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_PLEASE_ADD_TO_CC, getBugURL()));
-                }
+                text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_PLEASE_ADD_TO_CC, getBugURL()));
             } else if (equals(RESOLVED, status) || equals(CLOSED, status)) {
 
                 String resolution = state.getResolved().or(UNKNOWN);
@@ -119,26 +131,23 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
             }
         }
 
+        boolean needsinfo = ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO);
+        if (needsinfo) {
+            text.append(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION);
+            text.append(MessageFormat.format(Messages.THANKYOUDIALOG_FURTHER_INFORMATION,
+                    state.getInformation().or(Messages.THANKYOUDIALOG_NO_FURTHER_INFORMATIONS)));
+        }
+
         text.append(Messages.THANKYOUDIALOG_PLEASE_NOTE_ADDITIONAL_PERMISSIONS);
         text.append(Messages.THANKYOUDIALOG_THANK_YOU_FOR_HELP);
-
-        Link link = new Link(container, SWT.WRAP);
-        link.setText(text.toString());
-        link.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(state.getBugUrl().get());
-            }
-        });
-        GridDataFactory.defaultsFor(link).align(GridData.FILL, GridData.BEGINNING).applyTo(link);
-        return container;
+        return text.toString();
     }
 
     private String getBugURL() {
         return state.getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE);
     }
 
-    private boolean equals(String expected, String actual) {
+    private static boolean equals(String expected, String actual) {
         return StringUtils.equals(expected, actual);
     }
 }

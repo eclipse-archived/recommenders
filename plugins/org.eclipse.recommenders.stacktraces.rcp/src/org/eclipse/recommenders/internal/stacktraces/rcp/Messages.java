@@ -39,6 +39,7 @@ public class Messages extends NLS {
     public static String PREVIEWPAGE_LABEL_COMMENT;
     public static String PREVIEWPAGE_LABEL_MESSAGE;
     public static String PREVIEWPAGE_TITLE;
+    public static String THANKYOUDIALOG_FURTHER_INFORMATION;
     public static String THANKYOUDIALOG_INVALID_SERVER_RESPONSE;
     public static String THANKYOUDIALOG_MARKED_DUPLICATE;
     public static String THANKYOUDIALOG_MARKED_FIXED;
@@ -47,6 +48,7 @@ public class Messages extends NLS {
     public static String THANKYOUDIALOG_MARKED_UNKNOWN;
     public static String THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION;
     public static String THANKYOUDIALOG_MATCHED_PLEASE_ADD_TO_CC;
+    public static String THANKYOUDIALOG_NO_FURTHER_INFORMATIONS;
     public static String THANKYOUDIALOG_NOT_ABLE_TO_REPRODUCE_PLEASE_VISIT;
     public static String THANKYOUDIALOG_PLEASE_NOTE_ADDITIONAL_PERMISSIONS;
     public static String THANKYOUDIALOG_RECEIVED_AND_TRACKED;
