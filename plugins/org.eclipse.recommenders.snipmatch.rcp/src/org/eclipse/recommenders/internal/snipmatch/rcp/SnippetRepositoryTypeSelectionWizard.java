@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.*;
+import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
+
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -40,12 +43,15 @@ public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetReposit
     public SnippetRepositoryTypeSelectionWizard() {
         setWindowTitle(Messages.WIZARD_TYPE_SELECTION_WINDOW_TITLE);
         page = new SnippetRepositoryTypeSelectionWizardPage();
+
+        page.setImageDescriptor(imageDescriptorFromPlugin(BUNDLE_ID, WIZBAN_ADD_REPOSITORY));
         availableWizards = WizardDescriptors.loadAvailableWizards();
     }
 
     public SnippetRepositoryTypeSelectionWizard(SnippetRepositoryConfiguration configuration) {
         super();
         this.configurationToEdit = configuration;
+        page.setImageDescriptor(imageDescriptorFromPlugin(BUNDLE_ID, WIZBAN_EDIT_REPOSITORY));
         availableWizards = WizardDescriptors.filterApplicableWizardDescriptors(availableWizards, configuration);
     }
 
@@ -57,7 +63,7 @@ public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetReposit
     @Override
     public void addPages() {
         addPage(page);
-        // Add a second page is necessary since otherwise no next Button is displace
+        // Add a second page is necessary since otherwise no next Button is displayed
         addPage(new SnippetRepositoryTypeSelectionWizardPage());
     }
 
