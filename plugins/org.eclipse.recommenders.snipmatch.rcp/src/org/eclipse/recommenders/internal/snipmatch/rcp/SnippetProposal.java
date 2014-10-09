@@ -42,33 +42,45 @@ import com.google.common.collect.Ordering;
 public class SnippetProposal extends TemplateProposal implements ICompletionProposalExtension6 {
 
     private final ISnippet snippet;
-
-    private final boolean valid;
+    private TemplateContext context;
+    private Boolean valid = null;
 
     public static SnippetProposal newSnippetProposal(Recommendation<ISnippet> recommendation, Template template,
             TemplateContext context, IRegion region, Image image) throws BadLocationException, TemplateException {
-        boolean valid = false;
-        try {
-            context.evaluate(template);
-            valid = true;
-        } catch (Exception e) {
-            context = new JavaContext(context.getContextType(), new Document(), new Position(0), null);
-            context.evaluate(template);
-            log(ERROR_SNIPPET_COULD_NOT_BE_EVALUATED, e);
-        }
         int relevance = (int) (recommendation.getRelevance() * 100);
-        return new SnippetProposal(recommendation.getProposal(), relevance, template, context, region, image, valid);
+        return new SnippetProposal(recommendation.getProposal(), relevance, template, context, region, image);
     }
 
     private SnippetProposal(ISnippet snippet, int relevance, Template template, TemplateContext context,
-            IRegion region, Image image, boolean valid) {
+            IRegion region, Image image) {
         super(template, context, region, image, relevance);
+        this.context = context;
         this.snippet = snippet;
-        this.valid = valid;
     }
 
     @Override
     public boolean isValidFor(IDocument document, int offset) {
+        return isValid();
+    }
+
+    private boolean isValid() {
+        if (valid != null) {
+            return valid;
+        }
+
+        valid = false;
+        try {
+            context.evaluate(getTemplate());
+            valid = true;
+        } catch (Exception e) {
+            context = new JavaContext(context.getContextType(), new Document(), new Position(0), null);
+            try {
+                context.evaluate(getTemplate());
+            } catch (Exception e1) {
+                log(ERROR_SNIPPET_COULD_NOT_BE_EVALUATED, e, snippet.getName(), snippet.getUuid());
+                return false;
+            }
+        }
         return valid;
     }
 
@@ -76,7 +88,7 @@ public class SnippetProposal extends TemplateProposal implements ICompletionProp
     public String getAdditionalProposalInfo() {
         StringBuilder header = new StringBuilder();
 
-        if (!valid) {
+        if (!isValid()) {
             header.append(format(Messages.WARNING_CANNOT_APPLY_SNIPPET, "// XXX")); //$NON-NLS-1$
             header.append(LINE_SEPARATOR);
             header.append(format(Messages.WARNING_REPOSITION_CURSOR, "// TODO")); //$NON-NLS-1$
