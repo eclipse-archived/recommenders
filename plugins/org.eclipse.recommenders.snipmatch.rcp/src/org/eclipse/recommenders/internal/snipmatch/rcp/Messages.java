@@ -46,8 +46,6 @@ public class Messages extends NLS {
     public static String DIALOG_OPTION_SAVE;
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
-    public static String DIALOG_TITLE_ENTER_NEW_DEPENDENCY;
-
     public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_TITLE_CHANGE_CONFIGURATION_NAME;
     public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
@@ -57,7 +55,6 @@ public class Messages extends NLS {
     public static String DIALOG_TITLE_INVALID_SNIPPET_LOCATION;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
 
-    public static String DIALOG_TITLE_SELECT_DEPENDENCY;
     public static String DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE;
 
@@ -101,7 +98,6 @@ public class Messages extends NLS {
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
     public static String EDITOR_DESCRIPTION_LOCATION;
     public static String EDITOR_DESCRIPTION_TAGS;
-
 
     public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;

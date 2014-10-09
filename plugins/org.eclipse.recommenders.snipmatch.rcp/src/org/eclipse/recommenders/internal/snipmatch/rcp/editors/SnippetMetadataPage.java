@@ -17,14 +17,11 @@ import static org.eclipse.core.databinding.beans.BeanProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.jface.fieldassist.FieldDecorationRegistry.DEC_INFORMATION;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.JavaEditorSearchContext.resolve;
-import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,14 +41,8 @@ import org.eclipse.core.databinding.property.INativePropertyListener;
 import org.eclipse.core.databinding.property.ISimplePropertyListener;
 import org.eclipse.core.databinding.property.value.SimpleValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -66,13 +57,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateSelectionDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -89,7 +77,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
@@ -97,7 +85,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -106,7 +93,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
@@ -389,16 +376,27 @@ public class SnippetMetadataPage extends FormPage {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         Shell shell = btnContainerDependencies.getShell();
-                        ProjectCoordinateSelectionDialog dialog = new ProjectCoordinateSelectionDialog(shell);
+                        ProjectCoordinateSelectionDialog dialog = new ProjectCoordinateSelectionDialog(shell) {
+                            @Override
+                            public String createLabelForProjectCoordinate(ProjectCoordinate element) {
+                                return getStringForDependency(element);
+                            }
+
+                            @Override
+                            public boolean filter(ProjectCoordinate pc) {
+                                for (String dependencylistItem : fetchDependencyListItems()) {
+                                    if (dependencylistItem.equals(getStringForDependency(pc))) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        };
                         dialog.setInitialPattern(""); //$NON-NLS-1$
                         dialog.open();
 
-                        Object[] result = dialog.getResult();
-                        if (result != null) {
-                            for (Object object : result) {
-                                ppDependencies.add(object);
-                            }
-                        }
+                        Set<ProjectCoordinate> selectedElements = changeVersionsToZero(dialog.getSelectedElements());
+                        ppDependencies.addAll(selectedElements);
                     }
                 });
                 btnAddDependency.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -445,163 +443,26 @@ public class SnippetMetadataPage extends FormPage {
         context = createDataBindingContext();
     }
 
-    class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDialog {
+    private Collection<String> fetchDependencyListItems() {
+        final Collection<String> items = Lists.newArrayList();
+        Display.getDefault().syncExec(new Runnable() {
 
-        private Collection<ProjectCoordinate> pcs;
-        private final SharedImages images;
-        private LabelProvider labelProvider;
-
-        public ProjectCoordinateSelectionDialog(Shell shell) {
-            super(shell, true);
-            setTitle(Messages.DIALOG_TITLE_SELECT_DEPENDENCY);
-
-            IDependencyListener dependencyListener = InjectionService.getInstance().requestInstance(
-                    IDependencyListener.class);
-
-            images = InjectionService.getInstance().requestInstance(SharedImages.class);
-
-            ImmutableSet<DependencyInfo> dependencies = dependencyListener.getDependencies();
-            this.pcs = changeVersionsToZero(resolve(dependencies));
-
-            labelProvider = new LabelProvider() {
-                @Override
-                public String getText(Object element) {
-                    if (element == null) {
-                        return ""; //$NON-NLS-1$
-                    }
-                    if (element instanceof ProjectCoordinate) {
-                        return getStringForDependency((ProjectCoordinate) element);
-                    }
-                    return element.toString();
+            @Override
+            public void run() {
+                for (String string : listViewerDependencies.getList().getItems()) {
+                    items.add(string);
                 }
-
-                @Override
-                public Image getImage(Object element) {
-                    return images.getImage(OBJ_JAR);
-                }
-
-            };
-            setListLabelProvider(labelProvider);
-            setDetailsLabelProvider(labelProvider);
-        }
-
-        @Override
-        protected Control createContents(Composite parent) {
-            Control control = super.createContents(parent);
-
-            // final Text text = cast(getPatternControl());
-            //
-            // final IInputValidator validator = new IInputValidator() {
-            //
-            // @Override
-            // public String isValid(String newText) {
-            // if (isNullOrEmpty(newText)) {
-            //                        return ""; //$NON-NLS-1$
-            // }
-            // ProjectCoordinate pc = ProjectCoordinate.valueOf(newText);
-            // if (snippet.getNeededDependencies().contains(pc)) {
-            // return Messages.DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
-            // }
-            //
-            // return null;
-            // }
-            // };
-            //
-            // text.addModifyListener(new ModifyListener() {
-            //
-            // @Override
-            // public void modifyText(ModifyEvent e) {
-            // if (getResult().length == 0) {
-            // if (validator.isValid(text.getText()) != null) {
-            // getOkButton().setEnabled(true);
-            // } else {
-            // getOkButton().setEnabled(false);
-            // }
-            // }
-            // }
-            // });
-
-            return control;
-        }
-
-        private Collection<ProjectCoordinate> changeVersionsToZero(Set<ProjectCoordinate> resolved) {
-            Set<ProjectCoordinate> result = Sets.newHashSet();
-            for (ProjectCoordinate projectCoordinate : resolved) {
-                result.add(new ProjectCoordinate(projectCoordinate.getGroupId(), projectCoordinate.getArtifactId(),
-                        "0.0.0")); //$NON-NLS-1$
             }
-            return result;
+        });
+        return items;
+    }
+
+    private Set<ProjectCoordinate> changeVersionsToZero(Set<ProjectCoordinate> resolved) {
+        Set<ProjectCoordinate> result = Sets.newHashSet();
+        for (ProjectCoordinate projectCoordinate : resolved) {
+            result.add(new ProjectCoordinate(projectCoordinate.getGroupId(), projectCoordinate.getArtifactId(), "0.0.0")); //$NON-NLS-1$
         }
-
-        @Override
-        protected Control createExtendedContentArea(Composite parent) {
-            return null;
-        }
-
-        private static final String DIALOG_SETTINGS = "ProjectCoordinateSelectionDialog"; //$NON-NLS-1$
-
-        @Override
-        protected IDialogSettings getDialogSettings() {
-            IDialogSettings settings = JavaPlugin.getDefault().getDialogSettings().getSection(DIALOG_SETTINGS);
-
-            if (settings == null) {
-                settings = JavaPlugin.getDefault().getDialogSettings().addNewSection(DIALOG_SETTINGS);
-            }
-
-            return settings;
-        }
-
-        @Override
-        protected IStatus validateItem(Object item) {
-            return Status.OK_STATUS;
-        }
-
-        @Override
-        protected ItemsFilter createFilter() {
-            return new ItemsFilter() {
-                @Override
-                public boolean matchItem(Object item) {
-                    return matches(item.toString());
-                }
-
-                @Override
-                public String getPattern() {
-                    String pattern = super.getPattern();
-                    if (pattern.equals("")) { //$NON-NLS-1$
-                        return "?"; //$NON-NLS-1$
-                    }
-                    return pattern;
-                }
-
-                @Override
-                public boolean isConsistentItem(Object item) {
-                    return true;
-                }
-            };
-        }
-
-        @Override
-        protected Comparator getItemsComparator() {
-            return new Comparator() {
-                @Override
-                public int compare(Object arg0, Object arg1) {
-                    return arg0.toString().compareTo(arg1.toString());
-                }
-            };
-        }
-
-        @Override
-        protected void fillContentProvider(AbstractContentProvider contentProvider, ItemsFilter itemsFilter,
-                IProgressMonitor progressMonitor) throws CoreException {
-            for (ProjectCoordinate pc : pcs) {
-                contentProvider.add(pc, itemsFilter);
-            }
-        }
-
-        @Override
-        public String getElementName(Object item) {
-            return labelProvider.getText(item);
-        }
+        return result;
     }
 
     private InputDialog createExtraSearchTermInputDialog(Shell shell) {
@@ -647,32 +508,6 @@ public class SnippetMetadataPage extends FormPage {
             @Override
             protected void okPressed() {
                 ppTags.add(getValue());
-                super.okPressed();
-            }
-        };
-    }
-
-    private InputDialog createDependencyInputDialog(Shell shell) {
-        IInputValidator validator = new IInputValidator() {
-
-            @Override
-            public String isValid(String newText) {
-                if (isNullOrEmpty(newText)) {
-                    return ""; //$NON-NLS-1$
-                }
-                ProjectCoordinate pc = ProjectCoordinate.valueOf(newText);
-                if (snippet.getNeededDependencies().contains(pc)) {
-                    return Messages.DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
-                }
-
-                return null;
-            }
-        };
-        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_DEPENDENCY,
-                Messages.DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY, "", validator) { //$NON-NLS-1$
-            @Override
-            protected void okPressed() {
-                ppDependencies.add(ProjectCoordinate.valueOf(getValue()));
                 super.okPressed();
             }
         };
@@ -842,7 +677,7 @@ public class SnippetMetadataPage extends FormPage {
         return context;
     }
 
-    private String getStringForDependency(ProjectCoordinate pc) {
+    String getStringForDependency(ProjectCoordinate pc) {
         return pc.getGroupId() + ":" + pc.getArtifactId(); //$NON-NLS-1$
     }
 
