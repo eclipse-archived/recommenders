@@ -77,5 +77,4 @@ public class CreateSnippetHandler extends AbstractHandler {
                     Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
         }
     }
-
 }
