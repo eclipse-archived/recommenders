@@ -91,6 +91,7 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
         this.configuration = Checks.cast(configuration);
         if (configuration != null) {
             page.setImageDescriptor(imageDescriptorFromPlugin(BUNDLE_ID, WIZBAN_EDIT_GIT_REPOSITORY));
+            page.setDescription(Messages.WIZARD_GIT_REPOSITORY_EDIT_DESCRIPTION);
         }
     }
 
@@ -104,7 +105,7 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
         protected GitBasedRepositoryConfigurationWizardPage(String pageName) {
             super(pageName);
             setTitle(Messages.WIZARD_GIT_REPOSITORY_TITLE);
-            setDescription(Messages.WIZARD_GIT_REPOSITORY_DESCRIPTION);
+            setDescription(Messages.WIZARD_GIT_REPOSITORY_ADD_DESCRIPTION);
         }
 
         @Override

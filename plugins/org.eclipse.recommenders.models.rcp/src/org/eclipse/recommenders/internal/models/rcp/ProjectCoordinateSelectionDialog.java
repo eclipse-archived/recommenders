@@ -10,7 +10,6 @@ http://www.eclipse.org/legal/epl-v10.html
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.Messages.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
 
 import java.util.Comparator;
@@ -50,7 +49,7 @@ public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDial
 
     public ProjectCoordinateSelectionDialog(Shell shell) {
         super(shell, true);
-        setTitle(DIALOG_TITLE_SELECT_DEPENDENCY);
+        setTitle(Messages.DIALOG_TITLE_SELECT_PROJECT_COORDINATE);
 
         this.images = InjectionService.getInstance().requestInstance(SharedImages.class);
         this.dependencyListener = InjectionService.getInstance().requestInstance(IDependencyListener.class);
@@ -163,7 +162,7 @@ public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDial
     protected void fillContentProvider(AbstractContentProvider contentProvider, ItemsFilter itemsFilter,
             IProgressMonitor monitor) throws CoreException {
         ImmutableSet<DependencyInfo> dependencies = dependencyListener.getDependencies();
-        monitor.beginTask(DIALOG_RESOLVING_DEPENDENCIES, dependencies.size());
+        monitor.beginTask(Messages.DIALOG_RESOLVING_DEPENDENCIES, dependencies.size());
         try {
             for (DependencyInfo dependencyInfo : dependencies) {
                 ProjectCoordinate pc = pcAdvisor.resolve(dependencyInfo).orNull();

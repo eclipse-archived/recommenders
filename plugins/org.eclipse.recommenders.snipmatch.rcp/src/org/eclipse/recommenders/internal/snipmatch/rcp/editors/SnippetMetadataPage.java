@@ -393,6 +393,8 @@ public class SnippetMetadataPage extends FormPage {
                             }
                         };
                         dialog.setInitialPattern(""); //$NON-NLS-1$
+                        dialog.setTitle(Messages.DIALOG_TITLE_SELECT_DEPENDENCY);
+                        dialog.setMessage(Messages.DIALOG_MESSAGE_SELECT_DEPENDENCY);
                         dialog.open();
 
                         Set<ProjectCoordinate> selectedElements = changeVersionsToZero(dialog.getSelectedElements());
