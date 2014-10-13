@@ -27,8 +27,6 @@ public class Messages extends NLS {
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_TITLE;
 
-    public static String DEFAULT_REPO_NAME;
-
     public static String DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
@@ -63,9 +61,6 @@ public class Messages extends NLS {
 
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
-
-    public static String ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_ATTRIBUTE_NAME_URL;
-    public static String ECLIPSE_GIT_SNIPPET_REPOSITORY_CONFIGURATION_DESCRIPTION;
 
     public static String EDITOR_BUTTON_ADD_DEPENDENCY;
     public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
@@ -162,6 +157,13 @@ public class Messages extends NLS {
     public static String WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION;
     public static String WIZARD_GIT_REPOSITORY_TITLE;
     public static String WIZARD_GIT_REPOSITORY_WINDOW_TITLE;
+
+    public static String LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION;
+    public static String LOG_ERROR_STORING_DEFAULT_REPO_CONFIGURATION;
+    public static String LOG_ERROR_LOADING_REPO_CONFIGURATION;
+
+    public static String LOG_ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION;
+    public static String LOG_WARNING_DEFAULT_GIT_REPO_URL_DUPLICATE;
 
     public static String WIZARD_TYPE_SELECTION_DESCRIPTION;
     public static String WIZARD_TYPE_SELECTION_LABEL_WIZARDS;
