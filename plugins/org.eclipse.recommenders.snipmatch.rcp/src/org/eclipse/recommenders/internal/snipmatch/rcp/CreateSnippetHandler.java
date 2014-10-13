@@ -15,6 +15,9 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.EDITOR_I
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -25,6 +28,10 @@ import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateProvider;
+import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -35,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class CreateSnippetHandler extends AbstractHandler {
@@ -53,7 +61,7 @@ public class CreateSnippetHandler extends AbstractHandler {
     }
 
     @VisibleForTesting
-    public Snippet createSnippet(CompilationUnitEditor editor) throws ExecutionException {
+    Snippet createSnippet(CompilationUnitEditor editor) throws ExecutionException {
         ISourceViewer viewer = editor.getViewer();
         ITypeRoot root = cast(editor.getViewPartInput());
         CompilationUnit ast = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
@@ -61,7 +69,15 @@ public class CreateSnippetHandler extends AbstractHandler {
         IDocument doc = viewer.getDocument();
         ITextSelection textSelection = cast(viewer.getSelectionProvider().getSelection());
 
-        return new SnippetBuilder(ast, doc, textSelection).build();
+        ProjectCoordinateProvider pcProvider = InjectionService.getInstance().requestInstance(
+                ProjectCoordinateProvider.class);
+
+        String code = new SnippetCodeBuilder(ast, doc, textSelection).build();
+        Set<ProjectCoordinate> dependencies = new DependencyExtractor(ast, textSelection, pcProvider)
+        .extractDependencies();
+
+        return new Snippet(UUID.randomUUID(),
+                "", "", Lists.<String>newArrayList(), Lists.<String>newArrayList(), code, Location.NONE, dependencies); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void openSnippetInEditor(Snippet snippet) {

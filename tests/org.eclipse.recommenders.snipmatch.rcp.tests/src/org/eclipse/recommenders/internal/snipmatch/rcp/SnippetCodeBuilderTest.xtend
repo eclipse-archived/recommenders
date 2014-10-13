@@ -1,8 +1,10 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp
 
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.jdt.core.ITypeRoot
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
+import org.eclipse.jdt.ui.SharedASTProvider
 import org.eclipse.jface.text.TextSelection
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
@@ -12,7 +14,7 @@ import org.junit.rules.TestName
 
 import static org.junit.Assert.*
 
-class CreateSnippetHandlerTest {
+class SnippetCodeBuilderTest {
 
     private static val FIXTURE = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test")
 
@@ -34,7 +36,7 @@ class CreateSnippetHandlerTest {
                 ${ls}.hashCode();
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -56,7 +58,7 @@ class CreateSnippetHandlerTest {
                 List ${l:newName(java.util.List)} = EMPTY_LIST;
                 ${import:import(java.util.List)}${importStatic:importStatic(java.util.Collections.EMPTY_LIST)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -76,7 +78,7 @@ class CreateSnippetHandlerTest {
                 String ${s:newName(java.lang.String)} = null;
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -95,7 +97,7 @@ class CreateSnippetHandlerTest {
                 List ${l:newName(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -115,7 +117,7 @@ class CreateSnippetHandlerTest {
                 int ${two:newName(int)} = 1 + 1;
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -137,7 +139,7 @@ class CreateSnippetHandlerTest {
                 int ${j:newName(int)} = ${i};
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -154,7 +156,7 @@ class CreateSnippetHandlerTest {
                 int ${i:newName(int)} = 0, ${j:newName(int)} = ${i};
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -172,7 +174,7 @@ class CreateSnippetHandlerTest {
                 ${l:var(java.util.List)}.hashCode();
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -195,7 +197,7 @@ class CreateSnippetHandlerTest {
                 ${l:field(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -218,7 +220,7 @@ class CreateSnippetHandlerTest {
                 L = null;
                 ${importStatic:importStatic(«testName.methodName».L)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -238,7 +240,7 @@ class CreateSnippetHandlerTest {
                 this.${l:field(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -256,7 +258,7 @@ class CreateSnippetHandlerTest {
                 ${s:var(java.lang.System)}.out.println("");
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -276,7 +278,7 @@ class CreateSnippetHandlerTest {
                 System.out.println("");
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -299,7 +301,7 @@ class CreateSnippetHandlerTest {
                 ${l:field(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -319,7 +321,7 @@ class CreateSnippetHandlerTest {
                 L = null;
                 ${importStatic:importStatic(«testName.methodName».L)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -345,7 +347,7 @@ class CreateSnippetHandlerTest {
                 List ${l:newName(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -368,7 +370,7 @@ class CreateSnippetHandlerTest {
                 static List ${L:newName(java.util.List)} = null;
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -389,7 +391,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -419,7 +421,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -449,7 +451,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -480,7 +482,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -507,7 +509,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -540,7 +542,7 @@ class CreateSnippetHandlerTest {
                 }
                 ${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
@@ -557,18 +559,20 @@ class CreateSnippetHandlerTest {
                 HashMap<Set, List> ${map:newName(java.util.HashMap)} = null
                 ${import:import(java.util.HashMap, java.util.List, java.util.Set)}${cursor}
             '''.toString,
-            actual.code
+            actual
         )
     }
 
     def exercise(CharSequence code) {
-        val struct = CreateSnippetHandlerTest.FIXTURE.createFileAndParseWithMarkers(code)
+        val struct = FIXTURE.createFileAndParseWithMarkers(code)
         val cu = struct.first;
         val start = struct.second.head;
         val end = struct.second.last;
         val editor = EditorUtility.openInEditor(cu) as CompilationUnitEditor;
-        editor.selectionProvider.selection = new TextSelection(start, end - start)
-        val sut = new CreateSnippetHandler()
-        return sut.createSnippet(editor)
+        val root = editor.getViewPartInput() as ITypeRoot;
+        val ast = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
+        val doc = editor.viewer.getDocument();
+        val selection = new TextSelection(doc, start, end - start);
+        return new SnippetCodeBuilder(ast, doc, selection).build();
     }
 }
