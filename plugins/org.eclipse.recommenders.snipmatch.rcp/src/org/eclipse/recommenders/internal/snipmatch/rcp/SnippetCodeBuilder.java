@@ -16,9 +16,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -37,19 +35,13 @@ import org.eclipse.jdt.internal.corext.dom.Selection;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateProvider;
-import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.snipmatch.Location;
-import org.eclipse.recommenders.snipmatch.Snippet;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
-public class SnippetBuilder {
+public class SnippetCodeBuilder {
 
     private final CompilationUnit ast;
     private final IDocument doc;
@@ -57,29 +49,17 @@ public class SnippetBuilder {
 
     private Set<String> imports;
     private Set<String> importStatics;
-    private Set<ProjectCoordinate> dependencies;
     private HashMap<IVariableBinding, String> vars;
     private HashMap<String, Integer> lastVarIndex;
     private StringBuilder sb;
-    private ProjectCoordinateProvider pcAdvisor;
 
-    public SnippetBuilder(CompilationUnit ast, IDocument doc, ITextSelection textSelection) {
-        pcAdvisor = InjectionService.getInstance().requestInstance(ProjectCoordinateProvider.class);
-
-        this.dependencies = Sets.newHashSet();
+    public SnippetCodeBuilder(CompilationUnit ast, IDocument doc, ITextSelection textSelection) {
         this.ast = ast;
         this.doc = doc;
         this.textSelection = textSelection;
     }
 
-    public Snippet build() {
-        String code = createCode();
-        List<String> keywords = Lists.<String>newArrayList();
-        List<String> tags = Lists.<String>newArrayList();
-        return new Snippet(UUID.randomUUID(), "", "", keywords, tags, code, Location.NONE, dependencies); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    private String createCode() {
+    public String build() {
         final int start = textSelection.getOffset();
         final int length = textSelection.getLength();
         final char[] text = textSelection.getText().toCharArray();
@@ -271,11 +251,6 @@ public class SnippetBuilder {
         }
         String name = type.getErasure().getQualifiedName();
         imports.add(name);
-
-        ProjectCoordinate opc = pcAdvisor.resolve(type).orNull();
-        if (opc != null) {
-            dependencies.add(new ProjectCoordinate(opc.getGroupId(), opc.getArtifactId(), "0.0.0")); //$NON-NLS-1$
-        }
     }
 
     private void addStaticImport(IVariableBinding binding) {
@@ -286,11 +261,6 @@ public class SnippetBuilder {
 
         String name = declaringClass.getErasure().getQualifiedName();
         importStatics.add(name + "." + binding.getName());
-
-        ProjectCoordinate opc = pcAdvisor.resolve(declaringClass).orNull();
-        if (opc != null) {
-            dependencies.add(new ProjectCoordinate(opc.getGroupId(), opc.getArtifactId(), "0.0.0")); //$NON-NLS-1$
-        }
     }
 
     private void replaceLeadingWhitespaces() {
