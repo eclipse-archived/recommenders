@@ -215,7 +215,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         protected void removeConfiguration(SnippetRepositoryConfiguration configuration) {
             List<SnippetRepositoryConfiguration> configurations = getTableInput();
 
-            MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openInformation(
+            MessageDialogWithToggle confirmDialog = MessageDialogWithToggle.openOkCancelConfirm(
                     SnipmatchPreferencePage.this.getShell(), Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE,
                     format(Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE, configuration.getName()),
                     Messages.CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE, true, null, null);
