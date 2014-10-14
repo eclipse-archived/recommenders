@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.snipmatch.rcp
+package org.eclipse.recommenders.snipmatch.rcp.util
 
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.ITypeRoot

@@ -42,4 +42,5 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
 Export-Package: org.eclipse.recommenders.snipmatch.rcp,
  org.eclipse.recommenders.snipmatch.rcp.model,
  org.eclipse.recommenders.snipmatch.rcp.model.impl,
- org.eclipse.recommenders.snipmatch.rcp.model.util
+ org.eclipse.recommenders.snipmatch.rcp.model.util,
+ org.eclipse.recommenders.snipmatch.rcp.util
