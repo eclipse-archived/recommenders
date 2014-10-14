@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -102,6 +103,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -142,6 +144,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Action addSnippetAction;
     private Action removeSnippetAction;
     private Action editSnippetAction;
+    private Action shareSnippetAction;
 
     private boolean initializeTableData = true;
 
@@ -372,6 +375,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         };
 
+        shareSnippetAction = new Action() {
+            @Override
+            public void run() {
+                shareSnippets();
+            };
+        };
+
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
@@ -391,6 +401,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         boolean removeSnippetEnabled = false;
         boolean editSnippetEnabled = false;
+        boolean shareSnippetEnabled = false;
 
         if (selectionContainsOnlyOneElementOf(SnippetRepositoryConfiguration.class)) {
             editRepoEnabled = true;
@@ -404,11 +415,16 @@ public class SnippetsView extends ViewPart implements IRcpService {
             removeSnippetEnabled = true;
             editSnippetEnabled = true;
         }
+        if (selectionIsShareable()) {
+            shareSnippetEnabled = true;
+        }
+
         removeRepositoryAction.setEnabled(removeRepoEnabled);
         editRepositoryAction.setEnabled(editRepoEnabled);
 
         removeSnippetAction.setEnabled(removeSnippetEnabled);
         editSnippetAction.setEnabled(editSnippetEnabled);
+        shareSnippetAction.setEnabled(shareSnippetEnabled);
     }
 
     private void addRepo() {
@@ -587,6 +603,23 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
     }
 
+    private void shareSnippets() {
+        ensureIsTrue(selectionIsShareable());
+
+        List<KnownSnippet> selectedSnippets = castSelection();
+        Optional<ISnippetRepository> repository = repos.getRepository(selectedSnippets.get(0).config.getId());
+        if (!repository.isPresent()) {
+            return;
+        }
+        Collection<UUID> uuids = Collections2.transform(selectedSnippets, new Function<KnownSnippet, UUID>() {
+            @Override
+            public UUID apply(KnownSnippet input) {
+                return input.snippet.getUuid();
+            }
+        });
+        repository.get().share(uuids);
+    }
+
     private void addToolBar(final Composite parent) {
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 
@@ -655,6 +688,9 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET, ELCL_EDIT_SNIPPET, manager, editSnippetAction);
 
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET, ELCL_SHARE_SNIPPET, manager,
+                        shareSnippetAction);
+
                 manager.add(new Separator());
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, manager,
@@ -702,6 +738,32 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
         for (Object element : selection) {
             if (!aClass.isAssignableFrom(element.getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean selectionIsShareable() {
+        if (selection == null || selection.isEmpty()) {
+            return false;
+        }
+        if (!selectionConsistsOnlyElementsOf(KnownSnippet.class)) {
+            return false;
+        }
+        Set<Integer> configIds = Sets.newHashSet();
+        for (Object element : selection) {
+            KnownSnippet snippet = (KnownSnippet) element;
+            int configId = snippet.config.getId();
+            configIds.add(configId);
+            if (configIds.size() > 1) {
+                return false;
+            }
+            Optional<ISnippetRepository> repository = repos.getRepository(configId);
+            if (!repository.isPresent()) {
+                return false;
+            }
+            if (!repository.get().isSharingSupported()) {
                 return false;
             }
         }

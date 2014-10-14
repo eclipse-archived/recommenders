@@ -281,16 +281,23 @@ public class FileSnippetRepository implements ISnippetRepository {
             // small repos.
             Set<Recommendation<ISnippet>> res = Sets.newHashSet();
             for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
-                try {
-                    ISnippet snippet = snippetCache.get(fSnippet);
+                ISnippet snippet = getSnippet(fSnippet);
+                if (snippet != null) {
                     res.add(Recommendation.newRecommendation(snippet, 0));
-                } catch (Exception e) {
-                    log.error("Error while loading snippet from file {}", fSnippet.getAbsolutePath(), e);
                 }
             }
             return copyOf(res);
         } finally {
             readLock.unlock();
+        }
+    }
+
+    private ISnippet getSnippet(File snippetFile) {
+        try {
+            return snippetCache.get(snippetFile);
+        } catch (Exception e) {
+            log.error("Error while loading snippet from file {}", snippetFile.getAbsolutePath(), e);
+            return null;
         }
     }
 
@@ -580,6 +587,34 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean share(Collection<UUID> uuids) {
+        return false;
+    }
+
+    @Override
+    public boolean isSharingSupported() {
+        return false;
+    }
+
+    public ISnippet getSnippet(UUID uuid) {
+        File snippetFile = getSnippetFile(uuid);
+        if (snippetFile == null) {
+            return null;
+        }
+        return getSnippet(snippetFile);
+    }
+
+    public File getSnippetFile(UUID uuid) {
+        readLock.lock();
+        try {
+            File file = new File(snippetsdir, uuid.toString() + DOT_JSON);
+            return file.exists() ? file : null;
+        } finally {
+            readLock.unlock();
         }
     }
 }

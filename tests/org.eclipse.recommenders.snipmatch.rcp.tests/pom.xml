@@ -28,7 +28,7 @@
 						</dependency>
 					</dependencies>
 				</configuration>
-				<executions>
+				<!-- executions>
 					<execution>
 						<id>default-test</id>
 						<configuration>
@@ -52,7 +52,7 @@
 							</includes>
 						</configuration>
 					</execution>
-				</executions>
+				</executions -->
 			</plugin>
 		</plugins>
 	</build>

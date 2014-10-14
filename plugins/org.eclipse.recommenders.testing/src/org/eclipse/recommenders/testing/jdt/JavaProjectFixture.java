@@ -371,7 +371,7 @@ public class JavaProjectFixture {
         int attempts = 0;
         while (!file.exists()) {
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 // Do nothing
             }
@@ -380,8 +380,10 @@ public class JavaProjectFixture {
                 throw new IllegalStateException("Failed to create file");
             }
         }
-        final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
-
+        ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
+        while (cu == null) {
+            cu = (ICompilationUnit) javaProject.findElement(path);
+        }
         return cu;
     }
 

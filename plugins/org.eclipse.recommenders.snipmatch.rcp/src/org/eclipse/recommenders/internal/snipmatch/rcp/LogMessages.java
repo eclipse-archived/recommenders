@@ -42,6 +42,9 @@ public class LogMessages extends DefaultLogMessage {
     public static final LogMessages WARNING_DEFAULT_GIT_REPO_URL_DUPLICATE = new LogMessages(WARNING,
             Messages.LOG_WARNING_DEFAULT_GIT_REPO_URL_DUPLICATE);
 
+    public static final ILogMessage ERROR_CREATING_INDEX_HEAD_DIFF = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CREATING_INDEX_HEAD_DIFF);
+
     static Bundle bundle = Logs.getBundle(LogMessages.class);
 
     private LogMessages(int severity, String message) {

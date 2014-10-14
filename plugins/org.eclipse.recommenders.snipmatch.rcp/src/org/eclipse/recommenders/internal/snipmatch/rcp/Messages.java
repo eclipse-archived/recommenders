@@ -40,6 +40,8 @@ public class Messages extends NLS {
     public static String DIALOG_MESSAGE_NO_FORMAT_BRANCH_FAILURE;
     public static String DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY;
     public static String DIALOG_MESSAGE_SELECT_DEPENDENCY;
+    public static String DIALOG_MESSAGE_NO_GIT_CHANGES_IN_SELECTION;
+    public static String DIALOG_MESSAGE_GIT_PUSH_SUCCESSFUL;
 
     public static String DIALOG_OPTION_CANCEL;
     public static String DIALOG_OPTION_SAVE;
@@ -56,6 +58,9 @@ public class Messages extends NLS {
     public static String DIALOG_TITLE_SAVE_SNIPPET;
     public static String DIALOG_TITLE_BRANCH_CHECKOUT_FAILURE;
     public static String DIALOG_TITLE_SELECT_DEPENDENCY;
+    public static String DIALOG_TITLE_SELECTION_NOT_SHAREABLE;
+    public static String DIALOG_TITLE_GIT_PUSH_SUCCESSFUL;
+    public static String DIALOG_TITLE_GIT_PUSH_FAILED;
 
     public static String DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
 
@@ -108,6 +113,8 @@ public class Messages extends NLS {
     public static String ERROR_NO_EDITABLE_REPO_FOUND;
     public static String ERROR_NO_EDITABLE_REPO_FOUND_HINT;
     public static String ERROR_REPOSITORY_NOT_OPEN_YET;
+    public static String ERROR_EXCEPTION_WHILE_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
+    public static String ERROR_FAILURE_TO_PUSH_SNIPPETS_TO_REMOTE_GIT_REPO;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;
@@ -122,10 +129,13 @@ public class Messages extends NLS {
     public static String SNIPPETS_VIEW_MENUITEM_REFRESH;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET;
+    public static String SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET;
 
     public static String JOB_OPENING_SNIPPET_REPOSITORY;
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
+    public static String JOB_RESETTING_GIT_REPOSITORY;
+    public static String JOB_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
 
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_NEW;
@@ -159,11 +169,12 @@ public class Messages extends NLS {
     public static String WIZARD_GIT_REPOSITORY_TITLE;
     public static String WIZARD_GIT_REPOSITORY_WINDOW_TITLE;
 
-    public static String LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION;
-    public static String LOG_ERROR_STORING_DEFAULT_REPO_CONFIGURATION;
-    public static String LOG_ERROR_LOADING_REPO_CONFIGURATION;
-
+    public static String LOG_ERROR_CREATING_INDEX_HEAD_DIFF;
     public static String LOG_ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION;
+    public static String LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION;
+    public static String LOG_ERROR_LOADING_REPO_CONFIGURATION;
+    public static String LOG_ERROR_STORING_DEFAULT_REPO_CONFIGURATION;
+
     public static String LOG_WARNING_DEFAULT_GIT_REPO_URL_DUPLICATE;
 
     public static String WIZARD_TYPE_SELECTION_DESCRIPTION;

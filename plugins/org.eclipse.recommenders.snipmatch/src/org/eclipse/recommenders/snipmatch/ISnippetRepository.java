@@ -12,6 +12,7 @@ package org.eclipse.recommenders.snipmatch;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,4 +58,8 @@ public interface ISnippetRepository extends Openable, Closeable {
     boolean isImportSupported();
 
     boolean delete();
+
+    boolean share(Collection<UUID> uuids);
+
+    boolean isSharingSupported();
 }
