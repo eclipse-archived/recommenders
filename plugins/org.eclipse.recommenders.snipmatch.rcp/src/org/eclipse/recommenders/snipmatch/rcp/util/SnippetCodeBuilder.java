@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -35,11 +36,19 @@ import org.eclipse.jdt.internal.corext.dom.Selection;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.recommenders.utils.Nonnull;
+import org.eclipse.recommenders.utils.Nullable;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+/**
+ * @see <a
+ *      href="http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Fconcepts%2Fconcept-template-variables.htm">Template
+ *      variables</a>
+ */
 @SuppressWarnings("restriction")
 public class SnippetCodeBuilder {
 
@@ -47,13 +56,17 @@ public class SnippetCodeBuilder {
     private final IDocument doc;
     private final ITextSelection textSelection;
 
-    private Set<String> imports;
-    private Set<String> importStatics;
-    private HashMap<IVariableBinding, String> vars;
-    private HashMap<String, Integer> lastVarIndex;
-    private StringBuilder sb;
+    private final Set<String> imports = Sets.newTreeSet();
+    private final Set<String> importStatics = Sets.newTreeSet();
+    private final HashMap<IVariableBinding, String> vars = Maps.newHashMap();
+    private final HashMap<String, Integer> lastVarIndex = Maps.newHashMap();
+    private final StringBuilder sb = new StringBuilder();
 
-    public SnippetCodeBuilder(CompilationUnit ast, IDocument doc, ITextSelection textSelection) {
+    public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc,
+            @Nonnull ITextSelection textSelection) {
+        Preconditions.checkNotNull(ast);
+        Preconditions.checkNotNull(doc);
+        Preconditions.checkNotNull(textSelection);
         this.ast = ast;
         this.doc = doc;
         this.textSelection = textSelection;
@@ -66,12 +79,6 @@ public class SnippetCodeBuilder {
 
         final ASTNode enclosingNode = NodeFinder.perform(ast, start, length);
         final Selection selection = Selection.createFromStartLength(start, length);
-
-        imports = Sets.newTreeSet();
-        importStatics = Sets.newTreeSet();
-        vars = Maps.newHashMap();
-        lastVarIndex = Maps.newHashMap();
-        sb = new StringBuilder();
 
         outer: for (int i = 0; i < text.length; i++) {
             char ch = text[i];
@@ -105,7 +112,7 @@ public class SnippetCodeBuilder {
                         String uniqueVariableName = generateUniqueVariableName(vb, name.toString());
                         if (isDeclaration(name)) {
                             appendNewName(uniqueVariableName, vb);
-                        } else if (declaredInSelection(selection, vb)) {
+                        } else if (isDeclaredInSelection(vb, selection)) {
                             appendTemplateVariableReference(uniqueVariableName);
                         } else if (isQualified(name)) {
                             sb.append(name.getIdentifier());
@@ -114,10 +121,10 @@ public class SnippetCodeBuilder {
                                 sb.append(name.getIdentifier());
                                 addStaticImport(vb);
                             } else {
-                                appendVarReference(uniqueVariableName, vb, "field"); //$NON-NLS-1$
+                                appendVarReference(uniqueVariableName, "field", vb); //$NON-NLS-1$
                             }
                         } else {
-                            appendVarReference(uniqueVariableName, vb, "var"); //$NON-NLS-1$
+                            appendVarReference(uniqueVariableName, "var", vb); //$NON-NLS-1$
                         }
                         i += name.getLength() - 1;
                         continue outer;
@@ -136,7 +143,7 @@ public class SnippetCodeBuilder {
         return sb.toString();
     }
 
-    private boolean isDeclaration(SimpleName name) {
+    private boolean isDeclaration(@Nonnull SimpleName name) {
         StructuralPropertyDescriptor locationInParent = name.getLocationInParent();
 
         if (locationInParent == VariableDeclarationFragment.NAME_PROPERTY) {
@@ -148,15 +155,15 @@ public class SnippetCodeBuilder {
         }
     }
 
-    private boolean declaredInSelection(Selection selection, IVariableBinding vb) {
-        ASTNode declaringNode = ast.findDeclaringNode(vb);
+    private boolean isDeclaredInSelection(@Nonnull IVariableBinding binding, @Nonnull Selection selection) {
+        ASTNode declaringNode = ast.findDeclaringNode(binding);
         if (declaringNode == null) {
             return false; // Declared in different compilation unit
         }
         return selection.covers(declaringNode);
     }
 
-    private boolean isQualified(SimpleName node) {
+    private boolean isQualified(@Nonnull SimpleName node) {
         StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
         if (locationInParent == QualifiedName.NAME_PROPERTY) {
             return true;
@@ -165,9 +172,9 @@ public class SnippetCodeBuilder {
         }
     }
 
-    private String generateUniqueVariableName(IVariableBinding vb, String name) {
-        if (vb != null && vars.containsKey(vb)) {
-            return vars.get(vb);
+    private String generateUniqueVariableName(@Nullable IVariableBinding binding, @Nonnull String name) {
+        if (binding != null && vars.containsKey(binding)) {
+            return vars.get(binding);
         } else {
             String newName = name;
 
@@ -184,18 +191,18 @@ public class SnippetCodeBuilder {
             }
 
             lastVarIndex.put(name, i);
-            vars.put(vb, newName);
+            vars.put(binding, newName);
             return newName;
         }
     }
 
-    private void appendTypeBinding(SimpleName name, ITypeBinding tb) {
+    private void appendTypeBinding(@Nonnull SimpleName name, @Nonnull ITypeBinding tb) {
         sb.append(name);
         addImport(tb);
     }
 
-    private void appendNewName(String name, IVariableBinding vb) {
-        ITypeBinding type = vb.getType();
+    private void appendNewName(@Nonnull String name, @Nonnull IVariableBinding binding) {
+        ITypeBinding type = binding.getType();
         sb.append('$').append('{').append(name).append(':').append("newName").append('('); //$NON-NLS-1$
         if (type.isArray()) {
             sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
@@ -207,12 +214,12 @@ public class SnippetCodeBuilder {
         addImport(type);
     }
 
-    private StringBuilder appendTemplateVariableReference(String name) {
+    private StringBuilder appendTemplateVariableReference(@Nonnull String name) {
         return sb.append('$').append('{').append(name).append('}');
     }
 
-    private void appendVarReference(String name, IVariableBinding vb, String kind) {
-        ITypeBinding type = vb.getType();
+    private void appendVarReference(@Nonnull String name, @Nonnull String kind, @Nonnull IVariableBinding binding) {
+        ITypeBinding type = binding.getType();
         sb.append('$').append('{').append(name).append(':').append(kind).append('(');
         if (type.isArray()) {
             sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
@@ -224,7 +231,7 @@ public class SnippetCodeBuilder {
         addImport(type);
     }
 
-    private void appendImportVariable(String name, Collection<String> imports) {
+    private void appendImportVariable(@Nonnull String name, @Nonnull Collection<String> imports) {
         if (!imports.isEmpty()) {
             String uniqueName = generateUniqueVariableName(null, name);
             String joinedImports = Joiner.on(", ").join(imports); //$NON-NLS-1$
@@ -237,23 +244,24 @@ public class SnippetCodeBuilder {
         sb.append("${cursor}"); //$NON-NLS-1$
     }
 
-    private void addImport(ITypeBinding type) {
+    private void addImport(@Nonnull ITypeBinding binding) {
         // need importable types only. Get the component type if it's an array type
-        if (type.isArray()) {
-            addImport(type.getComponentType());
+        if (binding.isArray()) {
+            addImport(binding.getComponentType());
             return;
         }
-        if (type.isPrimitive()) {
+        IPackageBinding packageBinding = binding.getPackage();
+        if (packageBinding == null) {
+            return; // Either a primitive or some generics-related binding (e.g., a type variable)
+        }
+        if (packageBinding.getName().equals("java.lang")) { //$NON-NLS-1$
             return;
         }
-        if (type.getPackage().getName().equals("java.lang")) { //$NON-NLS-1$
-            return;
-        }
-        String name = type.getErasure().getQualifiedName();
+        String name = binding.getErasure().getQualifiedName();
         imports.add(name);
     }
 
-    private void addStaticImport(IVariableBinding binding) {
+    private void addStaticImport(@Nonnull IVariableBinding binding) {
         ITypeBinding declaringClass = binding.getDeclaringClass();
         if (declaringClass == null) {
             return;

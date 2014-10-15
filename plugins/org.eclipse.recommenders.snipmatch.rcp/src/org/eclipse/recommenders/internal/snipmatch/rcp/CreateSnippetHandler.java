@@ -75,7 +75,7 @@ public class CreateSnippetHandler extends AbstractHandler {
 
         String code = new SnippetCodeBuilder(ast, doc, textSelection).build();
         Set<ProjectCoordinate> dependencies = new DependencyExtractor(ast, textSelection, pcProvider)
-        .extractDependencies();
+                .extractDependencies();
 
         return new Snippet(UUID.randomUUID(),
                 "", "", Lists.<String>newArrayList(), Lists.<String>newArrayList(), code, Location.NONE, dependencies); //$NON-NLS-1$ //$NON-NLS-2$

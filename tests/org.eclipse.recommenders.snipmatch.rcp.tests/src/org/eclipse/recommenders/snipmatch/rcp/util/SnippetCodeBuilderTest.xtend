@@ -122,6 +122,26 @@ class SnippetCodeBuilderTest {
     }
 
     /*
+     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=447186
+     */
+    @Test
+    def void testNoImportForTypeVariable() {
+        val code = CodeBuilder::method(CodeBuilder::classname + "<T>",
+            '''
+                $T t = null;$
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                T ${t:newName(java.lang.Object)} = null;
+                ${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    /*
      * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=440726
      */
     @Test
