@@ -47,19 +47,18 @@ public final class Messages extends NLS {
     public static String TOOLBAR_TOOLTIP_REFRESH;
 
     public static String DIALOG_RESOLVING_DEPENDENCIES;
-
     public static String DIALOG_TITLE_ADD_MODEL_REPOSITORY;
     public static String DIALOG_TITLE_INVALID_COORDINATE_FORMAT;
     public static String DIALOG_TITLE_INDEX_DOWNLOAD_FAILURE;
     public static String DIALOG_TITLE_SELECT_PROJECT_COORDINATE;
+    public static String DIALOG_TITLE_SELECT_DEPENDENCY;
+    public static String DIALOG_TOGGLE_IGNORE_DOWNLOAD_FAILURES;
 
     public static String DIALOG_MESSAGE_URI_ALREADY_ADDED;
     public static String DIALOG_MESSAGE_INVALID_COORDINATE_FORMAT;
     public static String DIALOG_MESSAGE_INVALID_REPOSITORY_URI;
     public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE;
     public static String DIALOG_MESSAGE_FILE_A_BUG;
-
-    public static String DIALOG_TOGGLE_IGNORE_DOWNLOAD_FAILURES;
 
     public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
 
@@ -70,7 +69,6 @@ public final class Messages extends NLS {
     public static String COLUMN_LABEL_REPOSITORY;
 
     public static String TABLE_CELL_SUFFIX_KNOWN_COORDINATES;
-
     public static String TABLE_CELL_TOOLTIP_AVAILABLE_LOCALLY;
     public static String TABLE_CELL_TOOLTIP_AVAILABLE_REMOTELY;
     public static String TABLE_CELL_TOOLTIP_HINTS;

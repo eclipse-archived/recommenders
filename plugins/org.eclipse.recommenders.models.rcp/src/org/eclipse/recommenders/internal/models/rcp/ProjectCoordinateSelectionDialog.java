@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.recommenders.injection.InjectionService;
@@ -33,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -95,10 +95,10 @@ public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDial
 
     @Override
     protected IDialogSettings getDialogSettings() {
-        IDialogSettings settings = JavaPlugin.getDefault().getDialogSettings().getSection(DIALOG_SETTINGS);
+        IDialogSettings settings = IDEWorkbenchPlugin.getDefault().getDialogSettings().getSection(DIALOG_SETTINGS);
 
         if (settings == null) {
-            settings = JavaPlugin.getDefault().getDialogSettings().addNewSection(DIALOG_SETTINGS);
+            settings = IDEWorkbenchPlugin.getDefault().getDialogSettings().addNewSection(DIALOG_SETTINGS);
         }
 
         return settings;
