@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.databinding.property,
  org.eclipse.jface.databinding,
  org.eclipse.recommenders.net,
  org.eclipse.recommenders.stacktraces.model,
- org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.utils;bundle-version="2.1.9",
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
