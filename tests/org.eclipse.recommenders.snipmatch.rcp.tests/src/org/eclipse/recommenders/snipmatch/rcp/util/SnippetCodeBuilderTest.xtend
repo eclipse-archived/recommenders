@@ -16,7 +16,7 @@ import static org.junit.Assert.*
 
 class SnippetCodeBuilderTest {
 
-    private static val FIXTURE = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test")
+    private static val FIXTURE = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "SnippetCodeBuilderTest")
 
     @Rule
     public val TestName testName = new TestName();

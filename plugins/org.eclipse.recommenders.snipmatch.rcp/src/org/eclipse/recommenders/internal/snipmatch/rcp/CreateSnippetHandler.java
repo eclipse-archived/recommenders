@@ -35,6 +35,7 @@ import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
+import org.eclipse.recommenders.snipmatch.rcp.util.DependencyExtractor;
 import org.eclipse.recommenders.snipmatch.rcp.util.SnippetCodeBuilder;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
