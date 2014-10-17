@@ -31,6 +31,19 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 
             @Override
             public IStatus run(IProgressMonitor monitor) {
+                // Display.getDefault().syncExec(new Runnable() {
+                // @Override
+                // public void run() {
+                //
+                // UploadNotificationPopup dialog = new UploadNotificationPopup(
+                // "The Error is already fixed at\n<a>https://bugs.eclipse.org/bugs/show_bug.cgi?id=447713</a>\nYou might need to run an update.");
+                // dialog.open();
+                // }
+                // });
+                //
+                // if (true) {
+                // return Status.OK_STATUS;
+                // }
                 for (int i = 0; i < 1; i++) {
                     ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
                     RuntimeException cause = new IllegalArgumentException("cause" + i);

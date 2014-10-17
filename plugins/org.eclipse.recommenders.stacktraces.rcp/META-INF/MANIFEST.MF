@@ -5,6 +5,7 @@ Bundle-Version: 2.1.11.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.recommenders.internal.stacktraces.rcp.fadedialog.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.databinding.property,
  org.eclipse.core.runtime,
