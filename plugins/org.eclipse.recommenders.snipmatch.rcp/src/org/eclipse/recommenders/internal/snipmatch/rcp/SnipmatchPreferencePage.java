@@ -157,8 +157,12 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
         private void updateButtonStatus() {
             boolean selected = tableViewer.getTable().getSelectionIndex() != -1;
-            boolean editableType = getSelectedConfiguration() instanceof EclipseGitSnippetRepositoryConfiguration;
-            editButton.setEnabled(selected && editableType);
+            SnippetRepositoryConfiguration selectedConfiguration = getSelectedConfiguration();
+            boolean editableType = selectedConfiguration instanceof EclipseGitSnippetRepositoryConfiguration;
+            boolean wizardAvailable = selectedConfiguration != null
+                    && WizardDescriptors.isWizardAvailable(selectedConfiguration);
+
+            editButton.setEnabled(selected && editableType && wizardAvailable);
             removeButton.setEnabled(selected);
         }
 

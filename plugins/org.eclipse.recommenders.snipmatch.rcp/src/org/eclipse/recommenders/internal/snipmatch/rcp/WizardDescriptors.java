@@ -63,4 +63,7 @@ public class WizardDescriptors {
         return wizardDescriptors;
     }
 
+    public static boolean isWizardAvailable(SnippetRepositoryConfiguration config) {
+        return !filterApplicableWizardDescriptors(loadAvailableWizards(), config).isEmpty();
+    }
 }
