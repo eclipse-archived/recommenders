@@ -11,11 +11,13 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
-import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,9 +118,9 @@ import com.google.inject.name.Named;
 
 public class SnippetsView extends ViewPart implements IRcpService {
 
-    public static final String SEARCH_FIELD = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.searchfield";
-    public static final String TREE = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.tree";
-    public static final String SWT_ID = "org.eclipse.swtbot.widget.key";
+    public static final String SEARCH_FIELD = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.searchfield"; //$NON-NLS-1$
+    public static final String TREE = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.tree"; //$NON-NLS-1$
+    public static final String SWT_ID = "org.eclipse.swtbot.widget.key"; //$NON-NLS-1$
 
     private static Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
@@ -134,10 +136,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private final SnippetRepositoryConfigurations configs;
     private final File repositoryConfigurationFile;
     private final EventBus bus;
+    private final SnipmatchRcpPreferences prefs;
 
     private Action addRepositoryAction;
     private Action removeRepositoryAction;
     private Action editRepositoryAction;
+    private Action enableRepositoryAction;
+    private Action disableRepositoryAction;
 
     private Action refreshAction;
 
@@ -164,12 +169,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
     @Inject
     public SnippetsView(Repositories repos, SharedImages images, SnippetRepositoryConfigurations configs, EventBus bus,
-            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
+            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile, SnipmatchRcpPreferences prefs) {
         this.repos = repos;
         this.configs = configs;
         this.images = images;
         this.bus = bus;
         this.repositoryConfigurationFile = repositoryConfigurationFile;
+        this.prefs = prefs;
     }
 
     @Override
@@ -231,10 +237,17 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 StyledString text = new StyledString();
                 if (element instanceof SnippetRepositoryConfiguration) {
                     SnippetRepositoryConfiguration config = (SnippetRepositoryConfiguration) element;
+
                     text.append(config.getName());
                     text.append(" "); //$NON-NLS-1$
-                    text.append(format(Messages.TABLE_CELL_SUFFIX_SNIPPETS, fetchNumberOfSnippets(config)),
-                            StyledString.COUNTER_STYLER);
+
+                    if (prefs.isRepositoryEnabled(config)) {
+                        text.append(format(Messages.TABLE_CELL_SUFFIX_SNIPPETS, fetchNumberOfSnippets(config)),
+                                StyledString.COUNTER_STYLER);
+                    } else {
+                        text.append(Messages.TABLE_REPOSITORY_DISABLED, StyledString.COUNTER_STYLER);
+                    }
+
                     cell.setImage(images.getImage(Images.OBJ_REPOSITORY));
                 } else if (element instanceof KnownSnippet) {
                     KnownSnippet knownSnippet = (KnownSnippet) element;
@@ -347,6 +360,20 @@ public class SnippetsView extends ViewPart implements IRcpService {
             }
         };
 
+        enableRepositoryAction = new Action() {
+            @Override
+            public void run() {
+                changeEnableStateRepos(true);
+            }
+        };
+
+        disableRepositoryAction = new Action() {
+            @Override
+            public void run() {
+                changeEnableStateRepos(false);
+            }
+        };
+
         refreshAction = new Action() {
             @Override
             public void run() {
@@ -398,6 +425,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private void updateActionsStatus() {
         boolean removeRepoEnabled = false;
         boolean editRepoEnabled = false;
+        boolean enableRepoEnabled = false;
+        boolean disableRepoEnabled = false;
 
         boolean removeSnippetEnabled = false;
         boolean editSnippetEnabled = false;
@@ -414,6 +443,14 @@ public class SnippetsView extends ViewPart implements IRcpService {
             removeRepoEnabled = true;
         }
 
+        if (selectionContainsOnlyOneElementOf(SnippetRepositoryConfiguration.class)) {
+            SnippetRepositoryConfiguration config = (SnippetRepositoryConfiguration) selection.get(0);
+
+            boolean repositoryEnabled = prefs.isRepositoryEnabled(config);
+            enableRepoEnabled = !repositoryEnabled;
+            disableRepoEnabled = repositoryEnabled;
+        }
+
         if (selectionConsistsOnlyElementsOf(KnownSnippet.class)) {
             removeSnippetEnabled = true;
             editSnippetEnabled = true;
@@ -424,6 +461,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         removeRepositoryAction.setEnabled(removeRepoEnabled);
         editRepositoryAction.setEnabled(editRepoEnabled);
+        enableRepositoryAction.setEnabled(enableRepoEnabled);
+        disableRepositoryAction.setEnabled(disableRepoEnabled);
 
         removeSnippetAction.setEnabled(removeSnippetEnabled);
         editSnippetAction.setEnabled(editSnippetEnabled);
@@ -514,6 +553,14 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 refreshUI();
             }
         }
+    }
+
+    private void changeEnableStateRepos(boolean enabled) {
+        ensureIsTrue(selectionContainsOnlyOneElementOf(SnippetRepositoryConfiguration.class));
+
+        SnippetRepositoryConfiguration config = cast(selection.get(0));
+        prefs.setRepositoryEnabled(config, enabled);
+        updateActionsStatus();
     }
 
     private void reload() {
@@ -696,10 +743,10 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 if (!addedAddSnippetToRepoAction) {
                     addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET, ELCL_ADD_SNIPPET, manager, addSnippetAction);
                 }
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET, ELCL_REMOVE_SNIPPET, manager,
-                        removeSnippetAction);
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET, ELCL_EDIT_SNIPPET, manager, editSnippetAction);
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET, ELCL_REMOVE_SNIPPET, manager,
+                        removeSnippetAction);
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET, ELCL_SHARE_SNIPPET, manager,
                         shareSnippetAction);
@@ -708,11 +755,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, manager,
                         addRepositoryAction);
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY, ELCL_EDIT_REPOSITORY, manager,
+                        editRepositoryAction);
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY,
                         ELCL_REMOVE_REPOSITORY_DISABLED, manager, removeRepositoryAction);
 
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY, ELCL_EDIT_REPOSITORY, manager,
-                        editRepositoryAction);
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_ENABLE_REPOSITORY, ELCL_ENABLE_REPOSITORY, manager,
+                        enableRepositoryAction);
+                addAction(Messages.SNIPPETS_VIEW_MENUITEM_DISABLE_REPOSITORY, ELCL_DISABLE_REPOSITORY, manager,
+                        disableRepositoryAction);
             }
 
         });

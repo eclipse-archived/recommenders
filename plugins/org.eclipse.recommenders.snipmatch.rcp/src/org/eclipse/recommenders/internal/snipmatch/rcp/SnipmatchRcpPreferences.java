@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -25,14 +24,20 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public class SnipmatchRcpPreferences {
 
-    static final String SEPARATOR = ";"; //$NON-NLS-1
+    private static final String SEPARATOR = ";"; //$NON-NLS-1
+    private final EventBus bus;
     private Set<String> disabledRepositories = Sets.newHashSet();
+
+    @Inject
+    public SnipmatchRcpPreferences(EventBus bus) {
+        this.bus = bus;
+    }
 
     @Inject
     public void setDisabledRepositoryConfigurations(
@@ -41,9 +46,14 @@ public class SnipmatchRcpPreferences {
         if (newDisabledRepositoryConfiguration == null) {
             return;
         }
-        List<String> disabledRepositoryConfigurations = splitDisabledRepositoryString(newDisabledRepositoryConfiguration);
-        disabledRepositories.clear();
-        disabledRepositories.addAll(disabledRepositoryConfigurations);
+
+        Set<String> newDisabledRepositories = splitDisabledRepositoryString(newDisabledRepositoryConfiguration);
+        if (disabledRepositories.equals(newDisabledRepositories)) {
+            return;
+        }
+
+        disabledRepositories = newDisabledRepositories;
+        bus.post(new Repositories.SnippetRepositoryConfigurationChangedEvent());
     }
 
     public boolean isRepositoryEnabled(SnippetRepositoryConfiguration config) {
@@ -51,17 +61,18 @@ public class SnipmatchRcpPreferences {
     }
 
     public void setRepositoryEnabled(SnippetRepositoryConfiguration config, boolean enabled) {
+        Set<String> temp = Sets.newHashSet(disabledRepositories);
         if (enabled) {
-            disabledRepositories.remove(config.getId());
+            temp.remove(config.getId());
         } else {
-            disabledRepositories.add(config.getId());
+            temp.add(config.getId());
         }
-        store(joinDisabledRepositoriesToString(disabledRepositories));
+        store(joinDisabledRepositoriesToString(temp));
     }
 
-    public static List<String> splitDisabledRepositoryString(String disabledRepositoryConfigurations) {
+    public static Set<String> splitDisabledRepositoryString(String disabledRepositoryConfigurations) {
         Iterable<String> split = Splitter.on(SEPARATOR).omitEmptyStrings().split(disabledRepositoryConfigurations);
-        return Lists.newArrayList(split);
+        return Sets.newHashSet(split);
     }
 
     public static String joinDisabledRepositoriesToString(Collection<String> disabledRepositoryConfigurations) {

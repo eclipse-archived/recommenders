@@ -126,8 +126,12 @@ public class Messages extends NLS {
     public static String SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY;
+
+    public static String SNIPPETS_VIEW_MENUITEM_DISABLE_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET;
+
+    public static String SNIPPETS_VIEW_MENUITEM_ENABLE_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_REFRESH;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY;
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET;
@@ -190,6 +194,7 @@ public class Messages extends NLS {
 
     public static String TABLE_CELL_SUFFIX_SNIPPETS;
     public static String TABLE_COLUMN_TITLE_SNIPPETS;
+    public static String TABLE_REPOSITORY_DISABLED;
 
     public static String TOOLBAR_TOOLTIP_COLLAPSE_ALL;
     public static String TOOLBAR_TOOLTIP_EXPAND_ALL;

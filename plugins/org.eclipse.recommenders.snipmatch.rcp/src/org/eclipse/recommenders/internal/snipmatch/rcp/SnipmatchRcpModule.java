@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -77,8 +78,9 @@ public class SnipmatchRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public SnipmatchRcpPreferences provide(IWorkbench wb) {
+    public SnipmatchRcpPreferences provide(IWorkbench wb, EventBus bus) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        context.set(EventBus.class, bus);
         return ContextInjectionFactory.make(SnipmatchRcpPreferences.class, context);
     }
 
