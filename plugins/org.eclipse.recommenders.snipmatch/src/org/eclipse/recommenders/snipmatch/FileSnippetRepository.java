@@ -13,9 +13,14 @@ package org.eclipse.recommenders.snipmatch;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static java.util.Collections.emptySet;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.removeEnd;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
-import static org.eclipse.recommenders.snipmatch.Location.*;
+import static org.eclipse.recommenders.snipmatch.Location.FILE;
+import static org.eclipse.recommenders.snipmatch.Location.JAVA;
+import static org.eclipse.recommenders.snipmatch.Location.NONE;
+import static org.eclipse.recommenders.snipmatch.Location.UNKNOWN;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
@@ -112,7 +117,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     private final Lock readLock;
     private final Lock writeLock;
 
-    private final int id;
+    private final String id;
     private final File snippetsdir;
     private final File indexdir;
     private final String repoUrl;
@@ -135,7 +140,7 @@ public class FileSnippetRepository implements ISnippetRepository {
                 }
             });
 
-    public FileSnippetRepository(int id, File basedir) {
+    public FileSnippetRepository(String id, File basedir) {
         Preconditions.checkArgument(CACHE_SIZE > MAX_SEARCH_RESULTS,
                 "The cache size needs to be larger than the maximum number of search results.");
         this.id = id;
@@ -489,7 +494,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     @Override
-    public int getId() {
+    public String getId() {
         return id;
     }
 

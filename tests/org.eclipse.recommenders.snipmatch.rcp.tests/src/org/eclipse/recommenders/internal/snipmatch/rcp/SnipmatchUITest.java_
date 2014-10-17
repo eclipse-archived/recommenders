@@ -93,8 +93,8 @@ public class SnipmatchUITest {
 
         configs.getRepos().clear();
 
-        configuration1 = createConfiguration(0, "Repo1", "http://www.example.org/repo");
-        configuration2 = createConfiguration(1, "Repo2", "http://www.example.com/repo");
+        configuration1 = createConfiguration("Repo1", "Repo1", "http://www.example.org/repo");
+        configuration2 = createConfiguration("Repo2", "Repo2", "http://www.example.com/repo");
 
         configs.getRepos().add(configuration1);
         configs.getRepos().add(configuration2);
@@ -149,7 +149,7 @@ public class SnipmatchUITest {
         return mockedRepository;
     }
 
-    private static EclipseGitSnippetRepositoryConfiguration createConfiguration(int id, String name, String url) {
+    private static EclipseGitSnippetRepositoryConfiguration createConfiguration(String id, String name, String url) {
         EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
                 .createEclipseGitSnippetRepositoryConfiguration();
         configuration.setId(id);

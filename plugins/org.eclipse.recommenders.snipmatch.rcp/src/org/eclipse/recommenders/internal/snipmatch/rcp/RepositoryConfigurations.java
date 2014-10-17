@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
@@ -36,6 +37,7 @@ import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Logs;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class RepositoryConfigurations {
@@ -109,26 +111,14 @@ public class RepositoryConfigurations {
             }
         }
 
-        int id = fetchHighestUsedId(defaultConfigurations) + 1;
-
         for (SnippetRepositoryConfiguration config : defaultConfigurations) {
-            if (config.getId() == -1) {
-                config.setId(id);
-                id++;
+            if (Strings.isNullOrEmpty(config.getId())) {
+                config.setId(UUID.randomUUID().toString());
             }
+            config.setDefaultConfiguration(true);
         }
 
         return defaultConfigurations;
-    }
-
-    public static int fetchHighestUsedId(List<SnippetRepositoryConfiguration> defaultConfigurations) {
-        int id = 0;
-        for (SnippetRepositoryConfiguration config : defaultConfigurations) {
-            if (config.getId() > id) {
-                id = config.getId();
-            }
-        }
-        return id;
     }
 
     private static List<EClass> searchSubtypes(EPackage ePackage, EClass eClass) {

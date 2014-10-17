@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -37,7 +38,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
-import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -64,17 +64,20 @@ import com.google.inject.name.Named;
 
 public class SnipmatchPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+    private final SnipmatchRcpPreferences prefs;
     private final EventBus bus;
     private final Repositories repos;
     private final SnippetRepositoryConfigurations configuration;
-    private boolean dirty;
     private final File repositoryConfigurationFile;
+
+    private boolean dirty;
 
     @Inject
     public SnipmatchPreferencePage(EventBus bus, Repositories repos, SnippetRepositoryConfigurations configuration,
-            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile) {
+            @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile, SnipmatchRcpPreferences prefs) {
         super(GRID);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
+        this.prefs = prefs;
         this.bus = bus;
         this.repos = repos;
         this.configuration = configuration;
@@ -145,7 +148,9 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                     }
 
                     SnippetRepositoryConfiguration selectedConfiguration = cast(item.getData());
-                    editConfiguration(selectedConfiguration);
+                    if (!selectedConfiguration.isDefaultConfiguration()) {
+                        editConfiguration(selectedConfiguration);
+                    }
                     updateButtonStatus();
                 }
             });
@@ -158,12 +163,16 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         private void updateButtonStatus() {
             boolean selected = tableViewer.getTable().getSelectionIndex() != -1;
             SnippetRepositoryConfiguration selectedConfiguration = getSelectedConfiguration();
-            boolean editableType = selectedConfiguration instanceof EclipseGitSnippetRepositoryConfiguration;
-            boolean wizardAvailable = selectedConfiguration != null
-                    && WizardDescriptors.isWizardAvailable(selectedConfiguration);
+            if (selectedConfiguration == null) {
+                editButton.setEnabled(false);
+                removeButton.setEnabled(false);
+                return;
+            }
+            boolean wizardAvailable = WizardDescriptors.isWizardAvailable(selectedConfiguration);
+            boolean defaultConfiguration = selectedConfiguration.isDefaultConfiguration();
+            editButton.setEnabled(selected && wizardAvailable && !defaultConfiguration);
 
-            editButton.setEnabled(selected && editableType && wizardAvailable);
-            removeButton.setEnabled(selected);
+            removeButton.setEnabled(selected && !defaultConfiguration);
         }
 
         private Composite getButtonControl(Composite parent) {
@@ -282,7 +291,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 if (dialog.open() == Window.OK) {
                     List<SnippetRepositoryConfiguration> configurations = getTableInput();
                     SnippetRepositoryConfiguration newConfiguration = newWizard.getConfiguration();
-                    newConfiguration.setId(RepositoryConfigurations.fetchHighestUsedId(configurations) + 1);
+                    newConfiguration.setId(UUID.randomUUID().toString());
                     configurations.add(newConfiguration);
                     updateTableContent(configurations);
                     dirty = true;
@@ -341,7 +350,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                             if (oldConfigurations != null && oldConfigurations.contains(input)) {
                                 return tableViewer.getChecked(input);
                             }
-                            return input.isEnabled();
+                            return prefs.isRepositoryEnabled(input);
                         }
 
                     });
@@ -358,7 +367,10 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
 
         @Override
         protected void doLoadDefault() {
-            updateTableContent(RepositoryConfigurations.fetchDefaultConfigurations());
+            List<SnippetRepositoryConfiguration> defaultConfigurations = RepositoryConfigurations
+                    .fetchDefaultConfigurations();
+            updateTableContent(defaultConfigurations);
+            tableViewer.setCheckedElements(defaultConfigurations.toArray());
             dirty = true;
         }
 
@@ -370,7 +382,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             List<SnippetRepositoryConfiguration> oldconfigs = getTableInput();
             List<SnippetRepositoryConfiguration> newConfigs = Lists.newArrayList();
             for (SnippetRepositoryConfiguration config : oldconfigs) {
-                config.setEnabled(tableViewer.getChecked(config));
+                prefs.setRepositoryEnabled(config, tableViewer.getChecked(config));
                 newConfigs.add(config);
             }
 

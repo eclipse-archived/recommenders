@@ -14,10 +14,10 @@
       disposableProviderFactory="true" contentTypeIdentifier="" ecorePackage="snipmatch.ecore#/">
     <genDataTypes ecoreDataType="snipmatch.ecore#//ESnippetRepository"/>
     <genClasses image="false" ecoreClass="snipmatch.ecore#//SnippetRepositoryConfiguration">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/enabled"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/description"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/defaultConfiguration"/>
       <genOperations ecoreOperation="snipmatch.ecore#//SnippetRepositoryConfiguration/createRepositoryInstance"/>
     </genClasses>
     <genClasses image="false" ecoreClass="snipmatch.ecore#//DefaultSnippetRepositoryConfigurationProvider">

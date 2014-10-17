@@ -56,7 +56,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     private Repository localRepo;
 
-    public GitSnippetRepository(int id, File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
+    public GitSnippetRepository(String id, File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
         super(id, basedir);
         this.basedir = basedir;
         this.fetchUrl = fetchUrl;

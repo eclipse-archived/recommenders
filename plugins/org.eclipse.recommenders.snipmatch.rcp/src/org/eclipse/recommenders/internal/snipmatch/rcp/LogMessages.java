@@ -36,6 +36,8 @@ public class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_STORING_DEFAULT_REPO_CONFIGURATION);
     public static ILogMessage ERROR_LOADING_REPO_CONFIGURATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_LOADING_REPO_CONFIGURATION);
+    public static ILogMessage ERROR_STORING_DISABLED_REPOSITORY_CONFIGURATIONS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_STORING_DISABLED_REPOSITORY_CONFIGURATIONS);
 
     public static final LogMessages ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION);

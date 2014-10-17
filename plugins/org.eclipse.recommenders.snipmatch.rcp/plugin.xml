@@ -4,7 +4,15 @@
 	<extension-point id="configurationwizards" name="Configuration wizards" schema="schema/configurationwizards.exsd"/>
 	<extension-point id="pageFactories" name="Snippet Editor Page Factory" schema="schema/pageFactories.exsd"/>
 	<extension-point id="registeredEmfPackages" name="Snippet Repository Emf Package Registration" schema="schema/registeredEmfPackages.exsd"/>
- <extension-point id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration" schema="schema/defaultGitSnippetRepositoryConfigurations.exsd"/>
+	<extension-point id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration" schema="schema/defaultGitSnippetRepositoryConfigurations.exsd"/>
+	<!-- do not move the following extension to the bottom -->
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<!-- @generated snipmatchrcp -->
+		<package
+			uri="org.eclipse.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelPackage"
+			genModel="model/snipmatchrcp.genmodel"/>
+		</extension>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.snipmatch.rcp.SnippetEditor"
@@ -91,21 +99,21 @@
 				mnemonic="S"/>
 		</menuContribution>
 	</extension>
-	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationwizards">
-		<configurationwizard
-        name="%wizards.git-based-repo.name"
-        wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
-		</configurationwizard>
-	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.defaultGitSnippetRepositoryConfigurations">
 		<defaultGitSnippetRepositoryConfiguration
 			description="%defaultGitSnippetRepositorConfigurations.recommenders.description"
-			enabled="true"
+			id="org.eclipse.recommenders.snipmatch.repository"
 			name="%defaultGitSnippetRepositorConfigurations.recommenders.name"
 			pushBranchPrefix="refs/for"
 			pushUrl="https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"
 			url="http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git">
 		</defaultGitSnippetRepositoryConfiguration>
+	</extension>
+	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationwizards">
+		<configurationwizard
+			name="%wizards.git-based-repo.name"
+			wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
+		</configurationwizard>
 	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.registeredEmfPackages">
 		<registeredEmfPackages

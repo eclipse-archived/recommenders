@@ -140,8 +140,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     private Set<String> notTracked;
     private Set<String> files;
 
-    public EclipseGitSnippetRepository(int id, File basedir, String remoteUri, String pushUrl, String pushBranchPrefix,
-            EventBus bus) {
+    public EclipseGitSnippetRepository(String id, File basedir, String remoteUri, String pushUrl,
+            String pushBranchPrefix, EventBus bus) {
         this.bus = bus;
 
         delegate = new GitSnippetRepository(id, new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
@@ -316,7 +316,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     }
 
     @Override
-    public int getId() {
+    public String getId() {
         readLock.lock();
         try {
             return delegate.getId();
@@ -510,7 +510,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     }
 
     private IndexDiff buildIndexHeadDiffList(Repository repo, IProgressMonitor monitor) throws IOException,
-            OperationCanceledException {
+    OperationCanceledException {
         monitor.beginTask(UIText.CommitActionHandler_calculatingChanges, 1000);
         try {
             WorkingTreeIterator it = IteratorService.createInitialIterator(repo);
@@ -619,7 +619,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     private boolean doCommit(CommitDialog commitDialog) {
         /*
          * TODO This is a workaround for CommitDialog shortcomings.
-         * 
+         *
          * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=447236
          */
         IPreferenceStore preferenceStore = org.eclipse.egit.ui.Activator.getDefault().getPreferenceStore();

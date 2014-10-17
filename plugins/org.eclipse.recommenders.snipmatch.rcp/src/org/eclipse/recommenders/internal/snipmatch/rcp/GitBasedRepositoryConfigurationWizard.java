@@ -57,7 +57,6 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
         configuration.setUrl(page.txtFetchUri.getText());
         configuration.setPushUrl(page.txtPushUri.getText());
         configuration.setPushBranchPrefix(page.txtPushBranchPrefix.getText());
-        configuration.setEnabled(true);
         return true;
     }
 

@@ -35,12 +35,15 @@ import com.google.inject.Inject;
 
 public class Repositories implements IRcpService, Openable, Closeable {
 
+    private final SnippetRepositoryConfigurations configurations;
+    private final SnipmatchRcpPreferences prefs;
+
     private Set<ISnippetRepository> repositories = Sets.newHashSet();
-    private SnippetRepositoryConfigurations configurations;
 
     @Inject
-    public Repositories(EventBus bus, SnippetRepositoryConfigurations configurations) {
+    public Repositories(EventBus bus, SnippetRepositoryConfigurations configurations, SnipmatchRcpPreferences prefs) {
         bus.register(this);
+        this.prefs = prefs;
         this.configurations = configurations;
     }
 
@@ -49,7 +52,7 @@ public class Repositories implements IRcpService, Openable, Closeable {
     public void open() throws IOException {
         repositories.clear();
         for (SnippetRepositoryConfiguration config : configurations.getRepos()) {
-            if (!config.isEnabled()) {
+            if (!prefs.isRepositoryEnabled(config)) {
                 continue;
             }
             ISnippetRepository repo = config.createRepositoryInstance();
@@ -71,9 +74,9 @@ public class Repositories implements IRcpService, Openable, Closeable {
         return repositories;
     }
 
-    public Optional<ISnippetRepository> getRepository(int id) {
+    public Optional<ISnippetRepository> getRepository(String id) {
         for (ISnippetRepository repo : repositories) {
-            if (repo.getId() == id) {
+            if (repo.getId().equals(id)) {
                 return of(repo);
             }
         }
