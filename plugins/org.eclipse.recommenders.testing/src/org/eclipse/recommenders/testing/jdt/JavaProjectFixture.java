@@ -368,6 +368,18 @@ public class JavaProjectFixture {
         // create file
         final ByteArrayInputStream is = new ByteArrayInputStream(content.getBytes());
         file.create(is, true, NULL_PROGRESS_MONITOR);
+        int attempts = 0;
+        while (!file.exists()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // Do nothing
+            }
+            attempts++;
+            if (attempts > 10) {
+                throw new IllegalStateException("Failed to create file");
+            }
+        }
         final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
 
         return cu;
