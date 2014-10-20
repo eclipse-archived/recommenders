@@ -95,6 +95,8 @@ public class Messages extends NLS {
     public static String EDITOR_TITLE_METADATA;
     public static String EDITOR_TITLE_RAW_SOURCE;
 
+    public static String EDITOR_TOOLBAR_ITEM_HELP;
+
     public static String EDITOR_DESCRIPTION_DEPENDENCIES;
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
     public static String EDITOR_DESCRIPTION_LOCATION;

@@ -98,6 +98,7 @@ public final class SharedImages implements IDisposable {
         ELCL_EDIT_REPOSITORY(elcl16("edit_repository.png")), //$NON-NLS-1$
         ELCL_EDIT_SNIPPET(elcl16("edit_snippet.png")), //$NON-NLS-1$
         ELCL_EXPAND_ALL(elcl16("expandall.gif")), //$NON-NLS-1$
+        ELCL_HELP(elcl16("help.png")), //$NON-NLS-1$
         ELCL_REFRESH(elcl16("refresh_tab.gif")), //$NON-NLS-1$
         ELCL_REMOVE_REPOSITORY(elcl16("remove_repository.png")), //$NON-NLS-1$
         ELCL_REMOVE_REPOSITORY_DISABLED(elcl16("remove_repository_disabled.png")), //$NON-NLS-1$
