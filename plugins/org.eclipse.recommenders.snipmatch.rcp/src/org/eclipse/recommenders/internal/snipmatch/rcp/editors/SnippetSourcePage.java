@@ -56,6 +56,8 @@ public class SnippetSourcePage extends FormPage {
 
         form = managedForm.getForm();
         form.setText(Messages.EDITOR_TITLE_RAW_SOURCE);
+        EditorUtils.addHelpActionToForm(form);
+
         toolkit.decorateFormHeading(form.getForm());
 
         Composite body = form.getBody();
@@ -93,6 +95,12 @@ public class SnippetSourcePage extends FormPage {
         };
         managedForm.addPart(codePart);
         context = createDataBindingContext();
+    }
+
+    @Override
+    public void setFocus() {
+        super.setFocus();
+        textWidget.setFocus();
     }
 
     @Override

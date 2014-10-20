@@ -144,6 +144,8 @@ public class SnippetMetadataPage extends FormPage {
         FormToolkit toolkit = managedForm.getToolkit();
         ScrolledForm form = managedForm.getForm();
         form.setText(Messages.EDITOR_TITLE_METADATA);
+        EditorUtils.addHelpActionToForm(form);
+
         Composite body = form.getBody();
         toolkit.decorateFormHeading(form.getForm());
         toolkit.paintBordersFor(body);
@@ -229,7 +231,7 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 comboLocation.getCombo().setLayoutData(
                         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
-                                .indent(horizontalIndent, 0).create());
+                        .indent(horizontalIndent, 0).create());
 
                 final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
@@ -274,7 +276,7 @@ public class SnippetMetadataPage extends FormPage {
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
                 extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
                 extraSearchTermsDescriptionDecoration
-                        .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
@@ -440,7 +442,6 @@ public class SnippetMetadataPage extends FormPage {
             }
 
         };
-
         managedForm.addPart(contentsPart);
         context = createDataBindingContext();
     }
@@ -681,6 +682,12 @@ public class SnippetMetadataPage extends FormPage {
 
     String getStringForDependency(ProjectCoordinate pc) {
         return pc.getGroupId() + ":" + pc.getArtifactId(); //$NON-NLS-1$
+    }
+
+    @Override
+    public void setFocus() {
+        super.setFocus();
+        txtName.setFocus();
     }
 
     @Override
