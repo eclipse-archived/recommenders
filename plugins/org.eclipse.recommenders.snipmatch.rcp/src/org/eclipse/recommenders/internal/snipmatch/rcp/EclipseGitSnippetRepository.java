@@ -510,7 +510,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     }
 
     private IndexDiff buildIndexHeadDiffList(Repository repo, IProgressMonitor monitor) throws IOException,
-    OperationCanceledException {
+            OperationCanceledException {
         monitor.beginTask(UIText.CommitActionHandler_calculatingChanges, 1000);
         try {
             WorkingTreeIterator it = IteratorService.createInitialIterator(repo);
@@ -566,8 +566,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
             public boolean apply(ISnippet input) {
                 UUID uuid = input.getUuid();
                 for (String preselectedFile : preselectedFiles) {
-                    if (preselectedFile.substring(SNIPPETS_DIR.length(), preselectedFile.length() - EXT_JSON.length())
-                            .equals(uuid.toString())) {
+                    if (preselectedFile.substring(SNIPPETS_DIR.length(),
+                            preselectedFile.length() - EXT_JSON.length() - 1).equals(uuid.toString())) {
                         return true;
                     }
                 }
