@@ -53,7 +53,6 @@ import org.eclipse.egit.core.op.PushOperationResult;
 import org.eclipse.egit.core.op.ResetOperation;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
-import org.eclipse.egit.ui.internal.UIText;
 import org.eclipse.egit.ui.internal.commit.CommitHelper;
 import org.eclipse.egit.ui.internal.commit.CommitJob;
 import org.eclipse.egit.ui.internal.credentials.EGitCredentialsProvider;
@@ -511,7 +510,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private IndexDiff buildIndexHeadDiffList(Repository repo, IProgressMonitor monitor) throws IOException,
             OperationCanceledException {
-        monitor.beginTask(UIText.CommitActionHandler_calculatingChanges, 1000);
+        monitor.beginTask(Messages.MONITOR_CALCULATING_DIFF, 1000);
         try {
             WorkingTreeIterator it = IteratorService.createInitialIterator(repo);
             if (it == null) {
@@ -639,8 +638,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         try {
             commitOperation = new CommitOperation(delegate.getGitRepo(), commitDialog.getSelectedFiles(), notTracked,
                     commitDialog.getAuthor(), commitDialog.getCommitter(), commitDialog.getCommitMessage());
-        } catch (CoreException e1) {
-            Activator.handleError(UIText.CommitUI_commitFailed, e1, true);
+        } catch (CoreException e) {
+            Activator.handleError(Messages.ERROR_COMMIT_FAILED, e, true);
             return false;
         }
         commitOperation.setComputeChangeId(commitDialog.getCreateChangeId());

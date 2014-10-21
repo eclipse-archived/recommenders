@@ -107,6 +107,7 @@ public class Messages extends NLS {
     public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
     public static String LOG_ERROR_CANNOT_COMPUTE_LOCATION;
 
+    public static String ERROR_COMMIT_FAILED;
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_NO_FORMAT_BRANCH;
     public static String ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY;
@@ -198,6 +199,8 @@ public class Messages extends NLS {
 
     public static String TOOLBAR_TOOLTIP_COLLAPSE_ALL;
     public static String TOOLBAR_TOOLTIP_EXPAND_ALL;
+
+    public static String MONITOR_CALCULATING_DIFF;
 
     static {
         // initialize resource bundle
