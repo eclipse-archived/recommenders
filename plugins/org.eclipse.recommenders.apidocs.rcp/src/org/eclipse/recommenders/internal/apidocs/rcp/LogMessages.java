@@ -17,9 +17,11 @@ import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
+
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final LogMessages FAILED_TO_DETERMINE_STATIC_MEMBERS = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS);
@@ -36,8 +38,6 @@ public class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage NO_SUCH_ENTRY = new LogMessages(WARNING, Messages.LOG_WARNING_NO_SUCH_ENTRY);
 
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
-
     private LogMessages(int severity, String message) {
         // we are a bit lazy and don't use fixed error codes. But this this is likely not too much of a problem.
         super(severity, code++, message);
@@ -45,6 +45,6 @@ public class LogMessages extends DefaultLogMessage {
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

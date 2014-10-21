@@ -28,7 +28,11 @@ import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
-public class UUIDs {
+public final class UUIDs {
+
+    private UUIDs() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static String getUUID() {
         final Optional<String> uuid = lookupUUIDFromStore();

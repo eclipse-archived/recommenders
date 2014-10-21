@@ -19,6 +19,10 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 
 public final class Constants {
 
+    private Constants() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
+
     /*
      * Repository constants. Used for identifying archives, indexes, fields in indexes in model repository related
      * areas.

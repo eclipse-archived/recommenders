@@ -16,16 +16,16 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
+
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SAVE_PREFERENCES);
     public static final LogMessages ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_ADVISOR_INSTANTIATION);
-
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
@@ -33,6 +33,6 @@ public class LogMessages extends DefaultLogMessage {
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

@@ -35,6 +35,10 @@ import com.google.common.collect.Maps;
 
 public final class Dependencies {
 
+    private Dependencies() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
+
     public static Optional<DependencyInfo> createDependencyInfoForJre(IJavaProject javaProject) {
         Optional<String> executionEnvironmentId = getExecutionEnvironmentId(javaProject);
 

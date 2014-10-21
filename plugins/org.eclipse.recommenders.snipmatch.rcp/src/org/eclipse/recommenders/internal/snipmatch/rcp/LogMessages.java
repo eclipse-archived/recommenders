@@ -17,9 +17,11 @@ import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
+
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
@@ -47,14 +49,12 @@ public class LogMessages extends DefaultLogMessage {
     public static final ILogMessage ERROR_CREATING_INDEX_HEAD_DIFF = new LogMessages(ERROR,
             Messages.LOG_ERROR_CREATING_INDEX_HEAD_DIFF);
 
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
-
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
     }
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

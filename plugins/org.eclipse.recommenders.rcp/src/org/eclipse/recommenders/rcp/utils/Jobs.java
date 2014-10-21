@@ -19,7 +19,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
-public class Jobs {
+public final class Jobs {
+
+    private Jobs() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static final ISchedulingRule EXCLUSIVE = new SequentialSchedulingRule();
 

@@ -15,14 +15,14 @@ import static org.eclipse.core.runtime.IStatus.WARNING;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
 
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
+
     public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
             "Could not access \u2018{0}\u2019 using reflection. Functionality may be limited.");
-
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
@@ -30,6 +30,6 @@ public class LogMessages extends DefaultLogMessage {
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

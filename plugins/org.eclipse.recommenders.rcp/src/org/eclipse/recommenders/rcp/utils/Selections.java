@@ -25,7 +25,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "unchecked" })
-public class Selections {
+public final class Selections {
+
+    private Selections() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static <T> Optional<T> getFirstSelected(OpenEvent e) {
         ISelection selection = e.getViewer().getSelection();

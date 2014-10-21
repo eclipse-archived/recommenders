@@ -10,7 +10,12 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
-public class Constants {
+public final class Constants {
+
+    private Constants() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
+
     static final String PLUGIN_ID = "org.eclipse.recommenders.stacktraces.rcp";
     static final String PROP_NAME = "name";
     static final String PROP_EMAIL = "email";

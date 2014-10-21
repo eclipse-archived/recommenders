@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-public class Constants {
+public final class Constants {
+
+    private Constants() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     /**
      * Bundle symbolic name of the o.e.r.calls.rcp bundle.

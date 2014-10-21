@@ -23,6 +23,9 @@ import com.google.common.collect.Maps;
 
 public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdvisor {
 
+    private static final String GROUP_ID = "jre";
+    private static final String ARTIFACT_ID = "jre";
+
     private static Map<String, ProjectCoordinate> lookUpTable = createLookUpTable();
 
     @Override
@@ -38,13 +41,14 @@ public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdv
     private static Map<String, ProjectCoordinate> createLookUpTable() {
         Map<String, ProjectCoordinate> result = Maps.newHashMap();
 
-        result.put("JRE-1.1", new ProjectCoordinate("jre", "jre", "1.1.0"));
-        result.put("J2SE-1.2", new ProjectCoordinate("jre", "jre", "1.2.0"));
-        result.put("J2SE-1.3", new ProjectCoordinate("jre", "jre", "1.3.0"));
-        result.put("J2SE-1.4", new ProjectCoordinate("jre", "jre", "1.4.0"));
-        result.put("J2SE-1.5", new ProjectCoordinate("jre", "jre", "1.5.0"));
-        result.put("JavaSE-1.6", new ProjectCoordinate("jre", "jre", "1.6.0"));
-        result.put("JavaSE-1.7", new ProjectCoordinate("jre", "jre", "1.7.0"));
+        result.put("JRE-1.1", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.1.0"));
+        result.put("J2SE-1.2", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.2.0"));
+        result.put("J2SE-1.3", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.3.0"));
+        result.put("J2SE-1.4", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.4.0"));
+        result.put("J2SE-1.5", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.5.0"));
+        result.put("JavaSE-1.6", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.6.0"));
+        result.put("JavaSE-1.7", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.7.0"));
+        result.put("JavaSE-1.8", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.8.0"));
 
         return result;
     }

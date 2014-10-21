@@ -27,7 +27,11 @@ import org.eclipse.core.net.proxy.IProxyData;
 import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
-public class Proxies {
+public final class Proxies {
+
+    private Proxies() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
 
     private static final String DOUBLEBACKSLASH = "\\\\"; //$NON-NLS-1$
     private static final String ENV_USERDOMAIN = "USERDOMAIN"; //$NON-NLS-1$

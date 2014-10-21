@@ -20,6 +20,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -152,12 +153,13 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private void testAndInsertNewProposals(IRecommendersCompletionContext crContext,
             Map<IJavaCompletionProposal, CompletionProposal> baseProposals, Set<String> sortkeys,
             final Map<IJavaCompletionProposal, CompletionProposal> newProposals) {
-        for (IJavaCompletionProposal p : newProposals.keySet()) {
+        for (Entry<IJavaCompletionProposal, CompletionProposal> entry : newProposals.entrySet()) {
+            IJavaCompletionProposal p = entry.getKey();
             String displayString = p.getDisplayString();
             String completion = CompletionContexts.getPrefixMatchingArea(displayString);
             if (!sortkeys.contains(displayString) && containsSubsequence(completion, crContext.getPrefix())) {
-                baseProposals.put(p, newProposals.get(p));
-                sortkeys.add(p.getDisplayString());
+                baseProposals.put(p, entry.getValue());
+                sortkeys.add(displayString);
             }
         }
     }

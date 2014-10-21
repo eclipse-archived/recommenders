@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -16,10 +16,10 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.factor.AbstractFactor;
 import org.eclipse.recommenders.jayes.factor.Cut;
 
-public class BayesNodeUtil {
+public final class BayesNodeUtil {
 
     private BayesNodeUtil() {
-
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
     /**
@@ -41,7 +41,7 @@ public class BayesNodeUtil {
         cut.initialize();
 
         if (cut.getSubCut() != null || cut.getStepSize() != 1
-                || (cut.getEnd() - cut.getStart()) != node.getOutcomeCount()) {
+                || cut.getEnd() - cut.getStart() != node.getOutcomeCount()) {
             throw new AssertionError("Unexpected factor structure: node's dimension is not the lowest");
         }
 

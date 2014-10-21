@@ -18,14 +18,14 @@ import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
 @SuppressWarnings("restriction")
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
 
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
+
     public static final LogMessages EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
-
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
@@ -33,6 +33,6 @@ public class LogMessages extends DefaultLogMessage {
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

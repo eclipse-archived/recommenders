@@ -40,7 +40,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
 @SuppressWarnings("restriction")
-public class ProposalUtils {
+public final class ProposalUtils {
+
+    private ProposalUtils() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
 

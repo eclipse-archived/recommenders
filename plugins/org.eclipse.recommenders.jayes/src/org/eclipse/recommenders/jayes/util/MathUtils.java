@@ -12,10 +12,10 @@ package org.eclipse.recommenders.jayes.util;
 
 import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
 
-public class MathUtils {
+public final class MathUtils {
 
     private MathUtils() {
-
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
     public static void exp(double[] vector) {
@@ -64,7 +64,7 @@ public class MathUtils {
     /**
      * computes c := a / b , but avoids division by zero. In the context of the JTA, this is valid because it holds that
      * b == 0 -> a == 0
-     * 
+     *
      * @param a
      * @param b
      * @param c
@@ -125,7 +125,7 @@ public class MathUtils {
 
     /**
      * product of the values in the array, from index start (inclusive) to end (exclusive)
-     * 
+     *
      * @throws ArrayIndexOutOfBoundsException
      *             if end >= vector.length
      */

@@ -50,7 +50,11 @@ import org.eclipse.recommenders.utils.names.Names;
 
 import com.google.common.base.Optional;
 
-public class ASTNodeUtils {
+public final class ASTNodeUtils {
+
+    private ASTNodeUtils() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     /**
      * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"

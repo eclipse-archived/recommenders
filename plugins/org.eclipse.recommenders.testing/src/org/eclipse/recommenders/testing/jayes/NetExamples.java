@@ -16,25 +16,25 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten;
 
-public class NetExamples {
+public final class NetExamples {
 
     private NetExamples() {
-
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
     /**
      * a simple network with 4 nodes. The structure is as follows: <br/>
-     * 
+     *
      * <pre>
-     * a - b 
-     *  \ / 
+     * a - b
+     *  \ /
      *   c - d
-     * 
+     *
      * </pre>
-     * 
+     *
      * so although this is an easy network, LBP should show some expected trouble with this. JunctionTree will merge a,
      * b and c together to form a Clique
-     * 
+     *
      * @return
      */
     public static BayesNet testNet1() {
@@ -49,7 +49,7 @@ public class NetExamples {
         // @formatter:off
         b.setProbabilities(ArrayFlatten.flatten(new double[][] { { 0.1, 0.4, 0.5 }, // a = true
                 { 0.3, 0.4, 0.3 } // a = false
-                }));
+        }));
         // @formatter:on
 
         BayesNode c = net.createNode("c");
@@ -57,14 +57,14 @@ public class NetExamples {
         c.setParents(Arrays.asList(a, b));
         // @formatter:off
         c.setProbabilities(ArrayUtils.flatten(new double[][][] { { // a = true
-                { 0.1, 0.9 }, // b = la
-                        { 0.0, 1.0 }, // b = le
-                        { 0.5, 0.5 } // b = lu
-                }, { // a = false
-                { 0.2, 0.8 }, // b = la
-                        { 0.0, 1.0 }, // b = le
-                        { 0.7, 0.3 } // b = lu
-                } }));
+            { 0.1, 0.9 }, // b = la
+            { 0.0, 1.0 }, // b = le
+            { 0.5, 0.5 } // b = lu
+        }, { // a = false
+            { 0.2, 0.8 }, // b = la
+            { 0.0, 1.0 }, // b = le
+            { 0.7, 0.3 } // b = lu
+        } }));
         // @formatter:on
 
         BayesNode d = net.createNode("d");
@@ -73,7 +73,7 @@ public class NetExamples {
         // @formatter:off
         d.setProbabilities(ArrayFlatten.flatten(new double[][] { { 0.5, 0.5 }, // c = true
                 { 0.2, 0.8 } // c = false
-                }));
+        }));
         // @formatter:on
 
         return net;
@@ -106,7 +106,7 @@ public class NetExamples {
         // @formatter:off
         b.setProbabilities(ArrayFlatten.flatten(new double[][] { { 0.1, 0.4, 0.5 }, // a = true
                 { 0.3, 0.4, 0.3 } // a = false
-                }));
+        }));
         // @formatter:on
 
         BayesNode c = net.createNode("c");
@@ -114,14 +114,14 @@ public class NetExamples {
         c.setParents(Arrays.asList(a, b));
         // @formatter:off
         c.setProbabilities(ArrayUtils.flatten(new double[][][] { { // a = true
-                { 0.0, 0.0, 0.1, 0.9 }, // b = la
-                        { 0.0, 0.0, 0.0, 1.0 }, // b = le
-                        { 0.0, 0.0, 0.0, 1.0 } // b = lu
-                }, { // a = false
-                { 0.0, 0.5, 0.0, 0.5 }, // b = la
-                        { 0.0, 0.0, 0.0, 1.0 }, // b = le
-                        { 0.0, 0.7, 0.3, 0.0 } // b = lu
-                } }));
+            { 0.0, 0.0, 0.1, 0.9 }, // b = la
+            { 0.0, 0.0, 0.0, 1.0 }, // b = le
+            { 0.0, 0.0, 0.0, 1.0 } // b = lu
+        }, { // a = false
+            { 0.0, 0.5, 0.0, 0.5 }, // b = la
+            { 0.0, 0.0, 0.0, 1.0 }, // b = le
+            { 0.0, 0.7, 0.3, 0.0 } // b = lu
+        } }));
         // @formatter:on
 
         BayesNode d = net.createNode("d");
@@ -132,7 +132,7 @@ public class NetExamples {
                 { 0.2, 0.8 }, // c = false
                 { 0.5, 0.5 }, // c = sth
                 { 0.0, 1.0 } // c = sthElse
-                }));
+        }));
         // @formatter:on
 
         return net;

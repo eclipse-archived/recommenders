@@ -84,7 +84,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
-public class CompletionContextFunctions {
+public final class CompletionContextFunctions {
+
+    private CompletionContextFunctions() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {
         Map<CompletionContextKey, ICompletionContextFunction> res = new HashMap<CompletionContextKey, ICompletionContextFunction>();

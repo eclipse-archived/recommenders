@@ -22,7 +22,11 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 
-public class Proposals {
+public final class Proposals {
+
+    private Proposals() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static void overlay(IProcessableProposal proposal, ImageDescriptor icon) {
         overlay(proposal, icon, IDecoration.TOP_LEFT);

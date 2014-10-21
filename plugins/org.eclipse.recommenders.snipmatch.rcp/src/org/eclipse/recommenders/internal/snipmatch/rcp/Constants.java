@@ -15,7 +15,11 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
  * <p>
  * Note that UI strings should go into a messages files rather than into this file.
  */
-public class Constants {
+public final class Constants {
+
+    private Constants() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     public static final String BUNDLE_ID = "org.eclipse.recommenders.snipmatch.rcp"; //$NON-NLS-1$
     public static final String EDITOR_ID = "org.eclipse.recommenders.snipmatch.rcp.editors.snippet"; //$NON-NLS-1$

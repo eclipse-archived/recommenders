@@ -16,9 +16,11 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
-public class LogMessages extends DefaultLogMessage {
+public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
+
+    private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final LogMessages EXCEPTION_OCCURRED_IN_SERVICE_HOOK = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK);
@@ -46,14 +48,12 @@ public class LogMessages extends DefaultLogMessage {
     public static final LogMessages FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_CREATE_METHODNAME);
 
-    static Bundle bundle = Logs.getBundle(LogMessages.class);
-
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
     }
 
     @Override
     public Bundle bundle() {
-        return bundle;
+        return BUNDLE;
     }
 }

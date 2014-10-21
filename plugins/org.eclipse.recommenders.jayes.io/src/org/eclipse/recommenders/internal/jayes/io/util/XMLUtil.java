@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.internal.jayes.io.util;
 
-public class XMLUtil {
+public final class XMLUtil {
 
     private XMLUtil() {
-
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
     /**
@@ -42,7 +42,7 @@ public class XMLUtil {
 
     /**
      * adds a tab to every line
-     * 
+     *
      * @param text
      * @return
      */

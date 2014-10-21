@@ -16,10 +16,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.xpath.XPathEvaluator;
 import org.w3c.dom.xpath.XPathResult;
 
-public class XPathUtil {
+public final class XPathUtil {
 
     private XPathUtil() {
-
+        throw new IllegalStateException("Not meant to be instantiated");
     }
 
     public static Iterator<Node> evalXPath(XPathEvaluator eval, String xpath, Node context) {

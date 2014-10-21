@@ -44,9 +44,11 @@ import com.google.common.base.Optional;
  * Utility class that resolves a selected java element from editor selection or structured selection.
  */
 @SuppressWarnings("restriction")
-public class JavaElementSelections {
+public final class JavaElementSelections {
 
-    // private static final Logger LOG = LoggerFactory.getLogger(JavaElementSelections.class);
+    private JavaElementSelections() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     @SuppressWarnings("serial")
     private static final Map<StructuralPropertyDescriptor, JavaElementSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaElementSelectionLocation>() {
