@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
@@ -43,6 +44,20 @@ public class LogListenerTest {
 
     private interface SettingsOverrider {
         void override(Settings settings);
+    }
+
+    private static class SendActionSettingsOverrider implements SettingsOverrider {
+
+        private SendAction action;
+
+        public SendActionSettingsOverrider(SendAction action) {
+            this.action = action;
+        }
+
+        @Override
+        public void override(Settings settings) {
+            settings.setAction(action);
+        }
     }
 
     @Before
@@ -183,12 +198,7 @@ public class LogListenerTest {
 
     @Test
     public void testSendIfSilentMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.SILENT);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
 
         sut.logging(status, "");
@@ -198,12 +208,7 @@ public class LogListenerTest {
 
     @Test
     public void testNoCheckIfSilentMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.SILENT);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
 
         sut.logging(status, "");
@@ -213,12 +218,29 @@ public class LogListenerTest {
 
     @Test
     public void testCheckIfAskMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.ASK);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(ASK);
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+
+        sut.logging(status, "");
+
+        verify(sut, times(1)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testIfSkipReportsTrue() {
+        settingsOverrider = new SendActionSettingsOverrider(ASK);
+        System.setProperty(Constants.SYSPROP_SKIP_REPORTS, "true");
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+
+        sut.logging(status, "");
+
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
+    public void testIfSkipReportsFalse() {
+        settingsOverrider = new SendActionSettingsOverrider(ASK);
+        System.setProperty(Constants.SYSPROP_SKIP_REPORTS, "false");
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
 
         sut.logging(status, "");
@@ -228,12 +250,7 @@ public class LogListenerTest {
 
     @Test
     public void testUnknownPluginsIgnored() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.SILENT);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
         Status status = new Status(IStatus.ERROR, ANY_THIRD_PARTY_PLUGIN_ID, "any message");
 
         sut.logging(status, "");
@@ -244,12 +261,7 @@ public class LogListenerTest {
     @Test
     public void testIgnore() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.IGNORE);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(IGNORE);
 
         sut.logging(status, "");
 
@@ -259,12 +271,7 @@ public class LogListenerTest {
     @Test
     public void testNoCheckOnPauseDay() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_DAY);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(PAUSE_DAY);
 
         sut.logging(status, "");
 
@@ -274,12 +281,7 @@ public class LogListenerTest {
     @Test
     public void testNoSendOnPauseDay() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_DAY);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(PAUSE_DAY);
 
         sut.logging(status, "");
 
@@ -289,12 +291,7 @@ public class LogListenerTest {
     @Test
     public void testNoCheckPauseRestart() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_RESTART);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(PAUSE_RESTART);
 
         sut.logging(status, "");
 
@@ -304,12 +301,7 @@ public class LogListenerTest {
     @Test
     public void testNoSendOnPauseRestart() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_RESTART);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(PAUSE_RESTART);
 
         sut.logging(status, "");
 
@@ -365,12 +357,7 @@ public class LogListenerTest {
 
     @Test
     public void testNoReportOfSourceFiles() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.SILENT);
-            }
-        };
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
         String sourceDataMessage = "Exception occurred during compilation unit conversion:\n"
                 + "----------------------------------- SOURCE BEGIN -------------------------------------\n"
                 + "package some.package;\n" + "\n" + "import static some.import.method;\n"
