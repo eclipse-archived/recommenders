@@ -177,6 +177,7 @@ public class Messages extends NLS {
     public static String WIZARD_GIT_REPOSITORY_WINDOW_TITLE;
 
     public static String LOG_ERROR_CREATING_INDEX_HEAD_DIFF;
+    public static String LOG_ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID;
     public static String LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION;
     public static String LOG_ERROR_LOADING_REPO_CONFIGURATION;
     public static String LOG_ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION;

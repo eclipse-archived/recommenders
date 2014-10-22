@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -104,20 +104,22 @@ public class RepositoryConfigurations {
                 for (EClass eClass : subtypes) {
                     DefaultSnippetRepositoryConfigurationProvider configurationProvider = cast(EPackage.Registry.INSTANCE
                             .getEFactory(uri).create(eClass));
-                    defaultConfigurations.addAll(configurationProvider.getDefaultConfiguration());
+                    EList<SnippetRepositoryConfiguration> subDefaultConfigurations = configurationProvider
+                            .getDefaultConfiguration();
+                    for (SnippetRepositoryConfiguration config : subDefaultConfigurations) {
+                        if (Strings.isNullOrEmpty(config.getId())) {
+                            Logs.log(LogMessages.ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID);
+                            continue;
+                        } else {
+                            config.setDefaultConfiguration(true);
+                            defaultConfigurations.add(config);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Logs.log(LogMessages.ERROR_LOADING_DEFAULT_REPO_CONFIGURATION, e);
             }
         }
-
-        for (SnippetRepositoryConfiguration config : defaultConfigurations) {
-            if (Strings.isNullOrEmpty(config.getId())) {
-                config.setId(UUID.randomUUID().toString());
-            }
-            config.setDefaultConfiguration(true);
-        }
-
         return defaultConfigurations;
     }
 

@@ -32,6 +32,8 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages ERROR_CANNOT_COMPUTE_LOCATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_COMPUTE_LOCATION);
 
+    public static ILogMessage ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID = new LogMessages(ERROR,
+            Messages.LOG_ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID);
     public static ILogMessage ERROR_LOADING_DEFAULT_REPO_CONFIGURATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION);
     public static ILogMessage ERROR_STORING_REPO_CONFIGURATION = new LogMessages(ERROR,
