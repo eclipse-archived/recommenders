@@ -11,13 +11,11 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.*;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule.REPOSITORY_CONFIGURATION_FILE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
-import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -945,7 +943,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 treeViewer.replace(config, j, elements.get(j));
                 replacedElementsCount++;
             }
-            treeViewer.getTree().getItem(i).setExpanded(true);
         }
     }
 
