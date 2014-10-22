@@ -69,13 +69,20 @@
 			sequence="CTRL+ALT+SPACE"/>
 	</extension>
 	<extension point="org.eclipse.ui.themes">
+		<themeElementCategory
+			id="org.eclipse.recommenders.snipmatch.rcp.themeElementCategory"
+			label="Snipmatch">
+		</themeElementCategory>
 		<colorDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchboxbackground"
+			categoryId="org.eclipse.recommenders.snipmatch.rcp.themeElementCategory"
 			label="Search Box Background Color"
 			value="230, 255, 230"/>
 		<colorDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchResultBackgroundColor"
+			categoryId="org.eclipse.recommenders.snipmatch.rcp.themeElementCategory"
 			value="255, 255, 255"
 			label="Search Result Background Color"/>
 		<fontDefinition id="org.eclipse.recommenders.snipmatch.rcp.searchTextFont"
+			categoryId="org.eclipse.recommenders.snipmatch.rcp.themeElementCategory"
 			defaultsTo="org.eclipse.jface.textfont"
 			label="Search Text Font"/>
 	</extension>
