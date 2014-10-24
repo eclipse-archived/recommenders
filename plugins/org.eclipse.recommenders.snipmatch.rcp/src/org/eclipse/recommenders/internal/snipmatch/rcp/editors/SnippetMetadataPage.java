@@ -231,7 +231,7 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 comboLocation.getCombo().setLayoutData(
                         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
-                        .indent(horizontalIndent, 0).create());
+                                .indent(horizontalIndent, 0).create());
 
                 final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
@@ -276,7 +276,7 @@ public class SnippetMetadataPage extends FormPage {
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
                 extraSearchTermsDescriptionDecoration.setImage(infoDecoration.getImage());
                 extraSearchTermsDescriptionDecoration
-                .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
+                        .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
                 btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
@@ -384,6 +384,8 @@ public class SnippetMetadataPage extends FormPage {
                                 return getStringForDependency(element);
                             }
 
+                            private final Set<String> alreadyAddedPcLabels = Sets.newHashSet();
+
                             @Override
                             public boolean filter(ProjectCoordinate pc) {
                                 for (String dependencylistItem : fetchDependencyListItems()) {
@@ -391,7 +393,14 @@ public class SnippetMetadataPage extends FormPage {
                                         return true;
                                     }
                                 }
-                                return false;
+
+                                String labelForPc = createLabelForProjectCoordinate(pc);
+                                if (alreadyAddedPcLabels.contains(labelForPc)) {
+                                    return true;
+                                } else {
+                                    alreadyAddedPcLabels.add(labelForPc);
+                                    return false;
+                                }
                             }
                         };
                         dialog.setInitialPattern(""); //$NON-NLS-1$
