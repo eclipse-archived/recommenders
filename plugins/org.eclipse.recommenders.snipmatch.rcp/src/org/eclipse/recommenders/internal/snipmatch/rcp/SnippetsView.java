@@ -742,26 +742,38 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET, ELCL_ADD_SNIPPET, manager, addSnippetAction);
                 }
 
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET, ELCL_EDIT_SNIPPET, manager, editSnippetAction);
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET, ELCL_REMOVE_SNIPPET, manager,
-                        removeSnippetAction);
+                if (selectionConsistsOnlyElementsOf(KnownSnippet.class)) {
 
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET, ELCL_SHARE_SNIPPET, manager,
-                        shareSnippetAction);
+                    addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET, ELCL_EDIT_SNIPPET, manager,
+                            editSnippetAction);
+                    addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET, ELCL_REMOVE_SNIPPET, manager,
+                            removeSnippetAction);
+                    addAction(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET, ELCL_SHARE_SNIPPET, manager,
+                            shareSnippetAction);
+                }
 
                 manager.add(new Separator());
 
                 addAction(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY, ELCL_ADD_REPOSITORY, manager,
                         addRepositoryAction);
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY, ELCL_EDIT_REPOSITORY, manager,
-                        editRepositoryAction);
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY,
-                        ELCL_REMOVE_REPOSITORY_DISABLED, manager, removeRepositoryAction);
 
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_ENABLE_REPOSITORY, ELCL_ENABLE_REPOSITORY, manager,
-                        enableRepositoryAction);
-                addAction(Messages.SNIPPETS_VIEW_MENUITEM_DISABLE_REPOSITORY, ELCL_DISABLE_REPOSITORY, manager,
-                        disableRepositoryAction);
+                if (selectionConsistsOnlyElementsOf(SnippetRepositoryConfiguration.class)) {
+                    addAction(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY, ELCL_EDIT_REPOSITORY, manager,
+                            editRepositoryAction);
+                    addAction(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY,
+                            ELCL_REMOVE_REPOSITORY_DISABLED, manager, removeRepositoryAction);
+
+                    if (disableRepositoryAction.isEnabled()) {
+                        addAction(Messages.SNIPPETS_VIEW_MENUITEM_DISABLE_REPOSITORY, ELCL_DISABLE_REPOSITORY, manager,
+                                disableRepositoryAction);
+                    }
+
+                    if (enableRepositoryAction.isEnabled()) {
+                        addAction(Messages.SNIPPETS_VIEW_MENUITEM_ENABLE_REPOSITORY, ELCL_ENABLE_REPOSITORY, manager,
+                                enableRepositoryAction);
+                    }
+                }
+
             }
 
         });

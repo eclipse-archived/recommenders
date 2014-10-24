@@ -1,9 +1,14 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static java.text.MessageFormat.format;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -105,8 +110,8 @@ public class SnipmatchUITest {
 
         numberOfSnippetsGroupedByConfig = Maps.newHashMap();
 
-        mockedRepository1 = createRepositoryMock(configuration1, SNIPPET_1, SNIPPET_2, SNIPPET_3, SNIPPET_4);
-        mockedRepository2 = createRepositoryMock(configuration2, SNIPPET_5, SNIPPET_6);
+        mockedRepository1 = createRepositoryMock(configuration1, true, SNIPPET_1, SNIPPET_2, SNIPPET_3, SNIPPET_4);
+        mockedRepository2 = createRepositoryMock(configuration2, false, SNIPPET_5, SNIPPET_6);
 
         repos.getRepositories().clear();
 
@@ -127,7 +132,7 @@ public class SnipmatchUITest {
     }
 
     private static GitSnippetRepository createRepositoryMock(SnippetRepositoryConfiguration configuration,
-            ISnippet... snippets) {
+            boolean sharingSupported, ISnippet... snippets) {
 
         numberOfSnippetsGroupedByConfig.put(configuration, snippets.length);
 
@@ -135,6 +140,7 @@ public class SnipmatchUITest {
         when(mockedRepository.getId()).thenReturn(configuration.getId());
         when(mockedRepository.isImportSupported()).thenReturn(true);
         when(mockedRepository.isDeleteSupported()).thenReturn(true);
+        when(mockedRepository.isSharingSupported()).thenReturn(sharingSupported);
 
         List<Recommendation<ISnippet>> proposals = Lists.newArrayList();
         when(mockedRepository.search(new SearchContext(""))).thenReturn(proposals);
@@ -461,7 +467,7 @@ public class SnipmatchUITest {
     }
 
     @Test
-    public void testContextMenuItemStatusWhenSelectSnippet() throws Exception {
+    public void testContextMenuItemStatusWhenSelectSnippetFromRepoWhichSupportsSharing() throws Exception {
         SWTBotTree tree = findSnippetsTree();
 
         SWTBotTreeItem treeItem = tree.getTreeItem(createStringForRepository(configuration1)).getItems()[0];
@@ -472,10 +478,26 @@ public class SnipmatchUITest {
                         .isEnabled(), is(true));
         assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET).isEnabled(), is(true));
         assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET).isEnabled(), is(true));
+        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET).isEnabled(), is(true));
 
         assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY).isEnabled(), is(true));
-        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY).isEnabled(), is(false));
-        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY).isEnabled(), is(false));
+    }
+
+    @Test
+    public void testContextMenuItemStatusWhenSelectSnippetFromRepoWhichNotSupportsSharing() throws Exception {
+        SWTBotTree tree = findSnippetsTree();
+
+        SWTBotTreeItem treeItem = tree.getTreeItem(createStringForRepository(configuration2)).getItems()[0];
+
+        assertThat(
+                treeItem.contextMenu(
+                        format(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY, configuration2.getName()))
+                        .isEnabled(), is(true));
+        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET).isEnabled(), is(true));
+        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET).isEnabled(), is(true));
+        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET).isEnabled(), is(false));
+
+        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY).isEnabled(), is(true));
     }
 
     @Test
@@ -489,10 +511,9 @@ public class SnipmatchUITest {
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET).isEnabled(), is(true));
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET).isEnabled(), is(true));
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET).isEnabled(), is(true));
+        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET).isEnabled(), is(false));
 
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY).isEnabled(), is(true));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY).isEnabled(), is(false));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY).isEnabled(), is(false));
     }
 
     @Test
@@ -504,8 +525,6 @@ public class SnipmatchUITest {
                 treeItem.contextMenu(
                         format(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY, configuration1.getName()))
                         .isEnabled(), is(true));
-        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET).isEnabled(), is(false));
-        assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET).isEnabled(), is(false));
 
         assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY).isEnabled(), is(true));
         assertThat(treeItem.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY).isEnabled(), is(true));
@@ -520,12 +539,8 @@ public class SnipmatchUITest {
         tree.select(treeItem1, treeItem2);
 
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET).isEnabled(), is(true));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_SNIPPET).isEnabled(), is(false));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET).isEnabled(), is(false));
 
         assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_ADD_REPOSITORY).isEnabled(), is(true));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_EDIT_REPOSITORY).isEnabled(), is(false));
-        assertThat(tree.contextMenu(Messages.SNIPPETS_VIEW_MENUITEM_REMOVE_REPOSITORY).isEnabled(), is(false));
     }
 
 }
