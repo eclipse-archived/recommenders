@@ -183,26 +183,30 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void verifyKey(VerifyEvent e) {
+                TemplateProposal appliedProposal = selectedProposal;
                 switch (e.character) {
                 case SWT.CR:
                     e.doit = false;
-                    if (selectedProposal != null) {
+                    if (appliedProposal != null) {
                         state = AssistantControlState.ENABLE_HIDE;
-                        if (selectedProposal.isValidFor(context.getDocument(), context.getInvocationOffset())) {
-                            if (selectedProposal instanceof SnippetProposal) {
-                                snippetApplied((SnippetProposal) selectedProposal);
+                        assistant.uninstall();
+                        if (appliedProposal.isValidFor(context.getDocument(), context.getInvocationOffset())) {
+                            if (appliedProposal instanceof SnippetProposal) {
+                                snippetApplied((SnippetProposal) appliedProposal);
                             }
-                            selectedProposal.apply(context.getViewer(), (char) 0, SWT.NONE,
+                            appliedProposal.apply(context.getViewer(), (char) 0, SWT.NONE,
                                     context.getInvocationOffset());
 
-                            Point selection = selectedProposal.getSelection(context.getDocument());
+                            Point selection = appliedProposal.getSelection(context.getDocument());
                             if (selection != null) {
                                 context.getViewer().setSelectedRange(selection.x, selection.y);
                                 context.getViewer().revealRange(selection.x, selection.y);
                             }
                         }
+                    } else {
+                        state = AssistantControlState.ENABLE_HIDE;
+                        assistant.uninstall();
                     }
-                    assistant.uninstall();
                     return;
                 case SWT.TAB:
                     e.doit = false;
@@ -210,7 +214,7 @@ public class SnipmatchCompletionEngine {
                 }
 
                 // there is no navigation to support if no proposal is selected:
-                if (selectedProposal == null) {
+                if (appliedProposal == null) {
                     return;
                 }
                 // but if there is, let's navigate...
