@@ -47,6 +47,7 @@
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
+      <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.emf.common.source"/>
       <feature id="org.eclipse.emf.databinding"/>
