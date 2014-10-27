@@ -210,7 +210,7 @@ public class SparseFactor extends AbstractFactor implements Cloneable {
      */
     private double entropy(int classOne, int classTwo) {
         double p = classOne / (double) (classOne + classTwo);
-        if (p == 0 || p == 1) {
+        if (p <= 0.0 || p >= 1.0) {
             return 0;
         }
         return -(p * Math.log(p) + (1 - p) * Math.log(1 - p));
