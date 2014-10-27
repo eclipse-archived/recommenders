@@ -35,8 +35,9 @@ import com.google.common.annotations.VisibleForTesting;
 
 class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
-    public static Image TITLE_IMAGE = ErrorReportWizard.TITLE_IMAGE_DESC.createImage();
-    private ReportState state;
+    public static final Image TITLE_IMAGE = ErrorReportWizard.TITLE_IMAGE_DESC.createImage();
+
+    private final ReportState state;
 
     ThankYouDialog(Shell parentShell, ReportState state) {
         super(parentShell);
