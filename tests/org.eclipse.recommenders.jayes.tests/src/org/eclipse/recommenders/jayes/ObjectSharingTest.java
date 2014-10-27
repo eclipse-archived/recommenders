@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;

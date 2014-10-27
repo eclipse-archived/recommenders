@@ -8,13 +8,12 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.inference;
 
 import static org.junit.Assert.assertArrayEquals;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.LikelihoodWeightedSampling;
 import org.eclipse.recommenders.testing.jayes.NetExamples;
 import org.junit.Test;
 
@@ -37,5 +36,4 @@ public class LikelyhoodWeightedSamplingTest {
 
         assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.01);
     }
-
 }

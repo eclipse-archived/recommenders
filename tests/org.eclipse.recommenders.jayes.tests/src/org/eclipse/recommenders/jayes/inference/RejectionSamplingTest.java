@@ -8,18 +8,16 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.inference;
 
 import static org.junit.Assert.assertArrayEquals;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.testing.jayes.NetExamples;
-import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
 
-public class LBPTest {
+public class RejectionSamplingTest {
 
     @Test
     public void testSampler1() {
@@ -28,12 +26,13 @@ public class LBPTest {
         BayesNode b = net.getNode("b");
         BayesNode c = net.getNode("c");
 
-        IBayesInferrer sampler = new LoopyBeliefPropagation();
+        RejectionSampling sampler = new RejectionSampling();
+        sampler.setSampleCount(10000);
+        sampler.seed(1337); // for reproducibility
         sampler.setNetwork(net);
         sampler.addEvidence(a, "false");
         sampler.addEvidence(b, "lu");
 
         assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.01);
     }
-
 }

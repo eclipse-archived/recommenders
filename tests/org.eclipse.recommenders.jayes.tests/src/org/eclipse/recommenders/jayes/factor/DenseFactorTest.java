@@ -8,21 +8,18 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.factor;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
-import org.eclipse.recommenders.jayes.factor.AbstractFactor;
-import org.eclipse.recommenders.jayes.factor.DenseFactor;
-import org.eclipse.recommenders.jayes.factor.SparseFactor;
 import org.eclipse.recommenders.jayes.factor.arraywrapper.DoubleArrayWrapper;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.testing.jayes.ArrayUtils;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class FactorTest {
+public class DenseFactorTest {
 
     private static double[] distribution2x2x2() {
         // @formatter:off
