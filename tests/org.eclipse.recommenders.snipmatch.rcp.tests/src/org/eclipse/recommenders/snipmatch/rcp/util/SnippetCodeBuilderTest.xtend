@@ -13,6 +13,7 @@ import org.junit.Test
 import org.junit.rules.TestName
 
 import static org.junit.Assert.*
+import org.eclipse.jdt.core.ICompilationUnit
 
 class SnippetCodeBuilderTest {
 
@@ -20,6 +21,17 @@ class SnippetCodeBuilderTest {
 
     @Rule
     public val TestName testName = new TestName();
+
+    @Test
+    def void testInvalidSelection() {
+        val code = CodeBuilder::method(
+            '''
+                int i = 0;
+            ''')
+        val actual = exercise(code, -1, -1)
+
+        assertEquals("", actual)
+    }
 
     @Test
     def void testNewArrayAndCalls() {
@@ -584,10 +596,16 @@ class SnippetCodeBuilderTest {
     }
 
     def exercise(CharSequence code) {
-        val struct = FIXTURE.createFileAndParseWithMarkers(code)
-        val cu = struct.first;
-        val start = struct.second.head;
-        val end = struct.second.last;
+        val struct = FIXTURE.createFileAndParseWithMarkers(code);
+        return exercise(struct.first, struct.second.head, struct.second.last);
+    }
+
+    def exercise(CharSequence code, int start, int end) {
+        val struct = FIXTURE.createFileAndParseWithMarkers(code);
+        return exercise(struct.first, start, end);
+    }
+    
+    def exercise(ICompilationUnit cu, int start, int end) {
         val editor = EditorUtility.openInEditor(cu) as CompilationUnitEditor;
         val root = editor.getViewPartInput() as ITypeRoot;
         val ast = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);

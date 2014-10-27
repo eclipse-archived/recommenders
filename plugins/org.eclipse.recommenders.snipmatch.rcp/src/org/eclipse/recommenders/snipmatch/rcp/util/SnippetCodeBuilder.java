@@ -75,19 +75,23 @@ public class SnippetCodeBuilder {
     public String build() {
         final int start = textSelection.getOffset();
         final int length = textSelection.getLength();
-        final char[] text = textSelection.getText().toCharArray();
+        final String text = textSelection.getText();
+        if (text == null) {
+            return "";
+        }
+        final char[] chars = text.toCharArray();
 
         final ASTNode enclosingNode = NodeFinder.perform(ast, start, length);
         final Selection selection = Selection.createFromStartLength(start, length);
 
-        outer: for (int i = 0; i < text.length; i++) {
-            char ch = text[i];
+        outer: for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
             // every non-identifier character can be copied right away. This is
             // necessary since the NodeFinder sometimes
             // associates a whitespace with a previous AST node (not exactly
             // understood yet).
-            if (!Character.isJavaIdentifierPart(ch)) {
-                sb.append(ch);
+            if (!Character.isJavaIdentifierPart(c)) {
+                sb.append(c);
                 continue outer;
             }
 
@@ -131,7 +135,7 @@ public class SnippetCodeBuilder {
                     }
                 }
             }
-            sb.append(ch);
+            sb.append(c);
         }
 
         sb.append('\n');
