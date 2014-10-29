@@ -4,13 +4,13 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.util.triangulation;
 
-import static org.eclipse.recommenders.tests.jayes.GraphTest.createTestGraph;
+import static org.eclipse.recommenders.jayes.util.GraphTest.createTestGraph;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -20,9 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.recommenders.jayes.util.Graph;
-import org.eclipse.recommenders.jayes.util.triangulation.GraphElimination;
-import org.eclipse.recommenders.jayes.util.triangulation.MinFillIn;
-import org.eclipse.recommenders.jayes.util.triangulation.QuotientGraph;
 import org.junit.Test;
 
 public class GraphEliminationTest {
@@ -32,7 +29,7 @@ public class GraphEliminationTest {
      * 1-3
      * |/
      * 0--2
-     * 
+     *
      * where 3 has higher weight just for predictability
      * </pre>
      */

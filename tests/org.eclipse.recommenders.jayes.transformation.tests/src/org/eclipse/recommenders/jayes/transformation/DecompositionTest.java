@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.tests.jayes.transformation;
+package org.eclipse.recommenders.jayes.transformation;
 
 import static org.junit.Assert.*;
 
@@ -7,9 +7,6 @@ import java.util.Arrays;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
-import org.eclipse.recommenders.jayes.transformation.IDecompositionStrategy;
-import org.eclipse.recommenders.jayes.transformation.LatentDeterministicDecomposition;
-import org.eclipse.recommenders.jayes.transformation.SmoothedFactorDecomposition;
 import org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten;
 import org.eclipse.recommenders.jayes.transformation.util.DecompositionFailedException;
 import org.junit.Test;

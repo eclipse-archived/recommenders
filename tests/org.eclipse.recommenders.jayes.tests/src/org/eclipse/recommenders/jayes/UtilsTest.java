@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes;
 
 import static org.junit.Assert.*;
 
@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.jayes.util.AddressCalc;
-import org.eclipse.recommenders.jayes.BayesNet;
-import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.util.BayesNodeUtil;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.eclipse.recommenders.testing.jayes.NetExamples;

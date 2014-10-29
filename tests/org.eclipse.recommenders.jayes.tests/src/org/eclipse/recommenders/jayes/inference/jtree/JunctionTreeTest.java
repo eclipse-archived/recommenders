@@ -8,7 +8,7 @@
  * Contributors:
  *    Michael Kutschke - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jayes;
+package org.eclipse.recommenders.jayes.inference.jtree;
 
 import static org.junit.Assert.*;
 
@@ -20,9 +20,8 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.factor.AbstractFactor;
 import org.eclipse.recommenders.jayes.factor.FactorFactory;
 import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
-import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.jayes.lbp.LoopyBeliefPropagation;
 import org.eclipse.recommenders.testing.jayes.NetExamples;
-import org.eclipse.recommenders.tests.jayes.lbp.LoopyBeliefPropagation;
 import org.junit.Test;
 
 public class JunctionTreeTest {
