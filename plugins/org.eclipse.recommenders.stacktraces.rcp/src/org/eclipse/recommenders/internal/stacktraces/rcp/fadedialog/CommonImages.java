@@ -16,10 +16,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.osgi.framework.FrameworkUtil;
 
 class CommonImages {
 
-    private static final URL BASE_URL = Activator.getDefault().getBundle().getEntry("/icons/"); //$NON-NLS-1$
+    private static final URL BASE_URL = FrameworkUtil.getBundle(CommonImages.class).getEntry("/icons/"); //$NON-NLS-1$
 
     private static final String T_EVIEW = "eview16"; //$NON-NLS-1$s
 

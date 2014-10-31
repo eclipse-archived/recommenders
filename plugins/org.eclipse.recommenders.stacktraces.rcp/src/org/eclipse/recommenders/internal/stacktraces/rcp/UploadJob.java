@@ -20,6 +20,7 @@ import java.net.URI;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -80,14 +81,12 @@ public class UploadJob extends Job {
                 }
             });
             if (ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO)) {
-                String message = MessageFormat
-                        .format(Messages.UPLOADJOB_NEED_FURTHER_INFORMATION,
-                                state.getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
+                String message = MessageFormat.format(Messages.UPLOADJOB_NEED_FURTHER_INFORMATION, state.getBugUrl()
+                        .or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
                 openPopup(message);
             } else if (FIXED.equals(state.getStatus().orNull())) {
-                String message = MessageFormat.format(
-                        Messages.UPLOADJOB_ALREADY_FIXED_UPDATE, state
-                                .getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
+                String message = MessageFormat.format(Messages.UPLOADJOB_ALREADY_FIXED_UPDATE,
+                        state.getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
                 openPopup(message);
             }
             return new Status(IStatus.INFO, PLUGIN_ID, format(Messages.UPLOADJOB_THANK_YOU, details));
@@ -99,10 +98,12 @@ public class UploadJob extends Job {
     }
 
     private void openPopup(final String message) {
+
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                Window dialog = new UploadNotificationPopup(message);
+                String res = StringUtils.replace(message, "\n\t<a>", " <a>");
+                Window dialog = new ReportNotificationPopup(res);
                 dialog.open();
             }
         });

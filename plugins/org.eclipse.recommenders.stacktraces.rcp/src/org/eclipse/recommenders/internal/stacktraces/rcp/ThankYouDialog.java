@@ -10,11 +10,9 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.ReportState.*;
 
-import java.text.MessageFormat;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -101,52 +99,52 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
         StringBuilder text = new StringBuilder();
 
         if (state.isCreated()) {
-            String message = MessageFormat.format(Messages.THANKYOUDIALOG_TRACKED_PLEASE_ADD_TO_CC, getBugURL());
+            String message = format(Messages.THANKYOUDIALOG_NEW, getBugURL(), getBugId());
             text.append(message);
         } else {
             String status = state.getStatus().or(UNCONFIRMED);
             if (equals(UNCONFIRMED, status) || equals(NEW, status) || equals(ASSIGNED, status)) {
-                text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_PLEASE_ADD_TO_CC, getBugURL()));
+                text.append(format(Messages.THANKYOUDIALOG_MATCHED_EXISTING_BUG, getBugURL(), getBugId()));
             } else if (equals(RESOLVED, status) || equals(CLOSED, status)) {
-
                 String resolution = state.getResolved().or(UNKNOWN);
                 if (equals(FIXED, resolution)) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_FIXED, getBugURL()));
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_FIXED, getBugURL(), getBugId()));
                 } else if (equals(DUPLICATE, resolution)) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_DUPLICATE, getBugURL()));
-
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_DUPLICATE, getBugURL(), getBugId()));
                 } else if (equals(MOVED, resolution)) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_MOVED, getBugURL()));
-
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_MOVED, getBugURL(), getBugId()));
                 } else if (equals(WORKSFORME, resolution)) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_NOT_ABLE_TO_REPRODUCE_PLEASE_VISIT,
-                            getBugURL()));
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_WORKSFORME, getBugURL(), getBugId()));
                 } else if (equals(WONTFIX, resolution) || equals(INVALID, resolution)
                         || equals(NOT_ECLIPSE, resolution)) {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_NORMAL, getBugURL()));
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_NORMAL, getBugURL(), getBugId()));
                 } else {
-                    text.append(MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_UNKNOWN, resolution, getBugURL()));
+                    text.append(format(Messages.THANKYOUDIALOG_MARKED_UNKNOWN, resolution, getBugURL(), getBugId()));
                 }
             } else {
                 text.append(Messages.THANKYOUDIALOG_RECEIVED_UNKNOWN_SERVER_RESPONSE);
             }
         }
 
-        if (state.getInformation().isPresent()) {
-            text.append(Messages.THANKYOUDIALOG_ADDITIONAL_INFORMATIONS);
-            text.append(state.getInformation().get());
+        if (hasInfo()) {
+            text.append("\n\nCommitter Message:\n")
+            .append(format(Messages.THANKYOUDIALOG_COMMITTER_MESSAGE, getInfo()));
         }
 
-        boolean needsinfo = ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO);
-        if (needsinfo) {
-            text.append(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION);
-            text.append(MessageFormat.format(Messages.THANKYOUDIALOG_FURTHER_INFORMATION,
-                    state.getInformation().or(Messages.THANKYOUDIALOG_NO_FURTHER_INFORMATIONS)));
-        }
-
-        text.append(Messages.THANKYOUDIALOG_PLEASE_NOTE_ADDITIONAL_PERMISSIONS);
         text.append(Messages.THANKYOUDIALOG_THANK_YOU_FOR_HELP);
         return text.toString();
+    }
+
+    private boolean hasInfo() {
+        return state.getInformation().isPresent();
+    }
+
+    private String getInfo() {
+        return state.getInformation().or(Messages.THANKYOUDIALOG_COMMITTER_MESSAGE_EMPTY);
+    }
+
+    private String getBugId() {
+        return state.getBugId().or("---");
     }
 
     private String getBugURL() {

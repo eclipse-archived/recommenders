@@ -211,16 +211,16 @@ public abstract class AbstractNotificationPopup extends Window {
         titleTextLabel.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         final Label button = new Label(parent, SWT.NONE);
-        button.setImage(Activator.getImage(CommonImages.NOTIFICATION_CLOSE));
+        button.setImage(resources.createImage(CommonImages.NOTIFICATION_CLOSE));
         button.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
             public void mouseEnter(MouseEvent e) {
-                button.setImage(Activator.getImage(CommonImages.NOTIFICATION_CLOSE_HOVER));
+                button.setImage(resources.createImage(CommonImages.NOTIFICATION_CLOSE_HOVER));
             }
 
             @Override
             public void mouseExit(MouseEvent e) {
-                button.setImage(Activator.getImage(CommonImages.NOTIFICATION_CLOSE));
+                button.setImage(resources.createImage(CommonImages.NOTIFICATION_CLOSE));
             }
         });
         button.addMouseListener(new MouseAdapter() {
@@ -240,6 +240,7 @@ public abstract class AbstractNotificationPopup extends Window {
 
     private void initResources() {
         color = new NotificationPopupColors(display, resources);
+
     }
 
     @Override

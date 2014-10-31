@@ -12,16 +12,18 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import org.eclipse.recommenders.internal.stacktraces.rcp.fadedialog.AbstractNotificationPopup;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 
-public class UploadNotificationPopup extends AbstractNotificationPopup {
+public class ReportNotificationPopup extends AbstractNotificationPopup {
 
     private String message;
 
-    public UploadNotificationPopup(String link) {
+    public ReportNotificationPopup(String link) {
         super(getDisplay());
         setFadingEnabled(true);
         setDelayClose(2000);
@@ -34,11 +36,17 @@ public class UploadNotificationPopup extends AbstractNotificationPopup {
         composite.setLayout(new GridLayout(1, true));
         Link link = new Link(composite, SWT.NONE);
         link.setText(message);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Browsers.openInExternalBrowser(e.text);
+            }
+        });
     }
 
     @Override
     protected String getPopupShellTitle() {
-        return "Error Reporting";
+        return "Error Report Notification";
     }
 
     public static Display getDisplay() {
