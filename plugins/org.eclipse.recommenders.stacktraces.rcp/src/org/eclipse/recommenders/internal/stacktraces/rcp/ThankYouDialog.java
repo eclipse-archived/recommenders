@@ -132,6 +132,11 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
             }
         }
 
+        if (state.getInformation().isPresent()) {
+            text.append(Messages.THANKYOUDIALOG_ADDITIONAL_INFORMATIONS);
+            text.append(state.getInformation().get());
+        }
+
         boolean needsinfo = ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO);
         if (needsinfo) {
             text.append(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION);

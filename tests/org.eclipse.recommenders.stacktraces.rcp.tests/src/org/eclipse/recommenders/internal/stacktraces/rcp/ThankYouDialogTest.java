@@ -29,13 +29,15 @@ public class ThankYouDialogTest {
     private static final String BUG_URL = "http://bug/bug42";
     private static final String BUG_INFORMATION = "Bug information";
 
+    private static String MESSAGE_INFO = Messages.THANKYOUDIALOG_ADDITIONAL_INFORMATIONS + BUG_INFORMATION;
+
     private static String MESSAGE_END = Messages.THANKYOUDIALOG_PLEASE_NOTE_ADDITIONAL_PERMISSIONS
             + Messages.THANKYOUDIALOG_THANK_YOU_FOR_HELP;
 
     private static ReportState S_NEW_UNKNOWN_CREATED = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.UNKNOWN, ReportState.NEW, true);
     private static String M_TRACKED = MessageFormat.format(Messages.THANKYOUDIALOG_TRACKED_PLEASE_ADD_TO_CC, BUG_URL)
-            + MESSAGE_END;
+            + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_UNCONFIRMED_UNKNOWN = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.UNKNOWN, ReportState.UNCONFIRMED, false);
@@ -44,33 +46,35 @@ public class ThankYouDialogTest {
     private static ReportState S_ASSIGNED_UNKNOWN = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.UNKNOWN,
             ReportState.ASSIGNED, false);
     private static String M_MATCHED = MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_PLEASE_ADD_TO_CC, BUG_URL)
-            + MESSAGE_END;
+            + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_RESOLVED_FIXED = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.FIXED,
             ReportState.RESOLVED, false);
     private static ReportState S_CLOSED_FIXED = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.FIXED,
             ReportState.CLOSED, false);
-    private static String M_FIXED = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_FIXED, BUG_URL) + MESSAGE_END;
+    private static String M_FIXED = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_FIXED, BUG_URL) + MESSAGE_INFO
+            + MESSAGE_END;
 
     private static ReportState S_RESOLVED_DUPLICATE = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.DUPLICATE, ReportState.RESOLVED, false);
     private static ReportState S_CLOSED_DUPLICATE = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.DUPLICATE, ReportState.CLOSED, false);
     private static String M_DUPLICATE = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_DUPLICATE, BUG_URL)
-            + MESSAGE_END;
+            + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_RESOLVED_MOVED = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.MOVED,
             ReportState.RESOLVED, false);
     private static ReportState S_CLOSED_MOVED = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.MOVED,
             ReportState.CLOSED, false);
-    private static String M_MOVED = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_MOVED, BUG_URL) + MESSAGE_END;
+    private static String M_MOVED = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_MOVED, BUG_URL) + MESSAGE_INFO
+            + MESSAGE_END;
 
     private static ReportState S_RESOLVED_WORKSFORME = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.WORKSFORME, ReportState.RESOLVED, false);
     private static ReportState S_CLOSED_WORKSFORME = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.WORKSFORME, ReportState.CLOSED, false);
     private static String M_VISIT = MessageFormat.format(Messages.THANKYOUDIALOG_NOT_ABLE_TO_REPRODUCE_PLEASE_VISIT,
-            BUG_URL) + MESSAGE_END;
+            BUG_URL) + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_RESOLVED_WONTFIX = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.WONTFIX,
             ReportState.RESOLVED, false);
@@ -85,24 +89,26 @@ public class ThankYouDialogTest {
     private static ReportState S_CLOSED_NOT_ECLIPSE = newReportState(BUG_URL, BUG_INFORMATION, null,
             ReportState.NOT_ECLIPSE, ReportState.CLOSED, false);
     private static String M_MARKED_NORMAL = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_NORMAL, BUG_URL)
-            + MESSAGE_END;
+            + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_RESOLVED_UNKNOWN = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.UNKNOWN,
             ReportState.RESOLVED, false);
     private static ReportState S_CLOSED_UNKNOWN = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.UNKNOWN,
             ReportState.CLOSED, false);
     private static String M_UNKNWON = MessageFormat.format(Messages.THANKYOUDIALOG_MARKED_UNKNOWN, ReportState.UNKNOWN,
-            BUG_URL) + MESSAGE_END;
+            BUG_URL) + MESSAGE_INFO + MESSAGE_END;
 
     private static ReportState S_UNKNOWN_STATUS = newReportState(BUG_URL, BUG_INFORMATION, null, ReportState.UNKNOWN,
             "any unknown server status", false);
     private static String M_UNKNOWN_RESPONSE = MessageFormat.format(
-            Messages.THANKYOUDIALOG_RECEIVED_UNKNOWN_SERVER_RESPONSE, ReportState.UNKNOWN, BUG_URL) + MESSAGE_END;
+            Messages.THANKYOUDIALOG_RECEIVED_UNKNOWN_SERVER_RESPONSE, ReportState.UNKNOWN, BUG_URL)
+            + MESSAGE_INFO
+            + MESSAGE_END;
 
     private static ReportState S_NEED_INFO = newReportState(BUG_URL, BUG_INFORMATION,
             new String[] { ReportState.KEYWORD_NEEDINFO }, ReportState.UNKNOWN, ReportState.ASSIGNED, true);
     private static String M_NEED_INFO = MessageFormat.format(Messages.THANKYOUDIALOG_TRACKED_PLEASE_ADD_TO_CC, BUG_URL)
-            + MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION, BUG_URL)
+            + MESSAGE_INFO + MessageFormat.format(Messages.THANKYOUDIALOG_MATCHED_NEED_FURTHER_INFORMATION, BUG_URL)
             + MessageFormat.format(Messages.THANKYOUDIALOG_FURTHER_INFORMATION, BUG_INFORMATION) + MESSAGE_END;
 
     private static ReportState S_NEED_INFO_NULL = newReportState(BUG_URL, null,
