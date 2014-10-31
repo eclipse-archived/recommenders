@@ -36,6 +36,7 @@ public class Messages extends NLS {
     public static String SETTINGSPAGE_GROUPLABEL_PERSONAL;
     public static String LINK_LEARN_MORE;
     public static String LINK_PROVIDE_FEEDBACK;
+    public static String PREFERENCEPAGE_ASK_LABEL;
     public static String PREVIEWPAGE_DESC;
     public static String PREVIEWPAGE_LABEL_COMMENT;
     public static String PREVIEWPAGE_LABEL_MESSAGE;
