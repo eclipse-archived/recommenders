@@ -47,7 +47,12 @@ public class DefaultGitSnippetRepositoryConfigurations {
                 String pushBranchPrefix = element
                         .getAttribute(EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_PUSH_BRANCH_PREFIX);
 
-                defaultConfigurations.add(createConfiguration(id, name, description, url, pushUrl, pushBranchPrefix));
+                String priority = element.getAttribute(
+                        EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_DEFAULT_PRIORITY, "0"); //$NON-NLS-1$
+                int priorityInteger = Integer.parseInt(priority);
+
+                defaultConfigurations.add(createConfiguration(id, name, description, url, pushUrl, pushBranchPrefix,
+                        priorityInteger));
                 addedUrls.add(url);
             } catch (Exception e) {
                 Logs.log(LogMessages.ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION, e);
@@ -58,7 +63,7 @@ public class DefaultGitSnippetRepositoryConfigurations {
     }
 
     private static EclipseGitSnippetRepositoryConfiguration createConfiguration(String id, String name,
-            String description, String url, String pushUrl, String pushBranchPrefix) {
+            String description, String url, String pushUrl, String pushBranchPrefix, int priority) {
         EclipseGitSnippetRepositoryConfiguration configuration = SnipmatchRcpModelFactory.eINSTANCE
                 .createEclipseGitSnippetRepositoryConfiguration();
 
@@ -68,6 +73,7 @@ public class DefaultGitSnippetRepositoryConfigurations {
         configuration.setUrl(url);
         configuration.setPushUrl(pushUrl);
         configuration.setPushBranchPrefix(pushBranchPrefix);
+        configuration.setPriority(priority);
         return configuration;
     }
 

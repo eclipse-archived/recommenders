@@ -18,7 +18,6 @@ import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.Dependencies;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IDependencyListener;
@@ -27,41 +26,37 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.utils.Logs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class JavaEditorSearchContext extends SearchContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JavaEditorSearchContext.class);
-
     private final JavaContentAssistInvocationContext invocationContext;
 
-    public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext invocationContext) {
-        super(searchText, getLocation(invocationContext), getAvailableDependencies(invocationContext));
+    public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext invocationContext,
+            IDependencyListener dependencyListener, IProjectCoordinateProvider pcProvider) {
+        super(searchText, getLocation(invocationContext), getAvailableDependencies(invocationContext, pcProvider,
+                dependencyListener));
         this.invocationContext = invocationContext;
     }
 
-    private static Set<ProjectCoordinate> getAvailableDependencies(JavaContentAssistInvocationContext invocationContext) {
-        IDependencyListener dependencyListener = InjectionService.getInstance().requestInstance(
-                IDependencyListener.class);
-
+    private static Set<ProjectCoordinate> getAvailableDependencies(
+            JavaContentAssistInvocationContext invocationContext, IProjectCoordinateProvider pcProvider,
+            IDependencyListener dependencyListener) {
         IJavaProject project = invocationContext.getCompilationUnit().getJavaProject();
         ImmutableSet<DependencyInfo> availableDependencies = dependencyListener.getDependenciesForProject(Dependencies
                 .createDependencyInfoForProject(project));
 
-        return resolve(availableDependencies);
+        return resolve(pcProvider, availableDependencies);
     }
 
-    private static Set<ProjectCoordinate> resolve(Set<DependencyInfo> dependencyInfos) {
+    private static Set<ProjectCoordinate> resolve(IProjectCoordinateProvider pcProvider,
+            Set<DependencyInfo> dependencyInfos) {
         Set<ProjectCoordinate> result = Sets.newHashSet();
-        IProjectCoordinateProvider pcAdvisor = InjectionService.getInstance().requestInstance(
-                IProjectCoordinateProvider.class);
 
         for (DependencyInfo dependencyInfo : dependencyInfos) {
-            ProjectCoordinate pc = pcAdvisor.resolve(dependencyInfo).orNull();
+            ProjectCoordinate pc = pcProvider.resolve(dependencyInfo).orNull();
             if (pc != null) {
                 result.add(pc);
             }
@@ -97,5 +92,4 @@ public class JavaEditorSearchContext extends SearchContext {
     public JavaContentAssistInvocationContext getInvocationContext() {
         return invocationContext;
     }
-
 }

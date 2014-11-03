@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.internal.ui.text.java.RelevanceSorter;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateInformationControlCreator;
+import org.eclipse.jdt.ui.text.java.AbstractProposalSorter;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
@@ -25,6 +26,7 @@ import org.eclipse.jface.text.contentassist.ContentAssistEvent;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposalSorter;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetAppliedEvent;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -137,7 +140,24 @@ public class SnipmatchCompletionEngine {
         assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
         assistant.setRepeatedInvocationMode(true);
         assistant.setStatusLineVisible(true);
-        assistant.setSorter(new RelevanceSorter());
+        assistant.setSorter(new AbstractProposalSorter() {
+            private final ICompletionProposalSorter RELEVANCE_SORTER = new RelevanceSorter();
+
+            @Override
+            public int compare(ICompletionProposal p1, ICompletionProposal p2) {
+                if (p1 instanceof SnippetProposal && p2 instanceof SnippetProposal) {
+                    SnippetProposal s1 = (SnippetProposal) p1;
+                    SnippetProposal s2 = (SnippetProposal) p2;
+
+                    return ComparisonChain.start().compare(s1.getRepositoryRelevance(), s2.getRepositoryRelevance())
+                            .compare(s2.getRelevance(), s1.getRelevance())
+                            .compare(s1.getSnippet().getName(), s2.getSnippet().getName()).result();
+                } else {
+                    return RELEVANCE_SORTER.compare(p1, p2);
+                }
+            }
+
+        });
 
         return assistant;
     }
