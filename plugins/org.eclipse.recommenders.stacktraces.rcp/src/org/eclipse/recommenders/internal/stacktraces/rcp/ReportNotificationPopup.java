@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.stacktraces.rcp.fadedialog.AbstractNotificationPopup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,8 +35,10 @@ public class ReportNotificationPopup extends AbstractNotificationPopup {
     protected void createContentArea(Composite composite) {
         super.createContentArea(composite);
         composite.setLayout(new GridLayout(1, true));
-        Link link = new Link(composite, SWT.NONE);
+        Link link = new Link(composite, SWT.WRAP);
         link.setText(message);
+        link.setLayoutData(GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
+                .create());
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
