@@ -19,7 +19,11 @@ import org.eclipse.equinox.internal.p2.ui.discovery.wizards.CatalogConfiguration
 import org.eclipse.equinox.internal.p2.ui.discovery.wizards.DiscoveryWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 
-public class SnippetEditorDiscoveryUtils {
+public final class SnippetEditorDiscoveryUtils {
+
+    private SnippetEditorDiscoveryUtils() {
+        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+    }
 
     private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/snipmatch/directory.xml"; //$NON-NLS-1$
 

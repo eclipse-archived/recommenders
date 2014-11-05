@@ -12,10 +12,7 @@ package org.eclipse.recommenders.jayes.io;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +47,7 @@ public class IOTest {
     /**
      * assert that a network directly generated from GeNIe is (1) parsed correctly and (2) gives the same results as
      * GeNIe
-     * 
+     *
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException

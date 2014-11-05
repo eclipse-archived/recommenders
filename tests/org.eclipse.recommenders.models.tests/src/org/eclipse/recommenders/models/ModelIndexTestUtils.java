@@ -8,12 +8,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.aether.artifact.Artifact;
@@ -21,18 +19,17 @@ import org.eclipse.recommenders.utils.Constants;
 
 public class ModelIndexTestUtils {
 
-    public static Directory inMemoryIndex(Document... documents) throws Exception {
+    public static Directory inMemoryIndex(Document... documents) throws IOException {
         RAMDirectory directory = new RAMDirectory();
         return writeIndex(directory, documents);
     }
 
-    public static Directory onDiskIndex(File location, Document... documents) throws Exception {
+    public static Directory onDiskIndex(File location, Document... documents) throws IOException {
         FSDirectory directory = FSDirectory.open(location);
         return writeIndex(directory, documents);
     }
 
-    private static Directory writeIndex(Directory directory, Document... documents) throws CorruptIndexException,
-            LockObtainFailedException, IOException {
+    private static Directory writeIndex(Directory directory, Document... documents) throws IOException {
         IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_35, new KeywordAnalyzer());
         IndexWriter writer = new IndexWriter(directory, conf);
         for (Document document : documents) {

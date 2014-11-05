@@ -27,7 +27,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 @Beta
-public class Recommendations {
+public final class Recommendations {
+
+    private Recommendations() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
 
     private static final Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {
 
@@ -125,7 +129,7 @@ public class Recommendations {
 
     /**
      * Returns all proposals of the given iterable of recommendations.
-     * 
+     *
      * @see Recommendation#getProposal()
      */
     public static <R extends Recommendation<T>, T> List<T> getProposals(final Iterable<R> recommendations) {
@@ -146,5 +150,4 @@ public class Recommendations {
         }
         return res;
     }
-
 }

@@ -19,7 +19,6 @@ import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -59,8 +58,7 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
         }
     }
 
-    private Document readModelFromFile(File pomfile) throws FileNotFoundException, IOException,
-            ParserConfigurationException, SAXException {
+    private Document readModelFromFile(File pomfile) throws IOException, ParserConfigurationException, SAXException {
         InputStream pomInputStream = null;
         try {
             pomInputStream = new FileInputStream(pomfile);

@@ -21,7 +21,11 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.Ordering;
 
-public class Bags {
+public final class Bags {
+
+    private Bags() {
+        throw new IllegalStateException("Not meant to be instantiated");
+    }
 
     private static final Comparator<Entry<?>> BY_COUNT = new Comparator<Multiset.Entry<?>>() {
         @Override

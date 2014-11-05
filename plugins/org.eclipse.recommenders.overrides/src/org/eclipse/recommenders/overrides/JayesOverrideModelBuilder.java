@@ -73,7 +73,7 @@ public class JayesOverrideModelBuilder {
         int i = 0;
         for (final OverrideObservation obs : overriddenMethods) {
             i++;
-            final String name = "observation_" + String.valueOf(i);
+            final String name = "observation_" + i;
             patternNode.addOutcome(name);
             final double priorPatternProbability = obs.frequency / (double) totalNumberOfSubtypesFound;
             def[i] = priorPatternProbability;

@@ -165,8 +165,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         return false;
     }
 
-    private void initializeSnippetsRepo() throws GitAPIException, InvalidRemoteException, TransportException,
-    IOException {
+    private void initializeSnippetsRepo() throws GitAPIException {
         InitCommand init = Git.init();
         init.setBare(false);
         init.setDirectory(basedir);
@@ -228,7 +227,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
     }
 
     private void pullSnippets(Git git, String checkoutBranch) throws IOException, InvalidRemoteException,
-    TransportException, GitAPIException, CoreException {
+            TransportException, GitAPIException, CoreException {
         CheckoutCommand checkout = git.checkout();
         checkout.setName(checkoutBranch);
         checkout.setStartPoint("origin/" + checkoutBranch);

@@ -208,7 +208,8 @@ public class StaticHooksProvider extends ApidocProvider {
         }
     }
 
-    private final class MethodNameComparator implements Comparator<IMethod> {
+    private static class MethodNameComparator implements Comparator<IMethod> {
+
         @Override
         public int compare(final IMethod o1, final IMethod o2) {
             final String s1 = JavaElementLabels.getElementLabel(o1, JavaElementLabels.ALL_FULLY_QUALIFIED);
@@ -217,7 +218,8 @@ public class StaticHooksProvider extends ApidocProvider {
         }
     }
 
-    private final class TypeNameComparator implements Comparator<IType> {
+    private static class TypeNameComparator implements Comparator<IType> {
+
         @Override
         public int compare(final IType arg0, final IType arg1) {
             final String s0 = arg0.getFullyQualifiedName();

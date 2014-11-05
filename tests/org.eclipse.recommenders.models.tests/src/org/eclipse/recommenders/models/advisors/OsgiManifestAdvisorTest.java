@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
@@ -86,7 +85,7 @@ public class OsgiManifestAdvisorTest {
         scenarios.add(scenario("Invalid Bundle-Version", "org.example.project", "1.0-Beta", null));
         // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=441751
         scenarios
-        .add(scenario("Invalid domain name in Bundle-SymbolicName", "org.example.project._test", "1.0.0", null));
+                .add(scenario("Invalid domain name in Bundle-SymbolicName", "org.example.project._test", "1.0.0", null));
 
         return scenarios;
     }
@@ -140,7 +139,7 @@ public class OsgiManifestAdvisorTest {
     }
 
     private File createProjectWithManifestFile(String projectName, String bundleSymbolicName, String bundleVersion)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         File projectFolder = folder.newFolder(projectName);
         File metaInfFolder = folder.newFolder(projectName, "META-INF");
         File manifestFile = new File(metaInfFolder, "MANIFEST.MF");

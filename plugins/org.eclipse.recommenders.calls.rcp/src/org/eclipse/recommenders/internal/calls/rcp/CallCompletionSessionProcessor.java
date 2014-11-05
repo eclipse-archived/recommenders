@@ -24,8 +24,8 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -79,10 +79,9 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private IRecommendersCompletionContext ctx;
     private LookupEnvironment env;
     private Iterable<Recommendation<IMethodName>> recommendations;
-    private UniqueTypeName name;
     private ICallModel model;
 
-    private HashSet<IMethodName> observedCalls;
+    private Set<IMethodName> observedCalls;
 
     private Map<Recommendation<IMethodName>, Integer> recommendationsIndex;
 
@@ -119,7 +118,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (receiverType == null) {
             return false;
         }
-        name = pcProvider.toUniqueName(receiverType).orNull();
+        UniqueTypeName name = pcProvider.toUniqueName(receiverType).orNull();
         if (name == null) {
             return false;
         }

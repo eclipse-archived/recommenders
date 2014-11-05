@@ -111,7 +111,7 @@ class TableComparator extends ViewerComparator {
         }
     }
 
-    private void toggleDirection() throws AssertionError {
+    private void toggleDirection() {
         switch (direction) {
         case SWT.NONE:
             direction = SWT.UP;

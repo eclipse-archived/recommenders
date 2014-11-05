@@ -132,7 +132,7 @@ public class ApidocsView extends ViewPart {
         return providerRanking;
     }
 
-    private HashMap<String, ApidocProvider> fillProviderMap() {
+    private Map<String, ApidocProvider> fillProviderMap() {
         HashMap<String, ApidocProvider> providerMap = new HashMap<String, ApidocProvider>();
         for (ApidocProvider provider : providers) {
             providerMap.put(provider.getId(), provider);
@@ -378,7 +378,7 @@ public class ApidocsView extends ViewPart {
     }
 
     private void runProvider(JavaElementSelectionEvent selection) throws IllegalAccessException,
-    InvocationTargetException {
+            InvocationTargetException {
         Optional<Method> opt = subscriptionManager.findSubscribedMethod(activeProvider, selection);
         if (opt.isPresent()) {
             Method method = opt.get();

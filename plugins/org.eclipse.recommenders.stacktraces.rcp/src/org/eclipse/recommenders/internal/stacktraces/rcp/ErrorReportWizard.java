@@ -18,7 +18,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 
 public class ErrorReportWizard extends Wizard {
 
-    public static ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ErrorReportWizard.class,
+    public static final ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ErrorReportWizard.class,
             "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
 
     private Settings settings;
@@ -45,5 +45,4 @@ public class ErrorReportWizard extends Wizard {
         PreferenceInitializer.saveSettings(settings);
         return true;
     }
-
 }

@@ -22,10 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.annotations.Beta;
 
 /**
- * 
+ *
  * Contains utility methods for parsing and converting plain vm strings (or their corresponding {@link IName}s
  * respectively) to source strings.
- * 
+ *
  */
 public class Names {
     public static enum PrimitiveType {
@@ -205,7 +205,7 @@ public class Names {
     }
 
     /**
-     * 
+     *
      * @return new String[] { declaringType, methodNameAndDesciptor };
      */
     public static String[] parseMethodSignature2(final String vmMethodSignature) {
@@ -269,7 +269,7 @@ public class Names {
 
         final PrimitiveType p = PrimitiveType.fromSrc(StringUtils.substringBefore(type, ";"));
         if (p != null) {
-            return StringUtils.repeat("[", dimensions) + String.valueOf(p.vm());
+            return StringUtils.repeat("[", dimensions) + p.vm();
         }
 
         return StringUtils.repeat("[", dimensions) + "L" + type.replaceAll("\\.", "/");
@@ -418,7 +418,7 @@ public class Names {
     /**
      * Takes a (dot-based) type descriptor as used in JDT completion proposals and returns a standardized VM type
      * descriptor.
-     * 
+     *
      * @see #src2vmType(String)
      */
     public static String jdt2vmType(String jdtTypeDescriptor) {

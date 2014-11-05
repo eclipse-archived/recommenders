@@ -13,14 +13,9 @@ package org.eclipse.recommenders.snipmatch;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static java.util.Collections.emptySet;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.join;
-import static org.apache.commons.lang3.StringUtils.removeEnd;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
-import static org.eclipse.recommenders.snipmatch.Location.FILE;
-import static org.eclipse.recommenders.snipmatch.Location.JAVA;
-import static org.eclipse.recommenders.snipmatch.Location.NONE;
-import static org.eclipse.recommenders.snipmatch.Location.UNKNOWN;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
 import static org.eclipse.recommenders.utils.Urls.mangle;
 
@@ -51,7 +46,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -234,8 +228,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         }
     }
 
-    private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws CorruptIndexException,
-            IOException {
+    private void indexSnippet(IndexWriter writer, ISnippet snippet, String path) throws IOException {
         Document doc = new Document();
 
         doc.add(new Field(F_PATH, path, Store.YES, Index.NO));

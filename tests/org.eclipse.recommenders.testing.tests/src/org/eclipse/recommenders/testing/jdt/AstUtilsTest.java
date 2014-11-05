@@ -26,7 +26,7 @@ public class AstUtilsTest {
     public void test001() {
         String code = "$public class X extends Y {}";
 
-        Pair<CompilationUnit, Set<Integer>> markers = createAstWithMarkers(code.toString());
+        Pair<CompilationUnit, Set<Integer>> markers = createAstWithMarkers(code);
 
         assertThat(markers.getSecond(), hasItem(0));
     }
@@ -35,7 +35,7 @@ public class AstUtilsTest {
     public void test002() {
         String code = "class $X$ {}";
 
-        Pair<CompilationUnit, Set<Integer>> markers = createAstWithMarkers(code.toString());
+        Pair<CompilationUnit, Set<Integer>> markers = createAstWithMarkers(code);
 
         assertThat(markers.getFirst().toString(), not(hasToString(containsString(MARKER))));
 
