@@ -663,7 +663,7 @@ class SnippetCodeBuilderTest {
                 ${cursor}
             '''.toString, actual)
     }
- 
+
     @Test
     def void testDollarDollarVariableMethodArgument() {
         val code = CodeBuilder::method(
@@ -732,6 +732,78 @@ class SnippetCodeBuilderTest {
         assertEquals(
             '''
                 String ${textstr:newName(java.lang.String)} = "";
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testEmptyClass() {
+        val code = CodeBuilder::method(
+            '''
+                $public class Test { }$
+            '''
+        )
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                public class Test { }
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testClass() {
+        val code = CodeBuilder::method(
+            '''
+                $public class Test {
+                    List myList;
+                }$
+            '''
+        )
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                public class Test {
+                    List ${myList:newName(java.util.List)};
+                }
+                ${import:import(java.util.List)}${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testEmptyInterface() {
+        val code = CodeBuilder::method(
+            '''
+                $public interface Test { }$
+            '''
+        )
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                public interface Test { }
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testEmptyEnum() {
+        val code = CodeBuilder::method(
+            '''
+                $public enum Test { }$
+            '''
+        )
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                public enum Test { }
                 ${cursor}
             '''.toString, actual)
     }
