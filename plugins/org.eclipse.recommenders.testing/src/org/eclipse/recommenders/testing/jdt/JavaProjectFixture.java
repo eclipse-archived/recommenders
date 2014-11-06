@@ -218,10 +218,14 @@ public class JavaProjectFixture {
     }
 
     public Pair<String, Set<Integer>> findMarkers(final CharSequence content) {
+        return findMarkers(content, MARKER);
+    }
+
+    public Pair<String, Set<Integer>> findMarkers(final CharSequence content, String marker) {
         final Set<Integer> markers = Sets.newTreeSet();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
-        while ((pos = sb.indexOf(MARKER, pos)) != -1) {
+        while ((pos = sb.indexOf(marker, pos)) != -1) {
             sb.deleteCharAt(pos);
             markers.add(pos);
             ensureIsTrue(pos < sb.length());
@@ -248,7 +252,12 @@ public class JavaProjectFixture {
      */
     public Pair<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
             throws CoreException {
-        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+        return createFileAndParseWithMarkers(contentWithMarkers, MARKER);
+    }
+
+    public Pair<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers,
+            String marker) throws CoreException {
+        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers, marker);
 
         final ICompilationUnit cu = createFile(content.getFirst(), false);
         refreshAndBuildProject();

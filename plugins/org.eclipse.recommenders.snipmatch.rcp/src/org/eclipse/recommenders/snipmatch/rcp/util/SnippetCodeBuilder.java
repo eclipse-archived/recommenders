@@ -113,7 +113,8 @@ public class SnippetCodeBuilder {
                         continue outer;
                     case IBinding.VARIABLE:
                         IVariableBinding vb = (IVariableBinding) b;
-                        String uniqueVariableName = generateUniqueVariableName(vb, name.toString());
+                        String uniqueVariableName = generateUniqueVariableName(vb,
+                                StringUtils.replace(name.toString(), "$", ""));
                         if (isDeclaration(name)) {
                             appendNewName(uniqueVariableName, vb);
                         } else if (isDeclaredInSelection(vb, selection)) {
@@ -136,6 +137,10 @@ public class SnippetCodeBuilder {
                 }
             }
             sb.append(c);
+
+            if (c == '$') {
+                sb.append(c);
+            }
         }
 
         sb.append('\n');
@@ -240,7 +245,7 @@ public class SnippetCodeBuilder {
             String uniqueName = generateUniqueVariableName(null, name);
             String joinedImports = Joiner.on(", ").join(imports); //$NON-NLS-1$
             sb.append('$').append('{').append(uniqueName).append(':').append(name).append('(').append(joinedImports)
-            .append(')').append('}');
+                    .append(')').append('}');
         }
     }
 
