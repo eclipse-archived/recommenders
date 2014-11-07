@@ -32,6 +32,9 @@ import org.eclipse.recommenders.utils.gson.UuidTypeAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
@@ -187,6 +190,17 @@ public class ErrorReports {
 
     }
 
+    private static class StatusFilterSetting {
+
+        public StatusFilterSetting(String pluginPrefix, String... stacktraceClassPrefixes) {
+            this.pluginPrefix = pluginPrefix;
+            this.stacktraceClassPrefixes = Lists.newArrayList(stacktraceClassPrefixes);
+        }
+
+        final String pluginPrefix;
+        final List<String> stacktraceClassPrefixes;
+    }
+
     static boolean isWhitelisted(String className, List<String> whitelist) {
         for (String whiteListedPrefix : whitelist) {
             if (className.startsWith(whiteListedPrefix)) {
@@ -200,6 +214,71 @@ public class ErrorReports {
     private static ModelFactory factory = ModelFactory.eINSTANCE;
     private static final String SOURCE_BEGIN_MESSAGE = "----------------------------------- SOURCE BEGIN -------------------------------------";
     private static final String SOURCE_FILE_REMOVED = "source file contents removed";
+    private static final List<StatusFilterSetting> STATUS_FILTER_SETTINGS = ImmutableList
+            .of(
+            // at java.lang.Object.wait(Object.java:-2)
+            // at java.lang.Object.wait(Object.java:502)
+            // at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.getNextEvent(EventManager.java:400)
+            // at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:336)
+            new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object", "java.lang.Object",
+                    "org.eclipse.osgi.framework.eventmgr.EventManager",
+                    "org.eclipse.osgi.framework.eventmgr.EventManager"),
+            // at java.lang.Object.wait(Object.java:-2)
+            // at org.eclipse.core.internal.jobs.WorkerPool.sleep(WorkerPool.java:188)
+            // at org.eclipse.core.internal.jobs.WorkerPool.startJob(WorkerPool.java:220)
+            // at org.eclipse.core.internal.jobs.Worker.run(Worker.java:52)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object",
+                            "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.WorkerPool",
+                            "org.eclipse.core.internal.jobs.Worker"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at java.lang.Object.wait(Object.java:502)
+                    // at org.eclipse.jdt.internal.core.search.processing.JobManager.run(JobManager.java:382)
+                    // at java.lang.Thread.run(Thread.java:745)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object", "java.lang.Object",
+                            "org.eclipse.jdt.internal.core.search.processing.JobManager", "java.lang.Thread"),
+                    // at org.eclipse.pde.internal.core.PluginModelManager.initializeTable(PluginModelManager.java:496)
+                    // at org.eclipse.pde.internal.core.PluginModelManager.targetReloaded(PluginModelManager.java:473)
+                    // at
+                    // org.eclipse.pde.internal.core.RequiredPluginsInitializer$1.run(RequiredPluginsInitializer.java:34)
+                    // at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring",
+                            "org.eclipse.pde.internal.core.PluginModelManager",
+                            "org.eclipse.pde.internal.core.PluginModelManager",
+                            "org.eclipse.pde.internal.core.RequiredPluginsInitializer",
+                            "org.eclipse.core.internal.jobs.Worker"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:142)
+                    // at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:158)
+                    // at
+                    // org.eclipse.emf.common.util.CommonUtil$1ReferenceClearingQueuePollingThread.run(CommonUtil.java:70)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object",
+                            "java.lang.ref.ReferenceQueue", "java.lang.ref.ReferenceQueue",
+                            "org.eclipse.emf.common.util.CommonUtil"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at org.eclipse.core.internal.jobs.InternalWorker.run(InternalWorker.java:59)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object",
+                            "org.eclipse.core.internal.jobs.InternalWorker"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at org.eclipse.equinox.internal.util.impl.tpt.timer.TimerImpl.run(TimerImpl.java:141)
+                    // at java.lang.Thread.run(Thread.java:745)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object",
+                            "org.eclipse.equinox.internal.util.impl.tpt.timer.TimerImpl", "java.lang.Thread"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:142)
+                    // at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:158)
+                    // at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:209)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object",
+                            "java.lang.ref.ReferenceQueue", "java.lang.ref.ReferenceQueue", "java.lang.ref.Finalizer"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at java.lang.Object.wait(Object.java:502)
+                    // at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:157)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object", "java.lang.Object",
+                            "java.lang.ref.Reference$ReferenceHandler"),
+                    // at java.lang.Object.wait(Object.java:-2)
+                    // at java.lang.Object.wait(Object.java:502)
+                    // at org.eclipse.equinox.internal.util.impl.tpt.threadpool.Executor.run(Executor.java:106)
+                    new StatusFilterSetting("org.eclipse.ui.monitoring", "java.lang.Object", "java.lang.Object",
+                            "org.eclipse.equinox.internal.util.impl.tpt.threadpool.Executor"));
 
     public static ErrorReport copy(ErrorReport org) {
         return EcoreUtil.copy(org);
@@ -275,7 +354,8 @@ public class ErrorReports {
         }
     }
 
-    public static Status newStatus(IStatus status, Settings settings) {
+    @VisibleForTesting
+    static Status newStatus(IStatus status, Settings settings) {
         Status mStatus = factory.createStatus();
         mStatus.setMessage(removeSourceFileContents(status.getMessage()));
         mStatus.setSeverity(status.getSeverity());
@@ -295,8 +375,14 @@ public class ErrorReports {
                 mChildren.add(newStatus(coreExceptionStatus, settings));
             }
         }
+        // some stacktraces from ui.monitoring should be filtered
+        boolean needFiltering = "org.eclipse.ui.monitoring".equals(status.getPlugin())
+                && (status.getCode() == 0 || status.getCode() == 1);
+        // Multistatus handling
         for (IStatus child : status.getChildren()) {
-            mChildren.add(newStatus(child, settings));
+            if (!(needFiltering && isFiltered(child))) {
+                mChildren.add(newStatus(child, settings));
+            }
         }
 
         if (status.getException() != null) {
@@ -312,6 +398,29 @@ public class ErrorReports {
         return mStatus;
     }
 
+    private static boolean isFiltered(IStatus status) {
+        for (StatusFilterSetting filterSetting : STATUS_FILTER_SETTINGS) {
+            if (status.getPlugin().startsWith(filterSetting.pluginPrefix)
+                    && isStacktraceFiltered(status, filterSetting.stacktraceClassPrefixes)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isStacktraceFiltered(IStatus status, List<String> stacktraceClassPrefixes) {
+        java.lang.StackTraceElement[] stackTrace = status.getException().getStackTrace();
+        if (stackTrace.length != stacktraceClassPrefixes.size()) {
+            return false;
+        }
+        for (int i = 0; i < stackTrace.length; i++) {
+            if (!stackTrace[i].getClassName().startsWith(stacktraceClassPrefixes.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static String removeSourceFileContents(String message) {
         if (message.contains(SOURCE_BEGIN_MESSAGE)) {
             return SOURCE_FILE_REMOVED;
@@ -320,7 +429,7 @@ public class ErrorReports {
         }
     }
 
-    public static Throwable newThrowable(java.lang.Throwable throwable) {
+    private static Throwable newThrowable(java.lang.Throwable throwable) {
         Throwable mThrowable = factory.createThrowable();
         mThrowable.setMessage(throwable.getMessage());
         mThrowable.setClassName(throwable.getClass().getName());
