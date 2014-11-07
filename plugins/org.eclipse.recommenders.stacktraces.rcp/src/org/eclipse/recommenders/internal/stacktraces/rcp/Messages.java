@@ -14,6 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.stacktraces.rcp.messages"; //$NON-NLS-1$
+    public static String ERRORREPORTWIZARD_WE_NOTICED_ERROR;
     public static String FIELD_LABEL_SERVER;
     public static String FIELD_LABEL_ACTION;
     public static String FIELD_LABEL_ACTION_REPORT_ASK;

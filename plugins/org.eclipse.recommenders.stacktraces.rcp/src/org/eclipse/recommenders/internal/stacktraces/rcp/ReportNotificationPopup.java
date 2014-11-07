@@ -22,12 +22,13 @@ import org.eclipse.swt.widgets.Link;
 
 public class ReportNotificationPopup extends AbstractNotificationPopup {
 
+    private static final int DELAY_CLOSE_MS = 2000;
     private String message;
 
     public ReportNotificationPopup(String link) {
         super(getDisplay());
         setFadingEnabled(true);
-        setDelayClose(2000);
+        setDelayClose(DELAY_CLOSE_MS);
         this.message = link;
     }
 

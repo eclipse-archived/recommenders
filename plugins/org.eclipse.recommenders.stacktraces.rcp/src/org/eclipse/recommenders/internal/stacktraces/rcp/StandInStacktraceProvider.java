@@ -20,8 +20,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.utils.Reflections;
 
-import com.google.common.collect.Sets;
-
 public class StandInStacktraceProvider {
 
     public static class StandInException extends RuntimeException {
@@ -35,22 +33,6 @@ public class StandInStacktraceProvider {
 
     private static final String STAND_IN_MESSAGE = "Stand-In Stacktrace supplied by Eclipse Stacktraces & Error Reporting Tool";
 
-    private static final Set<String> BLACKLISTED_CLASSNAMES = Sets.newHashSet();
-
-    static {
-        BLACKLISTED_CLASSNAMES.add("java.security.AccessController");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.core.internal.runtime.Log");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.core.internal.runtime.RuntimeLog");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.core.internal.runtime.PlatformLogWriter");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogReaderServiceFactory");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogReaderServiceFactory$3");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogServiceFactory");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogServiceImpl");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.LoggerImpl");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.recommenders.internal.stacktraces.rcp.StandInStacktraceProvider");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.recommenders.internal.stacktraces.rcp.LogListener");
-    }
-
     private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
             .orNull();
 
@@ -59,7 +41,8 @@ public class StandInStacktraceProvider {
             Throwable syntetic = new StandInException(STAND_IN_MESSAGE);
             syntetic.fillInStackTrace();
             StackTraceElement[] stacktrace = syntetic.getStackTrace();
-            StackTraceElement[] clearedStacktrace = clearBlacklistedTopStackframes(stacktrace, BLACKLISTED_CLASSNAMES);
+            StackTraceElement[] clearedStacktrace = clearBlacklistedTopStackframes(stacktrace,
+                    Constants.STAND_IN_STACKTRACE_BLACKLIST);
             syntetic.setStackTrace(clearedStacktrace);
             try {
                 SET_EXCEPTION.invoke(status, syntetic);

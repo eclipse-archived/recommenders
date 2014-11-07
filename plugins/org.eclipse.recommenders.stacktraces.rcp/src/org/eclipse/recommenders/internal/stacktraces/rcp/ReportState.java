@@ -14,21 +14,21 @@ import com.google.common.base.Optional;
 
 public class ReportState {
 
-    public static final String KEYWORD_NEEDINFO = "needinfo";
+    public static final String KEYWORD_NEEDINFO = "needinfo"; //$NON-NLS-1$
     public static final String[] EMPTY_STRINGS = new String[0];
-    public static final String FIXED = "FIXED";
-    public static final String ASSIGNED = "ASSIGNED";
-    public static final String NOT_ECLIPSE = "NOT_ECLIPSE";
-    public static final String INVALID = "INVALID";
-    public static final String WONTFIX = "WONTFIX";
-    public static final String WORKSFORME = "WORKSFORME";
-    public static final String MOVED = "MOVED";
-    public static final String DUPLICATE = "DUPLICATE";
-    public static final String UNKNOWN = "UNKNOWN";
-    public static final String CLOSED = "CLOSED";
-    public static final String RESOLVED = "RESOLVED";
-    public static final String NEW = "NEW";
-    public static final String UNCONFIRMED = "UNCONFIRMED";
+    public static final String FIXED = "FIXED"; //$NON-NLS-1$
+    public static final String ASSIGNED = "ASSIGNED"; //$NON-NLS-1$
+    public static final String NOT_ECLIPSE = "NOT_ECLIPSE"; //$NON-NLS-1$
+    public static final String INVALID = "INVALID"; //$NON-NLS-1$
+    public static final String WONTFIX = "WONTFIX"; //$NON-NLS-1$
+    public static final String WORKSFORME = "WORKSFORME"; //$NON-NLS-1$
+    public static final String MOVED = "MOVED"; //$NON-NLS-1$
+    public static final String DUPLICATE = "DUPLICATE"; //$NON-NLS-1$
+    public static final String UNKNOWN = "UNKNOWN"; //$NON-NLS-1$
+    public static final String CLOSED = "CLOSED"; //$NON-NLS-1$
+    public static final String RESOLVED = "RESOLVED"; //$NON-NLS-1$
+    public static final String NEW = "NEW"; //$NON-NLS-1$
+    public static final String UNCONFIRMED = "UNCONFIRMED"; //$NON-NLS-1$
 
     private boolean created;
     private String bugId;

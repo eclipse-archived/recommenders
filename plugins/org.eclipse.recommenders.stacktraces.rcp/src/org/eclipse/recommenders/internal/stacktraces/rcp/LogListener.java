@@ -41,8 +41,9 @@ import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
 
-    private Cache<String, ErrorReport> cache = CacheBuilder.newBuilder().maximumSize(30)
-            .expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private Cache<String, ErrorReport> cache = CacheBuilder.newBuilder()
+            .maximumSize(Constants.PREVIOUS_ERROR_CACHE_MAXIMUM_SIZE)
+            .expireAfterAccess(Constants.PREVIOUS_ERROR_CACHE_EXPIRE_AFTER_ACCESS_MINUTES, TimeUnit.MINUTES).build();
     private IObservableList errorReports;
     private volatile boolean isDialogOpen;
     private Settings settings;

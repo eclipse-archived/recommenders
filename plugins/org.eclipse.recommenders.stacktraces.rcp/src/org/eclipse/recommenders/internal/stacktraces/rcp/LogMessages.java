@@ -24,14 +24,14 @@ public final class LogMessages extends DefaultLogMessage {
     private static final Bundle BUNDLE = FrameworkUtil.getBundle(LogMessages.class);
 
     public static final LogMessages NO_INTERNET = new LogMessages(WARNING,
-            "Could not connect to server. Your IP is ''{0}''");
+            "Could not connect to server. Your IP is ''{0}''"); //$NON-NLS-1$
     public static final LogMessages FAILED_TO_PARSE_SEND_MODE = new LogMessages(ERROR,
-            "Failed to parse send mode ''{0}''. Returning ''{1}'' instead.");
+            "Failed to parse send mode ''{0}''. Returning ''{1}'' instead."); //$NON-NLS-1$
     public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
-            "Could not access \u2018{0}\u2019 using reflection.  Functionality may be limited.");
+            "Could not access \u2018{0}\u2019 using reflection.  Functionality may be limited."); //$NON-NLS-1$
     public static final ILogMessage PAUSE_PERIOD_ELAPSED = new LogMessages(INFO,
-            "The paused interval for error reporting is elapsed, returning to 'ASK'-Mode");
-    public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR, "Saving preferences failed");
+            "The paused interval for error reporting is elapsed, returning to 'ASK'-Mode"); //$NON-NLS-1$
+    public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR, "Saving preferences failed"); //$NON-NLS-1$
 
     public static final ILogMessage REPORTING_ERROR = new LogMessages(WARNING, "Error during error-reporting");
 

@@ -19,7 +19,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 public class ErrorReportWizard extends Wizard {
 
     public static ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ErrorReportWizard.class,
-            "/icons/wizban/stackframes_wiz.gif");
+            "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
 
     private Settings settings;
     private SettingsWizardPage page1;
@@ -34,7 +34,7 @@ public class ErrorReportWizard extends Wizard {
 
     @Override
     public void addPages() {
-        setWindowTitle("We noticed an error...");
+        setWindowTitle(Messages.ERRORREPORTWIZARD_WE_NOTICED_ERROR);
         setDefaultPageImageDescriptor(TITLE_IMAGE_DESC);
         addPage(page1);
         addPage(page2);
