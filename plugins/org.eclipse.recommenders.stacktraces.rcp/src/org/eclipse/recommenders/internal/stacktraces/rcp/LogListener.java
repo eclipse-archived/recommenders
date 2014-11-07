@@ -29,6 +29,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
@@ -63,28 +64,31 @@ public class LogListener implements ILogListener, IStartup {
 
     @Override
     public void logging(final IStatus status, String nouse) {
-
-        if (skipSendingReports() || !isErrorSeverity(status)) {
-            return;
-        }
-        settings = readSettings();
-        if (!hasPluginIdWhitelistedPrefix(status, settings.getWhitelistedPluginIds())) {
-            return;
-        }
-        SendAction sendAction = settings.getAction();
-        if (!isSendingAllowedOnAction(sendAction)) {
-            return;
-        }
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
-        final ErrorReport report = newErrorReport(status, settings);
-        if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
-            return;
-        }
-        addForSending(report);
-        if (sendAction == SendAction.ASK) {
-            checkAndSendWithDialog(report);
-        } else if (sendAction == SendAction.SILENT) {
-            sendAndClear();
+        try {
+            if (skipSendingReports() || !isErrorSeverity(status)) {
+                return;
+            }
+            settings = readSettings();
+            if (!hasPluginIdWhitelistedPrefix(status, settings.getWhitelistedPluginIds())) {
+                return;
+            }
+            SendAction sendAction = settings.getAction();
+            if (!isSendingAllowedOnAction(sendAction)) {
+                return;
+            }
+            stacktraceProvider.insertStandInStacktraceIfEmpty(status);
+            final ErrorReport report = newErrorReport(status, settings);
+            if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
+                return;
+            }
+            addForSending(report);
+            if (sendAction == SendAction.ASK) {
+                checkAndSendWithDialog(report);
+            } else if (sendAction == SendAction.SILENT) {
+                sendAndClear();
+            }
+        } catch (Exception e) {
+            Logs.log(LogMessages.REPORTING_ERROR, e);
         }
     }
 

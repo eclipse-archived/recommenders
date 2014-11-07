@@ -33,6 +33,8 @@ public final class LogMessages extends DefaultLogMessage {
             "The paused interval for error reporting is elapsed, returning to 'ASK'-Mode");
     public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR, "Saving preferences failed");
 
+    public static final ILogMessage REPORTING_ERROR = new LogMessages(WARNING, "Error during error-reporting");
+
     public LogMessages(int severity, String message) {
         super(severity, code++, message);
     }
