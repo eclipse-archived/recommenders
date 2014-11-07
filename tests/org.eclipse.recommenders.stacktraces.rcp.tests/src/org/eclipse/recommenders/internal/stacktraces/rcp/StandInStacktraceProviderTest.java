@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.never;
 
@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -119,16 +118,6 @@ public class StandInStacktraceProviderTest {
     }
 
     @Test
-    public void testInsertClearedStackframesInStatusWithNoException() {
-        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message");
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
-        ArgumentCaptor<StackTraceElement[]> captor = ArgumentCaptor.forClass(StackTraceElement[].class);
-        Mockito.verify(stacktraceProvider).clearBlacklistedTopStackframes(captor.capture(),
-                Mockito.anySetOf(String.class));
-        assertThat(status.getException().getStackTrace(), is(captor.getValue()));
-    }
-
-    @Test
     public void testInsertStacktraceSkippedForStatusWithException() {
         IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message", new RuntimeException());
         stacktraceProvider.insertStandInStacktraceIfEmpty(status);
@@ -142,5 +131,15 @@ public class StandInStacktraceProviderTest {
         stacktraceProvider.insertStandInStacktraceIfEmpty(status);
         Mockito.verify(stacktraceProvider, never()).clearBlacklistedTopStackframes(
                 Mockito.any(StackTraceElement[].class), Mockito.anySetOf(String.class));
+    }
+
+    @Test
+    public void testInserterClassNotContainedInStacktrace() {
+        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message");
+        new StandInStacktraceProvider().insertStandInStacktraceIfEmpty(status);
+        for (StackTraceElement e : status.getException().getStackTrace()) {
+            assertThat(e.getClassName(), not(is(StandInStacktraceProvider.class.getCanonicalName())));
+        }
+
     }
 }

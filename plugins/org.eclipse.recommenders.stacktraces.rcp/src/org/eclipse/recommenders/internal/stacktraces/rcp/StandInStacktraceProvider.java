@@ -47,7 +47,7 @@ public class StandInStacktraceProvider {
         BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogServiceFactory");
         BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.ExtendedLogServiceImpl");
         BLACKLISTED_CLASSNAMES.add("org.eclipse.osgi.internal.log.LoggerImpl");
-        BLACKLISTED_CLASSNAMES.add("org.eclipse.recommenders.internal.stacktraces.rcp.DebugStacktraceProvider");
+        BLACKLISTED_CLASSNAMES.add("org.eclipse.recommenders.internal.stacktraces.rcp.StandInStacktraceProvider");
         BLACKLISTED_CLASSNAMES.add("org.eclipse.recommenders.internal.stacktraces.rcp.LogListener");
     }
 
