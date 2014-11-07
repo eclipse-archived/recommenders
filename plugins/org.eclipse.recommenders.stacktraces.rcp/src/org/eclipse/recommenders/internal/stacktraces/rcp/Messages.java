@@ -48,17 +48,14 @@ public class Messages extends NLS {
     public static String THANKYOUDIALOG_MARKED_MOVED;
     public static String THANKYOUDIALOG_MARKED_NORMAL;
     public static String THANKYOUDIALOG_MARKED_UNKNOWN;
-    public static String THANKYOUDIALOG_COMMITTER_NEEDINFO;
     public static String THANKYOUDIALOG_MATCHED_EXISTING_BUG;
     public static String THANKYOUDIALOG_COMMITTER_MESSAGE_EMPTY;
     public static String THANKYOUDIALOG_MARKED_WORKSFORME;
-    public static String THANKYOUDIALOG_PLEASE_NOTE_ADDITIONAL_PERMISSIONS;
     public static String THANKYOUDIALOG_RECEIVED_AND_TRACKED;
     public static String THANKYOUDIALOG_RECEIVED_UNKNOWN_SERVER_RESPONSE;
     public static String THANKYOUDIALOG_THANK_YOU;
     public static String THANKYOUDIALOG_THANK_YOU_FOR_HELP;
     public static String THANKYOUDIALOG_NEW;
-    public static String THANKYOUDIALOG_ADDITIONAL_INFORMATION;
     public static String TOOLTIP_ANONYMIZE_STACKTRACES;
     public static String TOOLTIP_CLEAR_MESSAGES;
     public static String TOOLTIP_SKIP_SIMILAR;

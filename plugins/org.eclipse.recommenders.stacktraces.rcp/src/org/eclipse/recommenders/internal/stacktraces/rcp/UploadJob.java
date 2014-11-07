@@ -19,7 +19,6 @@ import static org.eclipse.recommenders.net.Proxies.proxy;
 import java.net.URI;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -102,8 +101,7 @@ public class UploadJob extends Job {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                String res = StringUtils.replace(message, "\n\t<a>", " <a>");
-                Window dialog = new ReportNotificationPopup(res);
+                Window dialog = new ReportNotificationPopup(message);
                 dialog.open();
             }
         });

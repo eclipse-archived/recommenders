@@ -127,8 +127,7 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
         }
 
         if (hasInfo()) {
-            text.append("\n\nCommitter Message:\n")
-            .append(format(Messages.THANKYOUDIALOG_COMMITTER_MESSAGE, getInfo()));
+            text.append(format(Messages.THANKYOUDIALOG_COMMITTER_MESSAGE, getInfo()));
         }
 
         text.append(Messages.THANKYOUDIALOG_THANK_YOU_FOR_HELP);

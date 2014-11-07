@@ -206,7 +206,6 @@ public abstract class AbstractNotificationPopup extends Window {
         titleTextLabel.setText(getPopupShellTitle());
         titleTextLabel.setFont(CommonFonts.BOLD);
         titleTextLabel.setForeground(getTitleForeground());
-        // titleTextLabel.setForeground(color.getTitleText());
         titleTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         titleTextLabel.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
@@ -443,7 +442,7 @@ public abstract class AbstractNotificationPopup extends Window {
         /* Create Title Area */
         createTitleArea(titleCircle);
 
-        /* Outer composite to hold content controlls */
+        /* Outer composite to hold content controls */
         Composite outerContentCircle = new Composite(outerCircle, SWT.NONE);
         outerContentCircle.setBackgroundMode(SWT.INHERIT_FORCE);
 
