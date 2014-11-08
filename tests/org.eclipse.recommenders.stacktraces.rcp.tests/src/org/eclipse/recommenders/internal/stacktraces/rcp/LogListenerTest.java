@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.SYSPROP_ECLIPSE_BUILD_ID;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
@@ -62,6 +63,9 @@ public class LogListenerTest {
 
     @Before
     public void init() {
+        // Flag to bypass the runtime workbench test check:
+        System.setProperty(SYSPROP_ECLIPSE_BUILD_ID, "unit-tests");
+
         sut = spy(new LogListener());
         doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
         // safety: do not send errors during tests

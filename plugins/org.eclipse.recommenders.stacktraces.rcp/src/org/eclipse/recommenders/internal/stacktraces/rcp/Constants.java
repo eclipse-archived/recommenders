@@ -31,6 +31,7 @@ public final class Constants {
      * configurations lets the log listener skip automated error reporting.
      */
     static final String SYSPROP_SKIP_REPORTS = PLUGIN_ID + ".skipReports";
+    static final String SYSPROP_ECLIPSE_BUILD_ID = "eclipse.buildId";
 
     static final String PROP_NAME = "name";
     static final String PROP_EMAIL = "email";

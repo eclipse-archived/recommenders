@@ -11,7 +11,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
-import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.SYSPROP_SKIP_REPORTS;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -66,7 +66,7 @@ public class LogListener implements ILogListener, IStartup {
     @Override
     public void logging(final IStatus status, String nouse) {
         try {
-            if (skipSendingReports() || !isErrorSeverity(status)) {
+            if (skipSendingReports() || !isErrorSeverity(status) || isRuntimeEclipse()) {
                 return;
             }
             settings = readSettings();
@@ -99,6 +99,10 @@ public class LogListener implements ILogListener, IStartup {
 
     private boolean isErrorSeverity(final IStatus status) {
         return status.matches(IStatus.ERROR);
+    }
+
+    private boolean isRuntimeEclipse() {
+        return null == System.getProperty(SYSPROP_ECLIPSE_BUILD_ID);
     }
 
     @VisibleForTesting
