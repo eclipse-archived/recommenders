@@ -281,6 +281,23 @@ public class ErrorReportsTest {
         assertThat(newStatus.getChildren().get(2).getException().getMessage(), is("Stack Trace 6"));
     }
 
+    @Test
+    public void testMultistatusChildFilteringHandlesEmptyStacktrace() {
+        settings = ModelFactory.eINSTANCE.createSettings();
+        settings.getWhitelistedPackages().add("org.");
+
+        Exception e1 = new Exception("Stack Trace 1");
+        e1.setStackTrace(new java.lang.StackTraceElement[0]);
+        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
+                "Thread 'Signal Dispatcher' tid=4 (RUNNABLE)", e1);
+
+        IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1 },
+                "UI freeze of 10s at 08:09:02.936", newRuntimeException("stand-in-stacktrace"));
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
+                settings);
+        assertThat(newStatus.getChildren().size(), is(0));
+    }
+
     private static RuntimeException newRuntimeException(String message) {
         RuntimeException cause = new RuntimeException(message);
         cause.fillInStackTrace();
