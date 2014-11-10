@@ -27,7 +27,6 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalSorter;
-import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetAppliedEvent;
 import org.eclipse.swt.SWT;
@@ -75,7 +74,7 @@ public class SnipmatchCompletionEngine {
 
     private Shell searchShell;
     private JavaContentAssistInvocationContext context;
-    private TemplateProposal selectedProposal;
+    private ICompletionProposal selectedProposal;
     private StyledText searchText;
     private AssistantControlState state;
 
@@ -119,9 +118,8 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
-
-                if (proposal instanceof TemplateProposal) {
-                    selectedProposal = (TemplateProposal) proposal;
+                if (proposal instanceof ICompletionProposal) {
+                    selectedProposal = proposal;
                 } else {
                     selectedProposal = null;
                 }
@@ -135,6 +133,7 @@ public class SnipmatchCompletionEngine {
         assistant.setShowEmptyList(true);
         assistant.enablePrefixCompletion(true);
         assistant.enableColoredLabels(true);
+
         assistant.setContentAssistProcessor(processor, DEFAULT_CONTENT_TYPE);
         assistant.setInformationControlCreator(new TemplateInformationControlCreator(SWT.LEFT_TO_RIGHT));
         assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
@@ -152,6 +151,16 @@ public class SnipmatchCompletionEngine {
                     return ComparisonChain.start().compare(s1.getRepositoryRelevance(), s2.getRepositoryRelevance())
                             .compare(s2.getRelevance(), s1.getRelevance())
                             .compare(s1.getSnippet().getName(), s2.getSnippet().getName()).result();
+                } else if (p1 instanceof RepositoryProposal && p2 instanceof RepositoryProposal) {
+                    RepositoryProposal s1 = (RepositoryProposal) p1;
+                    RepositoryProposal s2 = (RepositoryProposal) p2;
+
+                    return ComparisonChain.start().compare(s1.getRepositoryPriority(), s2.getRepositoryPriority())
+                            .result();
+                } else if (p1 instanceof RepositoryProposal && p2 instanceof SnippetProposal) {
+                    return compareSnippetWithRepository((SnippetProposal) p2, (RepositoryProposal) p1);
+                } else if (p1 instanceof SnippetProposal && p2 instanceof RepositoryProposal) {
+                    return compareSnippetWithRepository((SnippetProposal) p1, (RepositoryProposal) p2);
                 } else {
                     return RELEVANCE_SORTER.compare(p1, p2);
                 }
@@ -162,12 +171,26 @@ public class SnipmatchCompletionEngine {
         return assistant;
     }
 
+    private int compareSnippetWithRepository(SnippetProposal s, RepositoryProposal r) {
+        int comparison = ComparisonChain.start().compare(r.getRepositoryPriority(), s.getRepositoryRelevance())
+                .result();
+        return comparison != 0 ? comparison : 1;
+    }
+
     public void show(final JavaContentAssistInvocationContext context) {
         this.context = context;
         processor.setContext(context);
         assistant.install(context.getViewer());
         state = AssistantControlState.KEEP_OPEN;
         createSearchPopup();
+    }
+
+    private void execute(String commandId) {
+        try {
+            assistant.getHandler(commandId).execute(null);
+        } catch (ExecutionException e) {
+            Throwables.propagate(e);
+        }
     }
 
     private void createSearchPopup() {
@@ -203,25 +226,23 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void verifyKey(VerifyEvent e) {
-                TemplateProposal appliedProposal = selectedProposal;
+                ICompletionProposal appliedProposal = selectedProposal;
                 switch (e.character) {
                 case SWT.CR:
                     e.doit = false;
-                    if (appliedProposal != null) {
+                    if (appliedProposal instanceof SnippetProposal) {
+                        SnippetProposal snippetProposal = (SnippetProposal) appliedProposal;
                         state = AssistantControlState.ENABLE_HIDE;
                         assistant.uninstall();
-                        if (appliedProposal.isValidFor(context.getDocument(), context.getInvocationOffset())) {
-                            if (appliedProposal instanceof SnippetProposal) {
-                                snippetApplied((SnippetProposal) appliedProposal);
-                            }
-                            appliedProposal.apply(context.getViewer(), (char) 0, SWT.NONE,
-                                    context.getInvocationOffset());
+                        if (snippetProposal.isValidFor(context.getDocument(), context.getInvocationOffset())) {
+                            snippetApplied(snippetProposal);
+                        }
+                        snippetProposal.apply(context.getViewer(), (char) 0, SWT.NONE, context.getInvocationOffset());
 
-                            Point selection = appliedProposal.getSelection(context.getDocument());
-                            if (selection != null) {
-                                context.getViewer().setSelectedRange(selection.x, selection.y);
-                                context.getViewer().revealRange(selection.x, selection.y);
-                            }
+                        Point selection = snippetProposal.getSelection(context.getDocument());
+                        if (selection != null) {
+                            context.getViewer().setSelectedRange(selection.x, selection.y);
+                            context.getViewer().revealRange(selection.x, selection.y);
                         }
                     } else {
                         state = AssistantControlState.ENABLE_HIDE;
@@ -241,18 +262,17 @@ public class SnipmatchCompletionEngine {
                 switch (e.keyCode) {
                 case SWT.ARROW_UP:
                     execute(ContentAssistant.SELECT_PREVIOUS_PROPOSAL_COMMAND_ID);
+                    if (selectedProposal instanceof RepositoryProposal) {
+                        execute(ContentAssistant.SELECT_PREVIOUS_PROPOSAL_COMMAND_ID);
+                    }
+
                     return;
                 case SWT.ARROW_DOWN:
                     execute(ContentAssistant.SELECT_NEXT_PROPOSAL_COMMAND_ID);
+                    if (selectedProposal instanceof RepositoryProposal) {
+                        execute(ContentAssistant.SELECT_NEXT_PROPOSAL_COMMAND_ID);
+                    }
                     return;
-                }
-            }
-
-            private void execute(String commandId) {
-                try {
-                    assistant.getHandler(commandId).execute(null);
-                } catch (ExecutionException e) {
-                    Throwables.propagate(e);
                 }
             }
         });
@@ -264,6 +284,9 @@ public class SnipmatchCompletionEngine {
                 processor.setTerms(query);
                 assistant.showPossibleCompletions();
                 assistant.showContextInformation();
+                if (selectedProposal instanceof RepositoryProposal) {
+                    execute(ContentAssistant.SELECT_NEXT_PROPOSAL_COMMAND_ID);
+                }
             }
         });
 

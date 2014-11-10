@@ -17,6 +17,8 @@ public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.messages"; //$NON-NLS-1$
 
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
+    public static String COMPLETION_ENGINE_REPOSITORY_MATCHES;
+
     public static String CONFIGURATION_DISPLAY_STRING;
 
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE;
@@ -95,7 +97,6 @@ public class Messages extends NLS {
 
     public static String EDITOR_TITLE_METADATA;
     public static String EDITOR_TITLE_RAW_SOURCE;
-
     public static String EDITOR_TOOLBAR_ITEM_HELP;
 
     public static String EDITOR_DESCRIPTION_DEPENDENCIES;

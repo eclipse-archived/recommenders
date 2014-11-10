@@ -127,17 +127,22 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             Optional<ISnippetRepository> repo = repos.getRepository(sortedConfigs.get(repositoryPriority).getId());
 
             if (repo.isPresent()) {
-                for (Recommendation<ISnippet> recommendation : repo.get().search(searchContext)) {
-                    ISnippet snippet = recommendation.getProposal();
+                List<Recommendation<ISnippet>> recommendations = repo.get().search(searchContext);
+                if (!recommendations.isEmpty()) {
+                    proposals.add(new RepositoryProposal(sortedConfigs.get(repositoryPriority), repositoryPriority,
+                            recommendations.size()));
+                    for (Recommendation<ISnippet> recommendation : recommendations) {
+                        ISnippet snippet = recommendation.getProposal();
 
-                    Template template = new Template(snippet.getName(), snippet.getDescription(), SNIPMATCH_CONTEXT_ID,
-                            snippet.getCode(), true);
+                        Template template = new Template(snippet.getName(), snippet.getDescription(),
+                                SNIPMATCH_CONTEXT_ID, snippet.getCode(), true);
 
-                    try {
-                        proposals.add(SnippetProposal.newSnippetProposal(recommendation, repositoryPriority, template,
-                                javaContext, region, image));
-                    } catch (Exception e) {
-                        log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
+                        try {
+                            proposals.add(SnippetProposal.newSnippetProposal(recommendation, repositoryPriority,
+                                    template, javaContext, region, image));
+                        } catch (Exception e) {
+                            log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
+                        }
                     }
                 }
             }
