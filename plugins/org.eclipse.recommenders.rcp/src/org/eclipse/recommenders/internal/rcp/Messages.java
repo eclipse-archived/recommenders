@@ -25,6 +25,8 @@ public final class Messages extends NLS {
     public static String PREFPAGE_LABEL_FAVORITE;
     public static String PREFPAGE_LINK_TWITTER;
     public static String PREFPAGE_LABEL_TWITTER;
+    public static String PREFPAGE_LINK_EXTENSIONS;
+    public static String PREFPAGE_LABEL_EXTENSIONS;
 
     public static String JOB_INITIALIZE_PROJECTS;
 

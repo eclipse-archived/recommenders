@@ -12,26 +12,18 @@ package org.eclipse.recommenders.internal.completion.rcp.tips;
 
 import static org.eclipse.jface.viewers.StyledString.DECORATIONS_STYLER;
 
-import java.util.Dictionary;
-
 import javax.inject.Inject;
 
-import org.eclipse.equinox.internal.p2.discovery.Catalog;
-import org.eclipse.equinox.internal.p2.discovery.DiscoveryCore;
-import org.eclipse.equinox.internal.p2.discovery.compatibility.RemoteBundleDiscoveryStrategy;
-import org.eclipse.equinox.internal.p2.ui.discovery.util.WorkbenchUtil;
-import org.eclipse.equinox.internal.p2.ui.discovery.wizards.CatalogConfiguration;
-import org.eclipse.equinox.internal.p2.ui.discovery.wizards.DiscoveryWizard;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposal;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.utils.Dialogs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -40,8 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
 public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
-
-    private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/completion/directory.xml"; //$NON-NLS-1$
 
     @Inject
     public DiscoveryCompletionProposal(SharedImages images) {
@@ -59,24 +49,7 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
     @Override
     public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
-        Catalog catalog = new Catalog();
-        Dictionary<Object, Object> env = DiscoveryCore.createEnvironment();
-        catalog.setEnvironment(env);
-        catalog.setVerifyUpdateSiteAvailability(false);
-
-        // add strategy for retrieving remote catalog
-
-        // look for remote descriptor
-        RemoteBundleDiscoveryStrategy remoteDiscoveryStrategy = new RemoteBundleDiscoveryStrategy();
-        remoteDiscoveryStrategy.setDirectoryUrl(DISCOVERY_URL);
-        catalog.getDiscoveryStrategies().add(remoteDiscoveryStrategy);
-
-        CatalogConfiguration configuration = new CatalogConfiguration();
-        configuration.setShowTagFilter(false);
-
-        DiscoveryWizard wizard = new DiscoveryWizard(catalog, configuration);
-        WizardDialog dialog = new WizardDialog(WorkbenchUtil.getShell(), wizard);
-        dialog.open();
+        Dialogs.newExtensionsDiscoveryDialog().open();
     }
 
     @Override
