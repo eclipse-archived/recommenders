@@ -6,13 +6,13 @@
 	<extension-point id="registeredEmfPackages" name="Snippet Repository Emf Package Registration" schema="schema/registeredEmfPackages.exsd"/>
 	<extension-point id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration" schema="schema/defaultGitSnippetRepositoryConfigurations.exsd"/>
 	<!-- do not move the following extension to the bottom -->
-	<extension point="org.eclipse.emf.ecore.generated_package">
-		<!-- @generated snipmatchrcp -->
-		<package
-			uri="org.eclipse.recommenders.snipmatch.rcp"
-			class="org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelPackage"
-			genModel="model/snipmatchrcp.genmodel"/>
-		</extension>
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated snipmatchrcp -->
+      <package
+            uri="org.eclipse.recommenders.snipmatch.rcp"
+            class="org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelPackage"
+            genModel="model/snipmatchrcp.genmodel"/>
+   </extension>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.snipmatch.rcp.SnippetEditor"
@@ -112,6 +112,7 @@
 	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.defaultGitSnippetRepositoryConfigurations">
 		<defaultGitSnippetRepositoryConfiguration
+			defaultPriority="0"
 			description="%defaultGitSnippetRepositorConfigurations.recommenders.description"
 			id="org.eclipse.recommenders.snipmatch.repository"
 			name="%defaultGitSnippetRepositorConfigurations.recommenders.name"

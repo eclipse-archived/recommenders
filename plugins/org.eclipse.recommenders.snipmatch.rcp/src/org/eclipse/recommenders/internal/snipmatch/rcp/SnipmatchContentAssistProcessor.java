@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,12 +23,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
-import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
@@ -34,44 +34,53 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.recommenders.models.IDependencyListener;
+import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
+import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.ui.IEditorPart;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
 
-    private final TemplateContextType snipmatchContextType;
     private final Repositories repos;
-
+    private final SnippetRepositoryConfigurations configs;
+    private final IProjectCoordinateProvider pcProvider;
+    private final IDependencyListener dependencyListener;
     private final Image image;
+    private final TemplateContextType snipmatchContextType;
 
-    private JavaContentAssistInvocationContext ctx;
+    private JavaContentAssistInvocationContext context;
     private String terms;
 
     @Inject
-    public SnipmatchContentAssistProcessor(Repositories repos, SharedImages images) {
+    public SnipmatchContentAssistProcessor(SnippetRepositoryConfigurations configs, Repositories repos,
+            IProjectCoordinateProvider pcProvider, IDependencyListener dependencyListener, SharedImages images) {
         this.repos = repos;
-        snipmatchContextType = SnipmatchTemplateContextType.getInstance();
+        this.configs = configs;
+        this.dependencyListener = dependencyListener;
+        this.pcProvider = pcProvider;
         image = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
+        snipmatchContextType = SnipmatchTemplateContextType.getInstance();
     }
 
-    public void setContext(JavaContentAssistInvocationContext ctx) {
-        this.ctx = ctx;
+    public void setContext(JavaContentAssistInvocationContext context) {
+        this.context = context;
     }
 
-    public void setTerms(String query) {
-        terms = query;
+    public void setTerms(String terms) {
+        this.terms = terms;
     }
 
     @Override
@@ -81,21 +90,25 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             return new ICompletionProposal[0];
         }
 
-        JavaEditorSearchContext context = new JavaEditorSearchContext(terms, ctx);
+        JavaEditorSearchContext searchContext = new JavaEditorSearchContext(terms, context, dependencyListener,
+                pcProvider);
 
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
-        List<Recommendation<ISnippet>> recommendations = Lists.newArrayList();
-        for (ISnippetRepository repo : repos.getRepositories()) {
-            recommendations.addAll(repo.search(context));
-        }
-        ICompilationUnit cu = ctx.getCompilationUnit();
-        IEditorPart editor = EditorUtility.isOpenInEditor(cu);
 
-        ISourceViewer sourceViewer = (ISourceViewer) editor.getAdapter(ITextOperationTarget.class);
-        Point selection = sourceViewer.getSelectedRange();
+        List<SnippetRepositoryConfiguration> sortedConfigs = Lists.newArrayList();
+        sortedConfigs.addAll(configs.getRepos());
+
+        Collections.sort(sortedConfigs, new Comparator<SnippetRepositoryConfiguration>() {
+            @Override
+            public int compare(SnippetRepositoryConfiguration o1, SnippetRepositoryConfiguration o2) {
+                return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
+            }
+        });
+
+        Point selection = viewer.getSelectedRange();
         IRegion region = new Region(selection.x, selection.y);
         Position p = new Position(selection.x, selection.y);
-        IDocument document = sourceViewer.getDocument();
+        IDocument document = viewer.getDocument();
 
         String selectedText = null;
         if (selection.y != 0) {
@@ -105,21 +118,31 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             }
         }
 
-        JavaContext ctx = new JavaContext(snipmatchContextType, document, p, cu);
-        ctx.setVariable("selection", selectedText); //$NON-NLS-1$
-        ctx.setForceEvaluation(true);
+        ICompilationUnit cu = context.getCompilationUnit();
+        JavaContext javaContext = new JavaContext(snipmatchContextType, document, p, cu);
+        javaContext.setVariable("selection", selectedText); //$NON-NLS-1$
+        javaContext.setForceEvaluation(true);
 
-        for (Recommendation<ISnippet> recommendation : recommendations) {
-            ISnippet snippet = recommendation.getProposal();
-            Template template = new Template(snippet.getName(), snippet.getDescription(), SNIPMATCH_CONTEXT_ID,
-                    snippet.getCode(), true);
+        for (int repositoryPriority = 0; repositoryPriority < sortedConfigs.size(); repositoryPriority++) {
+            Optional<ISnippetRepository> repo = repos.getRepository(sortedConfigs.get(repositoryPriority).getId());
 
-            try {
-                proposals.add(SnippetProposal.newSnippetProposal(recommendation, template, ctx, region, image));
-            } catch (Exception e) {
-                log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
+            if (repo.isPresent()) {
+                for (Recommendation<ISnippet> recommendation : repo.get().search(searchContext)) {
+                    ISnippet snippet = recommendation.getProposal();
+
+                    Template template = new Template(snippet.getName(), snippet.getDescription(), SNIPMATCH_CONTEXT_ID,
+                            snippet.getCode(), true);
+
+                    try {
+                        proposals.add(SnippetProposal.newSnippetProposal(recommendation, repositoryPriority, template,
+                                javaContext, region, image));
+                    } catch (Exception e) {
+                        log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
+                    }
+                }
             }
         }
+
         return Iterables.toArray(proposals, ICompletionProposal.class);
     }
 

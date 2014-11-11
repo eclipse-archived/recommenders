@@ -52,4 +52,5 @@ public final class Constants {
     public static final String EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_PUSH_URL = "pushUrl"; //$NON-NLS-1$
     public static final String EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_PUSH_BRANCH_PREFIX = "pushBranchPrefix"; //$NON-NLS-1$
     public static final String EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_URL = "url"; //$NON-NLS-1$
+    public static final String EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_DEFAULT_PRIORITY = "defaultPriority"; //$NON-NLS-1$
 }

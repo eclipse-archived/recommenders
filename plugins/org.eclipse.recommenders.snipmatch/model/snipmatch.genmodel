@@ -18,6 +18,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/description"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/defaultConfiguration"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute snipmatch.ecore#//SnippetRepositoryConfiguration/priority"/>
       <genOperations ecoreOperation="snipmatch.ecore#//SnippetRepositoryConfiguration/createRepositoryInstance"/>
     </genClasses>
     <genClasses image="false" ecoreClass="snipmatch.ecore#//DefaultSnippetRepositoryConfigurationProvider">
