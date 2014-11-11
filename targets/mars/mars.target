@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="143">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="148">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.junit4_x" version="0.0.0"/>
@@ -9,21 +9,43 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.ecf" version="0.0.0"/>
-<unit id="org.eclipse.ecf.filetransfer" version="0.0.0"/>
-<unit id="org.eclipse.ecf.identity" version="0.0.0"/>
-<unit id="org.eclipse.ecf.provider.filetransfer" version="0.0.0"/>
+<unit id="org.eclipse.e4.rcp.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.core.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.core.ssl.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.ssl.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.source.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.common.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.ecore.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.executable" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.help.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jdt.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.pde.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.platform.sdk" version="0.0.0"/>
+<unit id="org.eclipse.rcp.id" version="0.0.0"/>
+<unit id="org.eclipse.rcp.sdk.id" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M3-201410292000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/releases/mars"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
@@ -47,7 +69,7 @@
 <unit id="org.eclipse.aether.transport.http.source" version="0.0.0"/>
 <unit id="org.eclipse.aether.util" version="0.0.0"/>
 <unit id="org.eclipse.aether.util.source" version="0.0.0"/>
-<repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.0.v20140518/"/>
+<repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven" version="0.0.0"/>
@@ -105,12 +127,12 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <unit id="org.apache.commons.pool.source" version="1.6.0.v201204271246"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8217 -->
-<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpclient.source" version="4.2.6.v201311072007"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8216 -->
-<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
-<unit id="org.apache.httpcomponents.httpcore.source" version="4.2.5.v201311072007"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8925 -->
+<unit id="org.apache.httpcomponents.httpclient" version="4.3.4.v201410062000"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.3.4.v201410062000"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8924 -->
+<unit id="org.apache.httpcomponents.httpcore" version="4.3.2.v201409180530"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.3.2.v201409180530"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
 <unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
 <unit id="org.apache.lucene.core.source" version="3.5.0.v20120725-1805"/>
