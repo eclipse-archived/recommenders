@@ -238,7 +238,7 @@ class SnippetCodeBuilderTest {
      */
     @Test
     def void testReferenceToStaticFieldBeforeSelection() {
-        val code = CodeBuilder::classbody(testName.methodName,
+        val code = CodeBuilder::classbody(
             '''
                 static List L = null;
                 void method() {
@@ -250,7 +250,7 @@ class SnippetCodeBuilderTest {
         assertEquals(
             '''
                 L = null;
-                ${importStatic:importStatic(«testName.methodName».L)}${cursor}
+                ${cursor}
             '''.toString,
             actual
         )
@@ -338,6 +338,27 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
+    def void testReferenceToStaticFieldAfterSelectionFromWithinPackage() {
+        val code = "package org.example;" + CodeBuilder::classbody(testName.methodName,
+            '''
+                void method() {
+                    $L = null;$
+                }
+                static List L = null;
+            ''')
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                L = null;
+                ${importStatic:importStatic(org.example.«testName.methodName».L)}${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
     def void testReferenceToStaticFieldAfterSelection() {
         val code = CodeBuilder::classbody(testName.methodName,
             '''
@@ -351,7 +372,7 @@ class SnippetCodeBuilderTest {
         assertEquals(
             '''
                 L = null;
-                ${importStatic:importStatic(«testName.methodName».L)}${cursor}
+                ${cursor}
             '''.toString,
             actual
         )
@@ -500,7 +521,6 @@ class SnippetCodeBuilderTest {
                         String e;
                     }
                 }$
-                
             ''')
         val actual = exercise(code)
 
@@ -808,8 +828,43 @@ class SnippetCodeBuilderTest {
             '''.toString, actual)
     }
 
+    @Test
+    def void testImportedFromDefaultPackage() {
+        val code = CodeBuilder::method('''MyClass''',
+            '''
+                $MyClass mc = new MyClass()$;
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                MyClass ${mc:newName(MyClass)} = new MyClass()
+                ${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
+    def void testImportedFromPackage() {
+        var code = "package org.example;" + CodeBuilder::method('''MyClass''',
+            '''
+                $MyClass mc = new MyClass()$;
+            ''')
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                MyClass ${mc:newName(org.example.MyClass)} = new MyClass()
+                ${import:import(org.example.MyClass)}${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
     def exercise(CharSequence code) {
-        val struct = FIXTURE.createFileAndParseWithMarkers(code);
+        val struct = FIXTURE.createFileAndPackageAndParseWithMarkers(code);
         return exercise(struct.first, struct.second.head, struct.second.last);
     }
 
@@ -819,7 +874,7 @@ class SnippetCodeBuilderTest {
     }
 
     def exercise(CharSequence code, int start, int end) {
-        val struct = FIXTURE.createFileAndParseWithMarkers(code);
+        val struct = FIXTURE.createFileAndPackageAndParseWithMarkers(code);
         return exercise(struct.first, start, end);
     }
 

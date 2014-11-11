@@ -273,15 +273,17 @@ public class SnippetCodeBuilder {
             addImport(binding.getComponentType());
             return;
         }
+        if (isDeclaredInSelection(binding, selection)) {
+            return;
+        }
         IPackageBinding packageBinding = binding.getPackage();
         if (packageBinding == null) {
             return; // Either a primitive or some generics-related binding (e.g., a type variable)
         }
-        if (packageBinding.getName().equals("java.lang")) { //$NON-NLS-1$
+        if (packageBinding.isUnnamed()) {
             return;
         }
-
-        if (isDeclaredInSelection(binding, selection)) {
+        if (packageBinding.getName().equals("java.lang")) { //$NON-NLS-1$
             return;
         }
         String name = binding.getErasure().getQualifiedName();
@@ -293,7 +295,9 @@ public class SnippetCodeBuilder {
         if (declaringClass == null) {
             return;
         }
-
+        if (declaringClass.getPackage() != null && declaringClass.getPackage().isUnnamed()) {
+            return;
+        }
         String name = declaringClass.getErasure().getQualifiedName();
         importStatics.add(name + "." + binding.getName());
     }
