@@ -102,6 +102,8 @@ public final class Messages extends NLS {
 
     public static String LOG_INFO_NO_MODEL_RESOLVED;
 
+    public static String LIST_SEPARATOR;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }
