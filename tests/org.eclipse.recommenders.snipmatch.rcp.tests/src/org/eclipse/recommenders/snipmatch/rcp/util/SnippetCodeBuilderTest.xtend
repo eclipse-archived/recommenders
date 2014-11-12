@@ -11,6 +11,7 @@ import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import java.util.Map;
 
 import static org.junit.Assert.*
 import org.eclipse.jdt.core.ICompilationUnit
@@ -23,7 +24,7 @@ class SnippetCodeBuilderTest {
     public val TestName testName = new TestName();
 
     @Test
-    def void testInvalidSelection() {
+    def void testNullSelection() {
         val code = CodeBuilder::method(
             '''
                 int i = 0;
@@ -34,141 +35,50 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testNewArrayAndCalls() {
-        val code = CodeBuilder::method(
-            '''
-                $List[][] ls = new List[0][];
-                ls.hashCode();$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                List[][] ${ls:newName('java.util.List[][]')} = new List[0][];
-                ${ls}.hashCode();
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=442519
-     */
-    @Test
-    def void testNecessaryStaticImports() {
-        val code = CodeBuilder::classDeclaration('''
-            import static java.util.Collections.*;
-            public class «CodeBuilder::classname»''',
-            '''
-                $List l = EMPTY_LIST;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                List ${l:newName(java.util.List)} = EMPTY_LIST;
-                ${import:import(java.util.List)}${importStatic:importStatic(java.util.Collections.EMPTY_LIST)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439984
-     */
-    @Test
-    def void testNoJavaLangImport() {
-        val code = CodeBuilder::method(
-            '''
-                $String s = null;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                String ${s:newName(java.lang.String)} = null;
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testNoJavaLangImportButOtherImports() {
-        val code = CodeBuilder::method(
-            '''
-                $String s = null;
-                List l = null;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                String ${s:newName(java.lang.String)} = null;
-                List ${l:newName(java.util.List)} = null;
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439330
-     */
-    @Test
-    def void testNoEmptyImport() {
-        val code = CodeBuilder::method(
-            '''
-                $int two = 1 + 1;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                int ${two:newName(int)} = 1 + 1;
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=447186
-     */
-    @Test
-    def void testNoImportForTypeVariable() {
-        val code = CodeBuilder::method(CodeBuilder::classname + "<T>",
-            '''
-                $T t = null;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                T ${t:newName(java.lang.Object)} = null;
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=440726
-     */
-    @Test
-    def void testReferenceToLocalVariable() {
+    def void testLocalVariableDeclaredInSelection() {
         val code = CodeBuilder::method(
             '''
                 $int i = 0;
-                int j = i;$;
+                i = 1;$
             ''')
         val actual = exercise(code)
 
         assertEquals(
             '''
-                int ${i:newName(int)} = 0;
-                int ${j:newName(int)} = ${i};
+            int ${i:newName(int)} = 0;
+            ${i} = 1;
+            ${cursor}
+            '''.toString, actual
+        )
+    }
+
+    @Test
+    def void testLocalVariableReference() {
+        val code = CodeBuilder::method(
+            '''
+                String s = "";
+                $s = "hello";$
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                ${s:var(java.lang.String)} = "hello";
+                ${cursor}
+             '''.toString, actual)
+    }
+
+    @Test
+    def void testDeclaredLocalArrayJavaLangVariable() {
+        val code = CodeBuilder::method(
+            '''
+                $String[][] s = new String[0][];$
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                String[][] ${s:newName('java.lang.String[][]')} = new String[0][];
                 ${cursor}
             '''.toString,
             actual
@@ -176,16 +86,16 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testReferenceToLocalVariableInMultiDeclaration() {
+    def void testDeclaredLocalVariable() {
         val code = CodeBuilder::method(
             '''
-                $int i = 0, j = i;$;
+                $String s;$
             ''')
         val actual = exercise(code)
 
         assertEquals(
             '''
-                int ${i:newName(int)} = 0, ${j:newName(int)} = ${i};
+                String ${s:newName(java.lang.String)};
                 ${cursor}
             '''.toString,
             actual
@@ -193,28 +103,7 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testReferenceToLocalOutsideSelection() {
-        val code = CodeBuilder::method(
-            '''
-                List l = null;
-                $l.hashCode();$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                ${l:var(java.util.List)}.hashCode();
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
-     */
-    @Test
-    def void testReferenceToFieldBeforeSelection() {
+    def void testFieldReference() {
         val code = CodeBuilder::classbody(
             '''
                 List l = null;
@@ -227,29 +116,96 @@ class SnippetCodeBuilderTest {
         assertEquals(
             '''
                 ${l:field(java.util.List)} = null;
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
+                ${cursor}
+             '''.toString, actual)
     }
 
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
-     */
     @Test
-    def void testReferenceToStaticFieldBeforeSelection() {
+    def void testFieldArrayReference() {
         val code = CodeBuilder::classbody(
             '''
-                static List L = null;
+                List[] l = null;
                 void method() {
-                    $L = null;$
+                    $l = null;$
                 }
             ''')
         val actual = exercise(code)
 
         assertEquals(
             '''
-                L = null;
+                ${l:field('java.util.List[]')} = null;
+                ${cursor}
+             '''.toString, actual)
+    }
+
+    @Test
+    def void testDeclaredLocalNonJavaLangArrayVariable() {
+        val code = CodeBuilder::method(
+            '''
+                $List[] l = null;$
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                List[] ${l:newName('java.util.List[]')} = null;
+                ${import:import(java.util.List)}${cursor}
+             '''.toString, actual)
+    }
+
+    @Test
+    def void testStaticFieldReferenceInPackage() {
+        val code = "package org.example;" + CodeBuilder::classbody(testName.methodName,
+            '''
+                static List l = null;
+                void method() {
+                    $l = null;$
+                }
+            ''')
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                l = null;
+                ${importStatic:importStatic(org.example.«testName.methodName».l)}${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
+    def void testStaticFieldReference() {
+        val code = CodeBuilder::classbody(
+            '''
+                static List l = null;
+                void myMethod() {
+                    $l = null;$
+                }
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                l = null;
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testLocalArrayVariableReferenceInPackage() {
+        val code = "package org.example;" + CodeBuilder::classbody(testName.methodName,
+            '''
+                void method() {
+                    List[] l = null;
+                    $l = null;$
+                }
+            ''')
+
+        val actual = exercise(code)
+        assertEquals(
+            '''
+                ${l:var('java.util.List[]')} = null;
                 ${cursor}
             '''.toString,
             actual
@@ -257,19 +213,38 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testReferenceToThisQualifiedFieldBeforeSelection() {
-        val code = CodeBuilder::classbody(
+    def void testLocalNonJavaLangVariableReferenceInPackage() {
+        val code = "package org.example;" + CodeBuilder::classbody(testName.methodName,
             '''
-                List l = null;
                 void method() {
-                    $this.l = null;$
+                    List l = null;
+                    $l = null;$
                 }
+            ''')
+
+        val actual = exercise(code)
+        assertEquals(
+            '''
+                ${l:var(java.util.List)} = null;
+                ${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
+    def void testLocalArrayVariableReferenceQualifiedMethodCall() {
+        val code = CodeBuilder::method(
+            '''
+                $List[][] l = new List[0][];
+                l.hashCode();$
             ''')
         val actual = exercise(code)
 
         assertEquals(
             '''
-                this.${l:field(java.util.List)} = null;
+                List[][] ${l:newName('java.util.List[][]')} = new List[0][];
+                ${l}.hashCode();
                 ${import:import(java.util.List)}${cursor}
             '''.toString,
             actual
@@ -277,7 +252,75 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testReferenceToQualifiedFieldBeforeSelection() {
+    def void testStaticMethodCall() {
+        val code = CodeBuilder::classbody(
+            '''
+                static void myStaticMethod() { }
+                void myMethod() {
+                    $myStaticMethod();$
+                }
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                myStaticMethod();
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testQualifiedLocalVariableDeclaration() {
+        val code = CodeBuilder::method('''
+                $Map.Entry e = null;$
+            ''')
+
+        val actual = exercise(code)
+        assertEquals(
+            '''
+                Map.Entry ${e:newName(java.util.Map.Entry)} = null;
+                ${import:import(java.util.Map)}${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
+    def void testGenerateUniqueNamesForLocaVariableDelcarations() {
+        val code = CodeBuilder::classbody(
+            '''
+                $void method1() {
+                    String e;
+                }
+                void method2() {
+                    String e2;
+                }
+                void method3() {
+                    String e;
+                }$
+            ''')
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                void method1() {
+                    String ${e:newName(java.lang.String)};
+                }
+                void method2() {
+                    String ${e2:newName(java.lang.String)};
+                }
+                void method3() {
+                    String ${e3:newName(java.lang.String)};
+                }
+                ${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
+    def void testQualifiedMethodCallFromLocalVariable() {
         val code = CodeBuilder::method(
             '''
                 System s = null;
@@ -294,259 +337,12 @@ class SnippetCodeBuilderTest {
         )
     }
 
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=441205
-     */
     @Test
-    def void testStaticReferenceToQualifiedField() {
-        val code = CodeBuilder::method(
-            '''
-                $System.out.println("");$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                System.out.println("");
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
-     */
-    @Test
-    def void testReferenceToFieldAfterSelection() {
-        val code = CodeBuilder::classbody(
-            '''
-                void method() {
-                    $l = null;$
-                }
-                List l = null;
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                ${l:field(java.util.List)} = null;
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testReferenceToStaticFieldAfterSelectionFromWithinPackage() {
-        val code = "package org.example;" + CodeBuilder::classbody(testName.methodName,
-            '''
-                void method() {
-                    $L = null;$
-                }
-                static List L = null;
-            ''')
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                L = null;
-                ${importStatic:importStatic(org.example.«testName.methodName».L)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testReferenceToStaticFieldAfterSelection() {
-        val code = CodeBuilder::classbody(testName.methodName,
-            '''
-                void method() {
-                    $L = null;$
-                }
-                static List L = null;
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                L = null;
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=439331
-     */
-    @Test
-    def void testReferenceToFieldInSelection() {
-        val code = CodeBuilder::classbody(
-            '''
-                $void method() {
-                    l = null;
-                }
-                List l = null;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                void method() {
-                    ${l} = null;
-                }
-                List ${l:newName(java.util.List)} = null;
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testReferenceToStaticFieldInSelection() {
-        val code = CodeBuilder::classbody(
-            '''
-                $void method() {
-                    L = null;
-                }
-                static List L = null;$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                void method() {
-                    ${L} = null;
-                }
-                static List ${L:newName(java.util.List)} = null;
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testReferenceToParameterInSelection() {
-        val code = CodeBuilder::classbody(
-            '''
-                $void method(List l) {
-                    l = null;
-                }$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                void method(List ${l:newName(java.util.List)}) {
-                    ${l} = null;
-                }
-                ${import:import(java.util.List)}${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
-     */
-    @Test
-    def void testVariableDeclarationsInDifferentMethods() {
-        val code = CodeBuilder::classbody(
-            '''
-                $void method1() {
-                    String e;
-                }
-                void method2() {
-                    String e;
-                }$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                void method1() {
-                    String ${e:newName(java.lang.String)};
-                }
-                void method2() {
-                    String ${e2:newName(java.lang.String)};
-                }
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
-     */
-    @Test
-    def void testVariableDeclarationsInDifferentLoops() {
-        val code = CodeBuilder::method(
-            '''
-                $for (int i = 0; i < 10; i++) {
-                    String s;
-                }
-                for (int i = 0; i < 10; i++) {
-                    String s;
-                }$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                for (int ${i:newName(int)} = 0; ${i} < 10; ${i}++) {
-                    String ${s:newName(java.lang.String)};
-                }
-                for (int ${i2:newName(int)} = 0; ${i2} < 10; ${i2}++) {
-                    String ${s2:newName(java.lang.String)};
-                }
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    /*
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=437687
-     */
-    @Test
-    def void testVariableDeclarationsInNestedLoops() {
-        val code = CodeBuilder::method(
-            '''
-                $while (true) {
-                    String e;
-                    for (int i = 0; i < 10; i++) {
-                        String e;
-                    }
-                }$
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                while (true) {
-                    String ${e:newName(java.lang.String)};
-                    for (int ${i:newName(int)} = 0; ${i} < 10; ${i}++) {
-                        String ${e2:newName(java.lang.String)};
-                    }
-                }
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testParameter() {
+    def void testParameterDeclarationAndReference() {
         val code = CodeBuilder::classbody(
             '''
                 $void method(String s) {
-                    String s1;
-                    while (true) {
-                        s = "";
-                    }
+                    s = "";
                 }$
             ''')
         val actual = exercise(code)
@@ -554,10 +350,7 @@ class SnippetCodeBuilderTest {
         assertEquals(
             '''
                 void method(String ${s:newName(java.lang.String)}) {
-                    String ${s1:newName(java.lang.String)};
-                    while (true) {
-                        ${s} = "";
-                    }
+                    ${s} = "";
                 }
                 ${cursor}
             '''.toString,
@@ -566,36 +359,59 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testVariableDeclarationsPicksNewName() {
-        val code = CodeBuilder::classbody(
+    def void testEmptyInterface() {
+        val code = CodeBuilder::method(
             '''
-                $void method1() {
-                    String e;
-                }
-                void method2() {
-                    String e1;
-                }
-                void method3() {
-                    String e;
-                }$
+                $public interface Test { }$
+            '''
+        )
+
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                public interface Test { }
+                ${cursor}
+            '''.toString, actual)
+    }
+
+    @Test
+    def void testLocalClassInstantiation() {
+        val code = CodeBuilder::method('''MyClass''',
+            '''
+                $MyClass mc = new MyClass();$
             ''')
         val actual = exercise(code)
 
         assertEquals(
             '''
-                void method1() {
-                    String ${e:newName(java.lang.String)};
-                }
-                void method2() {
-                    String ${e1:newName(java.lang.String)};
-                }
-                void method3() {
-                    String ${e2:newName(java.lang.String)};
-                }
+                MyClass ${mc:newName(MyClass)} = new MyClass();
                 ${cursor}
             '''.toString,
             actual
         )
+    }
+
+    @Test
+    def void testReferenceToFieldBeforeSelectionAgainstReferenceToFieldAfterSelection() {
+        val codeFieldBeforeSelection = CodeBuilder::classbody(
+            '''
+                List l = null;
+                void method() {
+                    $this.l = null;$
+                }
+            ''')
+        val codeFieldAfterSelection = CodeBuilder::classbody(
+            '''
+                void method() {
+                    $this.l = null;$
+                }
+                List l = null;
+            ''')
+        val actualBefore = exercise(codeFieldBeforeSelection)
+        val actualAfter = exercise(codeFieldAfterSelection)
+
+        assertEquals(actualBefore, actualAfter)
     }
 
     @Test
@@ -650,7 +466,7 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testDollarVariable() {
+    def void testDollarVariableDeclaration() {
         val code = CodeBuilder::method(
             '''
                 %String text$str = "";%
@@ -667,61 +483,7 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
-    def void testDollarVariableMethodCall() {
-        val code = CodeBuilder::method(
-            '''
-                String text$str = "";
-                %text$str.length();%
-            '''
-        )
-
-        val actual = exercise(code, "%")
-
-        assertEquals(
-            '''
-                ${textstr:var(java.lang.String)}.length();
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testDollarDollarVariableMethodArgument() {
-        val code = CodeBuilder::method(
-            '''
-                %void method(String text$str) { }%
-            '''
-        )
-
-        val actual = exercise(code, "%")
-
-        assertEquals(
-            '''
-                void method(String ${textstr:newName(java.lang.String)}) { }
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testDollarTwoDollarVariable() {
-        val code = CodeBuilder::method(
-            '''
-                String text$str1 = "";
-                String text$str2 = "hello";
-                %text$str1 = text$str2;%
-            '''
-        )
-
-        val actual = exercise(code, "%")
-
-        assertEquals(
-            '''
-                ${textstr1:var(java.lang.String)} = ${textstr2:var(java.lang.String)};
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testDollarVariableClashWithNonDollarVariable() {
+    def void testGenerateUniqueNamesWithDollarVariable() {
         val code = CodeBuilder::method(
             '''
                 String textstr = "";
@@ -729,7 +491,6 @@ class SnippetCodeBuilderTest {
                 %textstr = text$str;%
             '''
         )
-
         val actual = exercise(code, "%")
 
         assertEquals(
@@ -737,130 +498,6 @@ class SnippetCodeBuilderTest {
                 ${textstr:var(java.lang.String)} = ${textstr2:var(java.lang.String)};
                 ${cursor}
             '''.toString, actual)
-    }
-
-    @Test
-    def void testVariableWithTwoAdjacentDollars() {
-        val code = CodeBuilder::method(
-            '''
-                %String text$$str = "";%
-            '''
-        )
-
-        val actual = exercise(code, "%")
-
-        assertEquals(
-            '''
-                String ${textstr:newName(java.lang.String)} = "";
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testEmptyClass() {
-        val code = CodeBuilder::method(
-            '''
-                $public class Test { }$
-            '''
-        )
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                public class Test { }
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testClass() {
-        val code = CodeBuilder::method(
-            '''
-                $public class Test {
-                    List myList;
-                }$
-            '''
-        )
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                public class Test {
-                    List ${myList:newName(java.util.List)};
-                }
-                ${import:import(java.util.List)}${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testEmptyInterface() {
-        val code = CodeBuilder::method(
-            '''
-                $public interface Test { }$
-            '''
-        )
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                public interface Test { }
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testEmptyEnum() {
-        val code = CodeBuilder::method(
-            '''
-                $public enum Test { }$
-            '''
-        )
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                public enum Test { }
-                ${cursor}
-            '''.toString, actual)
-    }
-
-    @Test
-    def void testImportedFromDefaultPackage() {
-        val code = CodeBuilder::method('''MyClass''',
-            '''
-                $MyClass mc = new MyClass()$;
-            ''')
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                MyClass ${mc:newName(MyClass)} = new MyClass()
-                ${cursor}
-            '''.toString,
-            actual
-        )
-    }
-
-    @Test
-    def void testImportedFromPackage() {
-        var code = "package org.example;" + CodeBuilder::method('''MyClass''',
-            '''
-                $MyClass mc = new MyClass()$;
-            ''')
-
-        val actual = exercise(code)
-
-        assertEquals(
-            '''
-                MyClass ${mc:newName(org.example.MyClass)} = new MyClass()
-                ${import:import(org.example.MyClass)}${cursor}
-            '''.toString,
-            actual
-        )
     }
 
     def exercise(CharSequence code) {
