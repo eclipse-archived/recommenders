@@ -12,7 +12,10 @@ package org.eclipse.recommenders.rcp.utils;
 
 import java.net.URL;
 
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
@@ -57,5 +60,15 @@ public final class BrowserUtils {
 
     public static void openInExternalBrowser(URL url) {
         openInExternalBrowser(url.toExternalForm());
+    }
+
+    /** Augments the supplied link to open it in a web browser when clicked on. */
+    public static void addOpenBrowserAction(Link link) {
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                BrowserUtils.openInExternalBrowser(event.text);
+            }
+        });
     }
 }
