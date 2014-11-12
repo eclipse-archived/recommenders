@@ -47,9 +47,9 @@ public class DefaultGitSnippetRepositoryConfigurations {
                 String pushBranchPrefix = element
                         .getAttribute(EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_PUSH_BRANCH_PREFIX);
 
-                String priority = element.getAttribute(
-                        EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_DEFAULT_PRIORITY, "0"); //$NON-NLS-1$
-                int priorityInteger = Integer.parseInt(priority);
+                String priority = element
+                        .getAttribute(EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS_DEFAULT_PRIORITY);
+                int priorityInteger = priority == null ? 0 : Integer.parseInt(priority);
 
                 defaultConfigurations.add(createConfiguration(id, name, description, url, pushUrl, pushBranchPrefix,
                         priorityInteger));
