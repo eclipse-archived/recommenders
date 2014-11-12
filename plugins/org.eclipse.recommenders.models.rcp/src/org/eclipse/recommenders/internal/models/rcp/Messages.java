@@ -55,8 +55,10 @@ public final class Messages extends NLS {
 
     public static String DIALOG_MESSAGE_URI_ALREADY_ADDED;
     public static String DIALOG_MESSAGE_INVALID_COORDINATE_FORMAT;
-    public static String DIALOG_MESSAGE_INVALID_REPOSITORY_URI;
+    public static String DIALOG_MESSAGE_INVALID_URI;
     public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE;
+    public static String DIALOG_MESSAGE_NOT_ABSOLUTE_URI;
+    public static String DIALOG_MESSAGE_UNSUPPORTED_PROTOCOL;
     public static String DIALOG_MESSAGE_FILE_A_BUG;
 
     public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
