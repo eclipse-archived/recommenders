@@ -16,9 +16,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.PREF_SEA
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jdt.internal.ui.text.java.RelevanceSorter;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateInformationControlCreator;
-import org.eclipse.jdt.ui.text.java.AbstractProposalSorter;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
@@ -26,7 +24,6 @@ import org.eclipse.jface.text.contentassist.ContentAssistEvent;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposalSorter;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetAppliedEvent;
 import org.eclipse.swt.SWT;
@@ -47,7 +44,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ComparisonChain;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -86,6 +82,7 @@ public class SnipmatchCompletionEngine {
         this.colorRegistry = colorRegistry;
         this.fontRegistry = fontRegistry;
         assistant = newContentAssistant();
+
     }
 
     private ContentAssistant newContentAssistant() {
@@ -138,45 +135,9 @@ public class SnipmatchCompletionEngine {
 
         assistant.setContentAssistProcessor(processor, DEFAULT_CONTENT_TYPE);
         assistant.setInformationControlCreator(new TemplateInformationControlCreator(SWT.LEFT_TO_RIGHT));
-
-        assistant.setSorter(new AbstractProposalSorter() {
-            private final ICompletionProposalSorter RELEVANCE_SORTER = new RelevanceSorter();
-
-            @Override
-            public int compare(ICompletionProposal p1, ICompletionProposal p2) {
-                if (p1 instanceof SnippetProposal && p2 instanceof SnippetProposal) {
-                    SnippetProposal s1 = (SnippetProposal) p1;
-                    SnippetProposal s2 = (SnippetProposal) p2;
-
-                    return ComparisonChain.start().compare(s1.getRepositoryRelevance(), s2.getRepositoryRelevance())
-                            .compare(s2.getRelevance(), s1.getRelevance())
-                            .compare(s1.getSnippet().getName(), s2.getSnippet().getName()).result();
-                } else if (p1 instanceof RepositoryProposal && p2 instanceof RepositoryProposal) {
-                    RepositoryProposal s1 = (RepositoryProposal) p1;
-                    RepositoryProposal s2 = (RepositoryProposal) p2;
-
-                    return ComparisonChain.start().compare(s1.getRepositoryPriority(), s2.getRepositoryPriority())
-                            .result();
-                } else if (p1 instanceof RepositoryProposal && p2 instanceof SnippetProposal) {
-                    int i = compareSnippetWithRepository((SnippetProposal) p2, (RepositoryProposal) p1);
-                    return i;
-                } else if (p1 instanceof SnippetProposal && p2 instanceof RepositoryProposal) {
-                    int i = -compareSnippetWithRepository((SnippetProposal) p1, (RepositoryProposal) p2);
-                    return i;
-                } else {
-                    return RELEVANCE_SORTER.compare(p1, p2);
-                }
-            }
-
-        });
+        assistant.setSorter(new ProposalSorter());
 
         return assistant;
-    }
-
-    private int compareSnippetWithRepository(SnippetProposal s, RepositoryProposal r) {
-        int comparison = ComparisonChain.start().compare(r.getRepositoryPriority(), s.getRepositoryRelevance())
-                .result();
-        return comparison != 0 ? comparison : -1;
     }
 
     public void show(final JavaContentAssistInvocationContext context) {
