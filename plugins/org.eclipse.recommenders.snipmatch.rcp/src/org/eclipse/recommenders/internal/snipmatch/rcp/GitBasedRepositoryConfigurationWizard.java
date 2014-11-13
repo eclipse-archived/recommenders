@@ -15,7 +15,9 @@ import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -35,8 +37,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 
 public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetRepositoryWizard {
+
+    private static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("file", "git", "http", "https", "ssh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     private GitBasedRepositoryConfigurationWizardPage page = new GitBasedRepositoryConfigurationWizardPage(
             Messages.WIZARD_GIT_REPOSITORY_PAGE_NAME);
@@ -217,9 +222,9 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
             } else if (!fetchUri.isAbsolute()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_ABSOLUTE_URL_REQUIRED,
                         txtFetchUri.getText()));
-            } else if (!Urls.isUriProtocolSupported(fetchUri, "file", "git", "http", "https", "ssh")) { //$NON-NLS-1$
+            } else if (!Urls.isUriProtocolSupported(fetchUri, ACCEPTED_PROTOCOLS)) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_URL_PROTOCOL_UNSUPPORTED,
-                        txtFetchUri.getText(), "file, git, http, https, ssh")); //$NON-NLS-1$
+                        txtFetchUri.getText(), StringUtils.join(ACCEPTED_PROTOCOLS, Messages.LIST_SEPARATOR)));
             } else if (Strings.isNullOrEmpty(txtPushUri.getText())) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_PUSH_URL);
             } else if (pushUri == null) {
@@ -228,9 +233,9 @@ public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetReposi
             } else if (!pushUri.isAbsolute()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_ABSOLUTE_URL_REQUIRED,
                         txtPushUri.getText()));
-            } else if (!Urls.isUriProtocolSupported(pushUri, "file", "git", "http", "https", "ssh")) { //$NON-NLS-1$
+            } else if (!Urls.isUriProtocolSupported(pushUri, ACCEPTED_PROTOCOLS)) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_URL_PROTOCOL_UNSUPPORTED,
-                        txtPushUri.getText(), "file, git, http, https, ssh")); //$NON-NLS-1$
+                        txtPushUri.getText(), StringUtils.join(ACCEPTED_PROTOCOLS, Messages.LIST_SEPARATOR)));
             } else if (Strings.isNullOrEmpty(txtPushBranchPrefix.getText())) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX);
             } else if (pushBranchPrefixValid != null) {

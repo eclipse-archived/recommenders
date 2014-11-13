@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -67,36 +68,53 @@ public class UrlsTest {
     @Test
     public void testValidAbsoluteUriWithSupportedProtocol() throws Exception {
         URI uri = new URI(HTTP_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri, "http", "file", "https"), true);
+        ArrayList<String> acceptedProtocols = new ArrayList<String>();
+        acceptedProtocols.add("http");
+        acceptedProtocols.add("file");
+        acceptedProtocols.add("https");
+        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), true);
     }
 
     @Test
     public void testValidRelativeUriProtocol() throws Exception {
         URI uri = new URI(RELATIVE_URI);
-        assertEquals(isUriProtocolSupported(uri, "http", "file", "https"), false);
+        ArrayList<String> acceptedProtocols = new ArrayList<String>();
+        acceptedProtocols.add("http");
+        acceptedProtocols.add("file");
+        acceptedProtocols.add("https");
+        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
     }
 
     @Test
     public void testValidAbsoluteUriWithUnsupportedProtocol() throws Exception {
         URI uri = new URI(HTTP_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri, "file"), false);
+        ArrayList<String> acceptedProtocols = new ArrayList<String>();
+        acceptedProtocols.add("file");
+        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
     }
 
     @Test
     public void testValidAbsoluteUriWithEmptyProtocolList() throws Exception {
         URI uri = new URI(HTTP_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri), false);
+        assertEquals(isUriProtocolSupported(uri, new ArrayList<String>()), false);
     }
 
     @Test
     public void testLowerUpperCaseValidAbsoluteUriWithSupportedProtocol() throws Exception {
         URI uri = new URI(HTTP_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri, "HTTP", "file", "https"), true);
+        ArrayList<String> acceptedProtocols = new ArrayList<String>();
+        acceptedProtocols.add("HTTP");
+        acceptedProtocols.add("file");
+        acceptedProtocols.add("https");
+        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), true);
     }
 
     @Test
     public void testAbsoluteUriProtocolIsSubstringOfSupportedProtocol() throws Exception {
         URI uri = new URI(HTTPS_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri, "file", "http"), false);
+        ArrayList<String> acceptedProtocols = new ArrayList<String>();
+        acceptedProtocols.add("file");
+        acceptedProtocols.add("http");
+        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
     }
 }

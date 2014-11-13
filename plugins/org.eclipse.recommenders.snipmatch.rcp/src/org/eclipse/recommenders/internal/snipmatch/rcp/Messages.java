@@ -210,6 +210,8 @@ public class Messages extends NLS {
 
     public static String MONITOR_CALCULATING_DIFF;
 
+    public static String LIST_SEPARATOR;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

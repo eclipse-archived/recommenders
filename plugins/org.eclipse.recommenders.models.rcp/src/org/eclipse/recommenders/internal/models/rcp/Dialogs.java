@@ -12,16 +12,21 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 public final class Dialogs {
+
+    private static final List<String> SUPPORTED_PROTOCOLS = ImmutableList.of("file", "http", "https"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     private Dialogs() {
     }
@@ -43,9 +48,10 @@ public final class Dialogs {
                         if (!uri.isAbsolute()) {
                             return Messages.DIALOG_MESSAGE_NOT_ABSOLUTE_URI;
                         }
-                        if (!Urls.isUriProtocolSupported(uri, "file", "http", "https")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+                        if (!Urls.isUriProtocolSupported(uri, SUPPORTED_PROTOCOLS)) {
                             return MessageFormat.format(Messages.DIALOG_MESSAGE_UNSUPPORTED_PROTOCOL, uri.getScheme(),
-                                    "file, http, https"); //$NON-NLS-1
+                                    StringUtils.join(SUPPORTED_PROTOCOLS, Messages.LIST_SEPARATOR));
                         }
                         return null;
                     }

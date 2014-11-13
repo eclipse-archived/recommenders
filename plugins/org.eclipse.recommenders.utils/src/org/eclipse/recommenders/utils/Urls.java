@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,7 +55,7 @@ public final class Urls {
         }
     }
 
-    public static boolean isUriProtocolSupported(URI uri, String... protocols) {
+    public static boolean isUriProtocolSupported(URI uri, List<String> protocols) {
         for (String protocol : protocols) {
             if (StringUtils.equalsIgnoreCase(protocol, uri.getScheme())) {
                 return true;
