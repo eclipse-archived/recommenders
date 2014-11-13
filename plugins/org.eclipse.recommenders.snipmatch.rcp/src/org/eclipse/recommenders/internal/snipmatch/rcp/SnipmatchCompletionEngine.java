@@ -158,9 +158,11 @@ public class SnipmatchCompletionEngine {
                     return ComparisonChain.start().compare(s1.getRepositoryPriority(), s2.getRepositoryPriority())
                             .result();
                 } else if (p1 instanceof RepositoryProposal && p2 instanceof SnippetProposal) {
-                    return compareSnippetWithRepository((SnippetProposal) p2, (RepositoryProposal) p1);
+                    int i = compareSnippetWithRepository((SnippetProposal) p2, (RepositoryProposal) p1);
+                    return i;
                 } else if (p1 instanceof SnippetProposal && p2 instanceof RepositoryProposal) {
-                    return compareSnippetWithRepository((SnippetProposal) p1, (RepositoryProposal) p2);
+                    int i = -compareSnippetWithRepository((SnippetProposal) p1, (RepositoryProposal) p2);
+                    return i;
                 } else {
                     return RELEVANCE_SORTER.compare(p1, p2);
                 }
@@ -174,7 +176,7 @@ public class SnipmatchCompletionEngine {
     private int compareSnippetWithRepository(SnippetProposal s, RepositoryProposal r) {
         int comparison = ComparisonChain.start().compare(r.getRepositoryPriority(), s.getRepositoryRelevance())
                 .result();
-        return comparison != 0 ? comparison : 1;
+        return comparison != 0 ? comparison : -1;
     }
 
     public void show(final JavaContentAssistInvocationContext context) {
