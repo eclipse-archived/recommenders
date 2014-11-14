@@ -112,10 +112,10 @@
 	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.defaultGitSnippetRepositoryConfigurations">
 		<defaultGitSnippetRepositoryConfiguration
-			defaultPriority="0"
-			description="%defaultGitSnippetRepositorConfigurations.recommenders.description"
 			id="org.eclipse.recommenders.snipmatch.repository"
 			name="%defaultGitSnippetRepositorConfigurations.recommenders.name"
+			description="%defaultGitSnippetRepositorConfigurations.recommenders.description"
+			defaultPriority="0"
 			pushBranchPrefix="refs/for"
 			pushUrl="https://git.eclipse.org/r/recommenders/org.eclipse.recommenders.snipmatch.snippets.git"
 			url="http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git">

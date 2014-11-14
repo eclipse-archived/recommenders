@@ -58,7 +58,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     private final SnippetRepositoryConfigurations configs;
     private final IProjectCoordinateProvider pcProvider;
     private final IDependencyListener dependencyListener;
-    private final Image image;
+    private final Image snippetImage;
     private final TemplateContextType snipmatchContextType;
 
     private JavaContentAssistInvocationContext context;
@@ -71,7 +71,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
         this.configs = configs;
         this.dependencyListener = dependencyListener;
         this.pcProvider = pcProvider;
-        image = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
+        snippetImage = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
         snipmatchContextType = SnipmatchTemplateContextType.getInstance();
     }
 
@@ -139,7 +139,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
 
                         try {
                             proposals.add(SnippetProposal.newSnippetProposal(recommendation, repositoryPriority,
-                                    template, javaContext, region, image));
+                                    template, javaContext, region, snippetImage));
                         } catch (Exception e) {
                             log(LogMessages.ERROR_CREATING_SNIPPET_PROPOSAL_FAILED, e);
                         }

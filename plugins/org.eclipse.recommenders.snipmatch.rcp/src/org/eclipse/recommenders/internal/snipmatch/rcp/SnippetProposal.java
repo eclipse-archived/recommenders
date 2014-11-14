@@ -127,8 +127,8 @@ public class SnippetProposal extends TemplateProposal implements ICompletionProp
         StyledString styledString = new StyledString();
         styledString.append(createDisplayString(snippet));
         if (!snippet.getTags().isEmpty()) {
-            styledString.append(" - ", StyledString.QUALIFIER_STYLER);
-            styledString.append(Joiner.on(", ").join(Ordering.natural().sortedCopy(snippet.getTags())),
+            styledString.append(" - ", StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
+            styledString.append(Joiner.on(", ").join(Ordering.natural().sortedCopy(snippet.getTags())), //$NON-NLS-1$
                     StyledString.COUNTER_STYLER);
         }
         return styledString;
