@@ -10,3 +10,4 @@ Fragment-Host: org.eclipse.recommenders.stacktraces.rcp
 Require-Bundle: org.hamcrest,
  org.junit,
  org.mockito
+Import-Package: org.eclipse.recommenders.testing

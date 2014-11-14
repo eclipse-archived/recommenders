@@ -22,8 +22,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.testing.RetainSystemProperties;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -61,8 +63,11 @@ public class LogListenerTest {
         }
     }
 
+    @Rule
+    public RetainSystemProperties retainSystemProperties = new RetainSystemProperties();
+
     @Before
-    public void init() {
+    public void setUp() {
         // Flag to bypass the runtime workbench test check:
         System.setProperty(SYSPROP_ECLIPSE_BUILD_ID, "unit-tests");
 
@@ -170,7 +175,17 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
+    }
+
+    @Test
+    public void testNoReportIfBuildIdUnknown() {
+        System.clearProperty(SYSPROP_ECLIPSE_BUILD_ID);
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "a message");
+
+        sut.logging(status, "");
+
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -179,7 +194,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -188,7 +203,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -197,7 +212,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, Mockito.never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -238,7 +253,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -259,7 +274,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -269,17 +284,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
-    }
-
-    @Test
-    public void testNoCheckOnPauseDay() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SendActionSettingsOverrider(PAUSE_DAY);
-
-        sut.logging(status, "");
-
-        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -289,17 +294,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
-    }
-
-    @Test
-    public void testNoCheckPauseRestart() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SendActionSettingsOverrider(PAUSE_RESTART);
-
-        sut.logging(status, "");
-
-        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -309,7 +304,7 @@ public class LogListenerTest {
 
         sut.logging(status, "");
 
-        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
+        verifyNoErrorReportSend();
     }
 
     @Test
@@ -373,5 +368,10 @@ public class LogListenerTest {
         ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
         verify(sut).sendStatus(captor.capture());
         Assert.assertEquals("source file contents removed", captor.getValue().getStatus().getMessage());
+    }
+
+    private void verifyNoErrorReportSend() {
+        verify(sut, never()).sendStatus(Mockito.any(ErrorReport.class));
+        verify(sut, never()).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }
 }
