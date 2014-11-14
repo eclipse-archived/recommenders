@@ -133,12 +133,12 @@ public class SnipmatchCompletionEngine {
         assistant.setShowEmptyList(true);
         assistant.enablePrefixCompletion(true);
         assistant.enableColoredLabels(true);
+        assistant.setRepeatedInvocationMode(true);
+        assistant.setStatusLineVisible(false);
 
         assistant.setContentAssistProcessor(processor, DEFAULT_CONTENT_TYPE);
         assistant.setInformationControlCreator(new TemplateInformationControlCreator(SWT.LEFT_TO_RIGHT));
-        assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
-        assistant.setRepeatedInvocationMode(true);
-        assistant.setStatusLineVisible(true);
+
         assistant.setSorter(new AbstractProposalSorter() {
             private final ICompletionProposalSorter RELEVANCE_SORTER = new RelevanceSorter();
 
@@ -284,8 +284,10 @@ public class SnipmatchCompletionEngine {
             public void modifyText(ModifyEvent e) {
                 String query = searchText.getText().trim();
                 processor.setTerms(query);
+                assistant.setEmptyMessage(Messages.COMPLETION_ENGINE_NO_SNIPPETS_FOUND);
                 assistant.showPossibleCompletions();
                 assistant.showContextInformation();
+
                 if (selectedProposal instanceof RepositoryProposal) {
                     execute(ContentAssistant.SELECT_NEXT_PROPOSAL_COMMAND_ID);
                 }
