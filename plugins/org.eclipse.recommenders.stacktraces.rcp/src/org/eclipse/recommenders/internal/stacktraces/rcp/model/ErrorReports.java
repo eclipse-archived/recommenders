@@ -124,7 +124,11 @@ public class ErrorReports {
 
     public static class PrettyPrintVisitor extends VisitorImpl {
         private static final int RIGHT_PADDING = 20;
-        public StringBuilder builder = new StringBuilder();
+        private StringBuilder reportStringBuilder = new StringBuilder();
+        private StringBuilder statusStringBuilder = new StringBuilder();
+        private StringBuilder bundlesStringBuilder = new StringBuilder();
+        private StringBuilder stacktraceStringBuilder = new StringBuilder();
+
         private boolean firstThrowable = true;
         private boolean firstBundle = true;
 
@@ -146,45 +150,50 @@ public class ErrorReports {
 
         @Override
         public void visit(ErrorReport report) {
-            appendHeadline("REPORT", builder);
-            appendAttributes(report, builder);
+            appendHeadline("REPORT", reportStringBuilder);
+            appendAttributes(report, reportStringBuilder);
             super.visit(report);
         }
 
         @Override
         public void visit(Status status) {
-            appendHeadline("STATUS", builder);
-            appendAttributes(status, builder);
+            appendHeadline("STATUS", statusStringBuilder);
+            appendAttributes(status, statusStringBuilder);
             super.visit(status);
         }
 
         @Override
         public void visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle bundle) {
             if (firstBundle) {
-                appendHeadline("BUNDLES", builder);
+                appendHeadline("BUNDLES", bundlesStringBuilder);
                 firstBundle = false;
             }
-            appendAttributes(bundle, builder);
+            appendAttributes(bundle, bundlesStringBuilder);
             super.visit(bundle);
         }
 
         @Override
         public void visit(Throwable throwable) {
             if (firstThrowable) {
-                appendHeadline("STACKTRACE", builder);
+                appendHeadline("STACKTRACE", stacktraceStringBuilder);
                 firstThrowable = false;
             } else {
-                builder.append("Caused by: ");
+                stacktraceStringBuilder.append("Caused by: ");
             }
-            builder.append(throwable.getClassName() + ": " + throwable.getMessage() + "\n");
+            stacktraceStringBuilder.append(throwable.getClassName() + ": " + throwable.getMessage() + "\n");
             super.visit(throwable);
         }
 
         @Override
         public void visit(StackTraceElement element) {
-            builder.append("\t at " + element.getClassName() + "." + element.getMethodName() + "("
+            stacktraceStringBuilder.append("\t at " + element.getClassName() + "." + element.getMethodName() + "("
                     + element.getFileName() + ":" + element.getLineNumber() + ")\n");
             super.visit(element);
+        }
+
+        public String print() {
+            return new StringBuilder().append(statusStringBuilder).append(stacktraceStringBuilder)
+                    .append(reportStringBuilder).append(bundlesStringBuilder).toString();
         }
 
     }
@@ -400,6 +409,6 @@ public class ErrorReports {
         }
         PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
         report.accept(prettyPrintVisitor);
-        return prettyPrintVisitor.builder.toString();
+        return prettyPrintVisitor.print();
     }
 }

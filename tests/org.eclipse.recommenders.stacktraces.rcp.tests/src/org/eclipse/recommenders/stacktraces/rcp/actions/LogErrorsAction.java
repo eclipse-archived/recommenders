@@ -27,12 +27,28 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
 
     @Override
     public void run(IAction action) {
+        System.setProperty("eclipse.buildId", "unit-tests");
         Job job = new Job("test exceptions") {
 
             @Override
             public IStatus run(IProgressMonitor monitor) {
                 System.setProperty("eclipse.buildId", "unit-tests");
-                for (int i = 0; i < 1; i++) {
+                // Display.getDefault().syncExec(new Runnable() {
+                // @Override
+                // public void run() {
+                //
+                // ConfigurationDialog wizard = new ConfigurationDialog(PlatformUI.getWorkbench()
+                // .getActiveWorkbenchWindow().getShell(), PreferenceInitializer.readSettings());
+                // wizard.setBlockOnOpen(true);
+                // wizard.open();
+                //
+                // }
+                // });
+                //
+                // if (true) {
+                // return Status.OK_STATUS;
+                // }
+                for (int i = 0; i < 3; i++) {
                     ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
                     RuntimeException cause = new IllegalArgumentException("cause" + i);
                     cause.fillInStackTrace();
