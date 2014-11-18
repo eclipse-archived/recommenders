@@ -35,6 +35,17 @@ public class ReflectionsTest {
     }
 
     @Test
+    public void testGetDeclaredMethodIsNullSafe() {
+        Optional<Method> declaringClassIsNull = Reflections.getDeclaredMethod(null, "hashCode");
+        Optional<Method> nameIsNull = Reflections.getDeclaredMethod(Object.class, null);
+        Optional<Method> parameterTypeIsNull = Reflections.getDeclaredMethod(Object.class, "hashCode", (Class[]) null);
+
+        assertThat(declaringClassIsNull.isPresent(), is(false));
+        assertThat(nameIsNull.isPresent(), is(false));
+        assertThat(parameterTypeIsNull.isPresent(), is(false));
+    }
+
+    @Test
     public void testGetDeclaredPublicField() {
         Optional<Field> result = Reflections.getDeclaredField(System.class, "in");
 
@@ -53,5 +64,14 @@ public class ReflectionsTest {
         Optional<Field> result = Reflections.getDeclaredField(System.class, "missing");
 
         assertThat(result.isPresent(), is(false));
+    }
+
+    @Test
+    public void testGetDeclaredFieldIsNullSafe() {
+        Optional<Field> declaringClassIsNull = Reflections.getDeclaredField(null, "in");
+        Optional<Field> nameIsNull = Reflections.getDeclaredField(System.class, null);
+
+        assertThat(declaringClassIsNull.isPresent(), is(false));
+        assertThat(nameIsNull.isPresent(), is(false));
     }
 }

@@ -51,6 +51,7 @@ import com.google.common.base.Throwables;
 public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessableProposalFactory.class);
+
     private static Class<JavaMethodCompletionProposal> javaMethodCompletionProposalClass;
     private static Class<JavaFieldWithCastedReceiverCompletionProposal> javaFieldWithCastedReceiverCompletionProposalClass;
     private static Class<OverrideCompletionProposal> overrideCompletionProposalClass;
@@ -63,6 +64,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
+
     private static Method proposalInfoMethod = Reflections.getDeclaredMethod(AbstractJavaCompletionProposal.class,
             "getProposalInfo").orNull(); //$NON-NLS-1$
 

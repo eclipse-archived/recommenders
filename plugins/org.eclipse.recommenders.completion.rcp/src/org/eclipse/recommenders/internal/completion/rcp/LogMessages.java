@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -28,6 +28,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
     public static final LogMessages LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
             Messages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING);
+    public static final LogMessages LOG_WARNING_LINKAGE_ERROR = new LogMessages(WARNING,
+            Messages.LOG_WARNING_LINKAGE_ERROR);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

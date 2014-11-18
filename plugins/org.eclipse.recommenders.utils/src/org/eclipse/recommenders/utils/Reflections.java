@@ -23,7 +23,11 @@ public final class Reflections {
         throw new IllegalStateException("Not meant to be instantiated");
     }
 
-    public static Optional<Field> getDeclaredField(Class<?> declaringClass, String name) {
+    public static Optional<Field> getDeclaredField(@Nullable Class<?> declaringClass, @Nullable String name) {
+        if (declaringClass == null || name == null) {
+            return Optional.absent();
+        }
+
         try {
             Field field = declaringClass.getDeclaredField(name);
             field.setAccessible(true);
@@ -34,7 +38,12 @@ public final class Reflections {
         }
     }
 
-    public static Optional<Method> getDeclaredMethod(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
+    public static Optional<Method> getDeclaredMethod(@Nullable Class<?> declaringClass, @Nullable String name,
+            @Nullable Class<?>... parameterTypes) {
+        if (declaringClass == null || name == null || parameterTypes == null) {
+            return Optional.absent();
+        }
+
         try {
             Method method = declaringClass.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);

@@ -70,10 +70,12 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
+import org.eclipse.recommenders.internal.completion.rcp.LogMessages;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.AstBindings;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
@@ -502,9 +504,25 @@ public final class CompletionContextFunctions {
 
     public static class LookupEnvironmentContextFunction implements ICompletionContextFunction<LookupEnvironment> {
 
-        private static final Field EXTENDED_CONTEXT = getDeclaredField(InternalCompletionContext.class,
+        private static Class<InternalCompletionContext> internalCompletionContextClass;
+        private static Class<InternalExtendedCompletionContext> internalExtendedCompletionContextClass;
+
+        static {
+            try {
+                internalCompletionContextClass = InternalCompletionContext.class;
+            } catch (LinkageError e) {
+                Logs.log(LogMessages.LOG_WARNING_LINKAGE_ERROR, e);
+            }
+            try {
+                internalExtendedCompletionContextClass = InternalExtendedCompletionContext.class;
+            } catch (LinkageError e) {
+                Logs.log(LogMessages.LOG_WARNING_LINKAGE_ERROR, e);
+            }
+        }
+
+        private static final Field EXTENDED_CONTEXT = getDeclaredField(internalCompletionContextClass,
                 "extendedContext").orNull(); //$NON-NLS-1$
-        private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(InternalExtendedCompletionContext.class,
+        private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(internalExtendedCompletionContextClass,
                 "lookupEnvironment").orNull(); //$NON-NLS-1$
 
         @Override

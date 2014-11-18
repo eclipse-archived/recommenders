@@ -47,6 +47,8 @@ public class Messages extends NLS {
     public static String LOG_ERROR_SESSION_PROCESSOR_FAILED;
     public static String LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
 
+    public static String LOG_WARNING_LINKAGE_ERROR;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
