@@ -1,20 +1,19 @@
-package org.eclipse.recommenders.snipmatch.rcp.util
+package org.eclipse.recommenders.jdt.templates
 
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.jdt.core.ICompilationUnit
 import org.eclipse.jdt.core.ITypeRoot
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
 import org.eclipse.jdt.ui.SharedASTProvider
-import org.eclipse.jface.text.TextSelection
+import org.eclipse.jface.text.Region
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
-import java.util.Map;
 
 import static org.junit.Assert.*
-import org.eclipse.jdt.core.ICompilationUnit
 
 class SnippetCodeBuilderTest {
 
@@ -520,7 +519,7 @@ class SnippetCodeBuilderTest {
         val root = editor.getViewPartInput() as ITypeRoot;
         val ast = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
         val doc = editor.viewer.getDocument();
-        val selection = new TextSelection(doc, start, end - start);
+        val selection = new Region(start, end - start);
         return new SnippetCodeBuilder(ast, doc, selection).build();
     }
 }

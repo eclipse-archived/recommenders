@@ -27,16 +27,17 @@ import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateProvider;
+import org.eclipse.recommenders.jdt.templates.SnippetCodeBuilder;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.recommenders.snipmatch.rcp.util.DependencyExtractor;
-import org.eclipse.recommenders.snipmatch.rcp.util.SnippetCodeBuilder;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -74,7 +75,8 @@ public class CreateSnippetHandler extends AbstractHandler {
         ProjectCoordinateProvider pcProvider = InjectionService.getInstance().requestInstance(
                 ProjectCoordinateProvider.class);
 
-        String code = new SnippetCodeBuilder(ast, doc, textSelection).build();
+        String code = new SnippetCodeBuilder(ast, doc, new Region(textSelection.getOffset(), textSelection.getLength()))
+        .build();
         Set<ProjectCoordinate> dependencies = new DependencyExtractor(ast, textSelection, pcProvider)
                 .extractDependencies();
 

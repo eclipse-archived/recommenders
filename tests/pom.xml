@@ -19,6 +19,7 @@
 		<module>org.eclipse.recommenders.jayes.tests</module>
 		<module>org.eclipse.recommenders.jayes.io.tests</module>
 		<module>org.eclipse.recommenders.jayes.transformation.tests</module>
+		<module>org.eclipse.recommenders.jdt.tests</module>
 		<module>org.eclipse.recommenders.models.tests</module>
 		<module>org.eclipse.recommenders.models.rcp.tests</module>
 		<module>org.eclipse.recommenders.overrides.tests</module>
