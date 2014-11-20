@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.recommenders.jdt.tests
+Bundle-Version: 2.1.11.qualifier
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Fragment-Host: org.eclipse.recommenders.jdt
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.jdt.ui,
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.testing,
+ org.eclipse.ui,
+ org.eclipse.xtext.xbase.lib,
+ org.junit

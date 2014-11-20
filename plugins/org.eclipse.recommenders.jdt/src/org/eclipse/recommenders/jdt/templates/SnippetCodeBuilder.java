@@ -8,11 +8,11 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.snipmatch.rcp.util;
+package org.eclipse.recommenders.jdt.templates;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+import static org.eclipse.recommenders.internal.jdt.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;
@@ -34,10 +34,9 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.internal.corext.dom.Selection;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.recommenders.utils.Nonnull;
 import org.eclipse.recommenders.utils.Nullable;
 
@@ -51,13 +50,11 @@ import com.google.common.collect.Sets;
  *      href="http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Fconcepts%2Fconcept-template-variables.htm">Template
  *      variables</a>
  */
-@SuppressWarnings("restriction")
 public class SnippetCodeBuilder {
 
     private final CompilationUnit ast;
     private final IDocument doc;
-    private final ITextSelection textSelection;
-    private final Selection selection;
+    private final IRegion textSelection;
 
     private final Set<String> imports = Sets.newTreeSet();
     private final Set<String> importStatics = Sets.newTreeSet();
@@ -65,26 +62,24 @@ public class SnippetCodeBuilder {
     private final HashMap<String, Integer> lastVarIndex = Maps.newHashMap();
     private final StringBuilder sb = new StringBuilder();
 
-    public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc,
-            @Nonnull ITextSelection textSelection) {
+    public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc, @Nonnull IRegion textSelection) {
         Preconditions.checkNotNull(ast);
         Preconditions.checkNotNull(doc);
         Preconditions.checkNotNull(textSelection);
         this.ast = ast;
         this.doc = doc;
         this.textSelection = textSelection;
-
-        if (textSelection.getOffset() >= 0 && textSelection.getLength() >= 0) {
-            this.selection = Selection.createFromStartLength(textSelection.getOffset(), textSelection.getLength());
-        } else {
-            this.selection = null;
-        }
     }
 
     public String build() {
         final int start = textSelection.getOffset();
         final int length = textSelection.getLength();
-        final String text = textSelection.getText();
+        String text;
+        try {
+            text = doc.get(start, length);
+        } catch (BadLocationException e) {
+            text = null;
+        }
         if (text == null) {
             return ""; //$NON-NLS-1$
         }
@@ -103,7 +98,7 @@ public class SnippetCodeBuilder {
 
             NodeFinder nodeFinder = new NodeFinder(enclosingNode, start + i, 0);
             ASTNode node = nodeFinder.getCoveringNode();
-            if (selection.covers(node)) {
+            if (isCoveredBySelection(node)) {
                 switch (node.getNodeType()) {
                 case ASTNode.SIMPLE_NAME:
                     SimpleName name = (SimpleName) node;
@@ -166,12 +161,19 @@ public class SnippetCodeBuilder {
         return sb.toString();
     }
 
+    public boolean isCoveredBySelection(ASTNode node) {
+        int nodeStart = node.getStartPosition();
+        int nodeEnd = nodeStart + node.getLength();
+        return textSelection.getOffset() <= nodeStart
+                && nodeEnd <= textSelection.getOffset() + textSelection.getLength();
+    }
+
     private boolean isDeclaredInSelection(@Nonnull IBinding binding) {
         ASTNode declaringNode = ast.findDeclaringNode(binding);
-        if (declaringNode == null || selection == null) {
+        if (declaringNode == null) {
             return false; // Declared in different compilation unit
         }
-        return selection.covers(declaringNode);
+        return isCoveredBySelection(declaringNode);
     }
 
     private boolean isQualified(@Nonnull SimpleName name) {
@@ -337,7 +339,7 @@ public class SnippetCodeBuilder {
             // fetch the selection's starting line from the editor document to
             // determine the number of leading
             // whitespace characters to remove from the snippet:
-            int startLineIndex = textSelection.getStartLine();
+            int startLineIndex = doc.getLineOfOffset(textSelection.getOffset());
             int startLineBeginOffset = doc.getLineOffset(startLineIndex);
             int startLineEndOffset = doc.getLineOffset(startLineIndex + 1) - 1;
             int lineLength = startLineEndOffset - startLineBeginOffset;

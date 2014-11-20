@@ -106,7 +106,6 @@ public class Messages extends NLS {
 
     public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
-    public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
     public static String LOG_ERROR_CANNOT_COMPUTE_LOCATION;
     public static String LOG_ERROR_FAILED_TO_LOAD_EDITOR_PAGES;
 

@@ -25,8 +25,6 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final LogMessages ERROR_CREATING_SNIPPET_PROPOSAL_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED);
-    public static final LogMessages ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
-            Messages.LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
     public static final LogMessages ERROR_SNIPPET_COULD_NOT_BE_EVALUATED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
     public static final LogMessages ERROR_CANNOT_COMPUTE_LOCATION = new LogMessages(ERROR,
