@@ -17,16 +17,11 @@ public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.rcp.messages"; //$NON-NLS-1$
 
     public static String PREFPAGE_DESCRIPTION_EMPTY;
-    public static String PREFPAGE_LABEL_HOMEPAGE;
     public static String PREFPAGE_LINK_HOMEPAGE;
-    public static String PREFPAGE_LABEL_MANUAL;
     public static String PREFPAGE_LINK_MANUAL;
     public static String PREFPAGE_LINK_FAVORITE;
-    public static String PREFPAGE_LABEL_FAVORITE;
     public static String PREFPAGE_LINK_TWITTER;
-    public static String PREFPAGE_LABEL_TWITTER;
     public static String PREFPAGE_LINK_EXTENSIONS;
-    public static String PREFPAGE_LABEL_EXTENSIONS;
 
     public static String JOB_INITIALIZE_PROJECTS;
 
