@@ -15,24 +15,27 @@ import java.text.MessageFormat;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Dialogs;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class RootPreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
+public class RootPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-    private SharedImages images;
+    private final SharedImages images;
 
     @Inject
     public RootPreferencePage(SharedImages images) {
@@ -47,31 +50,35 @@ public class RootPreferencePage extends org.eclipse.jface.preference.PreferenceP
     @Override
     protected Control createContents(final Composite parent) {
         noDefaultAndApplyButton();
-        Composite content = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(content);
+        Composite composite = new Composite(parent, SWT.NONE);
+        GridDataFactory.fillDefaults().applyTo(composite);
+        GridLayoutFactory.swtDefaults().margins(0, 5).applyTo(composite);
 
-        BrowserUtils.addOpenBrowserAction(createLink(content, Messages.PREFPAGE_LABEL_HOMEPAGE, Images.OBJ_HOMEPAGE,
-                Messages.PREFPAGE_LINK_HOMEPAGE, "http://www.eclipse.org/recommenders/")); //$NON-NLS-1$
+        Group group = new Group(composite, SWT.NONE);
+        group.setText("Useful links");
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(group);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
 
-        BrowserUtils.addOpenBrowserAction(createLink(content, Messages.PREFPAGE_LABEL_MANUAL, Images.OBJ_CONTAINER,
-                Messages.PREFPAGE_LINK_MANUAL, "http://www.eclipse.org/recommenders/manual/")); //$NON-NLS-1$
+        BrowserUtils.addOpenBrowserAction(createLink(group, Images.OBJ_HOMEPAGE, Messages.PREFPAGE_LINK_HOMEPAGE,
+                "http://www.eclipse.org/recommenders/")); //$NON-NLS-1$
 
-        BrowserUtils.addOpenBrowserAction(createLink(content, Messages.PREFPAGE_LABEL_FAVORITE,
-                Images.OBJ_FAVORITE_STAR, Messages.PREFPAGE_LINK_FAVORITE,
+        BrowserUtils.addOpenBrowserAction(createLink(group, Images.OBJ_CONTAINER, Messages.PREFPAGE_LINK_MANUAL,
+                "http://www.eclipse.org/recommenders/manual/")); //$NON-NLS-1$
+
+        BrowserUtils.addOpenBrowserAction(createLink(group, Images.OBJ_FAVORITE_STAR, Messages.PREFPAGE_LINK_FAVORITE,
                 "http://marketplace.eclipse.org/content/eclipse-code-recommenders")); //$NON-NLS-1$
 
-        BrowserUtils.addOpenBrowserAction(createLink(content, Messages.PREFPAGE_LABEL_TWITTER, Images.OBJ_BIRD_BLUE,
-                Messages.PREFPAGE_LINK_TWITTER, "http://twitter.com/recommenders")); //$NON-NLS-1$
+        BrowserUtils.addOpenBrowserAction(createLink(group, Images.OBJ_BIRD_BLUE, Messages.PREFPAGE_LINK_TWITTER,
+                "http://twitter.com/recommenders")); //$NON-NLS-1$
 
-        addOpenExtensionDiscoveryDialogAction(createLink(content, Messages.PREFPAGE_LABEL_EXTENSIONS,
-                Images.OBJ_LIGHTBULB, Messages.PREFPAGE_LINK_EXTENSIONS, "")); //$NON-NLS-1$
+        addOpenExtensionDiscoveryDialogAction(createLink(group, Images.OBJ_LIGHTBULB,
+                Messages.PREFPAGE_LINK_EXTENSIONS, "")); //$NON-NLS-1$
 
-        return new Composite(parent, SWT.NONE);
+        return parent;
     }
 
-    private Link createLink(Composite content, String description, Images icon, String urlLabel, String url) {
-        CLabel label = new CLabel(content, SWT.BEGINNING);
-        label.setText(description);
+    private Link createLink(Composite content, Images icon, String urlLabel, String url) {
+        Label label = new Label(content, SWT.BEGINNING);
         label.setImage(images.getImage(icon));
 
         Link link = new Link(content, SWT.BEGINNING);
