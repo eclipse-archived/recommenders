@@ -41,7 +41,6 @@ import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
-import org.eclipse.recommenders.calls.NullCallModel;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
@@ -113,21 +112,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         }
     }
 
-    private boolean findReceiverTypeAndModel() {
-        IType receiverType = ctx.get(RECEIVER_TYPE2, null);
-        if (receiverType == null) {
-            return false;
-        }
-        UniqueTypeName name = pcProvider.toUniqueName(receiverType).orNull();
-        if (name == null) {
-            return false;
-        }
-        // TODO loop until we find a model. later
-        model = modelProvider.acquireModel(name).or(NullCallModel.INSTANCE);
-        return model != null;
-
-    }
-
     private boolean isCompletionRequestSupported() {
         final ASTNode node = ctx.getCompletionNode().orNull();
         if (node == null) {
@@ -140,6 +124,20 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             }
             return false;
         }
+    }
+
+    private boolean findReceiverTypeAndModel() {
+        IType receiverType = ctx.get(RECEIVER_TYPE2, null);
+        if (receiverType == null) {
+            return false;
+        }
+        UniqueTypeName name = pcProvider.toUniqueName(receiverType).orNull();
+        if (name == null) {
+            return false;
+        }
+        // TODO loop until we find a model. later
+        model = modelProvider.acquireModel(name).orNull();
+        return model != null;
     }
 
     private boolean findRecommendations() {
@@ -163,11 +161,12 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (ctx.getExpectedTypeSignature().isPresent()) {
             recommendations = Recommendations.filterVoid(recommendations);
         }
+
         recommendations = top(recommendations, prefs.maxNumberOfProposals,
                 max(prefs.minProposalProbability, 0.01) / 100);
-
         calculateProposalRelevanceBoostMap();
-        return !isEmpty(recommendations);
+
+        return !isEmpty(recommendations) || !observedCalls.isEmpty();
     }
 
     private void calculateProposalRelevanceBoostMap() {
@@ -194,10 +193,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     @Override
     public void process(final IProcessableProposal proposal) {
-        if (isEmpty(recommendations)) {
-            return;
-        }
-
         final CompletionProposal coreProposal = proposal.getCoreProposal().or(NULL_PROPOSAL);
         switch (coreProposal.getKind()) {
         case CompletionProposal.METHOD_REF:
