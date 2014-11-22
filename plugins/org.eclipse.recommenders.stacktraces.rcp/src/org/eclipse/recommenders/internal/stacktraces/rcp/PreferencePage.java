@@ -109,7 +109,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     private static String descriptionForMode(SendAction mode) {
         switch (mode) {
         case ASK:
-            return Messages.FIELD_LABEL_ACTION_REPORT_ASK;
+            return Messages.PREFERENCEPAGE_ASK_LABEL;
         case IGNORE:
             return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
         case SILENT:
