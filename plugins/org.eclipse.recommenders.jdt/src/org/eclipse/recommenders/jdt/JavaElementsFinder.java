@@ -10,14 +10,9 @@
  */
 package org.eclipse.recommenders.jdt;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.core.IPackageFragmentRoot.K_SOURCE;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.COULD_NOT_FIND_COMPILATION_UNITS;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.COULD_NOT_FIND_JAVA_PROJECTS;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.COULD_NOT_FIND_PACKAGE_FRAGMENTS;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.COULD_NOT_FIND_PACKAGE_FRAGMENT_ROOTS;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.COULD_NOT_FIND_TYPE;
+import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -42,7 +37,7 @@ public class JavaElementsFinder {
             JavaModelManager mgr = JavaModelManager.getJavaModelManager();
             b.add(mgr.getJavaModel().getJavaProjects());
         } catch (Exception e) {
-            log(COULD_NOT_FIND_JAVA_PROJECTS, e);
+            log(ERROR_CANNOT_FETCH_JAVA_PROJECTS, e);
         }
         return b.build();
     }
@@ -56,7 +51,7 @@ public class JavaElementsFinder {
                 }
             }
         } catch (Exception e) {
-            log(COULD_NOT_FIND_PACKAGE_FRAGMENT_ROOTS, e, project);
+            log(ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS, e, project);
         }
         return b.build();
     }
@@ -68,7 +63,7 @@ public class JavaElementsFinder {
                 b.add((IPackageFragment) e);
             }
         } catch (Exception e) {
-            log(COULD_NOT_FIND_PACKAGE_FRAGMENTS, e, root);
+            log(ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT, e, root);
         }
         return b.build();
     }
@@ -78,7 +73,7 @@ public class JavaElementsFinder {
         try {
             b.add(fragment.getCompilationUnits());
         } catch (Exception e) {
-            log(COULD_NOT_FIND_COMPILATION_UNITS, e, fragment);
+            log(ERROR_CANNOT_FETCH_COMPILATION_UNITS, e, fragment);
         }
         return b.build();
     }
@@ -87,7 +82,7 @@ public class JavaElementsFinder {
         try {
             return fromNullable(project.findType(typename));
         } catch (JavaModelException e) {
-            log(COULD_NOT_FIND_TYPE, e, typename, project);
+            log(ERROR_CANNOT_FIND_TYPE_IN_PROJECT, e, typename, project);
             return absent();
         }
     }

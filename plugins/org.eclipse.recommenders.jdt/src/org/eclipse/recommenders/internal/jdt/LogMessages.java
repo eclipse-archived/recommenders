@@ -23,17 +23,18 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
-
-    public static final LogMessages COULD_NOT_FIND_JAVA_PROJECTS = new LogMessages(ERROR, "Could not fetch java projects from workspace");
-    public static final ILogMessage COULD_NOT_FIND_PACKAGE_FRAGMENT_ROOTS = new LogMessages(ERROR,
-            "Could not fetch package fragment roots of project '{1}'");
-    public static final ILogMessage COULD_NOT_FIND_PACKAGE_FRAGMENTS = new LogMessages(ERROR,
-            "Could not fetch package fragment of root '{1}'");
-    public static final ILogMessage COULD_NOT_FIND_COMPILATION_UNITS = new LogMessages(ERROR,
-            "Could not fetch compilation units of package '{1}'");
-    public static final ILogMessage COULD_NOT_FIND_TYPE = new LogMessages(ERROR, "Could not find type '{1}' in project '{2}'");
+    public static final ILogMessage ERROR_CANNOT_FETCH_JAVA_PROJECTS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_FETCH_JAVA_PROJECTS);
+    public static final ILogMessage ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS);
+    public static final ILogMessage ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT);
+    public static final ILogMessage ERROR_CANNOT_FETCH_COMPILATION_UNITS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS);
+    public static final ILogMessage ERROR_CANNOT_FIND_TYPE_IN_PROJECT = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
