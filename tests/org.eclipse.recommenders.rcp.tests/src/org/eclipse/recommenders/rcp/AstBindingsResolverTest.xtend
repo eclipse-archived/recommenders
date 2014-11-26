@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.ParameterizedType
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.TypeParameter
-import org.eclipse.recommenders.rcp.utils.AstBindings
+import org.eclipse.recommenders.jdt.AstBindings
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
 import org.junit.Test
 

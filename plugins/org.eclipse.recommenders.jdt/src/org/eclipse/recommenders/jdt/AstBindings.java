@@ -8,10 +8,10 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.jdt;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.List;

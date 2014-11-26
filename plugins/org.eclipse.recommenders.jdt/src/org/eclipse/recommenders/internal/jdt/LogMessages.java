@@ -35,6 +35,10 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS);
     public static final ILogMessage ERROR_CANNOT_FIND_TYPE_IN_PROJECT = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT);
+    public static final LogMessages FAILED_TO_CREATE_TYPENAME = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_CREATE_TYPENAME);
+    public static final LogMessages FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_CREATE_METHODNAME);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

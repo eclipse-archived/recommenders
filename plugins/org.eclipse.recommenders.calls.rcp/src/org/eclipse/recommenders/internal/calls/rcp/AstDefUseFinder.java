@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
-import static org.eclipse.recommenders.rcp.utils.AstBindings.toMethodName;
+import static org.eclipse.recommenders.jdt.AstBindings.toMethodName;
 import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.util.List;
@@ -42,7 +42,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
-import org.eclipse.recommenders.rcp.utils.AstBindings;
+import org.eclipse.recommenders.jdt.AstBindings;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;

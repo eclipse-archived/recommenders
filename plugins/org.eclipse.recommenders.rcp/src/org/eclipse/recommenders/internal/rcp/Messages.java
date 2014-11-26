@@ -35,8 +35,6 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
     public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
     public static String LOG_ERROR_AN_ERROR_OCCURRED;
-    public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
-    public static String LOG_ERROR_FAILED_TO_CREATE_METHODNAME;
 
     public static String DIALOG_TITLE_BUNDLE_RESOLUTION_FAILURE;
     public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FAILURE;

@@ -22,6 +22,8 @@ public class Messages extends NLS {
     public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT;
     public static String LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS;
     public static String LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT;
+    public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
+    public static String LOG_ERROR_FAILED_TO_CREATE_METHODNAME;
 
     static {
         // initialize resource bundle

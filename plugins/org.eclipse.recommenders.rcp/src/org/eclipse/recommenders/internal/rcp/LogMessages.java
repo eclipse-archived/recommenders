@@ -43,10 +43,6 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages FAILED_TO_RESOLVE_TYPE_PARAMETER = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER);
     public static final LogMessages AN_ERROR_OCCURRED = new LogMessages(ERROR, Messages.LOG_ERROR_AN_ERROR_OCCURRED);
-    public static final LogMessages FAILED_TO_CREATE_TYPENAME = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_CREATE_TYPENAME);
-    public static final LogMessages FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_CREATE_METHODNAME);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
