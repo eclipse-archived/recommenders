@@ -79,8 +79,8 @@ public class LogListener implements ILogListener, IStartup {
             if (!isSendingAllowedOnAction(sendAction)) {
                 return;
             }
-            stacktraceProvider.insertStandInStacktraceIfEmpty(status);
             final ErrorReport report = newErrorReport(status, settings);
+            stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
             if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
                 return;
             }

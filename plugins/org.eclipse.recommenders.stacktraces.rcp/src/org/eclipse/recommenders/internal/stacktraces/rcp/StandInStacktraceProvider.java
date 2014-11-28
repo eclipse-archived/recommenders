@@ -10,15 +10,11 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
-import static org.eclipse.recommenders.utils.Logs.log;
-
-import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.utils.Reflections;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 
 public class StandInStacktraceProvider {
 
@@ -33,10 +29,7 @@ public class StandInStacktraceProvider {
 
     private static final String STAND_IN_MESSAGE = "Stand-In Stacktrace supplied by Eclipse Stacktraces & Error Reporting Tool";
 
-    private static Method SET_EXCEPTION = Reflections.getDeclaredMethod(Status.class, "setException", Throwable.class)
-            .orNull();
-
-    protected void insertStandInStacktraceIfEmpty(final IStatus status) {
+    protected void insertStandInStacktraceIfEmpty(final Status status) {
         if (requiresStandInStacktrace(status)) {
             Throwable syntetic = new StandInException(STAND_IN_MESSAGE);
             syntetic.fillInStackTrace();
@@ -44,21 +37,13 @@ public class StandInStacktraceProvider {
             StackTraceElement[] clearedStacktrace = clearBlacklistedTopStackframes(stacktrace,
                     Constants.STAND_IN_STACKTRACE_BLACKLIST);
             syntetic.setStackTrace(clearedStacktrace);
-            try {
-                SET_EXCEPTION.invoke(status, syntetic);
-            } catch (Exception e) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, SET_EXCEPTION);
-            }
+            status.setException(ErrorReports.newThrowable(syntetic));
         }
     }
 
-    private boolean requiresStandInStacktrace(final IStatus status) {
+    private boolean requiresStandInStacktrace(final Status status) {
         if (status.getException() != null) {
             return false;
-        }
-        if (!(status instanceof Status)) {
-            return false;
-            // TODO log unknown status and send classname
         }
         return true;
     }

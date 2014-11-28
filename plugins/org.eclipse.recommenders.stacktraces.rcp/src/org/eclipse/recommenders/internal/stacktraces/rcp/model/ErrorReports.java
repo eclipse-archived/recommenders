@@ -369,7 +369,7 @@ public class ErrorReports {
         }
     }
 
-    private static Throwable newThrowable(java.lang.Throwable throwable) {
+    public static Throwable newThrowable(java.lang.Throwable throwable) {
         Throwable mThrowable = factory.createThrowable();
         mThrowable.setMessage(throwable.getMessage());
         mThrowable.setClassName(throwable.getClass().getName());

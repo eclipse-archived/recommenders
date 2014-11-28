@@ -17,7 +17,9 @@ import static org.mockito.Mockito.never;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,8 @@ public class StandInStacktraceProviderTest {
 
     private static final Set<String> BLACKLIST = Sets.newHashSet(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2);
 
+    private static final ModelFactory FACTORY = ModelFactory.eINSTANCE;
+
     @Spy
     private StandInStacktraceProvider stacktraceProvider = new StandInStacktraceProvider();
 
@@ -49,6 +53,21 @@ public class StandInStacktraceProviderTest {
             elements[i] = new StackTraceElement(classnames[i], "anyMethod", classnames[i] + ".java", -1);
         }
         return elements;
+    }
+
+    private static Status createStatus(int severity, String pluginId, String message) {
+        return createStatus(severity, pluginId, message, null);
+    }
+
+    private static Status createStatus(int severity, String pluginId, String message, java.lang.Throwable exception) {
+        Status status = FACTORY.createStatus();
+        status.setSeverity(severity);
+        status.setPluginId(pluginId);
+        status.setMessage(message);
+        if (exception != null) {
+            status.setException(ErrorReports.newThrowable(exception));
+        }
+        return status;
     }
 
     @Test
@@ -104,7 +123,7 @@ public class StandInStacktraceProviderTest {
 
     @Test
     public void testInsertStacktraceForStatusWithNoException() {
-        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message");
+        Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
         stacktraceProvider.insertStandInStacktraceIfEmpty(status);
         Mockito.verify(stacktraceProvider).clearBlacklistedTopStackframes(Mockito.any(StackTraceElement[].class),
                 Mockito.anySetOf(String.class));
@@ -112,22 +131,15 @@ public class StandInStacktraceProviderTest {
 
     @Test
     public void testInsertedExceptionClass() {
-        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message");
+        Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
         stacktraceProvider.insertStandInStacktraceIfEmpty(status);
-        Assert.assertTrue(status.getException() instanceof StandInStacktraceProvider.StandInException);
+        Assert.assertThat(status.getException().getClassName(),
+                is(StandInStacktraceProvider.StandInException.class.getName()));
     }
 
     @Test
     public void testInsertStacktraceSkippedForStatusWithException() {
-        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message", new RuntimeException());
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
-        Mockito.verify(stacktraceProvider, never()).clearBlacklistedTopStackframes(
-                Mockito.any(StackTraceElement[].class), Mockito.anySetOf(String.class));
-    }
-
-    @Test
-    public void testInsertStacktraceSkippedForNoStatusInstance() {
-        IStatus status = Mockito.mock(IStatus.class);
+        Status status = createStatus(IStatus.ERROR, "plugin.id", "any message", new RuntimeException());
         stacktraceProvider.insertStandInStacktraceIfEmpty(status);
         Mockito.verify(stacktraceProvider, never()).clearBlacklistedTopStackframes(
                 Mockito.any(StackTraceElement[].class), Mockito.anySetOf(String.class));
@@ -135,9 +147,10 @@ public class StandInStacktraceProviderTest {
 
     @Test
     public void testInserterClassNotContainedInStacktrace() {
-        IStatus status = new Status(IStatus.ERROR, "plugin.id", "any message");
+        Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
         new StandInStacktraceProvider().insertStandInStacktraceIfEmpty(status);
-        for (StackTraceElement e : status.getException().getStackTrace()) {
+        for (org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement e : status.getException()
+                .getStackTrace()) {
             assertThat(e.getClassName(), not(is(StandInStacktraceProvider.class.getCanonicalName())));
         }
 

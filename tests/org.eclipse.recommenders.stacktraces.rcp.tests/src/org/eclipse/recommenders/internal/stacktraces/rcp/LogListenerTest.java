@@ -12,11 +12,11 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.SYSPROP_ECLIPSE_BUILD_ID;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
@@ -90,24 +90,7 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testInsertDebugStacktraceOnAskMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.ASK);
-            }
-        };
-        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
-        Assert.assertThat(empty.getException(), nullValue());
-
-        sut.logging(empty, "");
-
-        assertThat(empty.getException(), notNullValue());
-        assertThat(empty.getException().getStackTrace().length, greaterThan(0));
-    }
-
-    @Test
-    public void testInsertDebugStacktraceOnSilentMode() {
+    public void testStatusUnmodified() {
         settingsOverrider = new SettingsOverrider() {
             @Override
             public void override(Settings settings) {
@@ -115,12 +98,10 @@ public class LogListenerTest {
             }
         };
         Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
-        Assert.assertThat(empty.getException(), nullValue());
+        Status empty2 = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
 
         sut.logging(empty, "");
-
-        assertThat(empty.getException(), notNullValue());
-        assertThat(empty.getException().getStackTrace().length, greaterThan(0));
+        assertTrue(EqualsBuilder.reflectionEquals(empty, empty2));
     }
 
     @Test
