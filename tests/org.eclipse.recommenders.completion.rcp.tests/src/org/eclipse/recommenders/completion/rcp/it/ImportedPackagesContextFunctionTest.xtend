@@ -13,6 +13,7 @@ import static org.eclipse.recommenders.testing.CodeBuilder.*
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 import static org.mockito.Mockito.*
+import com.google.common.base.Optional
 
 class ImportedPackagesContextFunctionTest {
 
@@ -33,7 +34,7 @@ class ImportedPackagesContextFunctionTest {
         val ast = SharedASTProvider.getAST(cu, SharedASTProvider.WAIT_YES, null)
         
         val ctx = mock(IRecommendersCompletionContext)
-        when(ctx.AST).thenReturn(ast)
+        when(ctx.AST).thenReturn(Optional.of(ast))
         
         val actual = new ImportedPackagesFunction().compute(ctx, CompletionContextKey.IMPORTED_PACKAGES)
         assertThat(actual, hasItem(VmPackageName.get("java/util")))

@@ -494,8 +494,12 @@ public final class CompletionContextFunctions {
             MethodDeclaration astMethod = null;
             IMethod jdtMethod = context.getEnclosingMethod().orNull();
             if (jdtMethod != null) {
-                CompilationUnit ast = context.getAST();
-                astMethod = ASTNodeUtils.find(ast, jdtMethod).orNull();
+                Optional<CompilationUnit> ast = context.getAST();
+                if (ast.isPresent()) {
+                    astMethod = ASTNodeUtils.find(ast.get(), jdtMethod).orNull();
+                } else {
+                    return null;
+                }
             }
             context.set(key, astMethod);
             return astMethod;
@@ -564,9 +568,14 @@ public final class CompletionContextFunctions {
         @SuppressWarnings("unchecked")
         public Set<IPackageName> compute(IRecommendersCompletionContext context,
                 CompletionContextKey<Set<IPackageName>> key) {
-            CompilationUnit ast = context.getAST();
-            List<ImportDeclaration> imports = ast.imports();
+            Optional<CompilationUnit> ast = context.getAST();
             Set<IPackageName> res = Sets.newHashSet();
+            List<ImportDeclaration> imports = null;
+            if (ast.isPresent()) {
+                imports = ast.get().imports();
+            } else {
+                return res;
+            }
             for (ImportDeclaration decl : imports) {
                 IBinding b = decl.resolveBinding();
                 if (b == null) {

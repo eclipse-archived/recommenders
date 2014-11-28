@@ -104,8 +104,10 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     }
 
     @Override
-    public CompilationUnit getAST() {
-        return get(AST_PROVIDER, null).get(getCompilationUnit());
+    public Optional<CompilationUnit> getAST() {
+        IAstProvider astProvider = get(AST_PROVIDER, null);
+        CompilationUnit ast = astProvider != null ? astProvider.get(getCompilationUnit()) : null;
+        return Optional.fromNullable(ast);
     }
 
     @Override

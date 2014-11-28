@@ -37,7 +37,7 @@ import com.google.common.collect.ImmutableMap;
 @SuppressWarnings({ "restriction", "rawtypes" })
 public interface IRecommendersCompletionContext {
 
-    CompilationUnit getAST();
+    Optional<CompilationUnit> getAST();
 
     Optional<IType> getClosestEnclosingType();
 
@@ -101,7 +101,7 @@ public interface IRecommendersCompletionContext {
      * <li> {@code List<MyClass>} --> {@code List}, and
      * <li> {@code MyClass MyClass[][] c} --> {@code MyClass}.
      * </ul>
-     * 
+     *
      * See {@link #getReceiverTypeSignature()} if you need the exact type signature including array literals or
      * generics.
      */
@@ -119,7 +119,7 @@ public interface IRecommendersCompletionContext {
 
     /**
      * Returns the value stored in this context under the given key - if any.
-     * 
+     *
      * @param key
      *            the class that get's mapped to a string to build the actual key
      */
