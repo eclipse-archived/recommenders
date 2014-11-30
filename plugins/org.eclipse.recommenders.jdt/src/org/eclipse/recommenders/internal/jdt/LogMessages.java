@@ -39,6 +39,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_FAILED_TO_CREATE_TYPENAME);
     public static final LogMessages FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_CREATE_METHODNAME);
+    public static final LogMessages ERROR_CANNOT_DETERMINE_LOCATION = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CANNOT_DETERMINE_LOCATION);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
