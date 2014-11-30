@@ -44,7 +44,7 @@ import org.eclipse.ui.progress.IProgressConstants;
  */
 public class UploadJob extends Job {
 
-    private Executor executor = Executor.newInstance();
+    private Executor executor;
     private ErrorReport event;
     private URI target;
     private Settings settings;
@@ -60,6 +60,7 @@ public class UploadJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask(Messages.UPLOADJOB_TASKNAME, 1);
         try {
+            executor = Executor.newInstance();
             String body = ErrorReports.toJson(event, settings, false);
             Request request = Request.Post(target).bodyString(body, ContentType.APPLICATION_JSON);
             Response response = proxy(executor, target).execute(request);
