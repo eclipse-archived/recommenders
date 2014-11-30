@@ -15,6 +15,10 @@ import static org.eclipse.jdt.core.IPackageFragmentRoot.K_SOURCE;
 import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.io.File;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -23,6 +27,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.recommenders.utils.Nullable;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -85,5 +90,27 @@ public class JavaElementsFinder {
             log(ERROR_CANNOT_FIND_TYPE_IN_PROJECT, e, typename, project);
             return absent();
         }
+    }
+
+    /**
+     * Returns the compilation unit's absolute location on the local hard drive - if it exists.
+     */
+    public static Optional<File> findLocation(@Nullable ICompilationUnit cu) {
+        if (cu == null) {
+            return absent();
+        }
+        IResource resource = cu.getResource();
+        if (resource == null) {
+            return absent();
+        }
+        IPath location = resource.getLocation();
+        if (location == null) {
+            return absent();
+        }
+        File file = location.toFile();
+        if (!file.exists()) {
+            return absent();
+        }
+        return Optional.of(file);
     }
 }
