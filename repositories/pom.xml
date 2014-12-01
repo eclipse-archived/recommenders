@@ -39,7 +39,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<outputDirectory>${project.build.directory}/repository</outputDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -122,7 +121,7 @@
 								<layout>p2</layout>
 							</repository>
 							<repository>
-								<id>kepler</id>
+								<id>luna</id>
 								<url>http://download.eclipse.org/releases/luna</url>
 								<layout>p2</layout>
 							</repository>

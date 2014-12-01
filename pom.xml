@@ -48,7 +48,7 @@
 	<properties>
 		<recommenders-version>2.1.11-SNAPSHOT</recommenders-version>
 		<javaVersion>1.6</javaVersion>
-		<tychoVersion>0.21.0</tychoVersion>
+		<tychoVersion>0.22.0</tychoVersion>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -219,6 +219,7 @@
 					<configuration>
 						<executionEnvironmentDefault>JavaSE-${javaVersion}</executionEnvironmentDefault>
 						<includePackedArtifacts>true</includePackedArtifacts>
+						<targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -474,6 +475,13 @@
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-compiler-plugin</artifactId>
+						<configuration>
+							<useJDK>BREE</useJDK>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
 						<configuration>
 							<useJDK>BREE</useJDK>
 						</configuration>
