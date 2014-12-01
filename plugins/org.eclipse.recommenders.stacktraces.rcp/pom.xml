@@ -5,10 +5,9 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>plugins</artifactId>
-		<version>2.1.11</version>
+		<version>2.1.12-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.eclipse.recommenders.stacktraces.rcp</artifactId>
 	<packaging>eclipse-plugin</packaging>
-<version>2.1.11-SNAPSHOT</version>
 </project>
