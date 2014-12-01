@@ -87,7 +87,7 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
 
     @Override
     public int getRelevance() {
-        return (2 ^ 12) - chain.getElements().size();
+        return -chain.getElements().size();
     }
 
     @Override
