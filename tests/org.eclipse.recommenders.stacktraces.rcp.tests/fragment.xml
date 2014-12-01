@@ -15,13 +15,22 @@
             </separator>
          </menu>
          <action
-               class="org.eclipse.recommenders.stacktraces.rcp.actions.SampleAction"
+               class="org.eclipse.recommenders.stacktraces.rcp.actions.UiFreezeAction"
+               icon="icons/sample2.gif"
+               id="org.eclipse.recommenders.stacktraces.rcp.test.actions.SampleAction"
+               label="UI Freeze"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Ooups! UI freeze...">
+         </action>
+         <action
+               class="org.eclipse.recommenders.stacktraces.rcp.actions.LogErrorsAction"
                icon="icons/sample.gif"
                id="org.eclipse.recommenders.stacktraces.rcp.test.actions.SampleAction"
                label="Log error(s)"
                menubarPath="sampleMenu/sampleGroup"
                toolbarPath="sampleGroup"
-               tooltip="Hello, Eclipse world">
+               tooltip="Ooups! Error...">
          </action>
       </actionSet>
    </extension>

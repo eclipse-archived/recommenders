@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.stacktraces.rcp.fadedialog.AbstractNotificationPopup;
 import org.eclipse.swt.SWT;
@@ -24,12 +26,14 @@ public class ReportNotificationPopup extends AbstractNotificationPopup {
 
     private static final int DELAY_CLOSE_MS = 2000;
     private String message;
+    private String url;
 
-    public ReportNotificationPopup(String link) {
+    public ReportNotificationPopup(String link, String url) {
         super(getDisplay());
         setFadingEnabled(true);
         setDelayClose(DELAY_CLOSE_MS);
         this.message = link;
+        this.url = url;
     }
 
     @Override
@@ -43,7 +47,9 @@ public class ReportNotificationPopup extends AbstractNotificationPopup {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(e.text);
+                if (!isEmpty(url)) {
+                    Browsers.openInExternalBrowser(url);
+                }
             }
         });
     }

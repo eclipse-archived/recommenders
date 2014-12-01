@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.IProgressConstants;
 
+import com.google.common.base.Optional;
+
 /**
  * Responsible to anonymize (if requested) and send an error report.
  */
@@ -79,15 +81,16 @@ public class UploadJob extends Job {
                     new ThankYouDialog(activeShell, state).open();
                 }
             });
+            Optional<String> info = state.getInformation();
             if (FIXED.equals(state.getResolved().orNull())) {
                 String message = format(Messages.UPLOADJOB_ALREADY_FIXED_UPDATE,
-                        state.getInformation().or("The error you reported has been fixed."),
-                        state.getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
-                openPopup(message);
+                        info.or("The error you reported has been fixed."),
+                        state.getBugId().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
+                openPopup(message, state.getBugUrl().orNull());
             } else if (ArrayUtils.contains(state.getKeywords().or(EMPTY_STRINGS), KEYWORD_NEEDINFO)) {
-                String message = format(Messages.UPLOADJOB_NEED_FURTHER_INFORMATION,
-                        state.getBugUrl().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
-                openPopup(message);
+                String message = format(Messages.UPLOADJOB_NEED_FURTHER_INFORMATION, info.or(""),
+                        state.getBugId().or(Messages.THANKYOUDIALOG_INVALID_SERVER_RESPONSE));
+                openPopup(message, state.getBugUrl().orNull());
             }
             return new Status(IStatus.INFO, PLUGIN_ID, format(Messages.UPLOADJOB_THANK_YOU, details));
         } catch (Exception e) {
@@ -97,12 +100,12 @@ public class UploadJob extends Job {
         }
     }
 
-    private void openPopup(final String message) {
+    private void openPopup(final String message, final String url) {
 
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                Window dialog = new ReportNotificationPopup(message);
+                Window dialog = new ReportNotificationPopup(message, url);
                 dialog.open();
             }
         });

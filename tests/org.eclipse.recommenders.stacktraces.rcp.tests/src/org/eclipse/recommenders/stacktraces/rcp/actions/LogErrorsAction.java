@@ -22,7 +22,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.osgi.framework.FrameworkUtil;
 
-public class SampleAction implements IWorkbenchWindowActionDelegate {
+public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
     private int counter;
 
     @Override

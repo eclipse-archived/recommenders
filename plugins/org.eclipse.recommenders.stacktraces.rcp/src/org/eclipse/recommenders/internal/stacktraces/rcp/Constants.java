@@ -193,7 +193,52 @@ public final class Constants {
                     "org.eclipse.jetty.util.thread.QueuedThreadPool",
                     "org.eclipse.jetty.util.thread.QueuedThreadPool",
                     "java.lang.Thread"),
-            // empty stacktrace
+
+            // at sun.misc.Unsafe.park(Unsafe.java:-2)
+            // at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)
+            // at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2078)
+            // at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1093)
+            // at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:809)
+            // at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1067)
+            // at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1127)
+            // at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+            // at java.lang.Thread.run(Thread.java:745)
+            new StatusFilterSetting("org.eclipse.ui.monitoring",
+                    "sun.misc.Unsafe",
+                    "java.util.concurrent.locks.LockSupport",
+                    "java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject",
+                    "java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue",
+                    "java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue",
+                    "java.util.concurrent.ThreadPoolExecutor",
+                    "java.util.concurrent.ThreadPoolExecutor",
+                    "java.util.concurrent.ThreadPoolExecutor$Worker",
+                    "java.lang.Thread"),
+
+            // at sun.misc.Unsafe.park(Unsafe.java:-2)
+            // at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)
+            // at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2078)
+            // at java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:467)
+            // at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1066)
+            // at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1127)
+            // at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+            // at java.lang.Thread.run(Thread.java:745)
+            new StatusFilterSetting("org.eclipse.ui.monitoring",
+                    "sun.misc.Unsafe",
+                    "java.util.concurrent.locks.LockSupport",
+                    "java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject",
+                    "java.util.concurrent.LinkedBlockingQueue",
+                    "java.util.concurrent.ThreadPoolExecutor",
+                    "java.util.concurrent.ThreadPoolExecutor",
+                    "java.util.concurrent.ThreadPoolExecutor$Worker",
+                    "java.lang.Thread"),
+
+            // at java.lang.Object.wait(Object.java:-2)
+            // at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:179)
+            new StatusFilterSetting("org.eclipse.ui.monitoring",
+                    "java.lang.Object",
+                    "org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread"),
+
+            // empty  stacktrace
             new StatusFilterSetting("org.eclipse.ui.monitoring")
                     );
     // @formatter:on
