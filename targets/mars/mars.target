@@ -45,7 +45,8 @@
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/egit/updates-3.4/"/>
+<!-- Once EGit 4.0 (to be part of mars) is released this needs to be set to the release repository. -->
+<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.api" version="0.0.0"/>
