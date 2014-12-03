@@ -181,6 +181,12 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         }
         try {
             URI uri = new URI(repositoryUri);
+            if (uri.getScheme() == null) {
+                return;
+            }
+            if (uri.getHost() == null) {
+                return;
+            }
             IProxyData[] entries = proxy.select(uri);
             if (entries.length == 0) {
                 modelRepository.unsetProxy();
