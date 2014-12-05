@@ -48,6 +48,9 @@ public final class AstBindings {
         }
         final StringBuilder sb = new StringBuilder();
         b = b.getErasure();
+        if (b == null) {
+            return absent();
+        }
         if (b.isArray()) {
             for (int i = b.getDimensions(); i-- > 0;) {
                 sb.append('[');
