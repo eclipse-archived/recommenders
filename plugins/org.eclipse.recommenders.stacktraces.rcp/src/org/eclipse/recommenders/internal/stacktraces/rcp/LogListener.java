@@ -133,13 +133,19 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private void addForSending(final ErrorReport report) {
-        Display.getDefault().syncExec(new Runnable() {
+        Runnable run = new Runnable() {
             @Override
             public void run() {
                 errorReports.add(report);
             }
-        });
+        };
         cache.put(computeCacheKey(report), report);
+        Display current = Display.getCurrent();
+        if (current != null) {
+            run.run();
+        } else {
+            Display.getDefault().asyncExec(run);
+        }
     }
 
     @VisibleForTesting
@@ -152,19 +158,26 @@ public class LogListener implements ILogListener, IStartup {
                 if (isDialogOpen) {
                     return;
                 }
-                isDialogOpen = true;
-                ErrorReportWizard stacktraceWizard = new ErrorReportWizard(settings, errorReports);
-                WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getShell(), stacktraceWizard);
-                int open = wizardDialog.open();
-                isDialogOpen = false;
-                if (open != Dialog.OK) {
-                    clear();
-                    return;
-                } else if (settings.getAction() == SendAction.IGNORE || settings.getAction() == SendAction.PAUSE_DAY
-                        || settings.getAction() == SendAction.PAUSE_RESTART) {
-                    // the user may have chosen to not to send events in the wizard. Respect this preference:
-                    return;
+                try {
+                    isDialogOpen = true;
+                    ErrorReportWizard stacktraceWizard = new ErrorReportWizard(settings, errorReports);
+                    WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                            .getShell(), stacktraceWizard);
+                    int open = wizardDialog.open();
+                    isDialogOpen = false;
+                    if (open != Dialog.OK) {
+                        clear();
+                        return;
+                    } else if (settings.getAction() == SendAction.IGNORE
+                            || settings.getAction() == SendAction.PAUSE_DAY
+                            || settings.getAction() == SendAction.PAUSE_RESTART) {
+                        // the user may have chosen to not to send events in the wizard. Respect this preference:
+                        return;
+                    }
+                } finally {
+                    // we may receive an exception in the dialog. In that case we'd never show up again. Thus we always
+                    // need to set this to false afterwards.
+                    isDialogOpen = false;
                 }
                 sendAndClear();
             }
