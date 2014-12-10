@@ -42,8 +42,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.OutputSupplier;
@@ -93,7 +93,7 @@ public class Zips {
                 if (!entry.isDirectory()) {
                     final File file = new File(destFolder, entry.getName());
                     Files.createParentDirs(file);
-                    Files.write(ByteStreams.toByteArray(zis), file);
+                    Files.asByteSink(file, FileWriteMode.APPEND).writeFrom(zis);
                 }
             }
         } finally {
