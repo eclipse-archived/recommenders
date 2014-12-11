@@ -84,6 +84,10 @@ public class MavenCentralFingerprintSearchAdvisor extends AbstractProjectCoordin
 
     @Override
     protected Optional<ProjectCoordinate> doSuggest(DependencyInfo dependencyInfo) {
+        if (!dependencyInfo.getFile().isFile()) {
+            return absent();
+        }
+
         try {
             SolrQuery query = new SolrQuery();
             query.setQuery("1:\"" + Fingerprints.sha1(dependencyInfo.getFile()) + "\"");

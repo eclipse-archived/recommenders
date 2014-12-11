@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
+import static com.google.common.base.Optional.absent;
+
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IModelIndex;
@@ -28,6 +30,9 @@ public class ModelIndexFingerprintAdvisor extends AbstractProjectCoordinateAdvis
 
     @Override
     protected Optional<ProjectCoordinate> doSuggest(DependencyInfo dependencyInfo) {
+        if (!dependencyInfo.getFile().isFile()) {
+            return absent();
+        }
         String fingerprint = Fingerprints.sha1(dependencyInfo.getFile());
         return indexer.suggestProjectCoordinateByFingerprint(fingerprint);
     }

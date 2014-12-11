@@ -52,6 +52,19 @@ public class ModelIndexFingerprintAdvisorTest {
     }
 
     @Test
+    public void testNonExistentFile() {
+        ModelIndexFingerprintAdvisor sut = new ModelIndexFingerprintAdvisor(null);
+        assertThat(sut.suggest(new DependencyInfo(new File(folder.getRoot(), "non-existent.jar"), JAR)),
+                is(Optional.<ProjectCoordinate>absent()));
+    }
+
+    @Test
+    public void testDirectory() {
+        ModelIndexFingerprintAdvisor sut = new ModelIndexFingerprintAdvisor(null);
+        assertThat(sut.suggest(new DependencyInfo(folder.getRoot(), JAR)), is(Optional.<ProjectCoordinate>absent()));
+    }
+
+    @Test
     public void testValidJAR() throws IOException {
         IModelIndex mockedIndexer = mock(ModelIndex.class);
         when(mockedIndexer.suggestProjectCoordinateByFingerprint(Fingerprints.sha1(exampleFile))).thenReturn(
