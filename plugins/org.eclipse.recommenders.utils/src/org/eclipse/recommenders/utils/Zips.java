@@ -111,8 +111,7 @@ public class Zips {
                 path = path.replace(File.separatorChar, '/');
                 ZipEntry e = new ZipEntry(path);
                 zos.putNextEntry(e);
-                byte[] data = Files.toByteArray(f);
-                zos.write(data);
+                Files.asByteSource(f).copyTo(zos);
                 zos.closeEntry();
             }
         } finally {
@@ -134,7 +133,7 @@ public class Zips {
 
     /**
      * Returns a path representing this package. The path is actually the package identifier itself.
-     * 
+     *
      * @see IPackageName#getIdentifier()
      */
     public static String path(IPackageName pkg, @Nullable String suffix) {
