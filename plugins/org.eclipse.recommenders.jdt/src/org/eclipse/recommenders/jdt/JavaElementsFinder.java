@@ -19,13 +19,13 @@ import java.io.File;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.utils.Nullable;
 
@@ -83,10 +83,20 @@ public class JavaElementsFinder {
         return b.build();
     }
 
+    public static ImmutableList<IClassFile> findClassFiles(IPackageFragment fragment) {
+        Builder<IClassFile> b = ImmutableList.builder();
+        try {
+            b.add(fragment.getClassFiles());
+        } catch (Exception e) {
+            log(ERROR_CANNOT_FETCH_CLASS_FILES, e, fragment);
+        }
+        return b.build();
+    }
+
     public static Optional<IType> findType(String typename, IJavaProject project) {
         try {
             return fromNullable(project.findType(typename));
-        } catch (JavaModelException e) {
+        } catch (Exception e) {
             log(ERROR_CANNOT_FIND_TYPE_IN_PROJECT, e, typename, project);
             return absent();
         }
@@ -112,5 +122,14 @@ public class JavaElementsFinder {
             return absent();
         }
         return Optional.of(file);
+    }
+
+    public static boolean hasSourceAttachment(IPackageFragmentRoot fragmentRoot) {
+        try {
+            return fragmentRoot.getSourceAttachmentPath() != null;
+        } catch (Exception e) {
+            log(ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH, e, fragmentRoot);
+            return false;
+        }
     }
 }
