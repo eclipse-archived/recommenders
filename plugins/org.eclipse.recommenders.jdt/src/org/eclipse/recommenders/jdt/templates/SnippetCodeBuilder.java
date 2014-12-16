@@ -125,7 +125,9 @@ public class SnippetCodeBuilder {
                         IVariableBinding vb = (IVariableBinding) b;
                         String uniqueVariableName = generateUniqueVariableName(vb, remove(name.toString(), '$'));
                         if (isDeclaration(name)) {
-                            appendNewNameVariable(uniqueVariableName, vb);
+                            if (!appendNewNameVariable(uniqueVariableName, vb)) {
+                                sb.append(name);
+                            }
                         } else if (isDeclaredInSelection(vb)) {
                             appendVariableReference(uniqueVariableName);
                         } else if (isQualified(name)) {
@@ -135,7 +137,9 @@ public class SnippetCodeBuilder {
                                 sb.append(name);
                                 rememberStaticImport(vb);
                             } else {
-                                appendFieldVariable(uniqueVariableName, vb);
+                                if (!appendFieldVariable(uniqueVariableName, vb)) {
+                                    sb.append(name);
+                                }
                             }
                         } else {
                             appendVarVariable(uniqueVariableName, vb);
@@ -276,58 +280,62 @@ public class SnippetCodeBuilder {
         }
     }
 
-    private StringBuilder appendNewNameVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
-        ITypeBinding type = binding.getType();
-        sb.append('$').append('{').append(name).append(':').append("newName").append('('); //$NON-NLS-1$
-        if (type.isArray()) {
-            sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
-        } else {
-            sb.append(type.getErasure().getQualifiedName());
-        }
-        return sb.append(')').append('}');
+    private boolean appendNewNameVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
+        return appendVarVariableInternal("newName", name, binding); //$NON-NLS-1$
     }
 
-    private StringBuilder appendVariableReference(@Nonnull String name) {
-        return sb.append('$').append('{').append(name).append('}');
+    private boolean appendVariableReference(@Nonnull String name) {
+        sb.append('$').append('{').append(name).append('}');
+        return true;
     }
 
-    private StringBuilder appendFieldVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
+    private boolean appendFieldVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
         Preconditions.checkArgument(binding.isField());
         return appendVarVariableInternal("field", name, binding); //$NON-NLS-1$
     }
 
-    private StringBuilder appendVarVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
+    private boolean appendVarVariable(@Nonnull String name, @Nonnull IVariableBinding binding) {
         return appendVarVariableInternal("var", name, binding); //$NON-NLS-1$
     }
 
-    private StringBuilder appendVarVariableInternal(@Nonnull String kind, @Nonnull String name,
+    private boolean appendVarVariableInternal(@Nonnull String kind, @Nonnull String name,
             @Nonnull IVariableBinding binding) {
         ITypeBinding type = binding.getType();
+        if (type == null) {
+            return false;
+        }
+        ITypeBinding erasure = type.getErasure();
+        if (erasure == null) {
+            return false;
+        }
         sb.append('$').append('{').append(name).append(':').append(kind).append('(');
         if (type.isArray()) {
-            sb.append('\'').append(type.getErasure().getQualifiedName()).append('\'');
+            sb.append('\'').append(erasure.getQualifiedName()).append('\'');
         } else {
-            sb.append(type.getErasure().getQualifiedName());
+            sb.append(erasure.getQualifiedName());
         }
-        return sb.append(')').append('}');
+        sb.append(')').append('}');
+        return true;
     }
 
-    private StringBuilder appendImportVariable() {
+    private boolean appendImportVariable() {
         return appendImportVariableInternal("import", imports); //$NON-NLS-1$
     }
 
-    private StringBuilder appendImportStaticVariable() {
+    private boolean appendImportStaticVariable() {
         return appendImportVariableInternal("importStatic", importStatics); //$NON-NLS-1$
     }
 
-    private StringBuilder appendImportVariableInternal(@Nonnull String name, @Nonnull Collection<String> imports) {
-        if (!imports.isEmpty()) {
-            String uniqueName = generateUniqueVariableName(null, name);
-            String joinedImports = Joiner.on(", ").join(imports); //$NON-NLS-1$
-            sb.append('$').append('{').append(uniqueName).append(':').append(name).append('(').append(joinedImports)
-                    .append(')').append('}');
+    private boolean appendImportVariableInternal(@Nonnull String name, @Nonnull Collection<String> imports) {
+        if (imports.isEmpty()) {
+            return false;
         }
-        return sb;
+
+        String uniqueName = generateUniqueVariableName(null, name);
+        String joinedImports = Joiner.on(", ").join(imports); //$NON-NLS-1$
+        sb.append('$').append('{').append(uniqueName).append(':').append(name).append('(').append(joinedImports)
+        .append(')').append('}');
+        return true;
     }
 
     private void appendCursorVariable() {

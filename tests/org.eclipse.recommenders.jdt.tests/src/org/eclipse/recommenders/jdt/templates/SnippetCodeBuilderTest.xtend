@@ -431,6 +431,23 @@ class SnippetCodeBuilderTest {
     }
 
     @Test
+    def void testUnresolvableGenerics() {
+        val code = CodeBuilder::method(
+            '''
+                $HashMap<UnknownType, UnknownType> map = null$;
+            ''')
+        val actual = exercise(code)
+
+        assertEquals(
+            '''
+                HashMap<UnknownType, UnknownType> ${map:newName(java.util.HashMap)} = null
+                ${import:import(java.util.HashMap)}${cursor}
+            '''.toString,
+            actual
+        )
+    }
+
+    @Test
     def void testDollarString() {
         val code = CodeBuilder::method(
             '''
