@@ -8,10 +8,11 @@
 		<version>2.1.12-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>incubators</artifactId>
+	<artifactId>incubators-milestones</artifactId>
 	<packaging>pom</packaging>
-	<name>Code Recommenders Incubators Update Site</name>
+	<name>Code Recommenders Incubators Milestones Update Site</name>
 	<build>
+		<outputDirectory>${project.build.directory}/repository</outputDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

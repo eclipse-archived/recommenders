@@ -20,8 +20,9 @@
 		<module>stable</module>
 		<!-- Contains features that are contributed to the current simultaneous release. -->
 		<module>simrel</module>
-		<!-- Composite update site referring to Code Recommenders Incubator projects. -->
-		<module>incubators</module>
+		<!-- Composite update sites referring to Code Recommenders Incubator projects. -->
+		<module>incubators-head</module>
+		<module>incubators-milestones</module>
 	</modules>
 	<properties>
 		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>

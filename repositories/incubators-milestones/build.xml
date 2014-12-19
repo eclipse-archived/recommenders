@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="build-composite-repository">
+	<!-- Build script to generate compsite update site for recommenders.incubator -->
+	<target name="build-composite-repository">
+		<property name="outputDirectory" value="${basedir}/target/repository"/>
+		<mkdir dir="${outputDirectory}"/>
+		<p2.composite.repository>
+			<repository location="file:/${outputDirectory}" name="Code Recommenders Incubators Milestones Update Site"/>
+			<add>
+				<repository location="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/milestones/"/>
+				<repository location="http://download.eclipse.org/recommenders.incubator/stats/updates/milestones/"/>
+				<!-- This update site hosts the Code Recommenders 1.x to 2.x Migration feature, which may be required during installation. -->
+				<repository location="http://download.eclipse.org/recommenders/updates/milestones/"/>
+			</add>
+		</p2.composite.repository>
+	</target>
+</project>

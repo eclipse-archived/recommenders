@@ -5,12 +5,12 @@
 		<property name="outputDirectory" value="${basedir}/target/repository"/>
 		<mkdir dir="${outputDirectory}"/>
 		<p2.composite.repository>
-			<repository location="file:/${outputDirectory}" name="Code Recommenders Incubators"/>
+			<repository location="file:/${outputDirectory}" name="Code Recommenders Incubators Head Update Site"/>
 			<add>
-				<repository location="http://download.eclipse.org/recommenders.incubator/codesearch/updates/milestones/"/>
-				<repository location="http://download.eclipse.org/recommenders.incubator/stats/updates/milestones/"/>
+				<repository location="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/head/"/>
+				<repository location="http://download.eclipse.org/recommenders.incubator/stats/updates/head/"/>
 				<!-- This update site hosts the Code Recommenders 1.x to 2.x Migration feature, which may be required during installation. -->
-				<repository location="http://download.eclipse.org/recommenders/updates/milestones/"/>
+				<repository location="http://download.eclipse.org/recommenders/updates/head/"/>
 			</add>
 		</p2.composite.repository>
 	</target>
