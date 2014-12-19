@@ -227,10 +227,8 @@ public class Zips {
             z.close();
             return true;
         } catch (IOException e) {
-            System.err.printf("Failed to close zip '%s'. Caught exception printed below.%n", z.getName());
-            e.printStackTrace();
+            Logs.log(LogMessages.LOG_ERROR_CANNOT_CLOSE_RESOURCE, e, z.getName());
             return false;
         }
     }
-
 }
