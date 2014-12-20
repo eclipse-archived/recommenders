@@ -72,8 +72,8 @@ public class LogListenerTest {
         System.setProperty(SYSPROP_ECLIPSE_BUILD_ID, "unit-tests");
 
         sut = spy(new LogListener());
-        doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
         // safety: do not send errors during tests
+        doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
         doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
         Mockito.when(sut.readSettings()).thenAnswer(new Answer<Settings>() {
             @Override
@@ -82,6 +82,8 @@ public class LogListenerTest {
                 if (settingsOverrider != null) {
                     settingsOverrider.override(settings);
                 }
+                // don't open initial config dialog
+                settings.setConfigured(true);
                 return settings;
             }
         });
@@ -127,38 +129,6 @@ public class LogListenerTest {
             @Override
             public void override(Settings settings) {
                 settings.setAction(SendAction.IGNORE);
-            }
-        };
-        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
-        Assert.assertThat(empty.getException(), nullValue());
-
-        sut.logging(empty, "");
-
-        assertThat(empty.getException(), nullValue());
-    }
-
-    @Test
-    public void testNoInsertDebugStacktraceOnPauseDayMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_DAY);
-            }
-        };
-        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
-        Assert.assertThat(empty.getException(), nullValue());
-
-        sut.logging(empty, "");
-
-        assertThat(empty.getException(), nullValue());
-    }
-
-    @Test
-    public void testNoInsertDebugStacktraceOnPauseRestartMode() {
-        settingsOverrider = new SettingsOverrider() {
-            @Override
-            public void override(Settings settings) {
-                settings.setAction(SendAction.PAUSE_RESTART);
             }
         };
         Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
@@ -281,26 +251,6 @@ public class LogListenerTest {
     public void testIgnore() {
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
         settingsOverrider = new SendActionSettingsOverrider(IGNORE);
-
-        sut.logging(status, "");
-
-        verifyNoErrorReportSend();
-    }
-
-    @Test
-    public void testNoSendOnPauseDay() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SendActionSettingsOverrider(PAUSE_DAY);
-
-        sut.logging(status, "");
-
-        verifyNoErrorReportSend();
-    }
-
-    @Test
-    public void testNoSendOnPauseRestart() {
-        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
-        settingsOverrider = new SendActionSettingsOverrider(PAUSE_RESTART);
 
         sut.logging(status, "");
 

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.RememberSendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -32,6 +33,7 @@ import com.google.common.collect.Lists;
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     private static final long MS_PER_DAY = TimeUnit.DAYS.toMillis(1);
+    private static boolean flagFirstAccess = true;
 
     @Override
     public void initializeDefaultPreferences() {
@@ -40,9 +42,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         s.put(PROP_NAME, "");
         s.put(PROP_EMAIL, "");
         s.putBoolean(PROP_SKIP_SIMILAR_ERRORS, true);
+        s.putBoolean(PROP_CONFIGURED, false);
         s.put(PROP_WHITELISTED_PLUGINS, Constants.WHITELISTED_PLUGINS);
         s.put(PROP_WHITELISTED_PACKAGES, Constants.WHITELISTED_PACKAGES);
         s.put(PROP_SEND_ACTION, SendAction.ASK.name());
+        s.put(PROP_REMEMBER_SEND_ACTION, RememberSendAction.NONE.name());
         s.putBoolean(PROP_ANONYMIZE_STACKTRACES, true);
         s.putBoolean(PROP_ANONYMIZE_MESSAGES, false);
     }
@@ -50,6 +54,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public static Settings readSettings() {
         ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, PLUGIN_ID);
         Settings settings = ModelFactory.eINSTANCE.createSettings();
+        settings.setConfigured(s.getBoolean(PROP_CONFIGURED));
         settings.setName(s.getString(PROP_NAME));
         settings.setEmail(s.getString(PROP_EMAIL));
         settings.setSkipSimilarErrors(s.getBoolean(PROP_SKIP_SIMILAR_ERRORS));
@@ -58,7 +63,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         settings.getWhitelistedPackages().addAll(parseWhitelist(s.getString(PROP_WHITELISTED_PACKAGES)));
         settings.setAnonymizeMessages(s.getBoolean(PROP_ANONYMIZE_MESSAGES));
         settings.setAnonymizeStrackTraceElements(s.getBoolean(PROP_ANONYMIZE_STACKTRACES));
-        settings.setAction(parseSendAction(s.getString(PROP_SEND_ACTION), s.getLong(PROP_PAUSE_PERIOD_START)));
+        RememberSendAction rememberSendAction = parseRememberSendAction(s.getString(PROP_REMEMBER_SEND_ACTION));
+        settings.setRememberSendAction(rememberSendAction);
+        settings.setAction(parseSendAction(s.getString(PROP_SEND_ACTION),
+                s.getLong(PROP_REMEMBER_SETTING_PERIOD_START), rememberSendAction));
+        flagFirstAccess = false;
         return settings;
     }
 
@@ -66,13 +75,15 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         //
         // XXX: server url and whitelist attributes are not persisted! They shoudn't be changed
         ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, PLUGIN_ID);
+        s.setValue(PROP_CONFIGURED, settings.isConfigured());
         s.setValue(PROP_NAME, settings.getName());
         s.setValue(PROP_EMAIL, settings.getEmail());
         s.setValue(PROP_SKIP_SIMILAR_ERRORS, settings.isSkipSimilarErrors());
         s.setValue(PROP_ANONYMIZE_STACKTRACES, settings.isAnonymizeStrackTraceElements());
         s.setValue(PROP_ANONYMIZE_MESSAGES, settings.isAnonymizeMessages());
         s.setValue(PROP_SEND_ACTION, settings.getAction().name());
-        s.setValue(PROP_PAUSE_PERIOD_START, settings.getPausePeriodStart());
+        s.setValue(PROP_REMEMBER_SEND_ACTION, settings.getRememberSendAction().name());
+        s.setValue(PROP_REMEMBER_SETTING_PERIOD_START, settings.getRememberSendActionPeriodStart());
         try {
             s.save();
         } catch (IOException e) {
@@ -85,28 +96,37 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         return Lists.newArrayList(ids);
     }
 
-    static boolean flagFirstAccess = true;
-
-    static SendAction parseSendAction(String mode, long pauseTimestamp) {
+    private static RememberSendAction parseRememberSendAction(String rememberAction) {
         try {
-            SendAction value = SendAction.valueOf(mode);
-            if (isPausePeriodElapsed(pauseTimestamp, value)) {
-                value = SendAction.ASK;
+            return RememberSendAction.valueOf(rememberAction);
+        } catch (IllegalArgumentException e) {
+            log(LogMessages.FAILED_TO_PARSE_SEND_MODE, rememberAction, RememberSendAction.NONE);
+            return RememberSendAction.NONE;
+        }
+    }
+
+    static SendAction parseSendAction(String mode, long pauseTimestamp, RememberSendAction rememberSendAction) {
+        try {
+            SendAction action = SendAction.valueOf(mode);
+            if (isRememberingPeriodElapsed(pauseTimestamp, rememberSendAction)) {
                 log(LogMessages.PAUSE_PERIOD_ELAPSED);
+                return SendAction.ASK;
+            } else {
+                return action;
             }
-            flagFirstAccess = false;
-            return value;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            log(LogMessages.FAILED_TO_PARSE_SEND_MODE, mode, SendAction.ASK);
             return SendAction.ASK;
         }
     }
 
-    private static boolean isPausePeriodElapsed(long pauseTimestamp, SendAction value) {
-        if (value == SendAction.PAUSE_RESTART && flagFirstAccess) {
+    private static boolean isRememberingPeriodElapsed(long pauseTimestamp, RememberSendAction rememberSendAction) {
+        if (rememberSendAction == RememberSendAction.RESTART && flagFirstAccess) {
             return true;
-        } else if (value == SendAction.PAUSE_DAY) {
+        } else if (rememberSendAction == RememberSendAction.HOURS_24) {
             long elapsedTime = System.currentTimeMillis() - pauseTimestamp;
-            return elapsedTime >= MS_PER_DAY;
+            boolean isDayElapsed = elapsedTime >= MS_PER_DAY;
+            return isDayElapsed;
         }
         return false;
     }

@@ -49,26 +49,26 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         addField(new ComboFieldEditor(PROP_SEND_ACTION, Messages.FIELD_LABEL_ACTION, createModeLabelAndValues(),
                 getFieldEditorParent()));
 
-        BooleanFieldEditor anonymizeStacktracesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES,
-                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, getFieldEditorParent());
-        DefaultToolTip anonymizeStacktracesToolTip = new DefaultToolTip(
-                anonymizeStacktracesFieldEditor.getDescriptionControl(getFieldEditorParent()));
-        anonymizeStacktracesToolTip.setText(Messages.TOOLTIP_ANONYMIZE_STACKTRACES);
-        addField(anonymizeStacktracesFieldEditor);
-
-        BooleanFieldEditor clearMessagesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES,
-                Messages.FIELD_LABEL_ANONYMIZE_MESSAGES, getFieldEditorParent());
-        DefaultToolTip clearMessagesToolTip = new DefaultToolTip(
-                clearMessagesFieldEditor.getDescriptionControl(getFieldEditorParent()));
-        clearMessagesToolTip.setText(Messages.TOOLTIP_CLEAR_MESSAGES);
-        addField(clearMessagesFieldEditor);
-
         BooleanFieldEditor skipSimilarErrorsFieldEditor = new BooleanFieldEditor(PROP_SKIP_SIMILAR_ERRORS,
                 Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS, getFieldEditorParent());
         DefaultToolTip skipSimilarErrorsToolTip = new DefaultToolTip(
                 skipSimilarErrorsFieldEditor.getDescriptionControl(getFieldEditorParent()));
         skipSimilarErrorsToolTip.setText(Messages.TOOLTIP_SKIP_SIMILAR);
         addField(skipSimilarErrorsFieldEditor);
+
+        BooleanFieldEditor anonymizeStacktracesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES,
+                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, getFieldEditorParent());
+        DefaultToolTip anonymizeStacktracesToolTip = new DefaultToolTip(
+                anonymizeStacktracesFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        anonymizeStacktracesToolTip.setText(Messages.TOOLTIP_MAKE_STACKTRACE_ANONYMOUS);
+        addField(anonymizeStacktracesFieldEditor);
+
+        BooleanFieldEditor clearMessagesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES,
+                Messages.FIELD_LABEL_ANONYMIZE_MESSAGES, getFieldEditorParent());
+        DefaultToolTip clearMessagesToolTip = new DefaultToolTip(
+                clearMessagesFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        clearMessagesToolTip.setText(Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS);
+        addField(clearMessagesFieldEditor);
 
         addLinks(getFieldEditorParent());
     }
@@ -114,10 +114,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
             return Messages.FIELD_LABEL_ACTION_REPORT_NEVER;
         case SILENT:
             return Messages.FIELD_LABEL_ACTION_REPORT_ALWAYS;
-        case PAUSE_DAY:
-            return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_DAY;
-        case PAUSE_RESTART:
-            return Messages.FIELD_LABEL_ACTION_REPORT_PAUSE_RESTART;
         default:
             return mode.name();
         }

@@ -105,9 +105,11 @@ class Settings {
     String email
     boolean anonymizeStrackTraceElements
     boolean anonymizeMessages
+    boolean configured
     boolean skipSimilarErrors
     SendAction action
-    long pausePeriodStart
+    RememberSendAction rememberSendAction
+    long rememberSendActionPeriodStart
     @GenModel(documentation="The remote address where error events are send to.")
     String serverUrl
     @GenModel(documentation="A list of prefixes a plug-in ID is matched against using String#startsWith (e.g., 'com.codetrails.'")
@@ -120,8 +122,13 @@ enum SendAction{
     ASK
     IGNORE
     SILENT
-    PAUSE_DAY
-    PAUSE_RESTART
+}
+
+enum RememberSendAction{
+    HOURS_24
+    RESTART
+    PERMANENT
+    NONE
 }
 
 type UUID wraps UUID

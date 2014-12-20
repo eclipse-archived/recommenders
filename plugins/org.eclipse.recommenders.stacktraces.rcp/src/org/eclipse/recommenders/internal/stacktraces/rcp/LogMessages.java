@@ -25,8 +25,12 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final LogMessages NO_INTERNET = new LogMessages(WARNING,
             "Could not connect to server. Your IP is ''{0}''"); //$NON-NLS-1$
-    public static final LogMessages FAILED_TO_PARSE_SEND_MODE = new LogMessages(ERROR,
+    public static final LogMessages FAILED_TO_PARSE_SEND_MODE = new LogMessages(WARNING,
             "Failed to parse send mode ''{0}''. Returning ''{1}'' instead."); //$NON-NLS-1$
+
+    public static final LogMessages FAILED_TO_PARSE_REMEMBER_SEND_MODE = new LogMessages(WARNING,
+            "Failed to parse remember send mode ''{0}''. Returning ''{1}'' instead."); //$NON-NLS-1$
+
     public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
             "Could not access \u2018{0}\u2019 using reflection.  Functionality may be limited."); //$NON-NLS-1$
     public static final ILogMessage PAUSE_PERIOD_ELAPSED = new LogMessages(INFO,

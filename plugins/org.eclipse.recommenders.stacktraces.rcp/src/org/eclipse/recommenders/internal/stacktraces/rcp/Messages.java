@@ -14,6 +14,14 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.stacktraces.rcp.messages"; //$NON-NLS-1$
+    public static String CONFIGURATIONDIALOG_ACTION_TOOLTIP;
+    public static String CONFIGURATIONDIALOG_ANONYMIZATION;
+    public static String CONFIGURATIONDIALOG_DISABLE;
+    public static String CONFIGURATIONDIALOG_ENABLE;
+    public static String CONFIGURATIONDIALOG_INFO;
+    public static String CONFIGURATIONDIALOG_PLEASE_TAKE_MOMENT_TO_CONFIGURE;
+    public static String CONFIGURATIONDIALOG_PREFERENCE_PAGE_LINK;
+    public static String CONFIGURATIONDIALOG_REPORTING_STARTED_FIRST_TIME;
     public static String ERRORREPORTWIZARD_WE_NOTICED_ERROR;
     public static String FIELD_LABEL_SERVER;
     public static String FIELD_LABEL_ACTION;
@@ -56,8 +64,9 @@ public class Messages extends NLS {
     public static String THANKYOUDIALOG_THANK_YOU;
     public static String THANKYOUDIALOG_THANK_YOU_FOR_HELP;
     public static String THANKYOUDIALOG_NEW;
-    public static String TOOLTIP_ANONYMIZE_STACKTRACES;
-    public static String TOOLTIP_CLEAR_MESSAGES;
+    public static String THANKYOUDIALOG_ADDITIONAL_INFORMATION;
+    public static String TOOLTIP_MAKE_STACKTRACE_ANONYMOUS;
+    public static String TOOLTIP_MAKE_MESSAGES_ANONYMOUS;
     public static String TOOLTIP_SKIP_SIMILAR;
     public static String UPLOADJOB_ALREADY_FIXED_UPDATE;
     public static String UPLOADJOB_BAD_RESPONSE;

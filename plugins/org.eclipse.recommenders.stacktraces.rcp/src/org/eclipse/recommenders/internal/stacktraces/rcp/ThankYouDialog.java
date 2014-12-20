@@ -33,7 +33,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
-    public static final Image TITLE_IMAGE = ErrorReportWizard.TITLE_IMAGE_DESC.createImage();
+    public static final Image TITLE_IMAGE = ErrorReportDialog.TITLE_IMAGE_DESC.createImage();
 
     private final ReportState state;
 
