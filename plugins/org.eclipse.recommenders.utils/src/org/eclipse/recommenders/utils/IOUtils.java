@@ -27,8 +27,7 @@ public final class IOUtils {
             s.close();
             return true;
         } catch (IOException e) {
-            System.err.printf("Failed to close resource '%s'. Caught exception printed below.%n", s);
-            e.printStackTrace();
+            Logs.log(LogMessages.LOG_ERROR_CANNOT_CLOSE_RESOURCE, e, s);
             return false;
         }
     }

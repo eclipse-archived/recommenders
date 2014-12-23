@@ -53,7 +53,11 @@ public final class Recommendations {
 
         @Override
         public boolean apply(final Recommendation<IMethodName> input) {
-            return !input.getProposal().isVoid();
+            if (input != null) {
+                return !input.getProposal().isVoid();
+            } else {
+                return false;
+            }
         }
     };
 
@@ -62,7 +66,11 @@ public final class Recommendations {
 
             @Override
             public boolean apply(final Recommendation<?> input) {
-                return input.getRelevance() >= min;
+                if (input != null) {
+                    return input.getRelevance() >= min;
+                } else {
+                    return false;
+                }
             }
         };
     }

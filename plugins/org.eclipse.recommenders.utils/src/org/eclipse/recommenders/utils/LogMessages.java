@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.eclipse.core.runtime.IStatus.WARNING;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
@@ -23,6 +23,7 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
             "Could not access \u2018{0}\u2019 using reflection. Functionality may be limited.");
+    public static final LogMessages LOG_ERROR_CANNOT_CLOSE_RESOURCE = new LogMessages(ERROR, "Failed to close resource ''{0}''");
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
