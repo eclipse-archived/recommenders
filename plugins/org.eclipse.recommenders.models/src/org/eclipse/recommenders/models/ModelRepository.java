@@ -13,6 +13,7 @@
  */
 package org.eclipse.recommenders.models;
 
+import static java.util.concurrent.TimeUnit.HOURS;
 import static org.eclipse.aether.ConfigurationProperties.PERSISTED_CHECKSUMS;
 import static org.eclipse.aether.repository.RepositoryPolicy.CHECKSUM_POLICY_FAIL;
 import static org.eclipse.aether.resolution.ArtifactDescriptorPolicy.IGNORE_MISSING;
@@ -180,7 +181,7 @@ public class ModelRepository implements IModelRepository {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
             RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
-                    .setAuthentication(authentication).setProxy(proxy).build();
+            .setAuthentication(authentication).setProxy(proxy).build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
             return Optional.of(result.getArtifact().getFile());
@@ -202,8 +203,8 @@ public class ModelRepository implements IModelRepository {
             onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
             onlineSession.setResolutionErrorPolicy(new SimpleResolutionErrorPolicy(CACHE_DISABLED));
         } else {
-            // Try to update any models older than 60 minutes.
-            onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_INTERVAL + ":" + 60);
+            // Try to update any models older than 1 hour.
+            onlineSession.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_INTERVAL + ":" + HOURS.toMinutes(1));
             // Do not retry downloading missing models until the update interval has elapsed.
             // Do not retry downloading models after a failed download.
             onlineSession.setResolutionErrorPolicy(new SimpleResolutionErrorPolicy(CACHE_ALL));

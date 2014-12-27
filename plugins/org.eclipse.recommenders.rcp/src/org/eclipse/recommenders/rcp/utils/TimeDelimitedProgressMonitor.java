@@ -15,18 +15,17 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class TimeDelimitedProgressMonitor implements IProgressMonitor {
 
-    long start = System.currentTimeMillis();
+    private final IProgressMonitor delegate;
 
-    private IProgressMonitor delegate;
+    private final long start = System.currentTimeMillis();
+    private final long limit;
 
-    private int limit;
-
-    public TimeDelimitedProgressMonitor(IProgressMonitor delegate, int limitInMillis) {
+    public TimeDelimitedProgressMonitor(IProgressMonitor delegate, long limitInMillis) {
         this.delegate = delegate == null ? new NullProgressMonitor() : delegate;
         limit = limitInMillis;
     }
 
-    public TimeDelimitedProgressMonitor(int limitInMillis) {
+    public TimeDelimitedProgressMonitor(long limitInMillis) {
         this(new NullProgressMonitor(), limitInMillis);
     }
 

@@ -220,7 +220,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
 
         try {
             IndexSearcher searcher = new IndexSearcher(reader);
-            TopDocs matches = searcher.search(query, 100);
+            TopDocs matches = searcher.search(query, MAX_DOCUMENTS_SEARCHED);
             searcher.close();
 
             Set<String> results = Sets.newHashSet();

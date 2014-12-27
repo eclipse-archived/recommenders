@@ -23,6 +23,8 @@ import com.google.common.base.Optional;
 
 public class SessionProcessorDescriptor {
 
+    private static final int DEFAULT_PRIORITY = 10;
+
     private final IConfigurationElement config;
     private final String id;
     private final String name;
@@ -41,7 +43,7 @@ public class SessionProcessorDescriptor {
         this.description = firstNonNull(config.getAttribute("description"), ""); //$NON-NLS-1$ //$NON-NLS-2$
         this.icon = createIcon(config);
         String priorityString = config.getAttribute("priority"); //$NON-NLS-1$
-        this.priority = priorityString == null ? 10 : Integer.parseInt(priorityString);
+        this.priority = priorityString == null ? DEFAULT_PRIORITY : Integer.parseInt(priorityString);
         String enabledByDefaultString = config.getAttribute("enabledByDefault"); //$NON-NLS-1$
         this.enabledByDefault = enabledByDefaultString == null ? true : Boolean.parseBoolean(enabledByDefaultString);
         this.preferencePage = config.getAttribute("preferencePage"); //$NON-NLS-1$

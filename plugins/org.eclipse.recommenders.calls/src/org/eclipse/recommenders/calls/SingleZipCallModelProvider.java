@@ -46,10 +46,13 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleZipCallModelProvider.class);
 
-    private final File models;
-    private ZipFile zip;
+    private static final int CACHE_SIZE = 30;
+
     private final LoadingCache<ITypeName, ICallModel> cache = CacheBuilder.newBuilder()
-            .expireAfterAccess(3, TimeUnit.MINUTES).maximumSize(30).build(new CallNetCacheLoader());
+            .expireAfterAccess(3, TimeUnit.MINUTES).maximumSize(CACHE_SIZE).build(new CallNetCacheLoader());
+    private final File models;
+
+    private ZipFile zip;
 
     public SingleZipCallModelProvider(File models) {
         this.models = models;

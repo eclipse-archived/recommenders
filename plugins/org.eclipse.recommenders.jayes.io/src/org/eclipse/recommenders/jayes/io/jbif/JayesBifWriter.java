@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -30,9 +30,9 @@ import com.google.common.primitives.Shorts;
 
 /**
  * Writer for the Jayes Binary Interchange Format (JBIF).
- * 
+ *
  * JBIF conforms to the following grammar:
- * 
+ *
  * <dl>
  * <dt><var>JBIF</var></dt>
  * <dd><var>Header</var> <var>BayesNet</var></dd>
@@ -53,7 +53,7 @@ import com.google.common.primitives.Shorts;
  * <dt><var>CPT</var></dt>
  * <dd>(entryCount: <code>int</code>) (probabilities: <code>double</code>...)</dd>
  * </dl>
- * 
+ *
  * Multi-byte primitive types are serialized in network byte-order.
  */
 public class JayesBifWriter implements IBayesNetWriter {
@@ -66,6 +66,7 @@ public class JayesBifWriter implements IBayesNetWriter {
         this.out = out;
     }
 
+    @Override
     public void write(BayesNet bayesNet) throws IOException {
         IOUtils.write(writeToArray(bayesNet), out);
     }
@@ -138,7 +139,7 @@ public class JayesBifWriter implements IBayesNetWriter {
 
     private void putName(String string, ByteBuffer buffer) {
         final byte[] utf8 = string.getBytes(Charsets.UTF_8);
-        Preconditions.checkArgument(utf8.length < 2 << 16);
+        Preconditions.checkArgument(utf8.length < 2 << Short.SIZE);
         final short byteCount = (short) utf8.length;
         buffer.putShort(byteCount);
 
@@ -163,7 +164,7 @@ public class JayesBifWriter implements IBayesNetWriter {
 
     private void putParents(BayesNode node, ByteBuffer buffer) {
         final int parentCount = node.getParents().size();
-        Preconditions.checkArgument(parentCount < 2 << 8);
+        Preconditions.checkArgument(parentCount < 2 << Byte.SIZE);
         buffer.put((byte) parentCount);
 
         for (BayesNode p : node.getParents()) {

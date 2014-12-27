@@ -67,12 +67,11 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EclipseModelIndex.class);
 
+    private static final int CACHE_SIZE = 10;
+
     private final File basedir;
-
     private final ModelsRcpPreferences prefs;
-
     private final IModelRepository repository;
-
     private final EventBus bus;
 
     /*
@@ -82,7 +81,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     private volatile ImmutableMap<String, Pair<File, IModelIndex>> openDelegates;
 
     private final Cache<Pair<ProjectCoordinate, String>, Optional<ModelCoordinate>> cache = CacheBuilder.newBuilder()
-            .maximumSize(10).concurrencyLevel(1).build();
+            .maximumSize(CACHE_SIZE).concurrencyLevel(1).build();
 
     @Inject
     public EclipseModelIndex(@Named(INDEX_BASEDIR) File basedir, ModelsRcpPreferences prefs,

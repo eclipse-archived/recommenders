@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static java.lang.Math.min;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
@@ -59,6 +60,8 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class SubwordsSessionProcessor extends SessionProcessor {
 
+    private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
+
     // Negative value ensures subsequence matches have a lower relevance than standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -10000;
 
@@ -79,7 +82,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             ICompilationUnit cu = jdtContext.getCompilationUnit();
             int offset = jdtContext.getInvocationOffset();
             NoProposalCollectingCompletionRequestor collector = new NoProposalCollectingCompletionRequestor();
-            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
+            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
 
             InternalCompletionContext compContext = collector.getCoreContext();
             CORE_CONTEXT.set(jdtContext, compContext);
@@ -173,7 +176,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             JavaContentAssistInvocationContext coreContext, int offset) {
         ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
         try {
-            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
+            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
         } catch (final Exception e) {
             log(EXCEPTION_DURING_CODE_COMPLETION, e);
         }

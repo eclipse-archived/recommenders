@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
@@ -88,6 +89,12 @@ import com.google.common.collect.Sets;
 @SuppressWarnings({ "restriction", "rawtypes" })
 public final class CompletionContextFunctions {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CompletionContextFunctions.class);
+
+    private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
+
+    private static final char[] EMPTY = new char[0];
+
     private CompletionContextFunctions() {
         throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
     }
@@ -115,10 +122,6 @@ public final class CompletionContextFunctions {
         res.put(IMPORTED_PACKAGES, new ImportedPackagesFunction());
         return res;
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(CompletionContextFunctions.class);
-
-    private static final char[] EMPTY = new char[0];
 
     public static class EnclosingElementContextFunction implements ICompletionContextFunction<IJavaElement> {
 
@@ -388,7 +391,7 @@ public final class CompletionContextFunctions {
             ICompilationUnit cu = context.getCompilationUnit();
             ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
             try {
-                cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(5000));
+                cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
             } catch (final Exception e) {
                 log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }

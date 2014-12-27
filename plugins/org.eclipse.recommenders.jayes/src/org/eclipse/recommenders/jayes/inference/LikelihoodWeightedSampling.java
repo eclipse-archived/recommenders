@@ -22,7 +22,9 @@ import org.eclipse.recommenders.jayes.util.MathUtils;
 @SuppressWarnings("deprecation")
 public class LikelihoodWeightedSampling extends AbstractInferer {
 
-    private int sampleCount = 200;
+    private static final int DEFAULT_SAMPLE_COUNT = 200;
+
+    private int sampleCount = DEFAULT_SAMPLE_COUNT;
     private final BasicSampler sampler = new BasicSampler();
 
     @Override

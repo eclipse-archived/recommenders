@@ -32,19 +32,21 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
- * A non-thread-safe implementation of {@link IModelProvider} that loads models from model zip files using a
+ * A non-thread-safe implementation of {@link IModelProvider} that loads models from model ZIP files using a
  * {@link ModelRepository}. Note that {@link #acquireModel(IUniqueName)} attempts to download matching model archives
  * immediately and thus blocks until the download is completed.
  */
 public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implements IModelProvider<K, M> {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-    protected LoadingCache<ModelCoordinate, ZipFile> openZips = CacheBuilder.newBuilder().maximumSize(10)
-            .expireAfterAccess(1, MINUTES).removalListener(new ZipRemovalListener()).build(new ZipCacheLoader());
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleModelProvider.class);
 
-    protected IModelRepository repository;
-    protected String modelType;
-    private IModelArchiveCoordinateAdvisor index;
+    private static final int CACHE_SIZE = 10;
+
+    private final LoadingCache<ModelCoordinate, ZipFile> openZips = CacheBuilder.newBuilder().maximumSize(CACHE_SIZE)
+            .expireAfterAccess(1, MINUTES).removalListener(new ZipRemovalListener()).build(new ZipCacheLoader());
+    private final IModelRepository repository;
+    private final IModelArchiveCoordinateAdvisor index;
+    private final String modelType;
 
     public SimpleModelProvider(IModelRepository cache, IModelArchiveCoordinateAdvisor index, String modelType) {
         this.repository = cache;
@@ -73,7 +75,7 @@ public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implement
             }
             return loadModel(zip, key);
         } catch (Exception e) {
-            log.error("Exception while loading model " + key, e);
+            LOG.error("Exception while loading model " + key, e);
             return absent();
         }
     }

@@ -57,6 +57,8 @@ import com.google.inject.Inject;
 
 public class SnippetEditor extends FormEditor implements IResourceChangeListener {
 
+    private static final int DEFAULT_PRIORITY = 100;
+
     private static Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
 
     private final Repositories repos;
@@ -108,7 +110,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
                     @Override
                     public Integer apply(IConfigurationElement element) {
                         String priorityString = element.getAttribute("priority"); //$NON-NLS-1$
-                        return priorityString == null ? 100 : Integer.parseInt(priorityString);
+                        return priorityString == null ? DEFAULT_PRIORITY : Integer.parseInt(priorityString);
                     }
                 }).sortedCopy(asList(elements))) {
             try {
