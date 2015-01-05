@@ -13,6 +13,7 @@ package org.eclipse.recommenders.stacktraces.rcp.actions;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -48,8 +49,9 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
                 // if (true) {
                 // return Status.OK_STATUS;
                 // }
-                for (int i = 0; i < 3; i++) {
-                    ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
+                IStatus[] children = new IStatus[3];
+                ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
+                for (int i = 0; i < children.length; i++) {
                     RuntimeException cause = new IllegalArgumentException("cause" + i);
                     cause.fillInStackTrace();
                     Exception exception = new RuntimeException("exception message", cause);
@@ -59,14 +61,16 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
                         e.fillInStackTrace();
                         exception = e;
                     }
-                    log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp",
-                            "status error message " + ++counter, exception));
+                    children[i] = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp",
+                            "status error message " + ++counter, exception);
                     try {
                         Thread.sleep(750);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+                log.log(new MultiStatus("org.eclipse.recommenders.stacktraces.rcp", IStatus.ERROR, children,
+                        "status error message", new RuntimeException()));
                 return Status.OK_STATUS;
             }
         };
