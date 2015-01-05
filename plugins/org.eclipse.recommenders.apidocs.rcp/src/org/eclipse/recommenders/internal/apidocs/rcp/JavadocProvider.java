@@ -34,7 +34,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAccess2;
 import org.eclipse.jdt.internal.ui.viewsupport.JavaElementLinks;
@@ -88,23 +87,23 @@ public final class JavadocProvider extends ApidocProvider {
 
     @JavaSelectionSubscriber
     public void onTypeSelection(final IType type, final JavaElementSelectionEvent selection, final Composite parent)
-            throws JavaModelException {
+            throws CoreException {
         render(type, parent);
     }
 
     @JavaSelectionSubscriber
     public void onMethodSelection(final IMethod method, final JavaElementSelectionEvent selection,
-            final Composite parent) throws JavaModelException {
+            final Composite parent) throws CoreException {
         render(method, parent);
     }
 
     @JavaSelectionSubscriber
     public void onFieldSelection(final IField field, final JavaElementSelectionEvent selection, final Composite parent)
-            throws JavaModelException {
+            throws CoreException {
         render(field, parent);
     }
 
-    private void render(final IMember element, final Composite parent) throws JavaModelException {
+    private void render(final IMember element, final Composite parent) throws CoreException {
         final String html = findJavadoc(element);
         renderJavadoc(html, parent);
     }
@@ -178,7 +177,7 @@ public final class JavadocProvider extends ApidocProvider {
         });
     }
 
-    private String findJavadoc(final IMember element) throws JavaModelException {
+    private String findJavadoc(final IMember element) throws CoreException {
         String html = JavadocContentAccess2.getHTMLContent(element, true);
         return extractJavadoc(html);
     }
