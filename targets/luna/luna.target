@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="150">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="151">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="0.0.0"/>
@@ -48,17 +48,15 @@
 <repository location="http://download.eclipse.org/egit/updates-3.4/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.api" version="0.0.0"/>
-<unit id="org.eclipse.aether.connector.basic" version="0.0.0"/>
-<unit id="org.eclipse.aether.impl" version="0.0.0"/>
-<unit id="org.eclipse.aether.spi" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.file" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.http" version="0.0.0"/>
-<unit id="org.eclipse.aether.util" version="0.0.0"/>
+<unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.aether.feature.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.aether.connector.basic.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.file.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.aether.transport.http.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.maven" version="0.0.0"/>
+<unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

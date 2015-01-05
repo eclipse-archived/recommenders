@@ -21,6 +21,12 @@
    </license>
 
    <requires>
+      <!-- Ensure that the correct third-party plugins are installed even if "provided" by m2e (see Bug 455860). -->
+      <import feature="org.eclipse.aether.feature" version="1.0.0" match="compatible"/>
+      <import feature="org.eclipse.aether.connector.basic.feature" version="1.0.0" match="compatible"/>
+      <import feature="org.eclipse.aether.maven.feature" version="3.1.0" match="compatible"/>
+      <import feature="org.eclipse.aether.transport.file.feature" version="1.0.0" match="compatible"/>
+      <import feature="org.eclipse.aether.transport.http.feature" version="1.0.0" match="compatible"/>
       <!-- These third-party bundles/fragments are not depended upon directly, but should nevertheless be installed. -->
       <import plugin="ch.qos.logback.classic" version="1.0.0" match="compatible"/>
       <import plugin="ch.qos.logback.core" version="1.0.0" match="compatible"/>

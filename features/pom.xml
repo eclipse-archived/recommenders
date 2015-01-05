@@ -78,10 +78,12 @@
 							<goal>source-feature</goal>
 						</goals>
 						<configuration>
-							<!-- Exclude 3rd party plugins without sources (or with remote sources). -->
-							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=374663 -->
+							<!-- Exclude 3rd party features without sources -->
 							<excludes>
-								<plugin id="org.eclipse.aether.maven" />
+								<feature id="org.eclipse.aether.connector.basic.feature" />
+								<feature id="org.eclipse.aether.maven.feature" />
+								<feature id="org.eclipse.aether.transport.file.feature" />
+								<feature id="org.eclipse.aether.transport.http.feature" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
 							<labelSuffix>&#xA0;(Sources)</labelSuffix>
