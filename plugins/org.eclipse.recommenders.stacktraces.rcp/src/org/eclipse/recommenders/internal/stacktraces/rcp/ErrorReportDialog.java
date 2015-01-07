@@ -45,6 +45,8 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -176,7 +178,7 @@ public class ErrorReportDialog extends MessageDialog {
 
     private Composite createTableComposite(Composite container) {
         Composite tableComposite = new Composite(container, SWT.NONE);
-        tableViewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION
+        tableViewer = new TableViewer(tableComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION
                 | SWT.BORDER);
         TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
         column.setLabelProvider(new ColumnLabelProvider() {
@@ -202,6 +204,21 @@ public class ErrorReportDialog extends MessageDialog {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 updateMessageText();
+            }
+
+        });
+        tableViewer.getControl().addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.DEL) {
+                    deleteSelection();
+                }
+            }
+
+            private void deleteSelection() {
+                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                errors.removeAll(selection.toList());
             }
 
         });
