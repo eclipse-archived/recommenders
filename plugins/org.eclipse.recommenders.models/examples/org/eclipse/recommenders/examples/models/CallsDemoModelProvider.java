@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.examples.models;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.Map;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.IUniqueName;
@@ -21,24 +22,21 @@ import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-import com.google.common.base.Optional;
-
 public class CallsDemoModelProvider extends PoolingModelProvider<IUniqueName<ITypeName>, Object> {
 
-    public CallsDemoModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index) {
-        super(repo, index, "call");
+    public CallsDemoModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index,
+            Map<String, IInputStreamTransformer> transformers) {
+        super(repo, index, "call", transformers);
     }
 
     @Override
-    protected Optional<Object> loadModel(ZipFile zip, IUniqueName<ITypeName> key) throws Exception {
-        String path = Zips.path(key.getName(), ".net");
-        ZipEntry entry = zip.getEntry(path);
-        if (entry == null) {
-            return Optional.absent();
-        }
-        InputStream s = zip.getInputStream(entry);
+    protected Object loadModel(InputStream in, IUniqueName<ITypeName> key) throws IOException {
         Object model = null; // ... do things with s to create a model
-        s.close();
-        return Optional.of(model);
+        return model;
+    }
+
+    @Override
+    protected String getBasePath(IUniqueName<ITypeName> key) {
+        return Zips.path(key.getName(), ".net");
     }
 }

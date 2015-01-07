@@ -11,17 +11,23 @@
 package org.eclipse.recommenders.calls;
 
 import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.utils.Constants.DOT_JBIF;
+import static org.eclipse.recommenders.utils.Constants.*;
 import static org.eclipse.recommenders.utils.Zips.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.UniqueTypeName;
+import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Openable;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -51,11 +57,13 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
     private final LoadingCache<ITypeName, ICallModel> cache = CacheBuilder.newBuilder()
             .expireAfterAccess(3, TimeUnit.MINUTES).maximumSize(CACHE_SIZE).build(new CallNetCacheLoader());
     private final File models;
+    private final Map<String, IInputStreamTransformer> transformers;
 
     private ZipFile zip;
 
-    public SingleZipCallModelProvider(File models) {
+    public SingleZipCallModelProvider(File models, Map<String, IInputStreamTransformer> transformers) {
         this.models = models;
+        this.transformers = transformers;
     }
 
     @Override
@@ -82,7 +90,13 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
     }
 
     public Set<ITypeName> acquireableTypes() {
-        return Zips.types(zip.entries(), DOT_JBIF);
+        Set<ITypeName> acquireableTypesSet = Zips.types(zip.entries(), DOT_JBIF);
+
+        for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+            acquireableTypesSet.addAll(Zips.types(zip.entries(), DOT_JBIF + "." + transformer.getKey())); //$NON-NLS-1$
+        }
+
+        return acquireableTypesSet;
     }
 
     @Override
@@ -92,8 +106,39 @@ public class SingleZipCallModelProvider implements ICallModelProvider, Openable 
 
     private final class CallNetCacheLoader extends CacheLoader<ITypeName, ICallModel> {
         @Override
-        public ICallModel load(ITypeName type) throws Exception {
-            return JayesCallModel.load(zip, type).or(NullCallModel.INSTANCE);
+        public ICallModel load(ITypeName type) throws IOException {
+            InputStream in = null;
+            try {
+                String path = Zips.path(type, DOT_JBIF);
+                in = getInputStream(zip, path).orNull();
+                ICallModel model = null;
+
+                if (in != null) {
+                    model = JayesCallModel.load(in, type);
+                }
+
+                if (model == null) {
+                    return NullCallModel.INSTANCE;
+                }
+                return model;
+            } finally {
+                IOUtils.closeQuietly(in);
+            }
+        }
+
+        private Optional<InputStream> getInputStream(ZipFile zip, String path) throws IOException {
+            for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+                ZipEntry toTransform = zip.getEntry(path + "." + transformer.getKey()); //$NON-NLS-1$
+                if (toTransform == null) {
+                    continue;
+                }
+                return Optional.of(transformer.getValue().transform(zip.getInputStream(toTransform)));
+            }
+            ZipEntry entry = zip.getEntry(path);
+            if (entry == null) {
+                return Optional.absent();
+            }
+            return Optional.of(zip.getInputStream(entry));
         }
     }
 }

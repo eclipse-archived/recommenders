@@ -9,6 +9,9 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 import java.util.zip.ZipFile;
 
 import org.eclipse.recommenders.utils.Zips;
@@ -31,7 +34,7 @@ public class PoolingModelProviderTest {
     PoolingModelProvider<UniqueTypeName, String> sut = create();
 
     @Test
-    public void testAquireRelease() {
+    public void testAcquireRelease() throws Exception {
         Optional<String> last = Optional.absent();
         for (int i = 0; i < 200; i++) {
             last = sut.acquireModel(someName);
@@ -70,19 +73,29 @@ public class PoolingModelProviderTest {
         IModelArchiveCoordinateAdvisor models = mock(IModelArchiveCoordinateAdvisor.class);
         when(models.suggest(any(ProjectCoordinate.class), anyString())).thenReturn(of(UNKNOWN));
 
-        return new PoolingModelProviderStub(repository, models, "calls");
+        return new PoolingModelProviderStub(repository, models, "calls", Collections.EMPTY_MAP);
     }
 
     private final class PoolingModelProviderStub extends PoolingModelProvider<UniqueTypeName, String> {
         private PoolingModelProviderStub(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
-                String modelType) {
-            super(repository, index, modelType);
+                String modelType, Map<String, IInputStreamTransformer> transformers) {
+            super(repository, index, modelType, transformers);
         }
 
         @Override
-        protected Optional<String> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
+        protected String loadModel(InputStream in, UniqueTypeName key) throws IOException {
             // return a "simple" model
-            return of(new String(""));
+            return new String("");
+        }
+
+        @Override
+        protected Optional<InputStream> getInputStream(ZipFile zip, String path) throws IOException {
+            return Optional.of(mock(InputStream.class));
+        }
+
+        @Override
+        protected String getBasePath(UniqueTypeName key) {
+            return "";
         }
     }
 }

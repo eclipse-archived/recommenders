@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.apidocs;
 
-import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.utils.Constants.*;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.Map;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
@@ -25,24 +25,22 @@ import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
-import com.google.common.base.Optional;
-
 public class OverridePatternsModelProvider extends PoolingModelProvider<UniqueTypeName, ClassOverridePatterns> {
 
-    public OverridePatternsModelProvider(IModelRepository repository, IModelIndex index) {
-        super(repository, index, CLASS_OVRP_MODEL);
+    public OverridePatternsModelProvider(IModelRepository repository, IModelIndex index,
+            Map<String, IInputStreamTransformer> transformers) {
+        super(repository, index, CLASS_OVRP_MODEL, transformers);
     }
 
     @Override
-    protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
-        String path = Zips.path(key.getName(), DOT_JSON);
-        ZipEntry entry = zip.getEntry(path);
-        if (entry == null) {
-            return absent();
-        }
-        InputStream is = zip.getInputStream(entry);
-        ClassOverridePatterns res = GsonUtil.deserialize(is, ClassOverridePatterns.class);
-        IOUtils.closeQuietly(is);
-        return of(res);
+    protected ClassOverridePatterns loadModel(InputStream in, UniqueTypeName key) throws IOException {
+        ClassOverridePatterns res = GsonUtil.deserialize(in, ClassOverridePatterns.class);
+        IOUtils.closeQuietly(in);
+        return res;
+    }
+
+    @Override
+    protected String getBasePath(UniqueTypeName key) {
+        return Zips.path(key.getName(), DOT_JSON);
     }
 }

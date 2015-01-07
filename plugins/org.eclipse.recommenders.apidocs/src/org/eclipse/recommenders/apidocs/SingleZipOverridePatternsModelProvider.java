@@ -10,19 +10,20 @@
  */
 package org.eclipse.recommenders.apidocs;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
-import static org.eclipse.recommenders.utils.Zips.closeQuietly;
-import static org.eclipse.recommenders.utils.Zips.readFully;
+import static org.eclipse.recommenders.utils.Zips.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.UniqueTypeName;
@@ -46,10 +47,12 @@ public class SingleZipOverridePatternsModelProvider implements
         IModelProvider<IUniqueName<ITypeName>, ClassOverridePatterns>, Openable {
 
     private final File models;
+    private final Map<String, IInputStreamTransformer> transformers;
     private ZipFile zip;
 
-    public SingleZipOverridePatternsModelProvider(File models) {
+    public SingleZipOverridePatternsModelProvider(File models, Map<String, IInputStreamTransformer> transformers) {
         this.models = models;
+        this.transformers = transformers;
     }
 
     @Override
@@ -64,7 +67,13 @@ public class SingleZipOverridePatternsModelProvider implements
     }
 
     public Set<ITypeName> acquireableTypes() {
-        return Zips.types(zip, DOT_JSON);
+        Set<ITypeName> acquireableTypesSet = Zips.types(zip.entries(), DOT_JSON);
+
+        for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+            acquireableTypesSet.addAll(Zips.types(zip.entries(), DOT_JSON + "." + transformer.getKey())); //$NON-NLS-1$
+        }
+
+        return acquireableTypesSet;
     }
 
     @Override
@@ -73,21 +82,35 @@ public class SingleZipOverridePatternsModelProvider implements
 
     @Override
     public Optional<ClassOverridePatterns> acquireModel(IUniqueName<ITypeName> key) {
-        String path = Zips.path(key.getName(), DOT_JSON);
-        ZipEntry entry = zip.getEntry(path);
-        if (entry == null) {
-            return absent();
-        }
-
-        InputStream is;
+        InputStream in = null;
         try {
-            is = zip.getInputStream(entry);
+            String basePath = Zips.path(key.getName(), DOT_JSON);
+            in = getInputStream(zip, basePath).orNull();
+            if (in == null) {
+                return absent();
+            }
+            ClassOverridePatterns res = GsonUtil.deserialize(in, ClassOverridePatterns.class);
+            return of(res);
         } catch (IOException e) {
             return absent();
+        } finally {
+            IOUtils.closeQuietly(in);
         }
-        ClassOverridePatterns res = GsonUtil.deserialize(is, ClassOverridePatterns.class);
-        IOUtils.closeQuietly(is);
-        return of(res);
+    }
+
+    private Optional<InputStream> getInputStream(ZipFile zip, String basePath) throws IOException {
+        for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+            ZipEntry toTransform = zip.getEntry(basePath + "." + transformer.getKey()); //$NON-NLS-1$
+            if (toTransform == null) {
+                continue;
+            }
+            return Optional.of(transformer.getValue().transform(zip.getInputStream(toTransform)));
+        }
+        ZipEntry entry = zip.getEntry(basePath);
+        if (entry == null) {
+            return Optional.absent();
+        }
+        return Optional.of(zip.getInputStream(entry));
     }
 
 }

@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.calls.rcp;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.PoolingCallModelProvider;
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.UniqueTypeName;
@@ -33,18 +35,22 @@ public class RcpCallModelProvider implements ICallModelProvider, IRcpService {
 
     private final IModelRepository repository;
     private final IModelArchiveCoordinateAdvisor index;
+    private final Map<String, IInputStreamTransformer> transformers;
+
     private ICallModelProvider delegate;
 
     @Inject
-    public RcpCallModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+    public RcpCallModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
+            Map<String, IInputStreamTransformer> transformers) {
         this.repository = repository;
         this.index = index;
+        this.transformers = transformers;
     }
 
     @Override
     @PostConstruct
     public void open() throws IOException {
-        delegate = new PoolingCallModelProvider(repository, index);
+        delegate = new PoolingCallModelProvider(repository, index, transformers);
         delegate.open();
     }
 

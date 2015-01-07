@@ -3,6 +3,7 @@
 <plugin>
 	<extension-point id="org.eclipse.recommenders.models.rcp.advisors" name="%extension-point.advisors.name" schema="schema/advisors.exsd"/>
 	<extension-point id="org.eclipse.recommenders.models.rcp.models" name="%extension-point.models.name" schema="schema/models.exsd"/>
+	<extension-point id="org.eclipse.recommenders.models.rcp.transformers" name="%extension.point.transformers.name" schema="schema/transformers.exsd"/>
 	<extension point="org.eclipse.ui.views">
 		<view id="org.eclipse.recommenders.models.rcp.views.modelRepositories"
 			category="org.eclipse.recommenders.rcp.views.root"

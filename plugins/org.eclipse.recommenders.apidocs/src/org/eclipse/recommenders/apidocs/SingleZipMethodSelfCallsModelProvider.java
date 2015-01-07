@@ -10,19 +10,20 @@
  */
 package org.eclipse.recommenders.apidocs;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
-import static org.eclipse.recommenders.utils.Zips.closeQuietly;
-import static org.eclipse.recommenders.utils.Zips.readFully;
+import static org.eclipse.recommenders.utils.Zips.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.UniqueTypeName;
@@ -39,16 +40,20 @@ import com.google.common.base.Optional;
  * A model provider that uses a single zip file to resolve and load self call models from.
  * <p>
  * Note that this provider does not implement any pooling behavior, i.e., calls to {@link #acquireModel(UniqueTypeName)}
- * may return the <b>same</b> {@link MethodSelfcallDirectives} independent of whether {@link #releaseModel(MethodSelfcallDirectives)} was called or
- * not. Thus, these <b>models should not be shared between and used by several recommenders at the same time</b>.
+ * may return the <b>same</b> {@link MethodSelfcallDirectives} independent of whether
+ * {@link #releaseModel(MethodSelfcallDirectives)} was called or not. Thus, these <b>models should not be shared between
+ * and used by several recommenders at the same time</b>.
  */
-public class SingleZipMethodSelfCallsModelProvider implements IModelProvider<IUniqueName<IMethodName>, MethodSelfcallDirectives>, Openable {
+public class SingleZipMethodSelfCallsModelProvider implements
+        IModelProvider<IUniqueName<IMethodName>, MethodSelfcallDirectives>, Openable {
 
     private final File models;
+    private final Map<String, IInputStreamTransformer> transformers;
     private ZipFile zip;
 
-    public SingleZipMethodSelfCallsModelProvider(File models) {
+    public SingleZipMethodSelfCallsModelProvider(File models, Map<String, IInputStreamTransformer> transformers) {
         this.models = models;
+        this.transformers = transformers;
     }
 
     @Override
@@ -63,26 +68,46 @@ public class SingleZipMethodSelfCallsModelProvider implements IModelProvider<IUn
     }
 
     public Set<ITypeName> acquireableTypes() {
-        return Zips.types(zip.entries(), DOT_JSON);
+        Set<ITypeName> acquireableTypesSet = Zips.types(zip.entries(), DOT_JSON);
+
+        for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+            acquireableTypesSet.addAll(Zips.types(zip.entries(), DOT_JSON + "." + transformer.getKey())); //$NON-NLS-1$
+        }
+
+        return acquireableTypesSet;
     }
 
     @Override
     public Optional<MethodSelfcallDirectives> acquireModel(IUniqueName<IMethodName> key) {
-        String path = Zips.path(key.getName(), DOT_JSON);
-        ZipEntry entry = zip.getEntry(path);
-        if (entry == null) {
-            return absent();
-        }
-
-        InputStream is;
+        InputStream in = null;
         try {
-            is = zip.getInputStream(entry);
+            String basePath = Zips.path(key.getName(), DOT_JSON);
+            in = getInputStream(zip, basePath).orNull();
+            if (in == null) {
+                return absent();
+            }
+            MethodSelfcallDirectives res = GsonUtil.deserialize(in, MethodSelfcallDirectives.class);
+            return of(res);
         } catch (IOException e) {
             return absent();
+        } finally {
+            IOUtils.closeQuietly(in);
         }
-        MethodSelfcallDirectives res = GsonUtil.deserialize(is, MethodSelfcallDirectives.class);
-        IOUtils.closeQuietly(is);
-        return of(res);
+    }
+
+    private Optional<InputStream> getInputStream(ZipFile zip, String basePath) throws IOException {
+        for (Entry<String, IInputStreamTransformer> transformer : transformers.entrySet()) {
+            ZipEntry toTransform = zip.getEntry(basePath + "." + transformer.getKey()); //$NON-NLS-1$
+            if (toTransform == null) {
+                continue;
+            }
+            return Optional.of(transformer.getValue().transform(zip.getInputStream(toTransform)));
+        }
+        ZipEntry entry = zip.getEntry(basePath);
+        if (entry == null) {
+            return Optional.absent();
+        }
+        return Optional.of(zip.getInputStream(entry));
     }
 
     @Override

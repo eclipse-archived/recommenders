@@ -15,6 +15,7 @@ import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.utils.Bags.newHashMultiset;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import org.eclipse.recommenders.apidocs.MethodSelfCallsDirectivesModelProvider;
 import org.eclipse.recommenders.apidocs.MethodSelfcallDirectives;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.UniqueMethodName;
@@ -59,12 +61,13 @@ public final class SelfCallsProvider extends ApidocProvider {
 
     @Inject
     public SelfCallsProvider(JavaElementResolver resolver, IProjectCoordinateProvider pcProvider,
-            EventBus workspaceBus, IModelRepository modelRepo, IModelIndex modelIndex) {
+            EventBus workspaceBus, IModelRepository modelRepo, IModelIndex modelIndex,
+            Map<String, IInputStreamTransformer> transformers) {
         this.resolver = resolver;
         this.pcProvider = pcProvider;
         this.workspaceBus = workspaceBus;
-        mStore = new MethodSelfCallsDirectivesModelProvider(modelRepo, modelIndex);
-        cStore = new ClassSelfCallsModelProvider(modelRepo, modelIndex);
+        mStore = new MethodSelfCallsDirectivesModelProvider(modelRepo, modelIndex, transformers);
+        cStore = new ClassSelfCallsModelProvider(modelRepo, modelIndex, transformers);
     }
 
     @JavaSelectionSubscriber
