@@ -93,6 +93,11 @@ public class ErrorReportDialog extends MessageDialog {
     }
 
     @Override
+    protected boolean customShouldTakeFocus() {
+        return false;
+    }
+
+    @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setLayout(new GridLayout(1, false));
