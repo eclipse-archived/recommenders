@@ -115,11 +115,7 @@ public class SnipmatchCompletionEngine {
 
             @Override
             public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
-                if (proposal instanceof ICompletionProposal) {
-                    selectedProposal = proposal;
-                } else {
-                    selectedProposal = null;
-                }
+                selectedProposal = proposal;
             }
 
             @Override
