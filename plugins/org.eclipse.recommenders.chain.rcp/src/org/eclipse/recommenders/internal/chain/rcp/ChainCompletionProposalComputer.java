@@ -196,20 +196,11 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void findEntrypointsForCompletionOnMemberAccess(final CompletionOnMemberAccess node) {
-        final Binding b = node.actualReceiverType;
+        final TypeBinding b = node.actualReceiverType;
         if (b == null) {
             return;
         }
-        switch (b.kind()) {
-        case Binding.TYPE:
-            addPublicInstanceMembersToEntrypoints((TypeBinding) b);
-            break;
-        case Binding.LOCAL:
-            addPublicInstanceMembersToEntrypoints(((VariableBinding) b).type);
-            break;
-        default:
-            log.warn("Can't handle %s as class member.", b); //$NON-NLS-1$
-        }
+        addPublicInstanceMembersToEntrypoints(b);
     }
 
     private void findEntrypointsForCompletionOnSingleName() {
