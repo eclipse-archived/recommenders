@@ -14,6 +14,7 @@ import static com.google.inject.Scopes.SINGLETON;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -21,11 +22,13 @@ import javax.inject.Singleton;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IDependencyListener;
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
@@ -34,10 +37,10 @@ import org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvi
 import org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor;
 import org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.ui.IWorkbench;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.eventbus.EventBus;
@@ -52,13 +55,15 @@ public class ModelsRcpModule extends AbstractModule {
     private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models"; //$NON-NLS-1$
     private static final String MODEL_CLASSIFIER_ATTRIBUTE = "classifier"; //$NON-NLS-1$
 
+    private static final String EXT_ID_TRANSFORMERS_CLASSIFIER = "org.eclipse.recommenders.models.rcp.transformers"; //$NON-NLS-1$
+    private static final String TRANSFORMER_CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
+    private static final String TRANSFORMER_FILE_EXTENSION_ATTRIBUTE = "fileExtension"; //$NON-NLS-1$
+
     public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS"; //$NON-NLS-1$
     public static final String MODEL_CLASSIFIER = "MODEL_CLASSIFIER"; //$NON-NLS-1$
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR"; //$NON-NLS-1$
     public static final String INDEX_BASEDIR = "INDEX_BASEDIR"; //$NON-NLS-1$
     public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS"; //$NON-NLS-1$
-
-    private static final Logger LOG = LoggerFactory.getLogger(ModelsRcpModule.class);
 
     @Override
     protected void configure() {
@@ -93,7 +98,7 @@ public class ModelsRcpModule extends AbstractModule {
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            LOG.error("Failed to bind file name {}.", fileName, e); //$NON-NLS-1$
+            Logs.log(LogMessages.LOG_ERROR_BIND_FILE_NAME, fileName, e);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }
@@ -145,6 +150,25 @@ public class ModelsRcpModule extends AbstractModule {
             builder.add(classifier);
         }
 
+        return builder.build();
+    }
+
+    @Provides
+    public Map<String, IInputStreamTransformer> provideTransformers() {
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXT_ID_TRANSFORMERS_CLASSIFIER);
+        ImmutableMap.Builder<String, IInputStreamTransformer> builder = ImmutableMap.builder();
+        for (IConfigurationElement element : elements) {
+            try {
+                IInputStreamTransformer transformer = (IInputStreamTransformer) element
+                        .createExecutableExtension(TRANSFORMER_CLASS_ATTRIBUTE);
+                String fileExtension = element.getAttribute(TRANSFORMER_FILE_EXTENSION_ATTRIBUTE);
+                builder.put(fileExtension, transformer);
+            } catch (CoreException e) {
+                Logs.log(LogMessages.LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED,
+                        element.getAttribute(TRANSFORMER_CLASS_ATTRIBUTE), e);
+            }
+        }
         return builder.build();
     }
 }

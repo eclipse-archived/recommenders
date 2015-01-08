@@ -25,11 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
-import org.eclipse.recommenders.commons.bayesnet.CommonsReader;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
@@ -41,7 +38,6 @@ import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Recommendation;
-import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -96,43 +92,25 @@ import com.google.common.collect.Lists;
 @Beta
 public class JayesCallModel implements ICallModel {
 
-    public static Optional<ICallModel> load(ZipFile zip, ITypeName type) throws Exception {
-        Optional<BayesNet> net = getModel(zip, type);
-        if (net.isPresent()) {
-            ICallModel m = new JayesCallModel(type, net.get());
-            return of(m);
-        } else {
-            return absent();
+    public static ICallModel load(InputStream is, ITypeName type) throws IOException {
+        BayesNet net = getModel(is, type);
+        ICallModel model = null;
+
+        if (net != null) {
+            ICallModel m = new JayesCallModel(type, net);
         }
+
+        return model;
     }
 
-    private static Optional<BayesNet> getModel(ZipFile zip, ITypeName type) throws IOException {
-        ZipEntry entry = zip.getEntry(Zips.path(type, DOT_JBIF));
-        if (entry != null) {
-
-            InputStream s = zip.getInputStream(entry);
-            IBayesNetReader rdr = new JayesBifReader(s);
-            try {
-                BayesNet net = rdr.read();
-                return of(net);
-            } finally {
-                IOUtils.closeQuietly(rdr);
-            }
+    private static BayesNet getModel(InputStream is, ITypeName type) throws IOException {
+        IBayesNetReader rdr = new JayesBifReader(is);
+        try {
+            BayesNet net = rdr.read();
+            return net;
+        } finally {
+            IOUtils.closeQuietly(rdr);
         }
-
-        entry = zip.getEntry(Zips.path(type, DOT_DATA));
-        if (entry != null) {
-
-            InputStream s = zip.getInputStream(entry);
-            IBayesNetReader rdr = new CommonsReader(s);
-            try {
-                BayesNet net = rdr.read();
-                return of(net);
-            } finally {
-                IOUtils.closeQuietly(rdr);
-            }
-        }
-        return absent();
     }
 
     private static final class StringToMethodNameFunction implements Function<String, IMethodName> {
@@ -229,8 +207,8 @@ public class JayesCallModel implements ICallModel {
             BayesNode node = pair.getValue();
             IMethodName method = pair.getKey();
             if (evidence.containsKey(node) && evidence.get(node).equals(Constants.N_STATE_TRUE)
-                    // remove the NULL that may have been introduced by
-                    // res.add(compute...)
+            // remove the NULL that may have been introduced by
+            // res.add(compute...)
                     && !VmMethodName.NULL.equals(method)) {
                 builder.add(method);
             }

@@ -10,31 +10,39 @@
  */
 package org.eclipse.recommenders.calls;
 
-import static org.eclipse.recommenders.utils.Constants.CLASS_CALL_MODELS;
+import static org.eclipse.recommenders.utils.Constants.*;
 
-import java.util.zip.ZipFile;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
-
-import com.google.common.base.Optional;
+import org.eclipse.recommenders.utils.Zips;
 
 public class PoolingCallModelProvider extends PoolingModelProvider<UniqueTypeName, ICallModel> implements
         ICallModelProvider {
 
-    public PoolingCallModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index) {
-        super(repo, index, CLASS_CALL_MODELS);
-    }
-
-    @Override
-    protected Optional<ICallModel> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
-        return JayesCallModel.load(zip, key.getName());
+    public PoolingCallModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index,
+            Map<String, IInputStreamTransformer> transformers) {
+        super(repo, index, CLASS_CALL_MODELS, transformers);
     }
 
     @Override
     protected void passivateModel(ICallModel model) {
         model.reset();
+    }
+
+    @Override
+    protected ICallModel loadModel(InputStream in, UniqueTypeName key) throws IOException {
+        return JayesCallModel.load(in, key.getName());
+    }
+
+    @Override
+    protected String getBasePath(UniqueTypeName key) {
+        return Zips.path(key.getName(), DOT_JBIF);
     }
 }

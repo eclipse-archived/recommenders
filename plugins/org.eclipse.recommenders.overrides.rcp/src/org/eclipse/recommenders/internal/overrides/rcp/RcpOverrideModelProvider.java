@@ -11,11 +11,13 @@
 package org.eclipse.recommenders.internal.overrides.rcp;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.IUniqueName;
@@ -34,19 +36,22 @@ public class RcpOverrideModelProvider implements IOverrideModelProvider, IRcpSer
 
     private final IModelRepository repository;
     private final IModelArchiveCoordinateAdvisor index;
+    private Map<String, IInputStreamTransformer> transformers;
 
     private PoolingOverrideModelProvider delegate;
 
     @Inject
-    public RcpOverrideModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+    public RcpOverrideModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
+            Map<String, IInputStreamTransformer> transformers) {
         this.repository = repository;
         this.index = index;
+        this.transformers = transformers;
     }
 
     @Override
     @PostConstruct
     public void open() throws IOException {
-        delegate = new PoolingOverrideModelProvider(repository, index);
+        delegate = new PoolingOverrideModelProvider(repository, index, transformers);
         delegate.open();
     }
 

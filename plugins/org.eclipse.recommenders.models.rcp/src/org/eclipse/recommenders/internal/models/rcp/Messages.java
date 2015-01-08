@@ -96,6 +96,8 @@ public final class Messages extends NLS {
     public static String TASK_RESOLVING_MODEL;
 
     public static String LOG_ERROR_ADVISOR_INSTANTIATION;
+    public static String LOG_ERROR_BIND_FILE_NAME;
+    public static String LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED;
     public static String LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE;
     public static String LOG_ERROR_MODEL_RESOLUTION_FAILURE;
     public static String LOG_ERROR_SAVE_PREFERENCES;

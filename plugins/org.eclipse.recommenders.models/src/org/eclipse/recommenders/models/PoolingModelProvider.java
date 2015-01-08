@@ -15,6 +15,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
@@ -41,8 +42,9 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
     // REVIEW: we may want to make pool creation configurable later?
     private GenericKeyedObjectPool<K, M> pool = createModelPool();
 
-    public PoolingModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index, String modelType) {
-        super(repository, index, modelType);
+    public PoolingModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index, String modelType,
+            Map<String, IInputStreamTransformer> transformers) {
+        super(repository, index, modelType, transformers);
     }
 
     private GenericKeyedObjectPool<K, M> createModelPool() {

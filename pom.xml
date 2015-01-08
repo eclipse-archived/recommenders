@@ -333,9 +333,10 @@
 							</goals>
 							<configuration>
 								<encoding>${project.build.sourceEncoding}</encoding>
-								<header>header-codetrails-2014.txt</header>
+								<header>header-codetrails-2015.txt</header>
 								<validHeaders>
 									<validHeader>header-amann-2012.txt</validHeader>
+									<validHeader>header-codetrails-2014.txt</validHeader>
 									<validHeader>header-faidherbe-2011.txt</validHeader>
 									<validHeader>header-henss-2010.txt</validHeader>
 									<validHeader>header-henss-2011.txt</validHeader>
