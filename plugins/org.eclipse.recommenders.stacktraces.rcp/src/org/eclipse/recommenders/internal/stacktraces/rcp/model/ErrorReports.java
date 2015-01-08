@@ -127,10 +127,11 @@ public class ErrorReports {
         private StringBuilder reportStringBuilder = new StringBuilder();
         private StringBuilder statusStringBuilder = new StringBuilder();
         private StringBuilder bundlesStringBuilder = new StringBuilder();
-        private StringBuilder stacktraceStringBuilder = new StringBuilder();
 
-        private boolean firstThrowable = true;
-        private boolean firstBundle = true;
+        public PrettyPrintVisitor() {
+            bundlesStringBuilder = new StringBuilder();
+            appendHeadline("BUNDLES", bundlesStringBuilder);
+        }
 
         private void appendAttributes(EObject object, StringBuilder builder) {
             for (EAttribute attribute : object.eClass().getEAllAttributes()) {
@@ -142,6 +143,9 @@ public class ErrorReports {
         }
 
         private void appendHeadline(String headline, StringBuilder builder) {
+            if (builder.length() != 0) {
+                builder.append("\n");
+            }
             String line = headline.replaceAll(".", "-") + "\n";
             builder.append(line);
             builder.append(headline + "\n");
@@ -159,41 +163,33 @@ public class ErrorReports {
         public void visit(Status status) {
             appendHeadline("STATUS", statusStringBuilder);
             appendAttributes(status, statusStringBuilder);
+            statusStringBuilder.append("Exception:");
+            append(status.getException(), statusStringBuilder);
             super.visit(status);
+        }
+
+        private void append(Throwable throwable, StringBuilder builder) {
+            builder.append(String.format("%s: %s\n", throwable.getClassName(), throwable.getMessage()));
+            for (StackTraceElement element : throwable.getStackTrace()) {
+                builder.append(String.format("\t at %s.%s(%s:%s)\n", element.getClassName(), element.getMethodName(),
+                        element.getFileName(), element.getLineNumber()));
+            }
+            Throwable cause = throwable.getCause();
+            if (cause != null) {
+                statusStringBuilder.append("Caused by: ");
+                append(cause, builder);
+            }
         }
 
         @Override
         public void visit(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle bundle) {
-            if (firstBundle) {
-                appendHeadline("BUNDLES", bundlesStringBuilder);
-                firstBundle = false;
-            }
             appendAttributes(bundle, bundlesStringBuilder);
             super.visit(bundle);
         }
 
-        @Override
-        public void visit(Throwable throwable) {
-            if (firstThrowable) {
-                appendHeadline("STACKTRACE", stacktraceStringBuilder);
-                firstThrowable = false;
-            } else {
-                stacktraceStringBuilder.append("Caused by: ");
-            }
-            stacktraceStringBuilder.append(throwable.getClassName() + ": " + throwable.getMessage() + "\n");
-            super.visit(throwable);
-        }
-
-        @Override
-        public void visit(StackTraceElement element) {
-            stacktraceStringBuilder.append("\t at " + element.getClassName() + "." + element.getMethodName() + "("
-                    + element.getFileName() + ":" + element.getLineNumber() + ")\n");
-            super.visit(element);
-        }
-
         public String print() {
-            return new StringBuilder().append(statusStringBuilder).append(stacktraceStringBuilder)
-                    .append(reportStringBuilder).append(bundlesStringBuilder).toString();
+            return new StringBuilder().append(statusStringBuilder).append("\n").append(reportStringBuilder)
+                    .append(bundlesStringBuilder).toString();
         }
 
     }
