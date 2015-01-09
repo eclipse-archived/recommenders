@@ -28,4 +28,5 @@ SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIM
 TARGET=/home/data/httpd/${DOWNLOAD_PATH}
 
 mkdir -p ${TARGET}
+rm -f -R ${TARGET}/*
 cp -v -R ${SOURCE}/* ${TARGET}
