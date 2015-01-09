@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.stacktraces.rcp.model;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -33,7 +35,6 @@ import org.eclipse.recommenders.utils.gson.UuidTypeAdapter;
 import org.osgi.framework.Bundle;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
@@ -199,15 +200,63 @@ public class ErrorReports {
 
     }
 
-    public static class StatusFilterSetting {
+    private static class MultiStatusFilter {
 
-        public StatusFilterSetting(String pluginPrefix, String... stacktraceClassPrefixes) {
-            this.pluginPrefix = pluginPrefix;
-            this.stacktraceClassPrefixes = Lists.newArrayList(stacktraceClassPrefixes);
+        private static void filter(Status status) {
+            HashSet<Throwable> throwables = new HashSet<Throwable>();
+            filter(status, throwables);
         }
 
-        final String pluginPrefix;
-        final List<String> stacktraceClassPrefixes;
+        private static void filter(Status status, Set<Throwable> throwables) {
+            EList<Status> children = status.getChildren();
+            int removedCount = 0;
+            for (int i = children.size() - 1; i >= 0; i--) {
+                Status childStatus = children.get(i);
+                if (filterChild(childStatus, throwables)) {
+                    children.remove(i);
+                    removedCount++;
+                } else {
+                    filter(childStatus, throwables);
+                }
+            }
+            if (removedCount > 0) {
+                status.setMessage(String.format("%s [%d child-status duplicates removed by Error Reporting]",
+                        status.getMessage(), removedCount));
+            }
+
+        }
+
+        private static boolean filterChild(Status status, Set<Throwable> throwables) {
+            Throwable throwable = status.getException();
+            if (throwable.getStackTrace().isEmpty()) {
+                return true;
+            }
+            for (Throwable t : throwables) {
+                if (stackTraceMatches(throwable, t)) {
+                    return true;
+                }
+            }
+            throwables.add(throwable);
+            return false;
+        }
+
+        private static boolean stackTraceMatches(Throwable throwable, Throwable t) {
+            EList<StackTraceElement> stackTrace = throwable.getStackTrace();
+            EList<StackTraceElement> stackTrace2 = t.getStackTrace();
+            if (stackTrace.size() != stackTrace2.size()) {
+                return false;
+            }
+            for (int i = 0; i < stackTrace.size(); i++) {
+                StackTraceElement ste = stackTrace.get(i);
+                StackTraceElement ste2 = stackTrace2.get(i);
+                if (!(ste.getClassName().equals(ste2.getClassName()) && ste.getMethodName()
+                        .equals(ste2.getMethodName()))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     }
 
     private static ModelFactory factory = ModelFactory.eINSTANCE;
@@ -316,14 +365,15 @@ public class ErrorReports {
                 mChildren.add(newStatus(coreExceptionStatus, settings));
             }
         }
+        // Multistatus handling
+        for (IStatus child : status.getChildren()) {
+            mChildren.add(newStatus(child, settings));
+        }
         // some stacktraces from ui.monitoring should be filtered
         boolean needFiltering = "org.eclipse.ui.monitoring".equals(status.getPlugin())
                 && (status.getCode() == 0 || status.getCode() == 1);
-        // Multistatus handling
-        for (IStatus child : status.getChildren()) {
-            if (!(needFiltering && isFiltered(child))) {
-                mChildren.add(newStatus(child, settings));
-            }
+        if (needFiltering) {
+            MultiStatusFilter.filter(mStatus);
         }
 
         if (status.getException() != null) {
@@ -337,29 +387,6 @@ public class ErrorReports {
         mStatus.setFingerprint(fingerprint.hash());
 
         return mStatus;
-    }
-
-    private static boolean isFiltered(IStatus status) {
-        for (StatusFilterSetting filterSetting : Constants.MULTISTATUS_CHILD_STACKTRACES_FILTER_SETTINGS) {
-            if (status.getPlugin().startsWith(filterSetting.pluginPrefix)
-                    && isStacktraceFiltered(status, filterSetting.stacktraceClassPrefixes)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isStacktraceFiltered(IStatus status, List<String> stacktraceClassPrefixes) {
-        java.lang.StackTraceElement[] stackTrace = status.getException().getStackTrace();
-        if (stackTrace.length != stacktraceClassPrefixes.size()) {
-            return false;
-        }
-        for (int i = 0; i < stackTrace.length; i++) {
-            if (!stackTrace[i].getClassName().startsWith(stacktraceClassPrefixes.get(i))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static String removeSourceFileContents(String message) {

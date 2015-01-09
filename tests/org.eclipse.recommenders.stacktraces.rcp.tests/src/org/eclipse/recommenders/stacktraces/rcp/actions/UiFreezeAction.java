@@ -19,6 +19,7 @@ public class UiFreezeAction implements IWorkbenchWindowActionDelegate {
 
     @Override
     public void run(IAction action) {
+        System.setProperty("eclipse.buildId", "unit-tests");
         try {
             Thread.sleep(6000);
         } catch (InterruptedException e) {

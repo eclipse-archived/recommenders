@@ -196,89 +196,31 @@ public class ErrorReportsTest {
     }
 
     @Test
-    public void testMultistatusChildFiltering() {
+    public void testMultistatusDuplicateChildFiltering() {
         settings = ModelFactory.eINSTANCE.createSettings();
         settings.getWhitelistedPackages().add("org.");
 
-        // java.lang.Exception: Stack Trace
-        // at java.lang.Object.wait(Object.java:-2)
-        // at org.eclipse.core.internal.jobs.Semaphore.acquire(Semaphore.java:39)
-        // at org.eclipse.core.internal.jobs.JobManager.join(JobManager.java:851)
-        // at org.eclipse.core.internal.jobs.InternalJob.join(InternalJob.java:384)
-        // at org.eclipse.core.runtime.jobs.Job.join(Job.java:420)
-        // ...
-        Exception e1 = new Exception("Stack Trace 1");
-        e1.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.Semaphore",
-                "org.eclipse.core.internal.jobs.JobManager", "org.eclipse.core.internal.jobs.InternalJob"));
-        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
-                "Sample at 08:09:05.634 (+2,698s) Thread 'main' tid=1 (TIMED_WAITING)", e1);
-
-        // java.lang.Exception: Stack Trace
-        // at java.lang.Object.wait(Object.java:-2)
-        // at java.lang.Object.wait(Object.java:502)
-        // at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.getNextEvent(EventManager.java:400)
-        // at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:336)
-        Exception e2 = new Exception("Stack Trace 2");
-        e2.setStackTrace(createStackTrace("java.lang.Object", "java.lang.Object",
-                "org.eclipse.osgi.framework.eventmgr.EventManager$EventThread",
-                "org.eclipse.osgi.framework.eventmgr.EventManager$EventThread"));
-        IStatus s2 = new Status(
-                IStatus.ERROR,
-                "org.eclipse.ui.monitoring",
-                "Thread 'Provisioning Event Dispatcher' tid=46 (WAITING) Waiting for: org.eclipse.osgi.framework.eventmgr.EventManager$EventThread@1980ed30",
-                e2);
-
-        // java.lang.Exception: Stack Trace
-        // at java.lang.Object.wait(Object.java:-2)
-        // at org.eclipse.core.internal.jobs.WorkerPool.sleep(WorkerPool.java:188)
-        // at org.eclipse.core.internal.jobs.WorkerPool.startJob(WorkerPool.java:220)
-        // at org.eclipse.core.internal.jobs.Worker.run(Worker.java:52)
-        Exception e3 = new Exception("Stack Trace 3");
-        e3.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
+        Exception e1 = new Exception("Stack Trace");
+        e1.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
                 "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.Worker"));
-        IStatus s3 = new Status(
-                IStatus.ERROR,
-                "org.eclipse.ui.monitoring",
-                "Thread 'Worker-12' tid=44 (TIMED_WAITING) Waiting for: org.eclipse.core.internal.jobs.WorkerPool@34bef503",
-                e3);
+        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
+                "Thread 'Worker-3' tid=39 (TIMED_WAITING)\n"
+                        + "Waiting for: org.eclipse.core.internal.jobs.WorkerPool@416dc7fc", e1);
 
-        // java.lang.Exception: Stack Trace
-        // at java.util.zip.ZipFile.open(ZipFile.java:-2)
-        // at java.util.zip.ZipFile.<init>(ZipFile.java:220)
-        // at java.util.zip.ZipFile.<init>(ZipFile.java:150)
-        // at org.eclipse.pde.internal.core.util.ManifestUtils.loadManifest(ManifestUtils.java:88)
-        // ...
-        Exception e4 = new Exception("Stack Trace 4");
-        e4.setStackTrace(createStackTrace("java.util.zip.ZipFile", "java.util.zip.ZipFile", "java.util.zip.ZipFile",
-                "org.eclipse.pde.internal.core.util.ManifestUtils"));
-        IStatus s4 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring", "Thread 'Worker-10' tid=42 (RUNNABLE)", e4);
+        Exception e2 = new Exception("Stack Trace");
+        e2.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
+                "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.Worker"));
+        IStatus s2 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
+                "Thread 'Worker-2' tid=36 (TIMED_WAITING)\n"
+                        + "Waiting for: org.eclipse.core.internal.jobs.WorkerPool@416dc7fc", e2);
 
-        // java.lang.Exception: Stack Trace
-        // at org.eclipse.pde.internal.core.PluginModelManager.initializeTable(PluginModelManager.java:496)
-        // at org.eclipse.pde.internal.core.PluginModelManager.targetReloaded(PluginModelManager.java:473)
-        // at org.eclipse.pde.internal.core.RequiredPluginsInitializer$1.run(RequiredPluginsInitializer.java:34)
-        // at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-        Exception e5 = new Exception("Stack Trace 5");
-        e5.setStackTrace(createStackTrace("org.eclipse.pde.internal.core.PluginModelManager",
-                "org.eclipse.pde.internal.core.PluginModelManager",
-                "org.eclipse.pde.internal.core.RequiredPluginsInitializer$1", "org.eclipse.core.internal.jobs.Worker"));
-        IStatus s5 = new Status(
-                IStatus.ERROR,
-                "org.eclipse.ui.monitoring",
-                "Thread 'Worker-4' tid=36 (BLOCKED) Waiting for: org.eclipse.pde.internal.core.PluginModelManager@56e13c98Lock ",
-                e5);
-
-        IStatus s6 = new Status(IStatus.ERROR, "org.eclipse.any.plugin", "any message", new Exception("Stack Trace 6"));
-
-        IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1, s2, s3, s4, s5, s6 },
+        IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1, s2 },
                 "UI freeze of 10s at 08:09:02.936", newRuntimeException("stand-in-stacktrace"));
-        // 2, 3 and 5 should be filtered, 1,4 and 6 remain
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
                 settings);
-        assertThat(newStatus.getChildren().size(), is(3));
-        assertThat(newStatus.getChildren().get(0).getException().getMessage(), is("Stack Trace 1"));
-        assertThat(newStatus.getChildren().get(1).getException().getMessage(), is("Stack Trace 4"));
-        assertThat(newStatus.getChildren().get(2).getException().getMessage(), is("Stack Trace 6"));
+        assertThat(newStatus.getChildren().size(), is(1));
+        assertThat(newStatus.getMessage(),
+                is("UI freeze of 10s at 08:09:02.936 [1 child-status duplicates removed by Error Reporting]"));
     }
 
     @Test
@@ -324,6 +266,45 @@ public class ErrorReportsTest {
         report.setStatus(mf.createStatus());
         report.getStatus().setException(mf.createThrowable());
         ErrorReports.prettyPrint(report, settings);
+
+    }
+
+    public void testMultistatusMainStacktracesNotFiltered() {
+        settings = ModelFactory.eINSTANCE.createSettings();
+        settings.getWhitelistedPackages().add("org.");
+
+        Exception e1 = new Exception("Stack Trace");
+        java.lang.StackTraceElement[] stackTrace = createStackTrace("java.lang.Thread",
+                "org.eclipse.recommenders.stacktraces.rcp.actions.UiFreezeAction",
+                "org.eclipse.ui.internal.PluginAction", "org.eclipse.ui.internal.WWinPluginAction",
+                "org.eclipse.jface.action.ActionContributionItem", "org.eclipse.jface.action.ActionContributionItem",
+                "org.eclipse.jface.action.ActionContributionItem", "org.eclipse.swt.widgets.EventTable",
+                "org.eclipse.swt.widgets.Display", "org.eclipse.swt.widgets.Widget", "org.eclipse.swt.widgets.Display",
+                "org.eclipse.swt.widgets.Display", "org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine",
+                "org.eclipse.core.databinding.observable.Realm",
+                "org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine",
+                "org.eclipse.e4.ui.internal.workbench.E4Workbench", "org.eclipse.ui.internal.Workbench",
+                "org.eclipse.core.databinding.observable.Realm", "org.eclipse.ui.internal.Workbench",
+                "org.eclipse.ui.PlatformUI", "org.eclipse.ui.internal.ide.application.IDEApplication",
+                "org.eclipse.equinox.internal.app.EclipseAppHandle",
+                "org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher",
+                "org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher",
+                "org.eclipse.core.runtime.adaptor.EclipseStarter", "org.eclipse.core.runtime.adaptor.EclipseStarter",
+                "sun.reflect.NativeMethodAccessorImpl", "sun.reflect.NativeMethodAccessorImpl",
+                "sun.reflect.DelegatingMethodAccessorImpl", "java.lang.reflect.Method",
+                "org.eclipse.equinox.launcher.Main", "org.eclipse.equinox.launcher.Main",
+                "org.eclipse.equinox.launcher.Main", "org.eclipse.equinox.launcher.Main",
+                "org.eclipse.equinox.launcher.Main");
+        e1.setStackTrace(stackTrace);
+        IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring", "Sample at 11:25:04.447 (+1,331s)\n"
+                + "Thread 'main' tid=1 (TIMED_WAITING)", e1);
+
+        IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1 },
+                "UI freeze of 6,0s at 11:24:59.108", newRuntimeException("stand-in-stacktrace"));
+        org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
+                settings);
+        assertThat(newStatus.getChildren().size(), is(1));
+        assertThat(newStatus.getChildren().get(0).getException().getStackTrace().size(), is(stackTrace.length));
     }
 
     private static RuntimeException newRuntimeException(String message) {
