@@ -23,6 +23,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.testing.RetainSystemProperties;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +32,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import com.google.common.base.Optional;
 
 public class LogListenerTest {
 
@@ -118,6 +121,18 @@ public class LogListenerTest {
         sut.logging(empty, "");
 
         assertThat(empty.getException(), nullValue());
+    }
+
+    @Test
+    public void testUnavailableShell() {
+        // only for this test: use all ui-features and settings
+        // reproduces Bug 448860
+        sut = spy(new LogListener());
+        doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
+        Optional<Shell> absent = Optional.absent();
+        when(sut.getWorkbenchWindowShell()).thenReturn(absent);
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+        sut.logging(status, "");
     }
 
     @Test

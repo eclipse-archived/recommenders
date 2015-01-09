@@ -31,9 +31,11 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -65,12 +67,16 @@ public class LogListener implements ILogListener, IStartup {
     @Override
     public void logging(final IStatus status, String nouse) {
         try {
-            if (!isReportingAllowedInEnvironment() || !isErrorSeverity(status)) {
+            if (!isReportingAllowedInEnvironment() || !isErrorSeverity(status) || isWorkbenchClosing()) {
                 return;
             }
             settings = readSettings();
             if (!settings.isConfigured()) {
                 firstConfiguration();
+            }
+            if (!settings.isConfigured()) {
+                Logs.log(LogMessages.FIRST_CONFIGURATION_FAILED);
+                return;
             }
             if (!hasPluginIdWhitelistedPrefix(status, settings.getWhitelistedPluginIds())) {
                 return;
@@ -93,6 +99,10 @@ public class LogListener implements ILogListener, IStartup {
         } catch (Exception e) {
             Logs.log(LogMessages.REPORTING_ERROR, e);
         }
+    }
+
+    private boolean isWorkbenchClosing() {
+        return PlatformUI.getWorkbench().isClosing();
     }
 
     private boolean isReportingAllowedInEnvironment() {
@@ -164,9 +174,11 @@ public class LogListener implements ILogListener, IStartup {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-                Configurator.ConfigureWithDialog(settings, shell);
-                PreferenceInitializer.saveSettings(settings);
+                Optional<Shell> shell = getWorkbenchWindowShell();
+                if (shell.isPresent()) {
+                    Configurator.ConfigureWithDialog(settings, shell.get());
+                    PreferenceInitializer.saveSettings(settings);
+                }
             }
         });
     }
@@ -202,18 +214,20 @@ public class LogListener implements ILogListener, IStartup {
                     return;
                 }
                 isDialogOpen = true;
-                Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-                ErrorReportDialog reportDialog = new ErrorReportDialog(shell, settings, errorReports) {
-                    @Override
-                    public boolean close() {
-                        boolean close = super.close();
-                        if (close) {
-                            isDialogOpen = false;
+                Optional<Shell> shell = getWorkbenchWindowShell();
+                if (shell.isPresent()) {
+                    ErrorReportDialog reportDialog = new ErrorReportDialog(shell.get(), settings, errorReports) {
+                        @Override
+                        public boolean close() {
+                            boolean close = super.close();
+                            if (close) {
+                                isDialogOpen = false;
+                            }
+                            return close;
                         }
-                        return close;
-                    }
-                };
-                reportDialog.open();
+                    };
+                    reportDialog.open();
+                }
             }
         });
     }
@@ -225,5 +239,17 @@ public class LogListener implements ILogListener, IStartup {
             return;
         }
         new UploadJob(report, settings, URI.create(settings.getServerUrl())).schedule();
+    }
+
+    @VisibleForTesting
+    protected Optional<Shell> getWorkbenchWindowShell() {
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (workbenchWindow != null) {
+            Shell shell = workbenchWindow.getShell();
+            if (shell != null) {
+                return Optional.of(shell);
+            }
+        }
+        return Optional.absent();
     }
 }

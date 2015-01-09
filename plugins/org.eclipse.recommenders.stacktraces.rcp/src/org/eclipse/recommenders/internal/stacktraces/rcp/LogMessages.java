@@ -39,6 +39,9 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage REPORTING_ERROR = new LogMessages(WARNING, "Error during error-reporting");
 
+    public static final ILogMessage FIRST_CONFIGURATION_FAILED = new LogMessages(WARNING,
+            "First configuration failed, please check the log"); //$NON-NLS-1$
+
     public LogMessages(int severity, String message) {
         super(severity, code++, message);
     }
