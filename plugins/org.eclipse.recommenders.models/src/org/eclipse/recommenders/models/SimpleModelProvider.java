@@ -72,7 +72,18 @@ public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implement
                 return absent();
             }
 
-            ZipFile zip = openZips.get(mc);
+            final ZipFile zip;
+            try {
+                zip = openZips.get(mc);
+            } catch (UncheckedExecutionException e) {
+                if (IllegalStateException.class.equals(e.getCause().getClass())) {
+                    // repository.getLocation(..) returned absent. Try to load ZIP file again next time.
+                    // This is a workaround as LoadingCache cannot be made to cache hits but try again on a cache miss.
+                    return absent();
+                } else {
+                    throw e;
+                }
+            }
 
             return doAcquireModel(key, zip);
         } catch (Exception e) {
