@@ -94,26 +94,20 @@ public class JayesCallModel implements ICallModel {
 
     public static ICallModel load(InputStream is, ITypeName type) throws IOException {
         BayesNet net = getModel(is, type);
-        ICallModel model = null;
-
-        if (net != null) {
-            ICallModel m = new JayesCallModel(type, net);
-        }
-
-        return model;
+        return new JayesCallModel(type, net);
     }
 
     private static BayesNet getModel(InputStream is, ITypeName type) throws IOException {
         IBayesNetReader rdr = new JayesBifReader(is);
         try {
-            BayesNet net = rdr.read();
-            return net;
+            return rdr.read();
         } finally {
             IOUtils.closeQuietly(rdr);
         }
     }
 
     private static final class StringToMethodNameFunction implements Function<String, IMethodName> {
+
         @Override
         public IMethodName apply(final String input) {
             return VmMethodName.get(input);
@@ -207,8 +201,8 @@ public class JayesCallModel implements ICallModel {
             BayesNode node = pair.getValue();
             IMethodName method = pair.getKey();
             if (evidence.containsKey(node) && evidence.get(node).equals(Constants.N_STATE_TRUE)
-            // remove the NULL that may have been introduced by
-            // res.add(compute...)
+                    // remove the NULL that may have been introduced by
+                    // res.add(compute...)
                     && !VmMethodName.NULL.equals(method)) {
                 builder.add(method);
             }

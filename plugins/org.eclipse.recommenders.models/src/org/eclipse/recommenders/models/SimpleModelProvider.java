@@ -92,7 +92,6 @@ public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implement
             } else {
                 return Optional.of(loadModel(in, key));
             }
-
         } catch (UncheckedExecutionException e) {
             if (IllegalStateException.class.equals(e.getCause().getClass())) {
                 // repository.getLocation(..) returned absent. Try to load ZIP file again next time.

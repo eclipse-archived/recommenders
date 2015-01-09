@@ -21,12 +21,11 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.models.UniqueMethodName;
-import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
 public class MethodSelfCallsDirectivesModelProvider extends
-        PoolingModelProvider<UniqueMethodName, MethodSelfcallDirectives> {
+PoolingModelProvider<UniqueMethodName, MethodSelfcallDirectives> {
 
     public MethodSelfCallsDirectivesModelProvider(IModelRepository repository, IModelIndex index,
             Map<String, IInputStreamTransformer> transformers) {
@@ -35,9 +34,7 @@ public class MethodSelfCallsDirectivesModelProvider extends
 
     @Override
     protected MethodSelfcallDirectives loadModel(InputStream in, UniqueMethodName key) throws IOException {
-        MethodSelfcallDirectives res = GsonUtil.deserialize(in, MethodSelfcallDirectives.class);
-        IOUtils.closeQuietly(in);
-        return res;
+        return GsonUtil.deserialize(in, MethodSelfcallDirectives.class);
     }
 
     @Override

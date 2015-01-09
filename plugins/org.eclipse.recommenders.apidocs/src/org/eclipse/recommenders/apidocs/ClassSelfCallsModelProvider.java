@@ -21,7 +21,6 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
-import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
@@ -34,9 +33,7 @@ public class ClassSelfCallsModelProvider extends PoolingModelProvider<UniqueType
 
     @Override
     protected ClassSelfcallDirectives loadModel(InputStream in, UniqueTypeName key) throws IOException {
-        ClassSelfcallDirectives res = GsonUtil.deserialize(in, ClassSelfcallDirectives.class);
-        IOUtils.closeQuietly(in);
-        return res;
+        return GsonUtil.deserialize(in, ClassSelfcallDirectives.class);
     }
 
     @Override
