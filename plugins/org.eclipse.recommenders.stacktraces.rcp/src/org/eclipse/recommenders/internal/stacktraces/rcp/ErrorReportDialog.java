@@ -89,7 +89,8 @@ public class ErrorReportDialog extends MessageDialog {
                 TITLE_IMAGE_DESC.createImage(),
                 "We noticed a new error event was logged. Such error events may reveal issues in the Eclipse codebase, and thus we kindly ask you to report it to eclipse.org.",
                 MessageDialog.WARNING, new String[] { "Send", "Don't Send" }, 0);
-        setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL);
+        setShellStyle(SWT.MODELESS | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX);
+        setBlockOnOpen(false);
         this.settings = settings;
         this.errors = errors;
     }
