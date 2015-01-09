@@ -34,6 +34,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -77,8 +78,12 @@ public class UploadJob extends Job {
             setProperty(IProgressConstants.ACTION_PROPERTY, new Action() {
                 @Override
                 public void run() {
-                    Shell activeShell = Display.getCurrent().getActiveShell();
-                    new ThankYouDialog(activeShell, state).open();
+                    try {
+                        Shell activeShell = Display.getCurrent().getActiveShell();
+                        new ThankYouDialog(activeShell, state).open();
+                    } catch (Exception e) {
+                        Logs.log(LogMessages.THANK_YOU_DIALOG_ERROR, e);
+                    }
                 }
             });
             Optional<String> info = state.getInformation();

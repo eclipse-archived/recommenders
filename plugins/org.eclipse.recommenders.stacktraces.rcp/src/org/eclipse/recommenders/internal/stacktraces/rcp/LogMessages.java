@@ -41,6 +41,7 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage FIRST_CONFIGURATION_FAILED = new LogMessages(WARNING,
             "First configuration failed, please check the log"); //$NON-NLS-1$
+    public static final ILogMessage THANK_YOU_DIALOG_ERROR = new LogMessages(WARNING, "Error in thank you dialog"); //$NON-NLS-1$
 
     public LogMessages(int severity, String message) {
         super(severity, code++, message);
