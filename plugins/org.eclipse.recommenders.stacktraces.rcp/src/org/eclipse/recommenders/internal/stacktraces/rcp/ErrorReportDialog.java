@@ -211,7 +211,7 @@ public class ErrorReportDialog extends MessageDialog {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.keyCode == SWT.DEL) {
+                if (e.keyCode == SWT.DEL || e.keyCode == SWT.BS) {
                     deleteSelection();
                 }
             }
