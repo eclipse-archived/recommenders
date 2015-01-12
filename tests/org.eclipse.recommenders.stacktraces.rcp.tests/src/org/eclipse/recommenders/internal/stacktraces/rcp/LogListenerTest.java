@@ -26,6 +26,7 @@ import org.eclipse.recommenders.testing.RetainSystemProperties;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -124,6 +125,7 @@ public class LogListenerTest {
     }
 
     @Test
+    @Ignore
     public void testUnavailableShell() {
         // only for this test: use all ui-features and settings
         // reproduces Bug 448860
