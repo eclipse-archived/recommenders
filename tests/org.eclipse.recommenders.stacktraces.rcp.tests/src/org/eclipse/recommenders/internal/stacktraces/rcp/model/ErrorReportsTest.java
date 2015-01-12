@@ -298,6 +298,34 @@ public class ErrorReportsTest {
         assertThat(newStatus.getChildren().size(), is(0));
     }
 
+    @Test
+    public void testPrettyPrintNullSafe1() {
+        ModelFactory mf = ModelFactory.eINSTANCE;
+        settings = mf.createSettings();
+        ErrorReport report = mf.createErrorReport();
+        ErrorReports.prettyPrint(report, settings);
+
+    }
+
+    @Test
+    public void testPrettyPrintNullSafe2() {
+        ModelFactory mf = ModelFactory.eINSTANCE;
+        settings = mf.createSettings();
+        ErrorReport report = mf.createErrorReport();
+        report.setStatus(mf.createStatus());
+        ErrorReports.prettyPrint(report, settings);
+    }
+
+    @Test
+    public void testPrettyPrintNullSafe3() {
+        ModelFactory mf = ModelFactory.eINSTANCE;
+        settings = mf.createSettings();
+        ErrorReport report = mf.createErrorReport();
+        report.setStatus(mf.createStatus());
+        report.getStatus().setException(mf.createThrowable());
+        ErrorReports.prettyPrint(report, settings);
+    }
+
     private static RuntimeException newRuntimeException(String message) {
         RuntimeException cause = new RuntimeException(message);
         cause.fillInStackTrace();

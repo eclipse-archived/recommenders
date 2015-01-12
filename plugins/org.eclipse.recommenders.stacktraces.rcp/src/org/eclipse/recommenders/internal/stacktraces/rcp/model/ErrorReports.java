@@ -164,7 +164,12 @@ public class ErrorReports {
             appendHeadline("STATUS", statusStringBuilder);
             appendAttributes(status, statusStringBuilder);
             statusStringBuilder.append("Exception:");
-            append(status.getException(), statusStringBuilder);
+            Throwable exception = status.getException();
+            if (exception != null) {
+                append(exception, statusStringBuilder);
+            } else {
+                statusStringBuilder.append("null");
+            }
             super.visit(status);
         }
 
