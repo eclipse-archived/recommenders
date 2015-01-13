@@ -334,7 +334,7 @@ public class SnippetCodeBuilder {
         String uniqueName = generateUniqueVariableName(null, name);
         String joinedImports = Joiner.on(", ").join(imports); //$NON-NLS-1$
         sb.append('$').append('{').append(uniqueName).append(':').append(name).append('(').append(joinedImports)
-        .append(')').append('}');
+                .append(')').append('}');
         return true;
     }
 
@@ -347,11 +347,8 @@ public class SnippetCodeBuilder {
             // fetch the selection's starting line from the editor document to
             // determine the number of leading
             // whitespace characters to remove from the snippet:
-            int startLineIndex = doc.getLineOfOffset(textSelection.getOffset());
-            int startLineBeginOffset = doc.getLineOffset(startLineIndex);
-            int startLineEndOffset = doc.getLineOffset(startLineIndex + 1) - 1;
-            int lineLength = startLineEndOffset - startLineBeginOffset;
-            String line = doc.get(startLineBeginOffset, lineLength);
+            IRegion firstLineInfo = doc.getLineInformationOfOffset(textSelection.getOffset());
+            String line = doc.get(firstLineInfo.getOffset(), firstLineInfo.getLength());
 
             int index = 0;
             for (; index < line.length(); index++) {

@@ -228,7 +228,7 @@ public class JavaProjectFixture {
         while ((pos = sb.indexOf(marker, pos)) != -1) {
             sb.deleteCharAt(pos);
             markers.add(pos);
-            ensureIsTrue(pos < sb.length());
+            ensureIsTrue(pos <= sb.length());
             pos--;
         }
         return newPair(sb.toString(), markers);
