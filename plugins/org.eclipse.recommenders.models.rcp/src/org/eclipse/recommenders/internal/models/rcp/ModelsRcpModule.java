@@ -154,6 +154,7 @@ public class ModelsRcpModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
     public Map<String, IInputStreamTransformer> provideTransformers() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 EXT_ID_TRANSFORMERS_CLASSIFIER);
