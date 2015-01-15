@@ -39,7 +39,7 @@ public class Messages extends NLS {
     public static String FIELD_LABEL_EMAIL;
     public static String FIELD_DESC_EMAIL;
     public static String FIELD_MESSAGE_EMAIL;
-    public static String SETTINGSPAGE_TITEL;
+    public static String SETTINGSPAGE_TITLE;
     public static String SETTINGSPAGE_DESC;
     public static String SETTINGSPAGE_GROUPLABEL_PERSONAL;
     public static String LINK_LEARN_MORE;

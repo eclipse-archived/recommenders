@@ -22,6 +22,7 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
@@ -30,6 +31,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+
+    private static final Point TOOLTIP_DISPLACEMENT = new Point(5, 20);
+    private static int TOOLTIP_MS_HIDE_DELAY = 20000;
 
     public PreferencePage() {
         super(GRID);
@@ -44,33 +48,46 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     @Override
     protected void createFieldEditors() {
         addField(new StringFieldEditor(PROP_SERVER, Messages.FIELD_LABEL_SERVER, getFieldEditorParent()));
-        addField(new StringFieldEditor(PROP_NAME, Messages.FIELD_LABEL_NAME, getFieldEditorParent()));
-        addField(new StringFieldEditor(PROP_EMAIL, Messages.FIELD_LABEL_EMAIL, getFieldEditorParent()));
+
+        addField(createStringFieldEditorAndToolTip(PROP_NAME, Messages.FIELD_LABEL_NAME, Messages.FIELD_MESSAGE_NAME));
+        addField(createStringFieldEditorAndToolTip(PROP_EMAIL, Messages.FIELD_LABEL_EMAIL, Messages.FIELD_MESSAGE_EMAIL
+                + " \n" + Messages.FIELD_DESC_EMAIL)); //$NON-NLS-1$
+
         addField(new ComboFieldEditor(PROP_SEND_ACTION, Messages.FIELD_LABEL_ACTION, createModeLabelAndValues(),
                 getFieldEditorParent()));
 
-        BooleanFieldEditor skipSimilarErrorsFieldEditor = new BooleanFieldEditor(PROP_SKIP_SIMILAR_ERRORS,
-                Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS, getFieldEditorParent());
-        DefaultToolTip skipSimilarErrorsToolTip = new DefaultToolTip(
-                skipSimilarErrorsFieldEditor.getDescriptionControl(getFieldEditorParent()));
-        skipSimilarErrorsToolTip.setText(Messages.TOOLTIP_SKIP_SIMILAR);
-        addField(skipSimilarErrorsFieldEditor);
-
-        BooleanFieldEditor anonymizeStacktracesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_STACKTRACES,
-                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, getFieldEditorParent());
-        DefaultToolTip anonymizeStacktracesToolTip = new DefaultToolTip(
-                anonymizeStacktracesFieldEditor.getDescriptionControl(getFieldEditorParent()));
-        anonymizeStacktracesToolTip.setText(Messages.TOOLTIP_MAKE_STACKTRACE_ANONYMOUS);
-        addField(anonymizeStacktracesFieldEditor);
-
-        BooleanFieldEditor clearMessagesFieldEditor = new BooleanFieldEditor(PROP_ANONYMIZE_MESSAGES,
-                Messages.FIELD_LABEL_ANONYMIZE_MESSAGES, getFieldEditorParent());
-        DefaultToolTip clearMessagesToolTip = new DefaultToolTip(
-                clearMessagesFieldEditor.getDescriptionControl(getFieldEditorParent()));
-        clearMessagesToolTip.setText(Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS);
-        addField(clearMessagesFieldEditor);
+        addField(createBooleanFieldEditorAndToolTip(PROP_SKIP_SIMILAR_ERRORS, Messages.FIELD_LABEL_SKIP_SIMILAR_ERRORS,
+                Messages.TOOLTIP_SKIP_SIMILAR));
+        addField(createBooleanFieldEditorAndToolTip(PROP_ANONYMIZE_STACKTRACES,
+                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, Messages.TOOLTIP_MAKE_STACKTRACE_ANONYMOUS));
+        addField(createBooleanFieldEditorAndToolTip(PROP_ANONYMIZE_MESSAGES, Messages.FIELD_LABEL_ANONYMIZE_MESSAGES,
+                Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS));
 
         addLinks(getFieldEditorParent());
+    }
+
+    private StringFieldEditor createStringFieldEditorAndToolTip(String name, String labelText, String toolTipText) {
+        StringFieldEditor stringFieldEditor = new StringFieldEditor(name, labelText, getFieldEditorParent());
+        DefaultToolTip toolTip = new DefaultToolTip(stringFieldEditor.getLabelControl(getFieldEditorParent()));
+        calibrateTooltip(toolTip, toolTipText);
+
+        return stringFieldEditor;
+    }
+
+    private BooleanFieldEditor createBooleanFieldEditorAndToolTip(String fieldEditorName, String fieldEditorLabel,
+            String toolTipText) {
+        BooleanFieldEditor booleanFieldEditor = new BooleanFieldEditor(fieldEditorName, fieldEditorLabel,
+                getFieldEditorParent());
+        DefaultToolTip toolTip = new DefaultToolTip(booleanFieldEditor.getDescriptionControl(getFieldEditorParent()));
+        calibrateTooltip(toolTip, toolTipText);
+
+        return booleanFieldEditor;
+    }
+
+    private void calibrateTooltip(DefaultToolTip toolTip, String toolTipText) {
+        toolTip.setText(toolTipText);
+        toolTip.setShift(TOOLTIP_DISPLACEMENT);
+        toolTip.setHideDelay(TOOLTIP_MS_HIDE_DELAY);
     }
 
     private void addLinks(Composite parent) {

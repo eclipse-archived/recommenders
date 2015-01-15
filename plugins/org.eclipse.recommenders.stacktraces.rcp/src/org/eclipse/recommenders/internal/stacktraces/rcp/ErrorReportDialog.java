@@ -150,7 +150,7 @@ public class ErrorReportDialog extends MessageDialog {
 
         commentText = new Text(commentContent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
         commentText.setToolTipText("If possible, please provide additional information "
-                + "like steps that allow committers to reproduce this error.");
+                + "such as steps that allow committers to reproduce this error.");
         commentText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent event) {

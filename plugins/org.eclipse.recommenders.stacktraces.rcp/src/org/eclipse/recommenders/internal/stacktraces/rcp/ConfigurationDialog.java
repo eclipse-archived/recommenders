@@ -21,11 +21,13 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -47,6 +49,9 @@ public class ConfigurationDialog extends TitleAreaDialog {
     public static final int ESC_CANCEL = 42 + 42;
     public static final ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ConfigurationDialog.class,
             "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
+
+    private static final Point TOOLTIP_DISPLACEMENT = new Point(5, 20);
+    private static int TOOLTIP_MS_HIDE_DELAY = 20000;
     private Text emailText;
     private Text nameText;
     private Button anonymizeStacktracesButton;
@@ -122,20 +127,21 @@ public class ConfigurationDialog extends TitleAreaDialog {
         Label nameLabel = new Label(personalGroup, SWT.NONE);
         nameLabel.setText(Messages.FIELD_LABEL_NAME);
         String nameTooltip = Messages.FIELD_MESSAGE_NAME;
-        nameLabel.setToolTipText(nameTooltip);
+        calibrateTooltip(new DefaultToolTip(nameLabel), nameTooltip);
         nameText = new Text(personalGroup, SWT.BORDER);
         nameText.setMessage(nameTooltip);
-        nameText.setToolTipText(nameTooltip);
+        calibrateTooltip(new DefaultToolTip(nameText), nameTooltip);
         grab.applyTo(nameText);
 
         Label emailLabel = new Label(personalGroup, SWT.NONE);
         emailLabel.setText(Messages.FIELD_LABEL_EMAIL);
-        String emailTooltip = Messages.FIELD_MESSAGE_EMAIL + Messages.FIELD_DESC_EMAIL;
-        emailLabel.setToolTipText(emailTooltip);
+        String emailTooltip = Messages.FIELD_MESSAGE_EMAIL + " \n" + Messages.FIELD_DESC_EMAIL; //$NON-NLS-1$
+        calibrateTooltip(new DefaultToolTip(emailLabel), emailTooltip);
         emailText = new Text(personalGroup, SWT.BORDER);
         emailText.setMessage(Messages.FIELD_MESSAGE_EMAIL);
-        emailText.setToolTipText(emailTooltip);
+        calibrateTooltip(new DefaultToolTip(emailText), emailTooltip);
         grab.applyTo(emailText);
+
         return personalGroup;
     }
 
@@ -198,5 +204,11 @@ public class ConfigurationDialog extends TitleAreaDialog {
         IObservableValue ovBtnAnonMsg = selection().observe(clearMessagesButton);
         IObservableValue ovSetAnonMsg = value(pkg.getSettings_AnonymizeMessages()).observe(settings);
         context.bindValue(ovBtnAnonMsg, ovSetAnonMsg, null, null);
+    }
+
+    private void calibrateTooltip(DefaultToolTip toolTip, String toolTipText) {
+        toolTip.setText(toolTipText);
+        toolTip.setShift(TOOLTIP_DISPLACEMENT);
+        toolTip.setHideDelay(TOOLTIP_MS_HIDE_DELAY);
     }
 }
