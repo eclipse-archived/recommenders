@@ -43,6 +43,14 @@ public final class LogMessages extends DefaultLogMessage {
             "First configuration failed, please check the log"); //$NON-NLS-1$
     public static final ILogMessage THANK_YOU_DIALOG_ERROR = new LogMessages(WARNING, "Error in thank you dialog"); //$NON-NLS-1$
 
+    public static final LogMessages HISTORY_NOT_AVAILABLE = new LogMessages(WARNING, "History service is not available"); //$NON-NLS-1$
+    public static final LogMessages HISTORY_NO_FINGERPRINT = new LogMessages(WARNING,
+            "Cannot index error report without fingerprint"); //$NON-NLS-1$
+    public static final LogMessages HISTORY_STOP_FAILED = new LogMessages(WARNING,
+            "Stoping the history service failed."); //$NON-NLS-1$
+    public static final LogMessages HISTORY_START_FAILED = new LogMessages(WARNING,
+            "Starting the history service failed."); //$NON-NLS-1$
+
     public LogMessages(int severity, String message) {
         super(severity, code++, message);
     }

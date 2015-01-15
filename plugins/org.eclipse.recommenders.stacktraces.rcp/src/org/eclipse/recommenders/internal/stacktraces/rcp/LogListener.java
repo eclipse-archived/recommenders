@@ -6,17 +6,19 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Marcel Bruch - initial API and implementation.
- *    Daniel Haftstein - added UI thread safety
+ *    Marcel Bruch, Daniel Haftstein - initial API and implementation.
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static com.google.common.base.Objects.equal;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.*;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
@@ -31,44 +33,78 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class LogListener implements ILogListener, IStartup {
 
-    private Cache<String, ErrorReport> cache = CacheBuilder.newBuilder()
-            .maximumSize(Constants.PREVIOUS_ERROR_CACHE_MAXIMUM_SIZE)
-            .expireAfterAccess(Constants.PREVIOUS_ERROR_CACHE_EXPIRE_AFTER_ACCESS_MINUTES, TimeUnit.MINUTES).build();
-    private IObservableList errorReports;
+    private IObservableList queueUI;
+    // careful! do never make any modifications to this list! It's a means to access the queued reports outside the UI
+    // thread. TODO is there a better way?
+    private ArrayList<ErrorReport> queueRO;
     private volatile boolean isDialogOpen;
     private Settings settings;
     private StandInStacktraceProvider stacktraceProvider = new StandInStacktraceProvider();
+    private History history;
 
     public LogListener() {
         Display.getDefault().syncExec(new Runnable() {
+
             @Override
             public void run() {
-                errorReports = Properties.selfList(ErrorReport.class).observe(Lists.newArrayList());
+                queueRO = Lists.newArrayList();
+                queueUI = Properties.selfList(ErrorReport.class).observe(queueRO);
             }
         });
+    }
+
+    @VisibleForTesting
+    public LogListener(History history) {
+        this();
+        this.history = history;
     }
 
     @Override
     public void earlyStartup() {
         Platform.addLogListener(this);
+        try {
+            history = new History();
+            history.startAsync();
+        } catch (Exception e1) {
+            log(HISTORY_START_FAILED);
+        }
+        PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+            @Override
+            public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                try {
+                    history.stopAsync();
+                    history.awaitTerminated();
+                } catch (Exception e) {
+                    log(HISTORY_STOP_FAILED);
+                }
+                return true;
+            }
+
+            @Override
+            public void postShutdown(IWorkbench workbench) {
+            }
+        });
     }
 
     @Override
     public void logging(final IStatus status, String nouse) {
         try {
-            if (!isReportingAllowedInEnvironment() || !isErrorSeverity(status) || isWorkbenchClosing()) {
+            if (!isReportingAllowedInEnvironment() || !isErrorSeverity(status) || isWorkbenchClosing()
+                    || !isHistoryRunning()) {
                 return;
             }
+
             settings = readSettings();
             if (!settings.isConfigured()) {
                 firstConfiguration();
@@ -86,10 +122,11 @@ public class LogListener implements ILogListener, IStartup {
             }
             final ErrorReport report = newErrorReport(status, settings);
             stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
-            if (settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
+            if (alreadyQueued(report) || settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
                 return;
             }
             addForSending(report);
+
             if (sendAction == SendAction.ASK) {
                 checkAndSendWithDialog(report);
             } else if (sendAction == SendAction.SILENT) {
@@ -98,6 +135,22 @@ public class LogListener implements ILogListener, IStartup {
         } catch (Exception e) {
             Logs.log(LogMessages.REPORTING_ERROR, e);
         }
+    }
+
+    private boolean alreadyQueued(ErrorReport report) {
+        for (ErrorReport r : queueRO) {
+            if (equal(getFingerprint(report), getFingerprint(r))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isHistoryRunning() {
+        if (history == null) {
+            return false;
+        }
+        return history.isRunning();
     }
 
     private boolean isWorkbenchClosing() {
@@ -114,22 +167,17 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private void sendList() {
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                for (Object entry : errorReports) {
-                    ErrorReport report = Checks.cast(entry);
-                    sendStatus(report);
-                }
-            }
-        });
+        for (ErrorReport entry : queueRO) {
+            ErrorReport report = Checks.cast(entry);
+            sendStatus(report);
+        }
     }
 
     private void clear() {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                errorReports.clear();
+                queueUI.clear();
             }
         });
     }
@@ -166,7 +214,7 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     private boolean sentSimilarErrorBefore(final ErrorReport report) {
-        return cache.getIfPresent(computeCacheKey(report)) != null;
+        return history.seen(report);
     }
 
     private void firstConfiguration() {
@@ -182,18 +230,13 @@ public class LogListener implements ILogListener, IStartup {
         });
     }
 
-    private String computeCacheKey(final ErrorReport report) {
-        return report.getStatus().getFingerprint();
-    }
-
     private void addForSending(final ErrorReport report) {
         Runnable run = new Runnable() {
             @Override
             public void run() {
-                errorReports.add(report);
+                queueUI.add(report);
             }
         };
-        cache.put(computeCacheKey(report), report);
         Display current = Display.getCurrent();
         if (current != null) {
             run.run();
@@ -215,7 +258,7 @@ public class LogListener implements ILogListener, IStartup {
                 isDialogOpen = true;
                 Optional<Shell> shell = getWorkbenchWindowShell();
                 if (shell.isPresent()) {
-                    ErrorReportDialog reportDialog = new ErrorReportDialog(shell.get(), settings, errorReports) {
+                    ErrorReportDialog reportDialog = new ErrorReportDialog(shell.get(), history, settings, queueUI) {
                         @Override
                         public boolean close() {
                             boolean close = super.close();
@@ -237,7 +280,7 @@ public class LogListener implements ILogListener, IStartup {
         if (settings.getAction() == SendAction.IGNORE) {
             return;
         }
-        new UploadJob(report, settings, URI.create(settings.getServerUrl())).schedule();
+        new UploadJob(report, history, settings, URI.create(settings.getServerUrl())).schedule();
     }
 
     @VisibleForTesting

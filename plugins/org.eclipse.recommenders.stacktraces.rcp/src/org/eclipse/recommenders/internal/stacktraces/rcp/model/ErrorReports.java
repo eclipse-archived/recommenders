@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.apache.commons.lang3.StringUtils.*;
 
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import org.eclipse.recommenders.utils.gson.UuidTypeAdapter;
 import org.osgi.framework.Bundle;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
@@ -311,7 +313,7 @@ public class ErrorReports {
         mReport.setEmail(settings.getEmail());
 
         mReport.setJavaRuntimeVersion(SystemUtils.JAVA_RUNTIME_VERSION);
-        mReport.setEclipseBuildId(System.getProperty("eclipse.buildId", "-"));
+        mReport.setEclipseBuildId(getEclipseBuildId().or("-"));
         mReport.setEclipseProduct(System.getProperty("eclipse.product", "-"));
         mReport.setOsgiArch(System.getProperty("osgi.arch", "-"));
         mReport.setOsgiWs(System.getProperty("osgi.ws", "-"));
@@ -321,6 +323,11 @@ public class ErrorReports {
 
         guessInvolvedPlugins(mReport);
         return mReport;
+    }
+
+    public static Optional<String> getEclipseBuildId() {
+        String res = System.getProperty("eclipse.buildId");
+        return fromNullable(res);
     }
 
     private static void guessInvolvedPlugins(ErrorReport mReport) {
@@ -438,5 +445,9 @@ public class ErrorReports {
         PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
         report.accept(prettyPrintVisitor);
         return prettyPrintVisitor.print();
+    }
+
+    public static String getFingerprint(ErrorReport report) {
+        return report.getStatus().getFingerprint();
     }
 }

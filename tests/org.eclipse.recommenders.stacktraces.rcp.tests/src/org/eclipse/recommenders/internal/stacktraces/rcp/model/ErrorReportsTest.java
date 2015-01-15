@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model;
 
-import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
+import static org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportsDTOs.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportsDTOs;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.AnonymizeStacktraceVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,46 +42,9 @@ public class ErrorReportsTest {
 
     private static Settings settings;
 
-    private static ErrorReport createTestEvent() {
-        RuntimeException cause = newRuntimeException("cause");
-        Exception exception = new RuntimeException("exception message", cause);
-        exception.fillInStackTrace();
-        IStatus status = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message",
-                exception);
-
-        settings = ModelFactory.eINSTANCE.createSettings();
-        return newErrorReport(status, settings);
-    }
-
-    private static Throwable createThrowable(String className) {
-        Throwable throwable = ModelFactory.eINSTANCE.createThrowable();
-        throwable.setClassName(className);
-        return throwable;
-    }
-
-    private static StackTraceElement createStackTraceElementDto(String className, String methodName) {
-        StackTraceElement element = ModelFactory.eINSTANCE.createStackTraceElement();
-        element.setClassName(className);
-        element.setMethodName(methodName);
-        element.setFileName("file.java");
-        return element;
-    }
-
-    private static java.lang.StackTraceElement createStackTraceElement(String declaringClass) {
-        return new java.lang.StackTraceElement(declaringClass, "anyMethod", "Classname.java", -1);
-    }
-
-    private static java.lang.StackTraceElement[] createStackTrace(String... declaringClasses) {
-        java.lang.StackTraceElement[] stackTraceElements = new java.lang.StackTraceElement[declaringClasses.length];
-        for (int i = 0; i < declaringClasses.length; i++) {
-            stackTraceElements[i] = createStackTraceElement(declaringClasses[i]);
-        }
-        return stackTraceElements;
-    }
-
     @Test
     public void testClearEventMessage() {
-        ErrorReport event = createTestEvent();
+        ErrorReport event = createTestReport();
 
         ErrorReports.clearMessages(event);
 
@@ -89,7 +53,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testClearThrowableMessage() {
-        ErrorReport event = createTestEvent();
+        ErrorReport event = createTestReport();
         ErrorReports.clearMessages(event);
         assertThat(event.getStatus().getException().getMessage(), is(ANONYMIZED_TAG));
     }
@@ -110,7 +74,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testAnonymizeStackTraceElementDtoClassnames() {
-        StackTraceElement element = createStackTraceElementDto(NOT_WHITELISTED_CLASSNAME_2,
+        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2,
                 NOT_WHITELISTED_METHODNAME_2);
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getClassName(), is(ANONYMIZED_TAG));
@@ -118,14 +82,14 @@ public class ErrorReportsTest {
 
     @Test
     public void testAnonymizeStackTraceElementDtoWhitelistedClassnames() {
-        StackTraceElement element = createStackTraceElementDto(WHITELISTED_CLASSNAME, "");
+        StackTraceElement element = createStackTraceElement(WHITELISTED_CLASSNAME, "");
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getClassName(), is(WHITELISTED_CLASSNAME));
     }
 
     @Test
     public void testAnonymizeStackTraceElementMethodname() {
-        StackTraceElement element = createStackTraceElementDto(NOT_WHITELISTED_CLASSNAME_2,
+        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2,
                 NOT_WHITELISTED_METHODNAME_2);
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getMethodName(), is(ANONYMIZED_TAG));
@@ -133,7 +97,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testAnonymizeStackTraceElementWhitelistedMethodname() {
-        StackTraceElement element = createStackTraceElementDto(WHITELISTED_CLASSNAME_2, WHITELISTED_METHODNAME_2);
+        StackTraceElement element = createStackTraceElement(WHITELISTED_CLASSNAME_2, WHITELISTED_METHODNAME_2);
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getMethodName(), is(WHITELISTED_METHODNAME_2));
     }
@@ -141,8 +105,8 @@ public class ErrorReportsTest {
     @Test
     public void testFingerprint() {
 
-        Exception cause = newRuntimeException("cause");
-        Exception r1 = newRuntimeException("exception message");
+        Exception cause = new RuntimeException("cause");
+        Exception r1 = new RuntimeException("exception message");
 
         r1.fillInStackTrace();
         Exception r2 = new RuntimeException("exception message", cause);
@@ -162,7 +126,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testFingerprintNested() {
-        Exception root = newRuntimeException("root");
+        Exception root = new RuntimeException("root");
         IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", root);
         IStatus s2 = new MultiStatus("org.eclipse.recommenders.stacktraces", 0, new IStatus[] { s1 },
                 "some error message", root);
@@ -201,21 +165,22 @@ public class ErrorReportsTest {
         settings.getWhitelistedPackages().add("org.");
 
         Exception e1 = new Exception("Stack Trace");
-        e1.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
+        e1.setStackTrace(createStacktraceForClasses("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
                 "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.Worker"));
         IStatus s1 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
                 "Thread 'Worker-3' tid=39 (TIMED_WAITING)\n"
                         + "Waiting for: org.eclipse.core.internal.jobs.WorkerPool@416dc7fc", e1);
 
         Exception e2 = new Exception("Stack Trace");
-        e2.setStackTrace(createStackTrace("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
-                "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.Worker"));
+        e2.setStackTrace(ErrorReportsDTOs.createStacktraceForClasses("java.lang.Object",
+                "org.eclipse.core.internal.jobs.WorkerPool", "org.eclipse.core.internal.jobs.WorkerPool",
+                "org.eclipse.core.internal.jobs.Worker"));
         IStatus s2 = new Status(IStatus.ERROR, "org.eclipse.ui.monitoring",
                 "Thread 'Worker-2' tid=36 (TIMED_WAITING)\n"
                         + "Waiting for: org.eclipse.core.internal.jobs.WorkerPool@416dc7fc", e2);
 
         IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1, s2 },
-                "UI freeze of 10s at 08:09:02.936", newRuntimeException("stand-in-stacktrace"));
+                "UI freeze of 10s at 08:09:02.936", new RuntimeException("stand-in-stacktrace"));
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
                 settings);
         assertThat(newStatus.getChildren().size(), is(1));
@@ -234,7 +199,7 @@ public class ErrorReportsTest {
                 "Thread 'Signal Dispatcher' tid=4 (RUNNABLE)", e1);
 
         IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1 },
-                "UI freeze of 10s at 08:09:02.936", newRuntimeException("stand-in-stacktrace"));
+                "UI freeze of 10s at 08:09:02.936", new RuntimeException("stand-in-stacktrace"));
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
                 settings);
         assertThat(newStatus.getChildren().size(), is(0));
@@ -274,7 +239,7 @@ public class ErrorReportsTest {
         settings.getWhitelistedPackages().add("org.");
 
         Exception e1 = new Exception("Stack Trace");
-        java.lang.StackTraceElement[] stackTrace = createStackTrace("java.lang.Thread",
+        java.lang.StackTraceElement[] stackTrace = createStacktraceForClasses("java.lang.Thread",
                 "org.eclipse.recommenders.stacktraces.rcp.actions.UiFreezeAction",
                 "org.eclipse.ui.internal.PluginAction", "org.eclipse.ui.internal.WWinPluginAction",
                 "org.eclipse.jface.action.ActionContributionItem", "org.eclipse.jface.action.ActionContributionItem",
@@ -300,17 +265,11 @@ public class ErrorReportsTest {
                 + "Thread 'main' tid=1 (TIMED_WAITING)", e1);
 
         IStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, new IStatus[] { s1 },
-                "UI freeze of 6,0s at 11:24:59.108", newRuntimeException("stand-in-stacktrace"));
+                "UI freeze of 6,0s at 11:24:59.108", new RuntimeException("stand-in-stacktrace"));
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status newStatus = ErrorReports.newStatus(multi,
                 settings);
         assertThat(newStatus.getChildren().size(), is(1));
         assertThat(newStatus.getChildren().get(0).getException().getStackTrace().size(), is(stackTrace.length));
-    }
-
-    private static RuntimeException newRuntimeException(String message) {
-        RuntimeException cause = new RuntimeException(message);
-        cause.fillInStackTrace();
-        return cause;
     }
 
 }

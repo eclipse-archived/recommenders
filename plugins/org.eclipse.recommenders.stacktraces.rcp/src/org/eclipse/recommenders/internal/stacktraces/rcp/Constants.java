@@ -77,4 +77,6 @@ public final class Constants {
     public static final String SOURCE_BEGIN_MESSAGE = "----------------------------------- SOURCE BEGIN -------------------------------------";
     public static final String SOURCE_FILE_REMOVED = "source file contents removed";
 
+    public static final String VERSION = "0.6";
+
 }

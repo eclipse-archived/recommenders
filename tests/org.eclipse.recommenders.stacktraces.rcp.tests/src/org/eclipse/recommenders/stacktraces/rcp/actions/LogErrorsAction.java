@@ -24,7 +24,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.osgi.framework.FrameworkUtil;
 
 public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
-    private int counter;
 
     @Override
     public void run(IAction action) {
@@ -34,21 +33,7 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
             @Override
             public IStatus run(IProgressMonitor monitor) {
                 System.setProperty("eclipse.buildId", "unit-tests");
-                // Display.getDefault().syncExec(new Runnable() {
-                // @Override
-                // public void run() {
-                //
-                // ConfigurationDialog wizard = new ConfigurationDialog(PlatformUI.getWorkbench()
-                // .getActiveWorkbenchWindow().getShell(), PreferenceInitializer.readSettings());
-                // wizard.setBlockOnOpen(true);
-                // wizard.open();
-                //
-                // }
-                // });
-                //
-                // if (true) {
-                // return Status.OK_STATUS;
-                // }
+                int counter = 0;
                 IStatus[] children = new IStatus[3];
                 ILog log = Platform.getLog(FrameworkUtil.getBundle(getClass()));
                 for (int i = 0; i < children.length; i++) {

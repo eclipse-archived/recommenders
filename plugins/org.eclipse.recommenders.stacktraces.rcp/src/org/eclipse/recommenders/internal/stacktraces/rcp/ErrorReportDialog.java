@@ -82,14 +82,16 @@ public class ErrorReportDialog extends MessageDialog {
     private Text commentText;
     private Button rememberDecisionButton;
     private ComboViewer rememberSettingCombo;
+    private History history;
 
-    public ErrorReportDialog(Shell parentShell, Settings settings, IObservableList errors) {
+    public ErrorReportDialog(Shell parentShell, History history, Settings settings, IObservableList errors) {
         super(
                 parentShell,
                 "An Error Was Logged",
                 TITLE_IMAGE_DESC.createImage(),
                 "We noticed a new error event was logged. Such error events may reveal issues in the Eclipse codebase, and thus we kindly ask you to report them to eclipse.org.",
                 MessageDialog.WARNING, new String[] { "Send", "Don't Send" }, 0);
+        this.history = history;
         setShellStyle(SWT.MODELESS | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX);
         setBlockOnOpen(false);
         this.settings = settings;
@@ -326,15 +328,17 @@ public class ErrorReportDialog extends MessageDialog {
         URI target = URI.create(settings.getServerUrl());
         List<Job> jobs = Lists.newLinkedList();
         for (ErrorReport report : reports) {
-            UploadJob job = new UploadJob(report, settings, target);
+            UploadJob job = new UploadJob(report, history, settings, target);
             jobs.add(job);
         }
         Jobs.sequential(format(Messages.UPLOADJOB_NAME, target), jobs);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void cancelPressed() {
         rememberSendAction(SendAction.IGNORE);
+        history.remember(errors);
         errors.clear();
         super.cancelPressed();
     }

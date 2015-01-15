@@ -51,10 +51,12 @@ public class UploadJob extends Job {
     private ErrorReport event;
     private URI target;
     private Settings settings;
+    private History history;
 
-    UploadJob(ErrorReport event, Settings settings, URI target) {
+    public UploadJob(ErrorReport event, History history, Settings settings, URI target) {
         super(format(Messages.UPLOADJOB_NAME, target));
         this.event = event;
+        this.history = history;
         this.settings = settings;
         this.target = target;
     }
@@ -73,6 +75,7 @@ public class UploadJob extends Job {
             if (code >= 400) {
                 return new Status(WARNING, PLUGIN_ID, format(Messages.UPLOADJOB_BAD_RESPONSE, details));
             }
+            history.remember(event);
             final ReportState state = GsonUtil.deserialize(details, ReportState.class);
             setProperty(IProgressConstants.KEEP_PROPERTY, Boolean.TRUE);
             setProperty(IProgressConstants.ACTION_PROPERTY, new Action() {

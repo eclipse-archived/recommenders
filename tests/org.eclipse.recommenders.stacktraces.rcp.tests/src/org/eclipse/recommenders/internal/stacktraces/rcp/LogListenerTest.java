@@ -16,7 +16,11 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
@@ -49,6 +53,14 @@ public class LogListenerTest {
         return new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message", e1);
     }
 
+    // mockito can only mock visible & non-final classes
+    protected class TestHistory extends History {
+        @Override
+        protected Directory createIndexDirectory() throws IOException {
+            return new RAMDirectory();
+        }
+    }
+
     private interface SettingsOverrider {
         void override(Settings settings);
     }
@@ -69,13 +81,17 @@ public class LogListenerTest {
 
     @Rule
     public RetainSystemProperties retainSystemProperties = new RetainSystemProperties();
+    private History history;
 
     @Before
     public void setUp() {
         // Flag to bypass the runtime workbench test check:
         System.setProperty(SYSPROP_ECLIPSE_BUILD_ID, "unit-tests");
 
-        sut = spy(new LogListener());
+        history = spy(new TestHistory());
+        history.startAsync();
+        history.awaitRunning();
+        sut = spy(new LogListener(history));
         // safety: do not send errors during tests
         doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
         doNothing().when(sut).sendStatus(Mockito.any(ErrorReport.class));
@@ -194,6 +210,16 @@ public class LogListenerTest {
     }
 
     @Test
+    public void testUseHistory() {
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
+        Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
+
+        sut.logging(status, "");
+
+        verify(history, times(1)).seen(Mockito.any(ErrorReport.class));
+    }
+
+    @Test
     public void testNoCheckIfSilentMode() {
         settingsOverrider = new SendActionSettingsOverrider(SILENT);
         Status status = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message");
@@ -276,13 +302,14 @@ public class LogListenerTest {
             @Override
             public void override(Settings settings) {
                 settings.setSkipSimilarErrors(false);
+                settings.setAction(SendAction.SILENT);
             }
         };
 
         sut.logging(createErrorStatus(), "");
         sut.logging(createErrorStatus(), "");
 
-        verify(sut, times(2)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
+        verify(sut, times(2)).sendStatus(Mockito.any(ErrorReport.class));
     }
 
     @Test
