@@ -80,7 +80,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
     public void create() {
         super.create();
         setTitle("Do you want to enable Error Reporting in Eclipse?");
-        String message = "Error events may reveal issues in Eclipse. Thus we ask you to report them to eclipse.org. To help improving Eclipse, please enable the reporter.";
+        String message = "Error events may reveal issues in Eclipse. Thus we ask you to report them to eclipse.org. To help improve Eclipse, please enable the reporter.";
         setMessage(message);
 
         // move focus away from first text-field to show its message-hint
