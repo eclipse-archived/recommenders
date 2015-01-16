@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
@@ -121,6 +122,9 @@ public class LogListener implements ILogListener, IStartup {
                 return;
             }
             final ErrorReport report = newErrorReport(status, settings);
+            if (filterEmptyUiMonitoring(report)) {
+                return;
+            }
             stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
             if (alreadyQueued(report) || settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
                 return;
@@ -135,6 +139,14 @@ public class LogListener implements ILogListener, IStartup {
         } catch (Exception e) {
             Logs.log(LogMessages.REPORTING_ERROR, e);
         }
+    }
+
+    private boolean filterEmptyUiMonitoring(ErrorReport report) {
+        Status status = report.getStatus();
+        if ("org.eclipse.ui.monitoring".equals(status.getPluginId())) {
+            return status.getChildren().isEmpty();
+        }
+        return false;
     }
 
     private boolean alreadyQueued(ErrorReport report) {

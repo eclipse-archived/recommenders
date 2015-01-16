@@ -74,8 +74,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testAnonymizeStackTraceElementDtoClassnames() {
-        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2,
-                NOT_WHITELISTED_METHODNAME_2);
+        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2, NOT_WHITELISTED_METHODNAME_2);
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getClassName(), is(ANONYMIZED_TAG));
     }
@@ -89,8 +88,7 @@ public class ErrorReportsTest {
 
     @Test
     public void testAnonymizeStackTraceElementMethodname() {
-        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2,
-                NOT_WHITELISTED_METHODNAME_2);
+        StackTraceElement element = createStackTraceElement(NOT_WHITELISTED_CLASSNAME_2, NOT_WHITELISTED_METHODNAME_2);
         element.accept(new AnonymizeStacktraceVisitor(PREFIX_WHITELIST));
         assertThat(element.getMethodName(), is(ANONYMIZED_TAG));
     }
@@ -234,6 +232,7 @@ public class ErrorReportsTest {
 
     }
 
+    @Test
     public void testMultistatusMainStacktracesNotFiltered() {
         settings = ModelFactory.eINSTANCE.createSettings();
         settings.getWhitelistedPackages().add("org.");

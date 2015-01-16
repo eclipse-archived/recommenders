@@ -17,11 +17,14 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
@@ -343,6 +346,19 @@ public class LogListenerTest {
         ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
         verify(sut).sendStatus(captor.capture());
         Assert.assertEquals("source file contents removed", captor.getValue().getStatus().getMessage());
+    }
+
+    @Test
+    public void testMonitoringStatusWithNoChildsFiltered() throws IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, NoSuchMethodException, SecurityException {
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
+        MultiStatus multi = new MultiStatus("org.eclipse.ui.monitoring", 0, "UI freeze of 6,0s at 11:24:59.108",
+                new RuntimeException("stand-in-stacktrace"));
+        Method method = Status.class.getDeclaredMethod("setSeverity", Integer.TYPE);
+        method.setAccessible(true);
+        method.invoke(multi, IStatus.ERROR);
+        sut.logging(multi, "");
+        verifyNoErrorReportSend();
     }
 
     private void verifyNoErrorReportSend() {
