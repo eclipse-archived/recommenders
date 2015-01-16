@@ -31,7 +31,6 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -243,13 +242,7 @@ public class LogListener implements ILogListener, IStartup {
 
     @VisibleForTesting
     protected Optional<Shell> getWorkbenchWindowShell() {
-        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (workbenchWindow != null) {
-            Shell shell = workbenchWindow.getShell();
-            if (shell != null) {
-                return Optional.of(shell);
-            }
-        }
-        return Optional.absent();
+        return Shells.getWorkbenchWindowShell();
     }
+
 }

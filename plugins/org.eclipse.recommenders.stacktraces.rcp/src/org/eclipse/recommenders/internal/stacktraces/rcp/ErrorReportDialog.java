@@ -64,6 +64,7 @@ import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 public class ErrorReportDialog extends MessageDialog {
@@ -93,6 +94,20 @@ public class ErrorReportDialog extends MessageDialog {
         setBlockOnOpen(false);
         this.settings = settings;
         this.errors = errors;
+    }
+
+    @Override
+    public int open() {
+        int returnCode = super.open();
+        reactivateModalShell();
+        return returnCode;
+    }
+
+    private void reactivateModalShell() {
+        Optional<Shell> modalShellExcluding = Shells.getModalShellExcluding(getShell());
+        if (modalShellExcluding.isPresent()) {
+            modalShellExcluding.get().forceActive();
+        }
     }
 
     @Override
