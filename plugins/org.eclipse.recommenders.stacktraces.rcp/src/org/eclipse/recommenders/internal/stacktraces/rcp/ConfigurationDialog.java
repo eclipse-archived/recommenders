@@ -123,26 +123,23 @@ public class ConfigurationDialog extends TitleAreaDialog {
         Composite personalGroup = new Composite(container, SWT.NONE);
         // personalGroup.setText(Messages.SETTINGSPAGE_GROUPLABEL_PERSONAL);
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(personalGroup);
-        GridDataFactory grab = GridDataFactory.fillDefaults().grab(true, false);
-        Label nameLabel = new Label(personalGroup, SWT.NONE);
-        nameLabel.setText(Messages.FIELD_LABEL_NAME);
-        String nameTooltip = Messages.FIELD_MESSAGE_NAME;
-        calibrateTooltip(new DefaultToolTip(nameLabel), nameTooltip);
-        nameText = new Text(personalGroup, SWT.BORDER);
-        nameText.setMessage(nameTooltip);
-        calibrateTooltip(new DefaultToolTip(nameText), nameTooltip);
-        grab.applyTo(nameText);
-
-        Label emailLabel = new Label(personalGroup, SWT.NONE);
-        emailLabel.setText(Messages.FIELD_LABEL_EMAIL);
-        String emailTooltip = Messages.FIELD_MESSAGE_EMAIL + " \n" + Messages.FIELD_DESC_EMAIL; //$NON-NLS-1$
-        calibrateTooltip(new DefaultToolTip(emailLabel), emailTooltip);
-        emailText = new Text(personalGroup, SWT.BORDER);
-        emailText.setMessage(Messages.FIELD_MESSAGE_EMAIL);
-        calibrateTooltip(new DefaultToolTip(emailText), emailTooltip);
-        grab.applyTo(emailText);
-
+        nameText = createLabelledText(personalGroup, Messages.FIELD_LABEL_NAME, Messages.FIELD_MESSAGE_NAME,
+                Messages.FIELD_MESSAGE_NAME);
+        String emailTooltip = Messages.FIELD_MESSAGE_EMAIL + '\n' + Messages.FIELD_DESC_EMAIL;
+        emailText = createLabelledText(personalGroup, Messages.FIELD_LABEL_EMAIL, Messages.FIELD_MESSAGE_EMAIL,
+                emailTooltip);
         return personalGroup;
+    }
+
+    private Text createLabelledText(Composite parent, String labelString, String messageString, String tooltipString) {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(labelString);
+        calibrateTooltip(new DefaultToolTip(label), tooltipString);
+        Text text = new Text(parent, SWT.BORDER);
+        text.setMessage(messageString);
+        calibrateTooltip(new DefaultToolTip(label), tooltipString);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(text);
+        return text;
     }
 
     private Group makeAnonymousGroup(Composite container) {
@@ -150,14 +147,21 @@ public class ConfigurationDialog extends TitleAreaDialog {
                 | SWT.SHADOW_OUT);
         makeAnonymousGroup.setLayout(new RowLayout(SWT.VERTICAL));
         makeAnonymousGroup.setText(Messages.CONFIGURATIONDIALOG_ANONYMIZATION);
-        anonymizeStacktracesButton = new Button(makeAnonymousGroup, SWT.CHECK);
-        anonymizeStacktracesButton.setText(Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES);
-        anonymizeStacktracesButton.setToolTipText(Messages.TOOLTIP_MAKE_STACKTRACE_ANONYMOUS);
 
-        clearMessagesButton = new Button(makeAnonymousGroup, SWT.CHECK);
-        clearMessagesButton.setText(Messages.FIELD_LABEL_ANONYMIZE_MESSAGES);
-        clearMessagesButton.setToolTipText(Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS);
+        anonymizeStacktracesButton = createGroupCheckButton(makeAnonymousGroup,
+                Messages.FIELD_LABEL_ANONYMIZE_STACKTRACES, Messages.TOOLTIP_MAKE_STACKTRACE_ANONYMOUS);
+        clearMessagesButton = createGroupCheckButton(makeAnonymousGroup, Messages.FIELD_LABEL_ANONYMIZE_MESSAGES,
+                Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS);
+        makeAnonymousGroup.setFocus();
         return makeAnonymousGroup;
+    }
+
+    private Button createGroupCheckButton(Group group, String buttonText, String toolTipText) {
+        Button button = new Button(group, SWT.CHECK);
+        button.setText(buttonText);
+        calibrateTooltip(new DefaultToolTip(button), toolTipText);
+
+        return button;
     }
 
     private Composite createLinksComposite(Composite container) {
