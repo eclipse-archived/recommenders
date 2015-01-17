@@ -64,7 +64,6 @@ import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 public class ErrorReportDialog extends MessageDialog {
@@ -106,9 +105,9 @@ public class ErrorReportDialog extends MessageDialog {
     }
 
     private void reactivateModalShell() {
-        Optional<Shell> modalShellExcluding = Shells.getModalShellExcluding(getShell());
-        if (modalShellExcluding.isPresent()) {
-            modalShellExcluding.get().forceActive();
+        Shell modalShellExcluding = Shells.getModalShellExcluding(getShell()).orNull();
+        if (modalShellExcluding != null) {
+            modalShellExcluding.forceActive();
         }
     }
 
@@ -319,8 +318,6 @@ public class ErrorReportDialog extends MessageDialog {
     protected void okPressed() {
         rememberSendAction(SendAction.SILENT);
         send(errors);
-        // clear after scheduling:
-        errors.clear();
         super.okPressed();
     }
 
@@ -339,8 +336,13 @@ public class ErrorReportDialog extends MessageDialog {
     protected void cancelPressed() {
         rememberSendAction(SendAction.IGNORE);
         history.remember(errors);
-        errors.clear();
         super.cancelPressed();
+    }
+
+    @Override
+    public boolean close() {
+        errors.clear();
+        return super.close();
     }
 
     private void rememberSendAction(SendAction action) {
