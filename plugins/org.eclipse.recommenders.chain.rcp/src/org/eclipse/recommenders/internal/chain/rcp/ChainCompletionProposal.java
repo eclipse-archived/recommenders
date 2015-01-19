@@ -41,6 +41,8 @@ import com.google.common.annotations.VisibleForTesting;
 public class ChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2,
         ICompletionProposalExtension3, ICompletionProposalExtension4, ICompletionProposalExtension6 {
 
+    private static final int CHAIN_PROPOSAL_BOOST = 100;
+
     private final Chain chain;
     private final TemplateProposal completion;
 
@@ -87,7 +89,7 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
 
     @Override
     public int getRelevance() {
-        return -chain.getElements().size();
+        return -chain.getElements().size() - CHAIN_PROPOSAL_BOOST;
     }
 
     @Override

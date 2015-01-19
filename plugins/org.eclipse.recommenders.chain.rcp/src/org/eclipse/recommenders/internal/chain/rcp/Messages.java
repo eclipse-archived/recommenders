@@ -27,6 +27,7 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_MAX_CHAIN_LENGTH;
     public static String FIELD_LABEL_MIN_CHAIN_LENGTH;
     public static String FIELD_LABEL_TIMEOUT;
+    public static String FIELD_ENABLE_QUICK_ASSIST_CHAINS;
 
     static {
         // initialize resource bundle
