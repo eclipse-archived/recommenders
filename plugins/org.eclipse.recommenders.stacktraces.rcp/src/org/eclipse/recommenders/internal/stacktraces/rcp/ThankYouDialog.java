@@ -17,10 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -33,7 +33,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
-    public static final Image TITLE_IMAGE = ErrorReportDialog.TITLE_IMAGE_DESC.createImage();
+    public static ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ThankYouDialog.class,
+            "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
 
     private final ReportState state;
 
@@ -63,7 +64,7 @@ class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
     protected Control createDialogArea(Composite parent) {
         setTitle(Messages.THANKYOUDIALOG_THANK_YOU);
         setMessage(Messages.THANKYOUDIALOG_RECEIVED_AND_TRACKED);
-        setTitleImage(TITLE_IMAGE);
+        setTitleImage(TITLE_IMAGE_DESC.createImage());
 
         Label linetop = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
         linetop.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
