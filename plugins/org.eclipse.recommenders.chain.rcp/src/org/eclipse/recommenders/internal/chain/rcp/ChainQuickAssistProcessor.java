@@ -24,6 +24,8 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IProblemLocation;
 import org.eclipse.jdt.ui.text.java.IQuickAssistProcessor;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.internal.chain.rcp.ChainRcpModule.ChainCompletion;
 
 import com.google.common.collect.Iterables;
 
@@ -31,9 +33,13 @@ public class ChainQuickAssistProcessor implements IQuickAssistProcessor {
 
     private final ChainCompletionProposalComputer computer;
 
+    private final IPreferenceStore preferenceStore;
+
     @Inject
-    public ChainQuickAssistProcessor(ChainCompletionProposalComputer computer) {
+    public ChainQuickAssistProcessor(ChainCompletionProposalComputer computer,
+            @ChainCompletion final IPreferenceStore preferenceStore) {
         this.computer = computer;
+        this.preferenceStore = preferenceStore;
     }
 
     @Override
@@ -44,9 +50,13 @@ public class ChainQuickAssistProcessor implements IQuickAssistProcessor {
     @Override
     public IJavaCompletionProposal[] getAssists(IInvocationContext context, IProblemLocation[] locations)
             throws CoreException {
-        JavaContentAssistInvocationContext ctx = toContentAssistInvocationContext(context);
-        List<IJavaCompletionProposal> proposals = cast(computer.computeCompletionProposals(ctx,
-                new NullProgressMonitor()));
-        return Iterables.toArray(proposals, IJavaCompletionProposal.class);
+        if (preferenceStore.getBoolean(ChainsPreferencePage.PREF_ENABLE_QUICK_ASSIST_CHAINS)) {
+            JavaContentAssistInvocationContext ctx = toContentAssistInvocationContext(context);
+            List<IJavaCompletionProposal> proposals = cast(computer.computeCompletionProposals(ctx,
+                    new NullProgressMonitor()));
+            return Iterables.toArray(proposals, IJavaCompletionProposal.class);
+        } else {
+            return new IJavaCompletionProposal[0];
+        }
     }
 }

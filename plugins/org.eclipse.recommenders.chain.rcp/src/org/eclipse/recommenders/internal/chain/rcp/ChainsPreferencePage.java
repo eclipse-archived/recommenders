@@ -19,6 +19,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.recommenders.utils.Throws;
@@ -39,6 +40,7 @@ public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEdit
     public static final String PREF_MAX_CHAIN_LENGTH = "recommenders.chain.max_chain_length"; //$NON-NLS-1$
     public static final String PREF_TIMEOUT = "recommenders.chain.timeout"; //$NON-NLS-1$
     public static final String PREF_IGNORED_TYPES = "recommenders.chain.ignore_types"; //$NON-NLS-1$
+    public static final String PREF_ENABLE_QUICK_ASSIST_CHAINS = "recommenders.chain.enable_quick_assist_chains"; //$NON-NLS-1
 
     public static final char IGNORE_TYPES_SEPARATOR = '|';
 
@@ -62,6 +64,8 @@ public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEdit
         addField(new IgnoredTypesEditor(Messages.FIELD_LABEL_IGNORED_TYPES, getFieldEditorParent()));
 
         addText(Messages.PREFPAGE_FOOTER_IGNORED_TYPES_WARNING);
+        addField(new BooleanFieldEditor(PREF_ENABLE_QUICK_ASSIST_CHAINS, Messages.FIELD_ENABLE_QUICK_ASSIST_CHAINS,
+                getFieldEditorParent()));
     }
 
     private void addField(final String name, final String labeltext, final int min, final int max) {
