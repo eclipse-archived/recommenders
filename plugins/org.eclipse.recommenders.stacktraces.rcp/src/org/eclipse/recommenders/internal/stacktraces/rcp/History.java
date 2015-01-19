@@ -30,6 +30,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -42,10 +43,14 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.VisitorImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.AbstractIdleService;
 
@@ -53,6 +58,7 @@ public class History extends AbstractIdleService {
 
     private static final String F_VERSION = "version";
     private static final String F_IDENTITY = "identity";
+    private static final String F_IDENTITY_TRACE = "identity-trace";
     private Directory index;
     private IndexWriter writer;
     private IndexReader reader;
@@ -97,16 +103,23 @@ public class History extends AbstractIdleService {
     }
 
     public boolean seen(ErrorReport report) {
+        return seen(new TermQuery(new Term(F_IDENTITY, identity(report))));
+    }
+
+    public boolean seenSimilar(ErrorReport report) {
+        return seen(new TermQuery(new Term(F_IDENTITY_TRACE, identityTrace(report))));
+    }
+
+    private boolean seen(Query q) {
         try {
-            String identity = identity(report);
             renewReaderAndSearcher();
-            TopDocs results = searcher.search(new TermQuery(new Term(F_IDENTITY, identity)), 1);
+            TopDocs results = searcher.search(q, 1);
             boolean foundIdenticalReport = results.totalHits > 0;
             return foundIdenticalReport;
         } catch (Exception e) {
             log(HISTORY_NOT_AVAILABLE, e);
+            return false;
         }
-        return false;
     }
 
     private String identity(ErrorReport report) {
@@ -115,6 +128,21 @@ public class History extends AbstractIdleService {
         Settings settings = PreferenceInitializer.readSettings();
         String json = ErrorReports.toJson(copy, settings, false);
         String hash = Hashing.murmur3_128().newHasher().putString(json, UTF_8).hash().toString();
+        return hash;
+    }
+
+    private String identityTrace(ErrorReport report) {
+        final Hasher hasher = Hashing.murmur3_128().newHasher();
+        report.accept(new VisitorImpl() {
+
+            @Override
+            public void visit(StackTraceElement element) {
+                hasher.putString(element.getClassName(), Charsets.UTF_8);
+                hasher.putString(element.getMethodName(), Charsets.UTF_8);
+                hasher.putInt(element.getLineNumber());
+            }
+        });
+        String hash = hasher.hash().toString();
         return hash;
     }
 
@@ -134,10 +162,16 @@ public class History extends AbstractIdleService {
     }
 
     public void remember(ErrorReport report) {
-        String identity = identity(report);
+        if (seen(report)) {
+            return;
+        }
         Document doc = new Document();
-        Field field = new Field(F_IDENTITY, identity, Store.NO, Index.NOT_ANALYZED);
+        Field field = new Field(F_IDENTITY, identity(report), Store.NO, Index.NOT_ANALYZED);
         doc.add(field);
+        if (report.isIgnoreSimilar()) {
+            field = new Field(F_IDENTITY_TRACE, identityTrace(report), Store.NO, Index.NOT_ANALYZED);
+            doc.add(field);
+        }
         try {
             writer.addDocument(doc);
             writer.commit();
