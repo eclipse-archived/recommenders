@@ -12,6 +12,8 @@ class ErrorReport {
     String name
     String email
     String comment
+    boolean logMessage
+    boolean ignoreSimilar
     String eclipseBuildId
     String eclipseProduct
     String javaRuntimeVersion
