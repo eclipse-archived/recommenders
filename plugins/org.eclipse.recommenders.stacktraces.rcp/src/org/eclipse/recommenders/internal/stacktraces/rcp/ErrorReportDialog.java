@@ -23,7 +23,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -68,8 +67,6 @@ import com.google.common.collect.Lists;
 
 public class ErrorReportDialog extends MessageDialog {
 
-    public static ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ErrorReportDialog.class,
-            "/icons/wizban/stackframes_wiz.gif");
     private static final Image ERROR_ICON = PlatformUI.getWorkbench().getSharedImages()
             .getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
     private Settings settings;
@@ -89,7 +86,7 @@ public class ErrorReportDialog extends MessageDialog {
         super(
                 parentShell,
                 "An Error Was Logged",
-                TITLE_IMAGE_DESC.createImage(),
+                null,
                 "We noticed a new error event was logged. Such error events may reveal issues in the Eclipse codebase, and thus we kindly ask you to report them to eclipse.org.",
                 MessageDialog.WARNING, new String[] { "Send", "Don't Send" }, 0);
         this.history = history;
