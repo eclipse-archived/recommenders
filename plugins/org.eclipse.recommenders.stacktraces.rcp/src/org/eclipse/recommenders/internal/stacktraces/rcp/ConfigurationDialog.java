@@ -16,11 +16,13 @@ import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
@@ -85,8 +87,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
     public void create() {
         super.create();
         setTitle("Do you want to enable Error Reporting in Eclipse?");
-        String message = "Error events may reveal issues in Eclipse. Thus we ask you to report them to eclipse.org. To help improve Eclipse, please enable the reporter.";
-        setMessage(message);
+        setMessage("Error events may reveal issues in Eclipse. Thus we ask you to report them to eclipse.org. To help improve Eclipse, please enable the reporter.");
 
         // move focus away from first text-field to show its message-hint
         anonymizeStacktracesButton.setFocus();
@@ -116,6 +117,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
         GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(linksComposite);
 
         createDataBindingContext();
+        Dialog.applyDialogFont(container);
         return container;
     }
 
@@ -137,7 +139,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
         calibrateTooltip(new DefaultToolTip(label), tooltipString);
         Text text = new Text(parent, SWT.BORDER);
         text.setMessage(messageString);
-        calibrateTooltip(new DefaultToolTip(label), tooltipString);
+        calibrateTooltip(new DefaultToolTip(text), tooltipString);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(text);
         return text;
     }
@@ -212,6 +214,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
 
     private void calibrateTooltip(DefaultToolTip toolTip, String toolTipText) {
         toolTip.setText(toolTipText);
+        toolTip.setFont(JFaceResources.getDialogFont());
         toolTip.setShift(TOOLTIP_DISPLACEMENT);
         toolTip.setHideDelay(TOOLTIP_MS_HIDE_DELAY);
     }

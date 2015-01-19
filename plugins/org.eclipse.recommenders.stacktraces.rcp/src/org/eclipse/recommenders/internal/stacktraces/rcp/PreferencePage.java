@@ -13,10 +13,12 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.swt.SWT;
@@ -37,7 +39,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
     public PreferencePage() {
         super(GRID);
-
     }
 
     @Override
@@ -64,6 +65,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
                 Messages.TOOLTIP_MAKE_MESSAGES_ANONYMOUS));
 
         addLinks(getFieldEditorParent());
+        Dialog.applyDialogFont(getFieldEditorParent());
     }
 
     private StringFieldEditor createStringFieldEditorAndToolTip(String name, String labelText, String toolTipText) {
@@ -86,6 +88,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
     private void calibrateTooltip(DefaultToolTip toolTip, String toolTipText) {
         toolTip.setText(toolTipText);
+        toolTip.setFont(JFaceResources.getDialogFont());
         toolTip.setShift(TOOLTIP_DISPLACEMENT);
         toolTip.setHideDelay(TOOLTIP_MS_HIDE_DELAY);
     }
@@ -93,23 +96,21 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     private void addLinks(Composite parent) {
         Composite feedback = new Composite(parent, SWT.NONE);
         feedback.setLayout(new RowLayout(SWT.VERTICAL));
-        Link learnMoreLink = new Link(feedback, SWT.NONE);
-        learnMoreLink.setText(Messages.LINK_LEARN_MORE);
-        learnMoreLink.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(HELP_URL);
-            }
-        });
 
-        Link feedbackLink = new Link(feedback, SWT.NONE);
-        feedbackLink.setText(Messages.LINK_PROVIDE_FEEDBACK);
-        feedbackLink.addSelectionListener(new SelectionAdapter() {
+        createAndConfigureLink(feedback, Messages.LINK_LEARN_MORE, HELP_URL);
+        createAndConfigureLink(feedback, Messages.LINK_PROVIDE_FEEDBACK, FEEDBACK_FORM_URL);
+    }
+
+    private Link createAndConfigureLink(Composite parent, String text, final String url) {
+        Link link = new Link(parent, SWT.NONE);
+        link.setText(text);
+        link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(FEEDBACK_FORM_URL);
+                Browsers.openInExternalBrowser(url);
             }
         });
+        return link;
     }
 
     private static String[][] createModeLabelAndValues() {
