@@ -321,7 +321,6 @@ public class ErrorReports {
         mReport.setOsgiOsVersion(System.getProperty(org.osgi.framework.Constants.FRAMEWORK_OS_VERSION, "-"));
         mReport.setStatus(newStatus(event, settings));
 
-        guessInvolvedPlugins(mReport);
         return mReport;
     }
 
@@ -330,20 +329,20 @@ public class ErrorReports {
         return fromNullable(res);
     }
 
-    private static void guessInvolvedPlugins(ErrorReport mReport) {
+    public static void guessInvolvedPlugins(ErrorReport report) {
         CollectStackTraceElementPackagesVisitor v = new CollectStackTraceElementPackagesVisitor();
-        mReport.accept(v);
-        Set<String> unique = Sets.newHashSet();
-        for (String pkg : v.packages) {
-            while (pkg.contains(".")) {
-                Bundle guess = Platform.getBundle(pkg);
-                pkg = StringUtils.substringBeforeLast(pkg, ".");
-                if (guess != null) {
-                    if (unique.add(guess.getSymbolicName())) {
-                        org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle mBundle = factory.createBundle();
-                        mBundle.setName(guess.getSymbolicName());
-                        mBundle.setVersion(guess.getVersion().toString());
-                        mReport.getPresentBundles().add(mBundle);
+        report.accept(v);
+        Set<String> uniqueBundleNames = Sets.newHashSet();
+        for (String packageName : v.packages) {
+            while (packageName.contains(".")) {
+                Bundle guessedBundleForPackageName = Platform.getBundle(packageName);
+                packageName = StringUtils.substringBeforeLast(packageName, ".");
+                if (guessedBundleForPackageName != null) {
+                    if (uniqueBundleNames.add(guessedBundleForPackageName.getSymbolicName())) {
+                        org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle bundle = factory.createBundle();
+                        bundle.setName(guessedBundleForPackageName.getSymbolicName());
+                        bundle.setVersion(guessedBundleForPackageName.getVersion().toString());
+                        report.getPresentBundles().add(bundle);
                     }
                     continue;
                 }

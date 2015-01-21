@@ -105,7 +105,6 @@ public class LogListener implements ILogListener, IStartup {
                     || !isHistoryRunning()) {
                 return;
             }
-
             settings = readSettings();
             if (!settings.isConfigured()) {
                 firstConfiguration();
@@ -126,6 +125,7 @@ public class LogListener implements ILogListener, IStartup {
                 return;
             }
             stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
+            guessInvolvedPlugins(report);
             if (alreadyQueued(report) || settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
                 return;
             }

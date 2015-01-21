@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.SYSPROP_ECLIPSE_BUILD_ID;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction.*;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -141,6 +142,32 @@ public class LogListenerTest {
         sut.logging(empty, "");
 
         assertThat(empty.getException(), nullValue());
+    }
+
+    @Test
+    public void testInsertDebugStacktrace() {
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+
+        sut.logging(empty, "");
+
+        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
+        verify(sut).sendStatus(captor.capture());
+        ErrorReport sendReport = captor.getValue();
+        assertThat(sendReport.getStatus().getException(), not(nullValue()));
+    }
+
+    @Test
+    public void testBundlesAddedToDebugStacktrace() {
+        settingsOverrider = new SendActionSettingsOverrider(SILENT);
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+
+        sut.logging(empty, "");
+
+        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
+        verify(sut).sendStatus(captor.capture());
+        ErrorReport sendReport = captor.getValue();
+        assertThat(sendReport.getPresentBundles(), not(empty()));
     }
 
     @Test
