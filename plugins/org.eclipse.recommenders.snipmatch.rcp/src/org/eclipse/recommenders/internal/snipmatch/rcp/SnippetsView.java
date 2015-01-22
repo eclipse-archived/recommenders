@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -62,10 +63,12 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView.KnownSnippet;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.rcp.utils.Jobs;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Location;
@@ -149,12 +152,12 @@ public class SnippetsView extends ViewPart implements IRcpService {
     private Action editSnippetAction;
     private Action shareSnippetAction;
 
-    private boolean initializeTableData = true;
+    private volatile boolean initializeTableData = true;
 
-    private List<SnippetRepositoryConfiguration> availableRepositories = Lists.newArrayList();
-    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepoName = LinkedListMultimap
+    private volatile List<SnippetRepositoryConfiguration> availableRepositories = Lists.newArrayList();
+    private volatile ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepoName = LinkedListMultimap
             .create();
-    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> filteredSnippetsGroupedByRepoName = LinkedListMultimap
+    private volatile ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> filteredSnippetsGroupedByRepoName = LinkedListMultimap
             .create();
 
     private final Function<KnownSnippet, String> toStringRepresentation = new Function<KnownSnippet, String>() {
@@ -188,15 +191,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                Job refreshJob = new UIJob(Messages.JOB_REFRESHING_SNIPPETS_VIEW) {
-                    @Override
-                    public IStatus runInUIThread(IProgressMonitor monitor) {
-                        updateData();
-                        refreshTable();
-                        return Status.OK_STATUS;
-                    }
-                };
-                refreshJob.schedule();
+                refreshUI();
             }
         });
         txtSearch.setData(SWT_ID, SEARCH_FIELD);
@@ -566,7 +561,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                Display.getDefault().asyncExec(new Runnable() {
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
                     @Override
                     public void run() {
                         refreshAction.setEnabled(false);
@@ -586,7 +581,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     // IOException here
                     LOG.error(e.getMessage(), e);
                 }
-                Display.getDefault().asyncExec(new Runnable() {
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
                     @Override
                     public void run() {
                         refreshAction.setEnabled(true);
@@ -867,36 +862,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
         addAction(text, imageResource, contributionManager, action);
     }
 
-    private void updateData() {
-        if (txtSearch.isDisposed()) {
-            return;
-        }
-        snippetsGroupedByRepoName = searchSnippets(""); //$NON-NLS-1$
-        filteredSnippetsGroupedByRepoName = searchSnippets(txtSearch.getText());
-        availableRepositories = configs.getRepos();
-    }
-
-    private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> searchSnippets(String searchTerm) {
-        ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepositoryName = LinkedListMultimap
-                .create();
-
-        for (SnippetRepositoryConfiguration config : configs.getRepos()) {
-            ISnippetRepository repo = repos.getRepository(config.getId()).orNull();
-            if (repo == null) {
-                continue;
-            }
-            Set<KnownSnippet> knownSnippets = Sets.newHashSet();
-            for (Recommendation<ISnippet> recommendation : repo.search(new SearchContext(searchTerm.trim()))) {
-                knownSnippets.add(new KnownSnippet(config, recommendation.getProposal()));
-            }
-            List<KnownSnippet> sorted = Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(toStringRepresentation)
-                    .sortedCopy(knownSnippets);
-            snippetsGroupedByRepositoryName.putAll(config, sorted);
-        }
-
-        return snippetsGroupedByRepositoryName;
-    }
-
     @Subscribe
     public void onEvent(SnippetRepositoryOpenedEvent e) throws IOException {
         refreshUI();
@@ -922,40 +887,18 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void refreshUI() {
-
-        Job refreshJob = new UIJob(Messages.JOB_REFRESHING_SNIPPETS_VIEW) {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
             @Override
-            public IStatus runInUIThread(IProgressMonitor monitor) {
-                if (!treeViewer.getControl().isDisposed()) {
-                    updateData();
-                    if (initializeTableData) {
-                        treeViewer.setInput(getViewSite());
-                        initializeTableData = false;
-                    } else {
-                        refreshTable();
-                    }
-                }
-                addSnippetAction.setEnabled(isImportSupported());
-                return Status.OK_STATUS;
+            public void run() {
+                Job.getJobManager().cancel(SearchJob.SEARCH_JOB_FAMILY);
+                Job.getJobManager().cancel(RefreshTableJob.REFRESH_TABLE_JOB_FAMILY);
+                final String query = txtSearch.isDisposed() ? "" : txtSearch.getText();
+                Job searchSnippetsJob = new SearchJob(Messages.JOB_SEARCHING_SNIPPET_REPOSITORIES, query);
+                Job refreshTableJob = new RefreshTableJob(Messages.JOB_REFRESHING_SNIPPETS_VIEW);
+                Jobs.sequential(Messages.JOB_GROUP_UPDATING_SNIPPETS_VIEW, searchSnippetsJob, refreshTableJob);
             }
-        };
-        refreshJob.schedule();
-    }
-
-    private void refreshTable() {
-        int numberOfVisibleElements = treeViewer.getTree().getSize().y / treeViewer.getTree().getItemHeight() + 1;
-        treeViewer.refresh();
-        int replacedElementsCount = 0;
-        for (int i = 0; i < availableRepositories.size(); i++) {
-            SnippetRepositoryConfiguration config = availableRepositories.get(i);
-            List<KnownSnippet> elements = filteredSnippetsGroupedByRepoName.get(config);
-            treeViewer.setChildCount(config, elements.size());
-            for (int j = 0; j < elements.size() && replacedElementsCount < numberOfVisibleElements; j++) {
-                treeViewer.replace(config, j, elements.get(j));
-                replacedElementsCount++;
-            }
-        }
+        });
     }
 
     @Nullable
@@ -971,6 +914,138 @@ public class SnippetsView extends ViewPart implements IRcpService {
     @Override
     public void setFocus() {
         treeViewer.getControl().setFocus();
+    }
+
+    private final class SearchJob extends Job {
+
+        public static final String SEARCH_JOB_FAMILY = "SEARCH_JOB_FAMILY"; //$NON-NLS-1$
+
+        private final String query;
+
+        private SearchJob(String name, String query) {
+            super(name);
+            this.query = query;
+            setSystem(true);
+        }
+
+        @Override
+        public IStatus run(IProgressMonitor monitor) {
+            try {
+                monitor.beginTask(Messages.MONITOR_SEARCH_SNIPPETS, 30);
+                snippetsGroupedByRepoName = searchSnippets("", new SubProgressMonitor(monitor, 10)); //$NON-NLS-1$
+                filteredSnippetsGroupedByRepoName = searchSnippets(query, new SubProgressMonitor(monitor, 10));
+                availableRepositories = configs.getRepos();
+                monitor.worked(10);
+                if (monitor.isCanceled()) {
+                    return Status.CANCEL_STATUS;
+                } else {
+                    return Status.OK_STATUS;
+                }
+            } finally {
+                monitor.done();
+            }
+        }
+
+        private ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> searchSnippets(String searchTerm,
+                IProgressMonitor monitor) {
+
+            try {
+                ListMultimap<SnippetRepositoryConfiguration, KnownSnippet> snippetsGroupedByRepositoryName = LinkedListMultimap
+                        .create();
+
+                monitor.beginTask(Messages.MONITOR_SEARCH_SNIPPETS, configs.getRepos().size());
+                for (SnippetRepositoryConfiguration config : configs.getRepos()) {
+                    if (monitor.isCanceled()) {
+                        return snippetsGroupedByRepositoryName;
+                    }
+                    ISnippetRepository repo = repos.getRepository(config.getId()).orNull();
+                    if (repo == null) {
+                        continue;
+                    }
+                    Set<KnownSnippet> knownSnippets = Sets.newHashSet();
+                    for (Recommendation<ISnippet> recommendation : repo.search(new SearchContext(searchTerm.trim()))) {
+                        if (monitor.isCanceled()) {
+                            return snippetsGroupedByRepositoryName;
+                        }
+                        knownSnippets.add(new KnownSnippet(config, recommendation.getProposal()));
+                    }
+                    List<KnownSnippet> sorted = Ordering.from(String.CASE_INSENSITIVE_ORDER)
+                            .onResultOf(toStringRepresentation).sortedCopy(knownSnippets);
+                    snippetsGroupedByRepositoryName.putAll(config, sorted);
+                    monitor.worked(1);
+                }
+
+                return snippetsGroupedByRepositoryName;
+            } finally {
+                monitor.done();
+            }
+        }
+
+        @Override
+        public boolean belongsTo(Object family) {
+            return SEARCH_JOB_FAMILY.equals(family);
+        }
+    }
+
+    private final class RefreshTableJob extends UIJob {
+
+        public static final String REFRESH_TABLE_JOB_FAMILY = "REFRESH_TABLE_JOB_FAMILY"; //$NON-NLS-1$
+
+        private RefreshTableJob(String name) {
+            super(name);
+            setSystem(true);
+        }
+
+        @Override
+        public IStatus runInUIThread(IProgressMonitor monitor) {
+            try {
+                if (!treeViewer.getControl().isDisposed()) {
+                    if (initializeTableData) {
+                        treeViewer.setInput(getViewSite());
+                        initializeTableData = false;
+                    } else {
+                        refreshTable(monitor);
+                    }
+                }
+                addSnippetAction.setEnabled(isImportSupported());
+                if (monitor.isCanceled()) {
+                    return Status.CANCEL_STATUS;
+                } else {
+                    return Status.OK_STATUS;
+                }
+            } finally {
+                monitor.done();
+            }
+        }
+
+        private void refreshTable(IProgressMonitor monitor) {
+            int numberOfVisibleElements = treeViewer.getTree().getSize().y / treeViewer.getTree().getItemHeight() + 1;
+            try {
+                monitor.beginTask(Messages.MONITOR_REFRESHING_TABLE, availableRepositories.size());
+                treeViewer.refresh();
+                int replacedElementsCount = 0;
+                for (int i = 0; i < availableRepositories.size(); i++) {
+                    SnippetRepositoryConfiguration config = availableRepositories.get(i);
+                    List<KnownSnippet> elements = filteredSnippetsGroupedByRepoName.get(config);
+                    treeViewer.setChildCount(config, elements.size());
+                    for (int j = 0; j < elements.size() && replacedElementsCount < numberOfVisibleElements; j++) {
+                        if (monitor.isCanceled()) {
+                            return;
+                        }
+                        treeViewer.replace(config, j, elements.get(j));
+                        replacedElementsCount++;
+                    }
+                    monitor.worked(1);
+                }
+            } finally {
+                monitor.done();
+            }
+        }
+
+        @Override
+        public boolean belongsTo(Object family) {
+            return REFRESH_TABLE_JOB_FAMILY.equals(family);
+        }
     }
 
     public class KnownSnippet {

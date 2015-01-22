@@ -140,11 +140,13 @@ public class Messages extends NLS {
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET;
 
+    public static String JOB_GROUP_UPDATING_SNIPPETS_VIEW;
     public static String JOB_OPENING_SNIPPET_REPOSITORY;
     public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
     public static String JOB_REFRESHING_SNIPPETS_VIEW;
     public static String JOB_RESETTING_GIT_REPOSITORY;
     public static String JOB_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
+    public static String JOB_SEARCHING_SNIPPET_REPOSITORIES;
 
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_NEW;
@@ -208,8 +210,11 @@ public class Messages extends NLS {
     public static String TOOLBAR_TOOLTIP_EXPAND_ALL;
 
     public static String MONITOR_CALCULATING_DIFF;
+    public static String MONITOR_SEARCH_SNIPPETS;
+    public static String MONITOR_REFRESHING_TABLE;
 
     public static String LIST_SEPARATOR;
+
 
     static {
         // initialize resource bundle
