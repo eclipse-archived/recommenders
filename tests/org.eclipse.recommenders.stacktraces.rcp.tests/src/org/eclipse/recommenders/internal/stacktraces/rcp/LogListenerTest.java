@@ -88,13 +88,16 @@ public class LogListenerTest {
     private History history;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         // Flag to bypass the runtime workbench test check:
         System.setProperty(SYSPROP_ECLIPSE_BUILD_ID, "unit-tests");
 
         history = spy(new TestHistory());
         history.startAsync();
         history.awaitRunning();
+        // not called on spy, so call manually
+        history.startUp();
+
         sut = spy(new LogListener(history));
         // safety: do not send errors during tests
         doNothing().when(sut).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
