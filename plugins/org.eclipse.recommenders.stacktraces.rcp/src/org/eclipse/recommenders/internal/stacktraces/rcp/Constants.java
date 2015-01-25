@@ -58,7 +58,7 @@ public final class Constants {
     public static final int PREVIOUS_ERROR_CACHE_EXPIRE_AFTER_ACCESS_MINUTES = 10;
 
     // Whitelist for sending
-    public static final String WHITELISTED_PLUGINS = "org.eclipse.;org.apache.log4j.;com.codetrails.;";
+    public static final String WHITELISTED_PLUGINS = "org.eclipse.;org.apache.log4j;com.codetrails;";
     public static final String WHITELISTED_PACKAGES = "org.eclipse.;;;org.apache.;java.;javax.;javafx.;sun.;com.sun.;com.codetrails.;org.osgi.;com.google.;ch.qos.;org.slf4j.;";
 
     // Classes removed from top of stand-in-stacktrace
