@@ -37,7 +37,9 @@ public final class LogMessages extends DefaultLogMessage {
             "The paused interval for error reporting is elapsed, returning to 'ASK'-Mode"); //$NON-NLS-1$
     public static final LogMessages SAVE_PREFERENCES_FAILED = new LogMessages(ERROR, "Saving preferences failed"); //$NON-NLS-1$
 
-    public static final LogMessages REPORTING_ERROR = new LogMessages(WARNING, "Error during error-reporting");
+    public static final LogMessages REPORTING_ERROR = new LogMessages(
+            WARNING,
+            "Unexpected Error occured while handling an error report. Please open a bug at https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders.Incubator&component=Stacktraces");
 
     public static final LogMessages FIRST_CONFIGURATION_FAILED = new LogMessages(WARNING,
             "First configuration failed, please check the log"); //$NON-NLS-1$

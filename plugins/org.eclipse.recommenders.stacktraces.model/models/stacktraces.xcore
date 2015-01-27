@@ -4,7 +4,10 @@
 @GenModel(complianceLevel="6.0")
 package org.eclipse.recommenders.internal.stacktraces.rcp.model
 
+import com.google.common.base.Joiner
+import java.util.List
 import java.util.UUID
+import com.google.common.base.Splitter
 
 class ErrorReport {
     UUID anonymousId
@@ -105,8 +108,8 @@ class Visitor{
 class Settings {
     String name
     String email
-    boolean anonymizeStrackTraceElements
     boolean anonymizeMessages
+    boolean anonymizeStrackTraceElements
     boolean configured
     boolean skipSimilarErrors
     SendAction action
@@ -115,9 +118,9 @@ class Settings {
     @GenModel(documentation="The remote address where error events are send to.")
     String serverUrl
     @GenModel(documentation="A list of prefixes a plug-in ID is matched against using String#startsWith (e.g., 'com.codetrails.'")
-    String[] whitelistedPluginIds
+    ListOfStrings whitelistedPluginIds
     @GenModel(documentation="A list of prefixes a class name is matched against using String#startsWith (e.g., 'com.codetrails.'")
-    String[] whitelistedPackages
+    ListOfStrings whitelistedPackages
 }
 
 enum SendAction{
@@ -134,3 +137,8 @@ enum RememberSendAction{
 }
 
 type UUID wraps UUID
+
+type ListOfStrings wraps List<String> convert {Joiner.on(";").skipNulls().join(it)} create {
+    Splitter.on(';').omitEmptyStrings().trimResults().splitToList(it);
+    
+}

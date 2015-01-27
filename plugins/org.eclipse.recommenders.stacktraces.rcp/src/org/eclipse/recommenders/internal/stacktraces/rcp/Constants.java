@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import java.util.Set;
 
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelPackage;
+
 import com.google.common.collect.ImmutableSet;
 
 public final class Constants {
@@ -31,18 +33,34 @@ public final class Constants {
     static final String SYSPROP_SKIP_REPORTS = PLUGIN_ID + ".skipReports";
     static final String SYSPROP_ECLIPSE_BUILD_ID = "eclipse.buildId";
 
-    static final String PROP_NAME = "name";
-    static final String PROP_EMAIL = "email";
-    static final String PROP_ANONYMIZE_STACKTRACES = "anonymize-stacktraces";
-    static final String PROP_ANONYMIZE_MESSAGES = "anonymize-messages";
-    static final String PROP_CONFIGURED = "configured";
-    static final String PROP_SEND_ACTION = "send-action";
-    static final String PROP_REMEMBER_SEND_ACTION = "remember-send-action";
-    static final String PROP_REMEMBER_SETTING_PERIOD_START = "remember-setting-period-start";
-    static final String PROP_SKIP_SIMILAR_ERRORS = "skip-similar-errors";
-    static final String PROP_WHITELISTED_PLUGINS = "whitelisted-plugins";
-    static final String PROP_WHITELISTED_PACKAGES = "whitelisted-packages";
-    static final String PROP_SERVER = "server-url";
+    static final String PROP_NAME;
+    static final String PROP_EMAIL;
+    static final String PROP_ANONYMIZE_STACKTRACES;
+    static final String PROP_ANONYMIZE_MESSAGES;
+    static final String PROP_CONFIGURED;
+    static final String PROP_SEND_ACTION;
+    static final String PROP_REMEMBER_SEND_ACTION;
+    static final String PROP_REMEMBER_SETTING_PERIOD_START;
+    static final String PROP_SKIP_SIMILAR_ERRORS;
+    static final String PROP_WHITELISTED_PLUGINS;
+    static final String PROP_WHITELISTED_PACKAGES;
+    static final String PROP_SERVER;
+
+    static {
+        ModelPackage pkg = ModelPackage.eINSTANCE;
+        PROP_ANONYMIZE_STACKTRACES = pkg.getSettings_AnonymizeStrackTraceElements().getName();
+        PROP_ANONYMIZE_MESSAGES = pkg.getSettings_AnonymizeMessages().getName();
+        PROP_CONFIGURED = pkg.getSettings_Configured().getName();
+        PROP_EMAIL = pkg.getSettings_Email().getName();
+        PROP_NAME = pkg.getSettings_Name().getName();
+        PROP_REMEMBER_SEND_ACTION = pkg.getSettings_RememberSendAction().getName();
+        PROP_REMEMBER_SETTING_PERIOD_START = pkg.getSettings_RememberSendActionPeriodStart().getName();
+        PROP_SEND_ACTION = pkg.getSettings_Action().getName();
+        PROP_SERVER = pkg.getSettings_ServerUrl().getName();
+        PROP_SKIP_SIMILAR_ERRORS = pkg.getSettings_SkipSimilarErrors().getName();
+        PROP_WHITELISTED_PACKAGES = pkg.getSettings_WhitelistedPackages().getName();
+        PROP_WHITELISTED_PLUGINS = pkg.getSettings_WhitelistedPluginIds().getName();
+    }
 
     static final String HELP_URL = "https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub";
     static final String FEEDBACK_FORM_URL = "https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform";

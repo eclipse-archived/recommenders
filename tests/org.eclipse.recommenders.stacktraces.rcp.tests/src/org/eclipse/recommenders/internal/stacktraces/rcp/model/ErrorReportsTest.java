@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp.model;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportsDTOs.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,7 +41,7 @@ public class ErrorReportsTest {
 
     private static String ANONYMIZED_TAG = "HIDDEN";
 
-    private static Settings settings;
+    Settings settings;
 
     @Test
     public void testClearEventMessage() {
@@ -114,7 +115,7 @@ public class ErrorReportsTest {
         IStatus s2 = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "some error message", r2);
 
         settings = ModelFactory.eINSTANCE.createSettings();
-        settings.getWhitelistedPackages().add("org.");
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status noCause = ErrorReports.newStatus(s1, settings);
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status withCause = ErrorReports.newStatus(s2, settings);
@@ -130,7 +131,7 @@ public class ErrorReportsTest {
                 "some error message", root);
 
         settings = ModelFactory.eINSTANCE.createSettings();
-        settings.getWhitelistedPackages().add("org.");
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status normal = ErrorReports.newStatus(s1, settings);
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status multi = ErrorReports.newStatus(s2, settings);
@@ -147,6 +148,7 @@ public class ErrorReportsTest {
         IStatus rootEvent = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces", "someErrorMessage",
                 rootException);
         settings = ModelFactory.eINSTANCE.createSettings();
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         org.eclipse.recommenders.internal.stacktraces.rcp.model.Status rootStatus = ErrorReports.newStatus(rootEvent,
                 settings);
@@ -160,7 +162,7 @@ public class ErrorReportsTest {
     @Test
     public void testMultistatusDuplicateChildFiltering() {
         settings = ModelFactory.eINSTANCE.createSettings();
-        settings.getWhitelistedPackages().add("org.");
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         Exception e1 = new Exception("Stack Trace");
         e1.setStackTrace(createStacktraceForClasses("java.lang.Object", "org.eclipse.core.internal.jobs.WorkerPool",
@@ -189,7 +191,7 @@ public class ErrorReportsTest {
     @Test
     public void testMultistatusChildFilteringHandlesEmptyStacktrace() {
         settings = ModelFactory.eINSTANCE.createSettings();
-        settings.getWhitelistedPackages().add("org.");
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         Exception e1 = new Exception("Stack Trace 1");
         e1.setStackTrace(new java.lang.StackTraceElement[0]);
@@ -225,9 +227,13 @@ public class ErrorReportsTest {
     public void testPrettyPrintNullSafe3() {
         ModelFactory mf = ModelFactory.eINSTANCE;
         settings = mf.createSettings();
+        settings.setWhitelistedPackages(newArrayList("org."));
+
         ErrorReport report = mf.createErrorReport();
         report.setStatus(mf.createStatus());
-        report.getStatus().setException(mf.createThrowable());
+        Throwable t = mf.createThrowable();
+        t.setClassName("org.test");
+        report.getStatus().setException(t);
         ErrorReports.prettyPrint(report, settings);
 
     }
@@ -235,7 +241,7 @@ public class ErrorReportsTest {
     @Test
     public void testMultistatusMainStacktracesNotFiltered() {
         settings = ModelFactory.eINSTANCE.createSettings();
-        settings.getWhitelistedPackages().add("org.");
+        settings.setWhitelistedPackages(newArrayList("org."));
 
         Exception e1 = new Exception("Stack Trace");
         java.lang.StackTraceElement[] stackTrace = createStacktraceForClasses("java.lang.Thread",

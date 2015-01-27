@@ -394,7 +394,6 @@ public class ErrorReportDialog extends MessageDialog {
         } else {
             // if no remember-option is selected, the action was ASK-Mode (dialog open) and should stay so
         }
-        PreferenceInitializer.saveSettings(settings);
     }
 
     private RememberSendAction selectRememberAction() {

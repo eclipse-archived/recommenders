@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.newErrorReport;
 
 import org.eclipse.core.runtime.IStatus;
@@ -67,6 +68,8 @@ public class ErrorReportsDTOs {
                 "some error message", exception);
 
         Settings settings = ModelFactory.eINSTANCE.createSettings();
+        settings.setWhitelistedPackages(newArrayList("org."));
+
         return newErrorReport(status, settings);
     }
 

@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
@@ -30,7 +31,6 @@ import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
@@ -48,10 +48,13 @@ public class LogListener implements ILogListener, IStartup {
     // careful! do never make any modifications to this list! It's a means to access the queued reports outside the UI
     // thread. TODO is there a better way?
     private ArrayList<ErrorReport> queueRO;
-    private volatile boolean isDialogOpen;
-    private Settings settings;
+    // private Settings settings;
     private StandInStacktraceProvider stacktraceProvider = new StandInStacktraceProvider();
     private History history;
+    private Settings settings;
+
+    private final ReentrantLock sendDialogLock = new ReentrantLock();
+    private final ReentrantLock configureDialogLock = new ReentrantLock();
 
     public LogListener() {
         Display.getDefault().syncExec(new Runnable() {
@@ -65,13 +68,15 @@ public class LogListener implements ILogListener, IStartup {
     }
 
     @VisibleForTesting
-    public LogListener(History history) {
+    public LogListener(History history, Settings settings) {
         this();
         this.history = history;
+        this.settings = settings;
     }
 
     @Override
     public void earlyStartup() {
+        settings = PreferenceInitializer.getDefault();
         Platform.addLogListener(this);
         try {
             history = new History();
@@ -105,12 +110,20 @@ public class LogListener implements ILogListener, IStartup {
                     || !isHistoryRunning()) {
                 return;
             }
-            settings = readSettings();
-            if (!settings.isConfigured()) {
-                firstConfiguration();
+            try {
+                if (!configureDialogLock.tryLock()) {
+                    return;
+                }
+
+                if (!settings.isConfigured()) {
+                    firstConfiguration();
+                }
+            } finally {
+                configureDialogLock.unlock();
             }
+
             if (!settings.isConfigured()) {
-                Logs.log(LogMessages.FIRST_CONFIGURATION_FAILED);
+                log(LogMessages.FIRST_CONFIGURATION_FAILED);
                 return;
             }
             if (!hasPluginIdWhitelistedPrefix(status, settings.getWhitelistedPluginIds())) {
@@ -137,7 +150,7 @@ public class LogListener implements ILogListener, IStartup {
                 sendAndClear();
             }
         } catch (Exception e) {
-            Logs.log(LogMessages.REPORTING_ERROR, e);
+            log(REPORTING_ERROR, e);
         }
     }
 
@@ -206,11 +219,6 @@ public class LogListener implements ILogListener, IStartup {
         return status.matches(IStatus.ERROR);
     }
 
-    @VisibleForTesting
-    protected Settings readSettings() {
-        return PreferenceInitializer.readSettings();
-    }
-
     private static boolean hasPluginIdWhitelistedPrefix(IStatus status, List<String> whitelistedIdPrefixes) {
         String pluginId = status.getPlugin();
         for (String id : whitelistedIdPrefixes) {
@@ -234,10 +242,13 @@ public class LogListener implements ILogListener, IStartup {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                Optional<Shell> shell = getWorkbenchWindowShell();
-                if (shell.isPresent()) {
-                    Configurator.ConfigureWithDialog(settings, shell.get());
-                    PreferenceInitializer.saveSettings(settings);
+                try {
+                    Optional<Shell> shell = getWorkbenchWindowShell();
+                    if (shell.isPresent()) {
+                        Configurator.ConfigureWithDialog(settings, shell.get());
+                    }
+                } catch (Exception e) {
+                    log(REPORTING_ERROR, e);
                 }
             }
         });
@@ -260,28 +271,35 @@ public class LogListener implements ILogListener, IStartup {
 
     @VisibleForTesting
     protected void checkAndSendWithDialog(final ErrorReport report) {
+        // optimization
+        if (sendDialogLock.isLocked()) {
+            return;
+        }
         // run on UI-thread to ensure that the observable list is not modified from another thread
         // and that the wizard is created on the UI-thread.
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                if (isDialogOpen) {
+                if (!sendDialogLock.tryLock()) {
                     return;
                 }
-                isDialogOpen = true;
-                Optional<Shell> shell = getWorkbenchWindowShell();
-                if (shell.isPresent()) {
-                    ErrorReportDialog reportDialog = new ErrorReportDialog(shell.get(), history, settings, queueUI) {
-                        @Override
-                        public boolean close() {
-                            boolean close = super.close();
-                            if (close) {
-                                isDialogOpen = false;
+                try {
+                    Optional<Shell> shell = getWorkbenchWindowShell();
+                    if (shell.isPresent()) {
+                        ErrorReportDialog reportDialog = new ErrorReportDialog(shell.get(), history, settings, queueUI) {
+                            @Override
+                            public boolean close() {
+                                boolean close = super.close();
+                                if (close) {
+                                    sendDialogLock.unlock();
+                                }
+                                return close;
                             }
-                            return close;
-                        }
-                    };
-                    reportDialog.open();
+                        };
+                        reportDialog.open();
+                    }
+                } catch (Exception e) {
+                    sendDialogLock.unlock();
                 }
             }
         });
