@@ -50,7 +50,7 @@ public class ConfigurationDialog extends TitleAreaDialog {
      */
     public static final int ESC_CANCEL = 42 + 42;
     public static final ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ConfigurationDialog.class,
-            "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
+            "/icons/wizban/stacktraces_wiz.png"); //$NON-NLS-1$
 
     private static final Point TOOLTIP_DISPLACEMENT = new Point(5, 20);
     private static int TOOLTIP_MS_HIDE_DELAY = 20000;

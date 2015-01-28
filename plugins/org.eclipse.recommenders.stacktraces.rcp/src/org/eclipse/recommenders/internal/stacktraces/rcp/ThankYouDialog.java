@@ -34,7 +34,7 @@ import com.google.common.annotations.VisibleForTesting;
 class ThankYouDialog extends org.eclipse.jface.dialogs.TitleAreaDialog {
 
     public static ImageDescriptor TITLE_IMAGE_DESC = ImageDescriptor.createFromFile(ThankYouDialog.class,
-            "/icons/wizban/stackframes_wiz.gif"); //$NON-NLS-1$
+            "/icons/wizban/stacktraces_wiz.png"); //$NON-NLS-1$
 
     private final ReportState state;
 
