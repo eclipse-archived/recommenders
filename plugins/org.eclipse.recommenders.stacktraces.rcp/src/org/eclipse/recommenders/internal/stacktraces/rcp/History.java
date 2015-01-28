@@ -63,6 +63,11 @@ public class History extends AbstractIdleService {
     private IndexWriter writer;
     private IndexReader reader;
     private IndexSearcher searcher;
+    private Settings settings;
+
+    public History(Settings settings) {
+        this.settings = settings;
+    }
 
     @VisibleForTesting
     protected Directory createIndexDirectory() throws IOException {
@@ -103,11 +108,11 @@ public class History extends AbstractIdleService {
     }
 
     public boolean seen(ErrorReport report) {
-        return seen(new TermQuery(new Term(F_IDENTITY, identity(report))));
+        return seen(new TermQuery(new Term(F_IDENTITY, exactIdentity(report))));
     }
 
     public boolean seenSimilar(ErrorReport report) {
-        return seen(new TermQuery(new Term(F_IDENTITY_TRACE, identityTrace(report))));
+        return seen(new TermQuery(new Term(F_IDENTITY_TRACE, traceIdentity(report))));
     }
 
     private boolean seen(Query q) {
@@ -122,16 +127,18 @@ public class History extends AbstractIdleService {
         }
     }
 
-    private String identity(ErrorReport report) {
+    private String exactIdentity(ErrorReport report) {
         ErrorReport copy = ErrorReports.copy(report);
-        copy.setEventId(null);
-        Settings settings = PreferenceInitializer.getDefault();
+        // remove potential user content:
+        copy.setComment(null);
+        copy.setName(null);
+        copy.setEmail(null);
         String json = ErrorReports.toJson(copy, settings, false);
         String hash = Hashing.murmur3_128().newHasher().putString(json, UTF_8).hash().toString();
         return hash;
     }
 
-    private String identityTrace(ErrorReport report) {
+    private String traceIdentity(ErrorReport report) {
         final Hasher hasher = Hashing.murmur3_128().newHasher();
         report.accept(new VisitorImpl() {
 
@@ -166,10 +173,10 @@ public class History extends AbstractIdleService {
             return;
         }
         Document doc = new Document();
-        Field field = new Field(F_IDENTITY, identity(report), Store.NO, Index.NOT_ANALYZED);
+        Field field = new Field(F_IDENTITY, exactIdentity(report), Store.NO, Index.NOT_ANALYZED);
         doc.add(field);
         if (report.isIgnoreSimilar()) {
-            field = new Field(F_IDENTITY_TRACE, identityTrace(report), Store.NO, Index.NOT_ANALYZED);
+            field = new Field(F_IDENTITY_TRACE, traceIdentity(report), Store.NO, Index.NOT_ANALYZED);
             doc.add(field);
         }
         try {

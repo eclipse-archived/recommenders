@@ -52,12 +52,17 @@ public class LogListenerTest {
 
     private static Status createErrorStatus() {
         Exception e1 = new RuntimeException();
-        e1.fillInStackTrace();
+        StackTraceElement[] trace = ErrorReportsDTOs.createStacktraceForClasses("A", "D", "C");
+        e1.setStackTrace(trace);
         return new Status(IStatus.ERROR, TEST_PLUGIN_ID, "test message", e1);
     }
 
     // mockito can only mock visible & non-final classes
     protected class TestHistory extends History {
+        public TestHistory(Settings settings) {
+            super(settings);
+        }
+
         @Override
         protected Directory createIndexDirectory() throws IOException {
             return new RAMDirectory();
@@ -78,7 +83,7 @@ public class LogListenerTest {
         settings.setConfigured(true);
         settings.setWhitelistedPluginIds(newArrayList(TEST_PLUGIN_ID));
         settings.setWhitelistedPackages(newArrayList("java"));
-        history = spy(new TestHistory());
+        history = spy(new TestHistory(settings));
         history.startAsync();
         history.awaitRunning();
         // not called on spy, so call manually
@@ -300,8 +305,10 @@ public class LogListenerTest {
         settings.setSkipSimilarErrors(true);
         settings.setAction(ASK);
 
-        sut.logging(createErrorStatus(), "");
-        sut.logging(createErrorStatus(), "");
+        Status s1 = createErrorStatus();
+        Status s2 = createErrorStatus();
+        sut.logging(s1, "");
+        sut.logging(s2, "");
 
         verify(sut, times(1)).checkAndSendWithDialog(Mockito.any(ErrorReport.class));
     }

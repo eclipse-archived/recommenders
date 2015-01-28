@@ -308,7 +308,6 @@ public class ErrorReports {
     public static ErrorReport newErrorReport(IStatus event, Settings settings) {
         ErrorReport mReport = factory.createErrorReport();
         mReport.setAnonymousId(AnonymousId.getId());
-        mReport.setEventId(UUID.randomUUID());
         mReport.setName(settings.getName());
         mReport.setEmail(settings.getEmail());
 

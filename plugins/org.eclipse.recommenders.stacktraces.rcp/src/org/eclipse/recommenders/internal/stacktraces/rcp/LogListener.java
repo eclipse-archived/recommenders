@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
-import static com.google.common.base.Objects.equal;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.LogMessages.*;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.*;
@@ -19,13 +18,14 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.SendAction;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
@@ -53,8 +53,8 @@ public class LogListener implements ILogListener, IStartup {
     private History history;
     private Settings settings;
 
-    private final ReentrantLock sendDialogLock = new ReentrantLock();
-    private final ReentrantLock configureDialogLock = new ReentrantLock();
+    private final Semaphore sendDialogLock = new Semaphore(1);
+    private final Semaphore configureDialogLock = new Semaphore(1);
 
     public LogListener() {
         Display.getDefault().syncExec(new Runnable() {
@@ -79,7 +79,7 @@ public class LogListener implements ILogListener, IStartup {
         settings = PreferenceInitializer.getDefault();
         Platform.addLogListener(this);
         try {
-            history = new History();
+            history = new History(settings);
             history.startAsync();
         } catch (Exception e1) {
             log(HISTORY_START_FAILED);
@@ -107,19 +107,18 @@ public class LogListener implements ILogListener, IStartup {
     public void logging(final IStatus status, String nouse) {
         try {
             if (!isReportingAllowedInEnvironment() || !isErrorSeverity(status) || isWorkbenchClosing()
-                    || !isHistoryRunning()) {
+                    || !isHistoryRunning() || isQueueLimitReached()) {
+                return;
+            }
+            if (!configureDialogLock.tryAcquire()) {
                 return;
             }
             try {
-                if (!configureDialogLock.tryLock()) {
-                    return;
-                }
-
                 if (!settings.isConfigured()) {
                     firstConfiguration();
                 }
             } finally {
-                configureDialogLock.unlock();
+                configureDialogLock.release();
             }
 
             if (!settings.isConfigured()) {
@@ -139,7 +138,7 @@ public class LogListener implements ILogListener, IStartup {
             }
             stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
             guessInvolvedPlugins(report);
-            if (alreadyQueued(report) || settings.isSkipSimilarErrors() && sentSimilarErrorBefore(report)) {
+            if (alreadyQueued(report) || seenSameOrSimilarErrorBefore(report)) {
                 return;
             }
             addForSending(report);
@@ -154,6 +153,10 @@ public class LogListener implements ILogListener, IStartup {
         }
     }
 
+    private boolean isQueueLimitReached() {
+        return queueRO.size() >= 20;
+    }
+
     private boolean filterEmptyUiMonitoring(ErrorReport report) {
         Status status = report.getStatus();
         if ("org.eclipse.ui.monitoring".equals(status.getPluginId())) {
@@ -164,7 +167,7 @@ public class LogListener implements ILogListener, IStartup {
 
     private boolean alreadyQueued(ErrorReport report) {
         for (ErrorReport r : queueRO) {
-            if (equal(getFingerprint(report), getFingerprint(r))) {
+            if (EcoreUtil.equals(report, r)) {
                 return true;
             }
         }
@@ -233,7 +236,11 @@ public class LogListener implements ILogListener, IStartup {
         return sendAction == SendAction.ASK || sendAction == SendAction.SILENT;
     }
 
-    private boolean sentSimilarErrorBefore(final ErrorReport report) {
+    private boolean seenSameOrSimilarErrorBefore(final ErrorReport report) {
+        // for debugging / development mode
+        if (!settings.isSkipSimilarErrors()) {
+            return false;
+        }
         return history.seenSimilar(report) // did we send a similar error before?
                 || history.seen(report); // did we send exactly this error before?
     }
@@ -271,16 +278,13 @@ public class LogListener implements ILogListener, IStartup {
 
     @VisibleForTesting
     protected void checkAndSendWithDialog(final ErrorReport report) {
-        // optimization
-        if (sendDialogLock.isLocked()) {
-            return;
-        }
         // run on UI-thread to ensure that the observable list is not modified from another thread
         // and that the wizard is created on the UI-thread.
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                if (!sendDialogLock.tryLock()) {
+                // we only permit one dialog. If already open, skip this step and add directly to the queue.
+                if (!sendDialogLock.tryAcquire()) {
                     return;
                 }
                 try {
@@ -291,7 +295,8 @@ public class LogListener implements ILogListener, IStartup {
                             public boolean close() {
                                 boolean close = super.close();
                                 if (close) {
-                                    sendDialogLock.unlock();
+                                    // when closing, release the lock to let another thread reopen it.
+                                    sendDialogLock.release();
                                 }
                                 return close;
                             }
@@ -299,7 +304,8 @@ public class LogListener implements ILogListener, IStartup {
                         reportDialog.open();
                     }
                 } catch (Exception e) {
-                    sendDialogLock.unlock();
+                    // if something goes wrong in the internals of eclipse and throws an exception (it did in the past):
+                    sendDialogLock.release();
                 }
             }
         });
