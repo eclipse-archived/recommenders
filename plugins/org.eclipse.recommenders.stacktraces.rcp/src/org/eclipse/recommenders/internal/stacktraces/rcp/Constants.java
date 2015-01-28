@@ -62,7 +62,7 @@ public final class Constants {
         PROP_WHITELISTED_PLUGINS = pkg.getSettings_WhitelistedPluginIds().getName();
     }
 
-    static final String HELP_URL = "https://docs.google.com/document/d/14vRLXcgSwy0rEbpJArsR_FftOJW1SjWUAmZuzc2O8YI/pub";
+    static final String HELP_URL = "https://dev.eclipse.org/recommenders/community/confess/";
     static final String FEEDBACK_FORM_URL = "https://docs.google.com/a/codetrails.com/forms/d/1wd9AzydLv_TMa7ZBXHO7zQIhZjZCJRNMed-6J4fVNsc/viewform";
     static final String SERVER_URL = getServerUrl();
 
