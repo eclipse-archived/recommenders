@@ -15,17 +15,19 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class HistoryTest {
     private static ModelFactory factory = ModelFactory.eINSTANCE;
@@ -33,7 +35,10 @@ public class HistoryTest {
 
     @Before
     public void setUp() throws Exception {
-        sut = new History() {
+        Settings s = ModelFactory.eINSTANCE.createSettings();
+        s.setWhitelistedPackages(Lists.newArrayList("org."));
+        s.setWhitelistedPluginIds(Lists.newArrayList("org."));
+        sut = new History(s) {
             @Override
             protected Directory createIndexDirectory() throws IOException {
                 return new RAMDirectory();
@@ -68,18 +73,6 @@ public class HistoryTest {
         throwable2.setStackTrace(createStacktraceForClasses("any.Class1", "any.Class2"));
         Status status2 = ErrorReportsDTOs.createStatus(IStatus.ERROR, "plugin.id", "a message", throwable2);
         report2.setStatus(status2);
-
-        assertThat(sut.seen(report2), is(true));
-    }
-
-    @Test
-    public void testRememberDifferentId() {
-        ErrorReport report = factory.createErrorReport();
-        report.setEventId(UUID.randomUUID());
-        sut.remember(report);
-
-        ErrorReport report2 = factory.createErrorReport();
-        report2.setEventId(UUID.randomUUID());
 
         assertThat(sut.seen(report2), is(true));
     }
