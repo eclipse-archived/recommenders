@@ -85,12 +85,12 @@
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8217 -->
-<unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8216 -->
-<unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
 <unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9005 -->
+<unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9004 -->
+<unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <!-- This location points to the latest recommended build, as not all dependencies are part of the recommended Orbit build for Kepler SR2. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
 </location>

@@ -19,11 +19,14 @@ import static org.eclipse.recommenders.net.Proxies.proxy;
 import java.net.URI;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.GzipCompressingEntity;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -67,7 +70,8 @@ public class UploadJob extends Job {
         try {
             executor = Executor.newInstance();
             String body = ErrorReports.toJson(event, settings, false);
-            Request request = Request.Post(target).bodyString(body, ContentType.APPLICATION_JSON);
+            HttpEntity entity = new GzipCompressingEntity(new StringEntity(body, ContentType.APPLICATION_OCTET_STREAM));
+            Request request = Request.Post(target).body(entity);
             Response response = proxy(executor, target).execute(request);
             HttpResponse httpResponse = response.returnResponse();
             String details = EntityUtils.toString(httpResponse.getEntity());
