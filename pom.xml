@@ -68,16 +68,16 @@
 		<module>features</module>
 		<module>repositories</module>
 	</modules>
-<!-- TODO Remove comment after https://bugs.eclipse.org/bugs/show_bug.cgi?id=458748 has been fixed. -->
-<!--	<pluginRepositories>
+	<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=458748. -->
+	<pluginRepositories>
 		<pluginRepository>
-			<id>eclipse-maven-releases</id>
-			<url>https://repo.eclipse.org/content/repositories/releases/</url>
+			<id>eclipse-cbi-releases</id>
+			<url>https://repo.eclipse.org/content/groups/cbi/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
-	</pluginRepositories> -->
+	</pluginRepositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
