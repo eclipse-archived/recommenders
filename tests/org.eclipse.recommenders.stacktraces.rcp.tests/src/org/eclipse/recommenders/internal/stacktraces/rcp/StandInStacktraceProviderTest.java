@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.ErrorReportsDTOs.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -18,8 +19,11 @@ import static org.mockito.Mockito.never;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.ModelFactory;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -41,6 +45,15 @@ public class StandInStacktraceProviderTest {
 
     private static final Set<String> BLACKLIST = Sets.newHashSet(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2);
 
+    private Settings settings;
+
+    @Before
+    public void setUp() {
+        settings = ModelFactory.eINSTANCE.createSettings();
+        settings.setWhitelistedPluginIds(newArrayList("plugin.id"));
+        settings.setWhitelistedPackages(newArrayList("java"));
+    }
+
     @Spy
     private StandInStacktraceProvider stacktraceProvider = new StandInStacktraceProvider();
 
@@ -56,7 +69,8 @@ public class StandInStacktraceProviderTest {
 
     @Test
     public void testClearMultipleBlacklistedOnTop() {
-        StackTraceElement[] stackframes = createStacktraceForClasses(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2, ANY_CLASS_1);
+        StackTraceElement[] stackframes = createStacktraceForClasses(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2,
+                ANY_CLASS_1);
 
         StackTraceElement[] cleared = stacktraceProvider.clearBlacklistedTopStackframes(stackframes, BLACKLIST);
 
@@ -76,8 +90,8 @@ public class StandInStacktraceProviderTest {
 
     @Test
     public void testDoNotClearBlacklistedOnBottomButOnTop() {
-        StackTraceElement[] stackframes = createStacktraceForClasses(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2, ANY_CLASS_1,
-                BLACKLISTED_CLASS_3);
+        StackTraceElement[] stackframes = createStacktraceForClasses(BLACKLISTED_CLASS_1, BLACKLISTED_CLASS_2,
+                ANY_CLASS_1, BLACKLISTED_CLASS_3);
 
         StackTraceElement[] cleared = stacktraceProvider.clearBlacklistedTopStackframes(stackframes, BLACKLIST);
 
@@ -98,7 +112,7 @@ public class StandInStacktraceProviderTest {
     @Test
     public void testInsertStacktraceForStatusWithNoException() {
         Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
+        stacktraceProvider.insertStandInStacktraceIfEmpty(status, settings);
         Mockito.verify(stacktraceProvider).clearBlacklistedTopStackframes(Mockito.any(StackTraceElement[].class),
                 Mockito.anySetOf(String.class));
     }
@@ -106,7 +120,7 @@ public class StandInStacktraceProviderTest {
     @Test
     public void testInsertedExceptionClass() {
         Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
+        stacktraceProvider.insertStandInStacktraceIfEmpty(status, settings);
         Assert.assertThat(status.getException().getClassName(),
                 is(StandInStacktraceProvider.StandInException.class.getName()));
     }
@@ -114,7 +128,7 @@ public class StandInStacktraceProviderTest {
     @Test
     public void testInsertStacktraceSkippedForStatusWithException() {
         Status status = createStatus(IStatus.ERROR, "plugin.id", "any message", new RuntimeException());
-        stacktraceProvider.insertStandInStacktraceIfEmpty(status);
+        stacktraceProvider.insertStandInStacktraceIfEmpty(status, settings);
         Mockito.verify(stacktraceProvider, never()).clearBlacklistedTopStackframes(
                 Mockito.any(StackTraceElement[].class), Mockito.anySetOf(String.class));
     }
@@ -122,11 +136,18 @@ public class StandInStacktraceProviderTest {
     @Test
     public void testInserterClassNotContainedInStacktrace() {
         Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
-        new StandInStacktraceProvider().insertStandInStacktraceIfEmpty(status);
+        new StandInStacktraceProvider().insertStandInStacktraceIfEmpty(status, settings);
         for (org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement e : status.getException()
                 .getStackTrace()) {
             assertThat(e.getClassName(), not(is(StandInStacktraceProvider.class.getCanonicalName())));
         }
+    }
 
+    @Test
+    public void testFingerprintUpdated() {
+        Status status = createStatus(IStatus.ERROR, "plugin.id", "any message");
+        String oldFingerprint = status.getFingerprint();
+        new StandInStacktraceProvider().insertStandInStacktraceIfEmpty(status, settings);
+        assertThat(status.getFingerprint(), not(is(oldFingerprint)));
     }
 }

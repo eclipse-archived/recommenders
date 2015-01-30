@@ -10,10 +10,13 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports.computeFingerprintFor;
+
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
 
 public class StandInStacktraceProvider {
@@ -29,7 +32,7 @@ public class StandInStacktraceProvider {
 
     private static final String STAND_IN_MESSAGE = "Stand-In Stacktrace supplied by Eclipse Stacktraces & Error Reporting Tool";
 
-    protected void insertStandInStacktraceIfEmpty(final Status status) {
+    protected void insertStandInStacktraceIfEmpty(final Status status, Settings settings) {
         if (requiresStandInStacktrace(status)) {
             Throwable syntetic = new StandInException(STAND_IN_MESSAGE);
             syntetic.fillInStackTrace();
@@ -38,6 +41,7 @@ public class StandInStacktraceProvider {
                     Constants.STAND_IN_STACKTRACE_BLACKLIST);
             syntetic.setStackTrace(clearedStacktrace);
             status.setException(ErrorReports.newThrowable(syntetic));
+            status.setFingerprint(computeFingerprintFor(status, settings));
         }
     }
 

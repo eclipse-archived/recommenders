@@ -136,7 +136,7 @@ public class LogListener implements ILogListener, IStartup {
             if (filterEmptyUiMonitoring(report)) {
                 return;
             }
-            stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus());
+            stacktraceProvider.insertStandInStacktraceIfEmpty(report.getStatus(), settings);
             guessInvolvedPlugins(report);
             if (alreadyQueued(report) || seenSameOrSimilarErrorBefore(report)) {
                 return;

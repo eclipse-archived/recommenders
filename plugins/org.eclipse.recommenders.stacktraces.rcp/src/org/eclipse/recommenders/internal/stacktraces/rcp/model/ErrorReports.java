@@ -386,12 +386,16 @@ public class ErrorReports {
             mStatus.setException(mException);
         }
 
-        ThrowableFingerprintComputer fingerprint = new ThrowableFingerprintComputer(settings.getWhitelistedPackages(),
-                1024);
-        mStatus.accept(fingerprint);
-        mStatus.setFingerprint(fingerprint.hash());
+        mStatus.setFingerprint(computeFingerprintFor(mStatus, settings));
 
         return mStatus;
+    }
+
+    public static String computeFingerprintFor(Status status, Settings settings) {
+        ThrowableFingerprintComputer fingerprintComputer = new ThrowableFingerprintComputer(
+                settings.getWhitelistedPackages(), 1024);
+        status.accept(fingerprintComputer);
+        return fingerprintComputer.hash();
     }
 
     private static String removeSourceFileContents(String message) {

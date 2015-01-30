@@ -145,6 +145,21 @@ public class LogListenerTest {
     }
 
     @Test
+    public void testInsertedDebugStacktraceHasFingerprint() {
+
+        settings.setAction(SendAction.SILENT);
+        Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
+
+        sut.logging(empty, "");
+
+        ArgumentCaptor<ErrorReport> captor = ArgumentCaptor.forClass(ErrorReport.class);
+        verify(sut).sendStatus(captor.capture());
+        ErrorReport sendReport = captor.getValue();
+        // the fingerprint should not be a string of only 0-values, which indicates a missing fingerprint
+        assertThat(sendReport.getStatus().getFingerprint().matches("[0]*"), is(false));
+    }
+
+    @Test
     public void testBundlesAddedToDebugStacktrace() {
         settings.setAction(SendAction.SILENT);
         Status empty = new Status(IStatus.ERROR, TEST_PLUGIN_ID, "has no stacktrace");
