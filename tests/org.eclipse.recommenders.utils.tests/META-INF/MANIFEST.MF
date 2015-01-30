@@ -8,6 +8,5 @@ Fragment-Host: org.eclipse.recommenders.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.hamcrest,
  org.junit,
- org.mockito,
- org.eclipse.recommenders.net
+ org.mockito
 Import-Package: org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)"

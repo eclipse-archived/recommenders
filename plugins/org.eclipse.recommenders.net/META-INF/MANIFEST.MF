@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.net
 Bundle-Version: 2.1.12.qualifier
+Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.net
@@ -10,5 +10,4 @@ Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.http;version="[4.3.0,5.0.0)",
  org.apache.http.client.fluent;version="[4.3.0,5.0.0)"
-Export-Package: org.eclipse.recommenders.net;uses:="com.google.common.
- base,org.apache.http.client.fluent"
+Export-Package: org.eclipse.recommenders.net;uses:="com.google.common.base,org.apache.http.client.fluent"
