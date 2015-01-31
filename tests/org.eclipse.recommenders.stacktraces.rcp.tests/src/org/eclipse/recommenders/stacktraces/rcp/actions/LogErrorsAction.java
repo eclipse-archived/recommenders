@@ -10,6 +10,12 @@
  */
 package org.eclipse.recommenders.stacktraces.rcp.actions;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,6 +25,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.osgi.framework.FrameworkUtil;
@@ -35,29 +42,15 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
             @Override
             public IStatus run(IProgressMonitor monitor) {
                 System.setProperty("eclipse.buildId", "unit-tests");
-                logManyDifferentErrors();
                 logMultiStatusDelayed();
+                // logManyDifferentErrors();
+                // XXX only execute in non-production. These errors should never be sent to eclipse.org!
+                // logStressTest();
                 return Status.OK_STATUS;
             }
+
         };
         job.schedule();
-    }
-
-    private void logManyDifferentErrors() {
-        for (int k = 0; k < 10; k++) {
-            RuntimeException ex = new IllegalArgumentException("cause" + k);
-            StackTraceElement[] trace = createTrace(k);
-            ex.setStackTrace(trace);
-            log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp", "error", ex));
-        }
-    }
-
-    private StackTraceElement[] createTrace(int k) {
-        StackTraceElement[] trace = new StackTraceElement[k];
-        for (int j = k; j-- > 0;) {
-            trace[j] = new StackTraceElement("org.eclipse.M", "method" + j, "", 1);
-        }
-        return trace;
     }
 
     private void logMultiStatusDelayed() {
@@ -80,6 +73,58 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
                 "status error message", new RuntimeException()));
     }
 
+    private void logManyDifferentErrors() {
+        for (int k = 0; k < 10; k++) {
+            RuntimeException ex = new IllegalArgumentException("cause" + k);
+            StackTraceElement[] trace = createTrace(k);
+            ex.setStackTrace(trace);
+            log.log(new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp", "error", ex));
+        }
+    }
+
+    private void logStressTest() {
+        ExecutorService pool = Executors.newFixedThreadPool(200);
+        final Random random = new Random();
+        for (int i = 0; i < 100000; i++) {
+            pool.execute(new Runnable() {
+
+                @Override
+                public void run() {
+                    RuntimeException ex = new IllegalArgumentException("cause");
+                    StackTraceElement[] trace = createRandomTrace();
+                    ex.setStackTrace(trace);
+                    final Status status = new Status(IStatus.ERROR, "org.eclipse.recommenders.stacktraces.rcp",
+                            "error", ex);
+                    if (random.nextBoolean()) {
+                        log.log(status);
+                    } else {
+                        if (random.nextBoolean()) {
+                            Display.getDefault().syncExec(new ExecuteLog(status));
+                        } else {
+                            Display.getDefault().asyncExec(new ExecuteLog(status));
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private StackTraceElement[] createTrace(int k) {
+        StackTraceElement[] trace = new StackTraceElement[k];
+        for (int j = k; j-- > 0;) {
+            trace[j] = new StackTraceElement("org.eclipse.M", "method" + j, "", 1);
+        }
+        return trace;
+    }
+
+    private StackTraceElement[] createRandomTrace() {
+        StackTraceElement[] trace = new StackTraceElement[10];
+        for (int j = 10; j-- > 0;) {
+            trace[j] = new StackTraceElement("org.eclipse.M" + randomAlphanumeric(5), "method" + j, "", 1);
+        }
+        return trace;
+    }
+
     @Override
     public void selectionChanged(IAction action, ISelection selection) {
     }
@@ -92,4 +137,16 @@ public class LogErrorsAction implements IWorkbenchWindowActionDelegate {
     public void init(IWorkbenchWindow window) {
     }
 
+    private final class ExecuteLog implements Runnable {
+        private final Status status;
+
+        private ExecuteLog(Status status) {
+            this.status = status;
+        }
+
+        @Override
+        public void run() {
+            log.log(status);
+        }
+    }
 }
