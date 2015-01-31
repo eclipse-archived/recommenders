@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
 import static com.google.common.base.Charsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.stripToEmpty;
 import static org.apache.lucene.index.IndexReader.openIfChanged;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.LogMessages.HISTORY_NOT_AVAILABLE;
 import static org.eclipse.recommenders.utils.Logs.log;
@@ -40,16 +41,20 @@ import org.apache.lucene.util.IOUtils;
 import org.apache.lucene.util.Version;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReport;
-import org.eclipse.recommenders.internal.stacktraces.rcp.model.ErrorReports;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.Settings;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.StackTraceElement;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Status;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.Throwable;
 import org.eclipse.recommenders.internal.stacktraces.rcp.model.impl.VisitorImpl;
+import org.eclipse.recommenders.internal.stacktraces.rcp.model.util.ModelSwitch;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.AbstractIdleService;
@@ -128,14 +133,58 @@ public class History extends AbstractIdleService {
     }
 
     private String exactIdentity(ErrorReport report) {
-        ErrorReport copy = ErrorReports.copy(report);
-        // remove potential user content:
-        copy.setComment(null);
-        copy.setName(null);
-        copy.setEmail(null);
-        String json = ErrorReports.toJson(copy, settings, false);
-        String hash = Hashing.murmur3_128().newHasher().putString(json, UTF_8).hash().toString();
-        return hash;
+        final Hasher hasher = Hashing.murmur3_128().newHasher();
+        ModelSwitch<Hasher> s = new ModelSwitch<Hasher>() {
+            @Override
+            public Hasher caseErrorReport(ErrorReport object) {
+                hasher.putString(stripToEmpty(object.getEclipseProduct()), UTF_8);
+                hasher.putString(stripToEmpty(object.getEclipseBuildId()), UTF_8);
+                hasher.putString(stripToEmpty(object.getJavaRuntimeVersion()), UTF_8);
+                hasher.putString(stripToEmpty(object.getOsgiOs()), UTF_8);
+                hasher.putString(stripToEmpty(object.getOsgiOsVersion()), UTF_8);
+                hasher.putString(stripToEmpty(object.getOsgiArch()), UTF_8);
+                hasher.putString(stripToEmpty(object.getOsgiWs()), UTF_8);
+                return hasher;
+            };
+
+            @Override
+            public Hasher caseStatus(Status object) {
+                hasher.putString(stripToEmpty(object.getPluginId()), UTF_8);
+                hasher.putString(stripToEmpty(object.getPluginVersion()), UTF_8);
+                hasher.putString(stripToEmpty(object.getMessage()), UTF_8);
+                hasher.putInt(object.getSeverity());
+                hasher.putInt(object.getCode());
+                return hasher;
+            }
+
+            @Override
+            public Hasher caseBundle(org.eclipse.recommenders.internal.stacktraces.rcp.model.Bundle object) {
+                hasher.putString(stripToEmpty(object.getName()), UTF_8);
+                hasher.putString(stripToEmpty(object.getVersion()), UTF_8);
+                return hasher;
+            }
+
+            @Override
+            public Hasher caseStackTraceElement(StackTraceElement object) {
+                hasher.putString(stripToEmpty(object.getClassName()), UTF_8);
+                hasher.putString(stripToEmpty(object.getMethodName()), UTF_8);
+                hasher.putInt(object.getLineNumber());
+                return hasher;
+            }
+
+            @Override
+            public Hasher caseThrowable(Throwable object) {
+                hasher.putString(stripToEmpty(object.getClassName()), UTF_8);
+                hasher.putString(stripToEmpty(object.getMessage()), UTF_8);
+                return hasher;
+            }
+        };
+
+        for (TreeIterator<EObject> iterator = EcoreUtil.getAllContents(report, true); iterator.hasNext();) {
+            EObject modelElement = iterator.next();
+            s.doSwitch(modelElement);
+        }
+        return hasher.hash().toString();
     }
 
     private String traceIdentity(ErrorReport report) {
@@ -144,8 +193,8 @@ public class History extends AbstractIdleService {
 
             @Override
             public void visit(StackTraceElement element) {
-                hasher.putString(element.getClassName(), Charsets.UTF_8);
-                hasher.putString(element.getMethodName(), Charsets.UTF_8);
+                hasher.putString(element.getClassName(), UTF_8);
+                hasher.putString(element.getMethodName(), UTF_8);
                 hasher.putInt(element.getLineNumber());
             }
         });

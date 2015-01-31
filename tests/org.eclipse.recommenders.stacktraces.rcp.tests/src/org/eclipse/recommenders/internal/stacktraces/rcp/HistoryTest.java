@@ -60,6 +60,18 @@ public class HistoryTest {
     }
 
     @Test
+    public void testBug458792() {
+        ErrorReport report = factory.createErrorReport();
+        Status status = factory.createStatus();
+        report.setStatus(status);
+        assertThat(sut.seen(report), is(false));
+        sut.remember(report);
+        assertThat(sut.seen(report), is(true));
+        status.getChildren();
+        assertThat(sut.seen(report), is(true));
+    }
+
+    @Test
     public void testRememberSameStacktrace() {
         ErrorReport report = factory.createErrorReport();
         Throwable throwable = new Throwable();
