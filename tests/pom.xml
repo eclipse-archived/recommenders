@@ -22,6 +22,7 @@
 		<module>org.eclipse.recommenders.jdt.tests</module>
 		<module>org.eclipse.recommenders.models.tests</module>
 		<module>org.eclipse.recommenders.models.rcp.tests</module>
+		<module>org.eclipse.recommenders.net.tests</module>
 		<module>org.eclipse.recommenders.overrides.tests</module>
 		<module>org.eclipse.recommenders.rcp.tests</module>
 		<module>org.eclipse.recommenders.snipmatch.tests</module>
