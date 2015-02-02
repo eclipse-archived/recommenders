@@ -49,6 +49,8 @@
 		<recommenders-version>2.1.12-SNAPSHOT</recommenders-version>
 		<javaVersion>1.6</javaVersion>
 		<tychoVersion>0.22.0</tychoVersion>
+		<!-- The default simultaneous release used to base the target platform on (override with -Dsimrel=...) -->
+		<simrel>luna</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -220,6 +222,13 @@
 					<configuration>
 						<executionEnvironmentDefault>JavaSE-${javaVersion}</executionEnvironmentDefault>
 						<includePackedArtifacts>true</includePackedArtifacts>
+						<target>
+							<artifact>
+								<groupId>org.eclipse.recommenders</groupId>
+								<artifactId>${simrel}</artifactId>
+								<version>${recommenders-version}</version>
+							</artifact>
+						</target>
 						<targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
 					</configuration>
 				</plugin>
@@ -486,89 +495,6 @@
 						<artifactId>tycho-surefire-plugin</artifactId>
 						<configuration>
 							<useJDK>BREE</useJDK>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>juno</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>juno</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>kepler</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>kepler</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>luna</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>luna</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>mars</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>mars</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
 						</configuration>
 					</plugin>
 				</plugins>
