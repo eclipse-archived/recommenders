@@ -168,9 +168,11 @@ public final class JavaElementSelections {
 
     private static boolean isInvalidSelection(ITypeRoot root, final int offset) {
         try {
+            if (!root.exists()) {
+                return true;
+            }
             // check whether the type root is part of an package fragment root. If not, it's an invalid selection and
-            // all
-            // resolutions are likely to fail. Thus, return true (=invalid):
+            // all resolutions are likely to fail. Thus, return true (=invalid):
             IJavaElement ancestor = root.getAncestor(IJavaProject.PACKAGE_FRAGMENT_ROOT);
             if (!ancestor.exists()) {
                 return true;
