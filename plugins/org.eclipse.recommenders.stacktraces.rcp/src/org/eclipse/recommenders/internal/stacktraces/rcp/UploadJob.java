@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.stacktraces.rcp;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static java.text.MessageFormat.format;
 import static org.eclipse.core.runtime.IStatus.WARNING;
 import static org.eclipse.recommenders.internal.stacktraces.rcp.Constants.PLUGIN_ID;
@@ -70,7 +71,8 @@ public class UploadJob extends Job {
         try {
             executor = Executor.newInstance();
             String body = ErrorReports.toJson(event, settings, false);
-            HttpEntity entity = new GzipCompressingEntity(new StringEntity(body, ContentType.APPLICATION_OCTET_STREAM));
+            StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_OCTET_STREAM.withCharset(UTF_8));
+            HttpEntity entity = new GzipCompressingEntity(stringEntity);
             Request request = Request.Post(target).body(entity);
             Response response = proxy(executor, target).execute(request);
             HttpResponse httpResponse = response.returnResponse();
