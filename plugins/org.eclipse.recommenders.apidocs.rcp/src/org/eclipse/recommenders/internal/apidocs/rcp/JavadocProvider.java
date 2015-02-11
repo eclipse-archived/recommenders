@@ -16,10 +16,12 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.resolveSelectionLocationFromJavaElement;
 import static org.eclipse.recommenders.utils.Logs.log;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -61,6 +63,30 @@ import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends ApidocProvider {
+
+    /**
+     * Use of reflection made necessary due to a change in method signature of
+     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}.
+     *
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=459519">Bug 459519</a>
+     */
+    private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT;
+
+    static {
+        Method method = getDeclaredMethod(JavadocContentAccess2.class, "getHTMLContent", IMember.class, Boolean.TYPE)
+                .orNull();
+        if (method != null) {
+            JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = method;
+        } else {
+            method = getDeclaredMethod(JavadocContentAccess2.class, "getHTMLContent", IJavaElement.class, Boolean.TYPE)
+                    .orNull();
+            if (method != null) {
+                JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = method;
+            } else {
+                JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = null;
+            }
+        }
+    }
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
 
@@ -178,8 +204,16 @@ public final class JavadocProvider extends ApidocProvider {
     }
 
     private String findJavadoc(final IMember element) throws CoreException {
-        String html = JavadocContentAccess2.getHTMLContent(element, true);
-        return extractJavadoc(html);
+        if (JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT == null) {
+            return "";
+        }
+
+        try {
+            String html = (String) JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT.invoke(null, element, true);
+            return extractJavadoc(html);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private String findJavadoc(final IPackageFragment element) throws CoreException {
