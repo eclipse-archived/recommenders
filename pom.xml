@@ -2,10 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
 	<version>2.1.12-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<organization>
 		<name>Eclipse Foundation</name>
 		<url>http://www.eclipse.org/</url>
@@ -17,6 +19,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<mailingLists>
 		<mailingList>
 			<name>Developer Mailing List</name>
@@ -24,6 +27,20 @@
 			<archive>http://dev.eclipse.org/mhonarc/lists/recommenders-dev</archive>
 		</mailingList>
 	</mailingLists>
+
+	<prerequisites>
+		<maven>3.1.1</maven>
+	</prerequisites>
+
+	<modules>
+		<module>releng</module>
+		<module>targets</module>
+		<module>plugins</module>
+		<module>tests</module>
+		<module>features</module>
+		<module>repositories</module>
+	</modules>
+
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>https://bugs.eclipse.org/bugs/describecomponents.cgi?product=Recommenders</url>
@@ -45,6 +62,7 @@
 			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
+
 	<properties>
 		<recommenders-version>2.1.12-SNAPSHOT</recommenders-version>
 		<javaVersion>1.6</javaVersion>
@@ -59,17 +77,7 @@
 		<!-- Single jacoco.exec referenced from both plugins/* and tests/*. -->
 		<sonar.jacoco.reportPath>../../target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
-	<prerequisites>
-		<maven>3.1.1</maven>
-	</prerequisites>
-	<modules>
-		<module>releng</module>
-		<module>targets</module>
-		<module>plugins</module>
-		<module>tests</module>
-		<module>features</module>
-		<module>repositories</module>
-	</modules>
+
 	<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=458748. -->
 	<pluginRepositories>
 		<pluginRepository>
@@ -80,6 +88,7 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -87,30 +96,6 @@
 				<directory>resources</directory>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<extensions>true</extensions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>require-plugin-versions</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requirePluginVersions/>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
 				<!-- Apache Maven core plugins -->
@@ -389,6 +374,11 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tidy-maven-plugin</artifactId>
+					<version>1.0-beta-1</version>
+				</plugin>
+				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.2.201409121644</version>
@@ -459,7 +449,44 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>require-plugin-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requirePluginVersions/>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tidy-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>check-pom</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
+
 	<profiles>
 		<profile>
 			<!-- If you enable the "build-server" profile locally (for testing purposes), set "-Dcbi.jarsigner.skip=true" to skip JAR signing; signing only works on the build server. -->
