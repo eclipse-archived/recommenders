@@ -79,8 +79,6 @@ import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -88,8 +86,6 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 public final class CompletionContextFunctions {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CompletionContextFunctions.class);
 
     private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
 
@@ -541,6 +537,9 @@ public final class CompletionContextFunctions {
 
             try {
                 InternalCompletionContext ctx = context.get(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, null);
+                if (ctx == null) {
+                    return null;
+                }
                 InternalExtendedCompletionContext extCtx = cast(EXTENDED_CONTEXT.get(ctx));
                 if (extCtx == null) {
                     return null;
@@ -549,7 +548,7 @@ public final class CompletionContextFunctions {
                 context.set(key, env);
                 return env;
             } catch (Exception e) {
-                LOG.error("Cannot access LookupEnvironment by reflection.", e); //$NON-NLS-1$
+                Logs.log(LogMessages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT, e);
                 return null;
             }
         }
