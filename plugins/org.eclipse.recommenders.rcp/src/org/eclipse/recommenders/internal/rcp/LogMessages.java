@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
@@ -43,6 +44,11 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages FAILED_TO_RESOLVE_TYPE_PARAMETER = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER);
     public static final LogMessages AN_ERROR_OCCURRED = new LogMessages(ERROR, Messages.LOG_ERROR_AN_ERROR_OCCURRED);
+
+    public static final ILogMessage LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED = new LogMessages(WARNING,
+            Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED);
+    public static final ILogMessage LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM = new LogMessages(WARNING,
+            Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED_ITEM);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

@@ -23,15 +23,20 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.ui.editors,
  org.eclipse.equinox.p2.discovery,
  org.eclipse.equinox.p2.discovery.compatibility,
- org.eclipse.equinox.p2.ui.discovery
+ org.eclipse.equinox.p2.ui.discovery,
+ org.eclipse.recommenders.net
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.cache;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
  com.google.common.eventbus;version="[15.0.0,16.0.0)",
  com.google.common.util.concurrent;version="[15.0.0,16.0.0)",
+ org.apache.commons.io;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
- org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)"
+ org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)",
+ org.apache.commons.lang3.time;version="[3.0.0,4.0.0)",
+ org.apache.http;version="[4.3.0,5.0.0)",
+ org.apache.http.client.fluent;version="[4.3.0,5.0.0)"
 Export-Package: org.eclipse.recommenders.internal.rcp;x-friends:="org.
  eclipse.recommenders.rcp.tests",org.eclipse.recommenders.rcp;uses:="c
  om.google.common.base",org.eclipse.recommenders.rcp.utils;uses:="com.

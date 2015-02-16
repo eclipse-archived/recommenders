@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.recommenders.internal.rcp.news.CheckForProjectNewsJob;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -25,6 +28,7 @@ public class RcpPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         plugin = this;
         super.start(context);
+        new CheckForProjectNewsJob().schedule(TimeUnit.HOURS.toMillis(2));
     }
 
     @Override
