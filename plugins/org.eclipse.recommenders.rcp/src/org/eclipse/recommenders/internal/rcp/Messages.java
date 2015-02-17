@@ -47,6 +47,9 @@ public final class Messages extends NLS {
     public static String DIALOG_LABEL_BUNDLE_LIST;
     public static String DIALOG_RESTART_NOT_POSSIBLE;
 
+    public static String NEWS_NOTIFY_MESSAGE = "The Code Recommenders project has published a new blog post: {0}. <a href=\"{1}\">Read more...</a>";
+    public static String NEWS_LOADING_MESSAGE = "Loading Project Newsfeed...";
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

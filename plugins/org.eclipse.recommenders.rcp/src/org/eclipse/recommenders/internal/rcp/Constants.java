@@ -20,4 +20,6 @@ public final class Constants {
     public static final String BUNDLE_ID = "org.eclipse.recommenders.rcp"; //$NON-NLS-1$
 
     public static final String PREF_IGNORE_BUNDLE_RESOLUTION_FAILURE = "ignore.bundle.resolution.failures"; //$NON-NLS-1$
+    public static final String NEWS_ENABLED = "news-enabled"; //$NON-NLS-1$
+    public static final String NEWS_LAST_CHECK = "news-last-check"; //$NON-NLS-1$
 }
