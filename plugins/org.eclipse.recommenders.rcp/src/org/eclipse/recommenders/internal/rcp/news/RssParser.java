@@ -38,7 +38,7 @@ import com.google.common.collect.Lists;
 public class RssParser {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z", Locale.UK);
-    protected static final String FILTER_TAG = "planeteclipse";
+    protected static final String FILTER_TAG = "ide-news";
 
     public static List<Pair<String, URL>> getEntries(@Nullable String xml, @Nullable Date fromDate) {
         if (Strings.isNullOrEmpty(xml)) {
