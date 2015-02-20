@@ -19,8 +19,6 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.eclipse.core.internal.net.ProxyManager;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -107,11 +105,6 @@ public class ModelsRcpModule extends AbstractModule {
     @Provides
     public IDependencyListener provideDependencyListener(EventBus bus) {
         return new EclipseDependencyListener(bus);
-    }
-
-    @Provides
-    public IProxyService provideProxyService() {
-        return ProxyManager.getProxyManager();
     }
 
     @Provides

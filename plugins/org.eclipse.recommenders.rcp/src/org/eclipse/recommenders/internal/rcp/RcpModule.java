@@ -29,6 +29,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.core.internal.net.ProxyManager;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -116,6 +118,11 @@ public class RcpModule extends AbstractModule implements Module {
                 "Recommenders-Bus-Thread-", //$NON-NLS-1$
                 1L, TimeUnit.MINUTES);
         return new AsyncEventBus("Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
+    }
+
+    @Provides
+    public IProxyService provideProxyService() {
+        return ProxyManager.getProxyManager();
     }
 
     @Provides

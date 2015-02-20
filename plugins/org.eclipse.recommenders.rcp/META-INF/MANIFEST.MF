@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.equinox.p2.discovery,
  org.eclipse.equinox.p2.discovery.compatibility,
  org.eclipse.equinox.p2.ui.discovery,
- org.eclipse.recommenders.net
+ org.eclipse.recommenders.net,
+ org.eclipse.core.net
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.cache;version="[15.0.0,16.0.0)",
