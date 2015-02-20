@@ -8,10 +8,10 @@ else
 fi
 
 if [ -z "$2" ]; then
-    echo "No repository name (e.g., 'head', 'simrel') supplied."
+    echo "No release name ('head', 'milestones', 'stable', 'simrel') supplied."
     exit 2
 else
-    REPOSITORY=$2
+    RELEASE=$2
 fi
 
 if [ -z "$3" ]; then
@@ -21,10 +21,10 @@ else
    DOWNLOAD_PATH=$3
 fi
 
-echo "Publishing '${REPOSITORY}' repository of '${SIMREL}' configuration at http://${DOWNLOAD_PATH}"
+echo "Publishing '${RELEASE}' repository of '${SIMREL}' configuration at http://${DOWNLOAD_PATH}"
 echo
 
-SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
+SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${RELEASE}/target/repository
 TARGET=/home/data/httpd/${DOWNLOAD_PATH}
 
 mkdir -p ${TARGET}
