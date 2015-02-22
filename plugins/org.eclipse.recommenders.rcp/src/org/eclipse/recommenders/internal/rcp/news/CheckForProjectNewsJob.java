@@ -8,6 +8,8 @@
 package org.eclipse.recommenders.internal.rcp.news;
 
 import static java.text.MessageFormat.format;
+import static org.eclipse.recommenders.internal.rcp.Constants.*;
+import static org.eclipse.recommenders.internal.rcp.Messages.*;
 import static org.eclipse.recommenders.utils.Urls.*;
 
 import java.io.IOException;
@@ -29,34 +31,28 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.recommenders.internal.rcp.Constants;
 import org.eclipse.recommenders.internal.rcp.LogMessages;
 import org.eclipse.recommenders.net.Proxies;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.Logs;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Pair;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 public class CheckForProjectNewsJob extends Job {
 
-    static final String NEWS_ENABLED = "news-enabled";
-    static final String NEWS_LAST_CHECK = "news-last-check";
-
-    static IEclipsePreferences getPreferences() {
-        return InstanceScope.INSTANCE.getNode(Constants.BUNDLE_ID);
-    }
-
     // Code Recommenders project feed:
-    private URI feed = toUri(toUrl("http://www.codetrails.com/blog/feed/planet-eclipse"));
+    private URI feed = toUri(toUrl("http://www.codetrails.com/blog/feed/planet-eclipse")); //$NON-NLS-1$
     private IEclipsePreferences prefs;
 
-    public CheckForProjectNewsJob() {
-        super("Loading Project Newsfeed...");
+    public CheckForProjectNewsJob(IEclipsePreferences prefs) {
+        super(NEWS_LOADING_MESSAGE);
         setSystem(true);
-        prefs = getPreferences();
+        this.prefs = prefs;
     }
 
     @Override
@@ -89,20 +85,34 @@ public class CheckForProjectNewsJob extends Job {
     }
 
     private void doRun() throws IOException {
-        String string = download().orNull();
-        if (string == null) {
-            return;
-        }
+        List<Pair<String, URL>> newsItems = getNewsItems(getRSSFeed().orNull());
+        String link = createNotificationLink(newsItems);
+        openPopup(link);
+    }
+
+    @VisibleForTesting
+    protected List<Pair<String, URL>> getNewsItems(@Nullable String rssFeed) {
         Date last = getLastRun();
-        List<Pair<String, URL>> entries = RssParser.getEntries(string, last);
-        saveLastRun(new Date());
+        List<Pair<String, URL>> newsItems = RssParser.getEntries(rssFeed, last);
+        saveLastRun();
+        return newsItems;
+    }
+
+    @VisibleForTesting
+    protected String createNotificationLink(List<Pair<String, URL>> entries) {
         if (entries.isEmpty()) {
+            return ""; //$NON-NLS-1$
+        }
+
+        Pair<String, URL> latest = entries.get(0);
+        String link = format(NEWS_NOTIFY_MESSAGE, latest.getFirst(), latest.getSecond());
+        return link;
+    }
+
+    private void openPopup(@Nullable final String link) {
+        if (Strings.isNullOrEmpty(link)) {
             return;
         }
-        final Pair<String, URL> latest = entries.get(0);
-        final String link = format(
-                "The Code Recommenders project has published a new blog post: {0}. <a href=\"{1}\">Read more...</a>",
-                latest.getFirst(), latest.getSecond());
 
         Shells.getDisplay().asyncExec(new Runnable() {
             @Override
@@ -112,17 +122,16 @@ public class CheckForProjectNewsJob extends Job {
         });
     }
 
-    private void saveLastRun(Date last) {
-        prefs.putLong(NEWS_LAST_CHECK, last.getTime());
+    private void saveLastRun() {
+        prefs.putLong(NEWS_LAST_CHECK, new Date().getTime());
     }
 
     private Date getLastRun() {
         long time = prefs.getLong(NEWS_LAST_CHECK, System.currentTimeMillis());
-        Date last = new Date(time);
-        return last;
+        return new Date(time);
     }
 
-    private Optional<String> download() throws IOException {
+    private Optional<String> getRSSFeed() throws IOException {
         Executor executor = Executor.newInstance();
         Request request = Request.Get(feed);
         Response response = Proxies.proxy(executor, feed).execute(request);
