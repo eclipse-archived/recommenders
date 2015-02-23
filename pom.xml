@@ -67,7 +67,7 @@
 		<recommenders-version>2.1.12-SNAPSHOT</recommenders-version>
 		<javaVersion>1.6</javaVersion>
 		<tychoVersion>0.22.0</tychoVersion>
-		<!-- The default simultaneous release used to base the target platform on (override with -Dsimrel=...) -->
+		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>luna</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
@@ -118,7 +118,8 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
 					<configuration>
-						<deployAtEnd>true</deployAtEnd>
+						<!-- Needs to be unlocked by the "maintenance-simrel" profile below. -->
+						<skip>true</skip>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -177,7 +178,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.3.1</version>
+					<version>1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -489,7 +490,7 @@
 
 	<profiles>
 		<profile>
-			<!-- If you enable the "build-server" profile locally (for testing purposes), set "-Dcbi.jarsigner.skip=true" to skip JAR signing; signing only works on the build server. -->
+			<!-- If you activate the "build-server" profile locally (for testing purposes), set "-Dcbi.jarsigner.skip=true" to skip JAR signing; signing only works on the build server. -->
 			<id>build-server</id>
 			<build>
 				<pluginManagement>
@@ -522,6 +523,28 @@
 						<artifactId>tycho-surefire-plugin</artifactId>
 						<configuration>
 							<useJDK>BREE</useJDK>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- The "maintenance-simrel" profile unlocks deployment, which is skipped by default. -->
+			<id>maintenance-simrel</id>
+			<activation>
+				<property>
+					<name>simrel</name>
+					<!-- This needs to mirror the value of ${env.MAINTENANCE_SIMREL}. -->
+					<value>luna</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>false</skip>
 						</configuration>
 					</plugin>
 				</plugins>
