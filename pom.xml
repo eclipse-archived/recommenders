@@ -64,7 +64,7 @@
 	</distributionManagement>
 
 	<properties>
-		<recommenders-version>2.1.12-SNAPSHOT</recommenders-version>
+		<recommendersVersion>2.1.12-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.6</javaVersion>
 		<tychoVersion>0.22.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
@@ -157,7 +157,7 @@
 						<dependency>
 							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>coding-conventions</artifactId>
-							<version>${recommenders-version}</version>
+							<version>${recommendersVersion}</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -212,7 +212,7 @@
 							<artifact>
 								<groupId>org.eclipse.recommenders</groupId>
 								<artifactId>${simrel}</artifactId>
-								<version>${recommenders-version}</version>
+								<version>${recommendersVersion}</version>
 							</artifact>
 						</target>
 						<targetDefinitionIncludeSource>honor</targetDefinitionIncludeSource>
@@ -318,7 +318,7 @@
 						<dependency>
 							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>licenses</artifactId>
-							<version>${recommenders-version}</version>
+							<version>${recommendersVersion}</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -476,14 +476,15 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tidy-maven-plugin</artifactId>
-				<executions>
+				<!-- Disabled due to https://jira.codehaus.org/browse/MOJO-2073 -->
+				<!-- executions>
 					<execution>
 						<id>check-pom</id>
 						<goals>
 							<goal>check</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions -->
 			</plugin>
 		</plugins>
 	</build>

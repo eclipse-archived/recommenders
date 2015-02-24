@@ -1,4 +1,4 @@
-How to contribute to Eclipse Code Recommenders
+How to Contribute to Eclipse Code Recommenders
 ==============================================
 
 ![Logo](../plain/CONTRIBUTING/recommenders-logo.png)
@@ -49,7 +49,7 @@ But if some of the steps below fail – [let us know](https://dev.eclipse.org/ma
 If you want to build Code Recommenders from the command line, you will need both [Git](http://www.git-scm.com/downloads) and  [Apache Maven](http://maven.apache.org/download.html), version 3.x.
 First clone the Code Recommenders Git repository:
 
-    $ git clone http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git
+- `git clone http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git`
 
 **Windows users:** Code Recommenders uses Unix-style newlines (LF) throughout and fails the build if it finds Windows-style newlines (CRLF).
 Please make sure that your Git configuration has `core.autocrlf` set to `false` to prevent Git from changing newlines to Windows-style.
@@ -57,8 +57,8 @@ Please make sure that your Git configuration has `core.autocrlf` set to `false` 
 
 After you have successfully cloned the repository, use Maven to build Eclipse Code Recommenders from scratch:
 
-    $ cd org.eclipse.recommenders
-    $ mvn clean install
+- `cd org.eclipse.recommenders`
+- `mvn clean install`
 
 That’s it.
 After a few minutes wait, you should see a `BUILD SUCCESS`.
@@ -66,7 +66,7 @@ After a few minutes wait, you should see a `BUILD SUCCESS`.
 
 If you experience `OutOfMemoryError`s during the `mvn clean install` step, please set the `MAVEN_OPTS` environment variable as follows:
 
-    $ export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+- `export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m"`
 
 **Windows users:** Substitute `export` with `set` in the above command.
 
@@ -119,3 +119,50 @@ Congratulations, you have contributed your first change to Code Recommenders!
 
 Other committers will look at your code and provide feedback.
 Do not be alarmed if your change is not immediately merged; most changes require a bit of back-and-forth between contributors and committers.
+
+Releasing a New Version of Code Recommenders
+--------------------------------------------
+
+The following is of concern only to committers to Eclipse Code Recommenders.
+
+To release a new version of Code Recommenders, perform the following steps:
+
+- `export RELEASE_VERSION=x.y.z`
+- `git clean -df`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${RELEASE_VERSION}`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${RELEASE_VERSION}-SNAPSHOT`
+- `mvn tidy:pom`
+- `git commit -a -m "[releng] ${RELEASE_VERSION}"`
+- Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
+- `git push origin HEAD:refs/for/master`
+
+Thereafter, switch to the next (SNAPSHOT) version:
+
+- `export NEXT_VERSION=x.y.(z+1)`
+- `git checkout HEAD^ -- '*'`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${NEXT_VERSION}-SNAPSHOT`
+
+Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
+
+- `git commit -a -m "[releng] ${NEXT_VERSION}_VERSION"`
+- Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
+- `git push origin HEAD:refs/for/master`
+
+Wait till **both** commits have been built successfully by [Gerrit code review](https://git.eclipse.org/r/#/q/project:recommenders/org.eclipse.recommenders), only then submit the first one.
+Then wait till [the Hudson build](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) is successful, then check out the merge commit and tag it.
+
+* `git fetch`
+* `git checkout origin/master`
+* `git tag v${RELEASE_VERSION}`
+* `git push origin v${RELEASE_VERSION}`
+
+Submit the second change.
+
+After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) have been successful, promote the release build to the [milestones](download.eclipse.org/recommenders/updates/milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
+
+- In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/), select the release build.
+- Click *Promotion Status* and start the `milestones` jobs
+- Enter a `MILESTONES_VERSION` parameter of `v${RELEASE_VERSION}.R`
+- Click *Promotion Status* and start the `stable` jobs
+- Enter a `STABLE_VERSION` parameter of `v${RELEASE_VERSION}`
+- Click *Configure* and assign a *DisplayName* of v`$RECOMMENDERS_RELEASE`
