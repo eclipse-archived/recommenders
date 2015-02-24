@@ -5,7 +5,7 @@
 
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
-	<version>2.1.12-SNAPSHOT</version>
+	<version>2.1.12</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -64,7 +64,7 @@
 	</distributionManagement>
 
 	<properties>
-		<recommendersVersion>2.1.12-SNAPSHOT</recommendersVersion>
+		<recommendersVersion>2.1.12</recommendersVersion>
 		<javaVersion>1.6</javaVersion>
 		<tychoVersion>0.22.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
