@@ -33,6 +33,8 @@ import org.eclipse.swt.widgets.Shell;
 @SuppressWarnings("restriction")
 public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
+    private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/completion/directory.xml"; //$NON-NLS-1$
+
     @Inject
     public DiscoveryCompletionProposal(SharedImages images) {
         Image image = images.getImage(Images.OBJ_LIGHTBULB);
@@ -49,7 +51,7 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
     @Override
     public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
-        Dialogs.newExtensionsDiscoveryDialog().open();
+        Dialogs.newExtensionsDiscoveryDialog(DISCOVERY_URL).open();
     }
 
     @Override

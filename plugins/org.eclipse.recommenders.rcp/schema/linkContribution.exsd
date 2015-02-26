@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.recommenders.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.recommenders.rcp" id="org.eclipse.recommenders.rcp.linkContribution" name="Link Contribution"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;
+  This extension point allows plug-ins to contribute a link (e.g. open a browser, or a preference page) to a preference page.
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="linkContribution" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="linkContribution">
+      <complexType>
+         <attribute name="preferencePageId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique identifier of a preference page.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A short description to be displayed. This part &lt;b&gt;MUST&lt;/b&gt; contain a hyperlink tag (&lt;a&gt;&lt;a/&gt;).
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="commandId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique identifier of a command extension point, which will be executed when clicking the highlighted part of the label.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  An optional priority class, 0 is the highest priority (display at top). Default priority label are displayed at the end of the widget.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  An optional icon to display beside the label.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         2.1.13
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;
+  The following contribute a Browser link to the preference page with the given id:
+&lt;/p&gt;
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.recommenders.privacy.rcp.datums&quot;&gt;
+ &lt;linkContribution
+  commandId=&quot;org.eclipse.recommenders.rcp.openBrowser&quot;
+  icon=&quot;icon.png&quot;
+  label=&quot;Visit the &lt;a href=&quot;http://www.eclipse.org/recommenders/&quot;&gt;Project Homepage&lt;/a&gt;&quot;
+  preferencePageId=&quot;org.eclipse.recommenders.rcp.preferencePages.root&quot;
+  priority=&quot;0&quot;&gt;
+ &lt;/linkContribution&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+
+</schema>

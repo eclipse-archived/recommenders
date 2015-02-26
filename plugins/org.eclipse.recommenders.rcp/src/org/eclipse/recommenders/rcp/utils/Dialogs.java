@@ -23,17 +23,15 @@ public class Dialogs {
     private Dialogs() {
     }
 
-    private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/completion/directory.xml"; //$NON-NLS-1$
-
     /** Opens a dialog wizard displaying new code recommenders extensions. */
-    public static WizardDialog newExtensionsDiscoveryDialog() {
+    public static WizardDialog newExtensionsDiscoveryDialog(String discoveryUrl) {
         Catalog catalog = new Catalog();
         Dictionary<Object, Object> env = DiscoveryCore.createEnvironment();
         catalog.setEnvironment(env);
         catalog.setVerifyUpdateSiteAvailability(false);
 
         RemoteBundleDiscoveryStrategy remoteDiscoveryStrategy = new RemoteBundleDiscoveryStrategy();
-        remoteDiscoveryStrategy.setDirectoryUrl(DISCOVERY_URL);
+        remoteDiscoveryStrategy.setDirectoryUrl(discoveryUrl);
         catalog.getDiscoveryStrategies().add(remoteDiscoveryStrategy);
 
         CatalogConfiguration configuration = new CatalogConfiguration();

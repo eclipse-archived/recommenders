@@ -19,7 +19,12 @@ public final class Constants {
     public static final String PREF_UUID = "recommenders.uuid"; //$NON-NLS-1$
     public static final String BUNDLE_ID = "org.eclipse.recommenders.rcp"; //$NON-NLS-1$
 
+    public static final String PREF_PAGE_ID = "org.eclipse.recommenders.rcp.preferencePages.root"; //$NON-NLS-1$
+
     public static final String PREF_IGNORE_BUNDLE_RESOLUTION_FAILURE = "ignore.bundle.resolution.failures"; //$NON-NLS-1$
+
     public static final String NEWS_ENABLED = "news-enabled"; //$NON-NLS-1$
     public static final String NEWS_LAST_CHECK = "news-last-check"; //$NON-NLS-1$
+
+    public static final String COMMAND_HREF_ID = "org.eclipse.recommenders.rcp.linkContribution.href"; //$NON-NLS-1$
 }

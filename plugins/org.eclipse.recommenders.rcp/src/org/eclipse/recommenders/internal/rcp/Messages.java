@@ -17,11 +17,7 @@ public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.rcp.messages"; //$NON-NLS-1$
 
     public static String PREFPAGE_DESCRIPTION_EMPTY;
-    public static String PREFPAGE_LINK_HOMEPAGE;
-    public static String PREFPAGE_LINK_MANUAL;
-    public static String PREFPAGE_LINK_FAVORITE;
-    public static String PREFPAGE_LINK_TWITTER;
-    public static String PREFPAGE_LINK_EXTENSIONS;
+    public static String PREFPAGE_LINKS_DESCRIPTION;
 
     public static String JOB_INITIALIZE_PROJECTS;
 
@@ -34,6 +30,8 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FAILED_TO_RESOLVE_METHOD;
     public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
     public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
+    public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
+    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
     public static String LOG_ERROR_AN_ERROR_OCCURRED;
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED;
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED_ITEM;
