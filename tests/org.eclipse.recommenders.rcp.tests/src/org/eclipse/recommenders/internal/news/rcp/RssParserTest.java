@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

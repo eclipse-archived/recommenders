@@ -10,7 +10,7 @@
  *
  *  Based on https://github.com/awltech/eclipse-mylyn-notifications
  */
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,8 +19,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.window.Window;
-import org.eclipse.recommenders.internal.rcp.news.SwtUtil.FadeJob;
-import org.eclipse.recommenders.internal.rcp.news.SwtUtil.IFadeListener;
+import org.eclipse.recommenders.internal.news.rcp.SwtUtil.FadeJob;
+import org.eclipse.recommenders.internal.news.rcp.SwtUtil.IFadeListener;
+import org.eclipse.recommenders.internal.rcp.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -53,10 +54,6 @@ public abstract class AbstractNotificationPopup extends Window {
 
     private static final int TITLE_HEIGHT = 24;
 
-    private static final String LABEL_NOTIFICATION = "Notification";
-
-    private static final String LABEL_JOB_CLOSE = "Close Job";
-
     protected static final int MAX_WIDTH = 400;
 
     protected static final int MIN_HEIGHT = 100;
@@ -79,7 +76,7 @@ public abstract class AbstractNotificationPopup extends Window {
 
     private Image lastUsedBgImage;
 
-    private final Job closeJob = new Job(LABEL_JOB_CLOSE) {
+    private final Job closeJob = new Job(Messages.JOB_NAME_CLOSE) {
 
         @Override
         protected IStatus run(IProgressMonitor monitor) {
@@ -149,7 +146,7 @@ public abstract class AbstractNotificationPopup extends Window {
      * @return the name to be used in the title of the popup.
      */
     protected String getPopupShellTitle() {
-        return LABEL_NOTIFICATION;
+        return Messages.LABEL_NOTIFICATION_NAME;
     }
 
     protected Image getPopupShellImage(int maximumHeight) {

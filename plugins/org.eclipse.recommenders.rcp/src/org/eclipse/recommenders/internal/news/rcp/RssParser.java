@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import java.io.StringReader;
 import java.net.URL;
@@ -37,8 +37,8 @@ import com.google.common.collect.Lists;
 
 public class RssParser {
 
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z", Locale.UK);
-    protected static final String FILTER_TAG = "ide-news";
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z", Locale.UK); //$NON-NLS-1$
+    protected static final String FILTER_TAG = "ide-news"; //$NON-NLS-1$
 
     public static List<Pair<String, URL>> getEntries(@Nullable String xml, @Nullable Date fromDate) {
         if (Strings.isNullOrEmpty(xml)) {
@@ -50,7 +50,7 @@ public class RssParser {
         List<Pair<String, URL>> entries = Lists.newArrayList();
         XPath xPath = XPathFactory.newInstance().newXPath();
         try {
-            NodeList items = (NodeList) xPath.compile("rss/channel/item").evaluate(
+            NodeList items = (NodeList) xPath.compile("rss/channel/item").evaluate( //$NON-NLS-1$
                     new InputSource(new StringReader(xml)), XPathConstants.NODESET);
             for (int i = 0; i < items.getLength(); i++) {
                 Pair<String, URL> item = getItem(xPath, items.item(i), fromDate).orNull();
@@ -67,15 +67,15 @@ public class RssParser {
 
     private static Optional<Pair<String, URL>> getItem(XPath xPath, Node item, Date fromDate) {
         try {
-            Date date = DATE_FORMAT.parse(xPath.evaluate("pubDate", item));
+            Date date = DATE_FORMAT.parse(xPath.evaluate("pubDate", item)); //$NON-NLS-1$
             if (date.before(fromDate)) {
                 return Optional.absent();
             }
             if (!hasTag(xPath, item, FILTER_TAG)) {
                 return Optional.absent();
             }
-            String title = xPath.evaluate("title", item);
-            URL url = new URL(xPath.evaluate("link", item));
+            String title = xPath.evaluate("title", item); //$NON-NLS-1$
+            URL url = new URL(xPath.evaluate("link", item)); //$NON-NLS-1$
             return Optional.of(Pair.newPair(title, url));
         } catch (Exception e) {
             Logs.log(LogMessages.LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM, e);
@@ -84,7 +84,7 @@ public class RssParser {
     }
 
     private static boolean hasTag(XPath xPath, Node item, String tag) throws XPathExpressionException {
-        NodeList tagList = (NodeList) xPath.evaluate("category", item, XPathConstants.NODESET);
+        NodeList tagList = (NodeList) xPath.evaluate("category", item, XPathConstants.NODESET); //$NON-NLS-1$
         boolean foundTag = false;
         for (int i = 0; i < tagList.getLength(); i++) {
             Node tagItem = tagList.item(i);

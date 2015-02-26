@@ -8,12 +8,13 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.eclipse.recommenders.internal.rcp.Constants.NEWS_ENABLED;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.recommenders.internal.rcp.Messages;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Shells;
@@ -52,7 +53,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         });
 
         Link optout = new Link(composite, SWT.WRAP);
-        optout.setText("Click <a>here</a> to turn off news notifications.");
+        optout.setText(Messages.NEWS_TURN_OFF_MESSAGE);
         optout.setLayoutData(GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
                 .create());
         optout.addSelectionListener(new SelectionAdapter() {
@@ -67,6 +68,6 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
 
     @Override
     protected String getPopupShellTitle() {
-        return "New Updates on Code Recommenders";
+        return Messages.NEWS_LOADING_MESSAGE;
     }
 }

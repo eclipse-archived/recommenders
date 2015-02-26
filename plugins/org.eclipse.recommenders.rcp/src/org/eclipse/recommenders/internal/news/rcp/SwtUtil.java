@@ -10,7 +10,7 @@
  *
  *  Based on https://github.com/awltech/eclipse-mylyn-notifications
  */
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import java.util.Set;
 
@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.recommenders.internal.rcp.Messages;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
@@ -68,7 +69,7 @@ class SwtUtil {
         private final IFadeListener fadeListener;
 
         public FadeJob(Shell shell, int increment, long delay, IFadeListener fadeListener) {
-            super("Fading");
+            super(Messages.JOB_NAME_FADE);
             if (increment < -255 || increment == 0 || increment > 255) {
                 throw new IllegalArgumentException("-255 <= increment <= 255 && increment != 0"); //$NON-NLS-1$
             }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.recommenders.internal.rcp.news.CheckForProjectNewsJob;
+import org.eclipse.recommenders.internal.news.rcp.CheckForProjectNewsJob;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 

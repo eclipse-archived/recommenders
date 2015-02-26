@@ -134,7 +134,7 @@ public class RcpModule extends AbstractModule implements Module {
     @Singleton
     public JavaElementSelectionService provideJavaSelectionProvider(final EventBus bus) {
         final JavaElementSelectionService provider = new JavaElementSelectionService(bus);
-        new UIJob("Registering workbench selection listener.") { //$NON-NLS-1$
+        new UIJob(Messages.JOB_NAME_SELECTION_LISTENER_REGISTRATION) {
             {
                 schedule();
             }

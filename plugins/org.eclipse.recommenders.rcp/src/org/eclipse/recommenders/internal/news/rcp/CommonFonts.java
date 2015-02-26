@@ -10,7 +10,7 @@
  *
  *  Based on https://github.com/awltech/eclipse-mylyn-notifications
  */
-package org.eclipse.recommenders.internal.rcp.news;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import java.lang.reflect.Field;
 

@@ -45,8 +45,15 @@ public final class Messages extends NLS {
     public static String DIALOG_LABEL_BUNDLE_LIST;
     public static String DIALOG_RESTART_NOT_POSSIBLE;
 
-    public static String NEWS_NOTIFY_MESSAGE = "The Code Recommenders project has published a new blog post: {0}. <a href=\"{1}\">Read more...</a>";
-    public static String NEWS_LOADING_MESSAGE = "Loading Project Newsfeed...";
+    public static String NEWS_NOTIFY_MESSAGE;
+    public static String NEWS_LOADING_MESSAGE;
+    public static String NEWS_TURN_OFF_MESSAGE;
+
+    public static String LABEL_NOTIFICATION_NAME;
+
+    public static String JOB_NAME_CLOSE;
+    public static String JOB_NAME_FADE;
+    public static String JOB_NAME_SELECTION_LISTENER_REGISTRATION;
 
     static {
         // initialize resource bundle
