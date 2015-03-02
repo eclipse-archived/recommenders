@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="151">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="153">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="0.0.0"/>
@@ -122,10 +122,10 @@
 <!-- Once Luna SR2 is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-I"/>
 </location>
-<!-- Needed for the code generated with Xtend 2.7.2 -->
+<!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtext.xbase.lib" version="2.7.2.v201409160908"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201409160908/"/>
+<unit id="org.eclipse.xtext.xbase.lib" version="2.7.3.v201411190455"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201411190455/"/>
 </location>
 <!-- Needed for the SWTBot UI tests -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

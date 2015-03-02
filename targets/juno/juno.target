@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Juno (4.2)" sequenceNumber="151">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Juno (4.2)" sequenceNumber="153">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
@@ -92,10 +92,10 @@
 <!-- This location points to the latest recommended build, as not all dependencies are part of the recommended Orbit build for Kepler SR2. -->
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
 </location>
-<!-- Needed for the code generated with Xtend 2.7.2 -->
+<!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtext.xbase.lib" version="2.7.2.v201409160908"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201409160908/"/>
+<unit id="org.eclipse.xtext.xbase.lib" version="2.7.3.v201411190455"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201411190455/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
