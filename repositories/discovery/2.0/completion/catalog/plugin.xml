@@ -1,43 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-  <extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
-    <connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.codetrails" description="The idea of IDE 2.0 is built around leveraging crowdsourcing in your IDE to make your IDE the smartest place on earth. All tools in this category improve your IDE by either improving the quality of your code completion, quickfixes or enhance your API documentation." name="IDE 2.0 - Building Amazon for Software Engineers" relevance="30">
-      <icon
-            image48="images/crowd-48.png"/>
-    </connectorCategory>
-    <connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.incubation" description="Incubation projects at Code Recommenders. Note that these incubators may not be production ready." name="Code Recommenders Incubation Projects" relevance="10">
-      <icon
-            image48="images/incubation-48.png"/>
-    </connectorCategory>
-    <connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.science" description="Scientific extensions to Eclipse are developed by researchers across the world. By installing experimental science plugins, you can try the latest ideas and contribute to scientific progress." name="Scientific Projects" relevance="0">
-      <icon
-            image48="images/science-48.png"/>
-    </connectorCategory>
-  </extension>
-  <extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
-    <connectorDescriptor siteUrl="http://download.codetrails.com/updates/connect/stable/" id="com.codetrails.connect.hippie.rcp.feature" description="Connect is powered by 39 million completion events collected from developers working on open source projects. Install it to leverage the power of crowdsourcing." categoryId="org.eclipse.recommenders.rcp.discovery.category.codetrails" name="Codetrails Connect, Community Ed." provider="Codetrails" license="Codetrails Community License">
-      <iu id="com.codetrails.connect.hippie.rcp.feature.feature.group" />
-      <overview summary="Codetrails Connect also gives your the opportunity to have private repositories where you can share knowledge for your private APIs only with selected people." url="http://codetrails.com/connect/" />
-    </connectorDescriptor>
-    <connectorDescriptor
-          categoryId="org.eclipse.recommenders.rcp.discovery.category.incubation"
-          description="Install this feature if you want to insert complex code snippets with just a few keystrokes."
-          id="org.eclipse.recommenders.snipmatch.rcp.feature"
-          license="EPL"
-          name="Snipmatch &#x2013; a Crowdsourced Snippet&#x2010;completion Engine"
-          provider="Eclipse Code Recommenders"
-          siteUrl="http://download.eclipse.org/recommenders/updates/stable/">
-       <iu id="org.eclipse.recommenders.snipmatch.rcp.feature.feature.group"/>
-    </connectorDescriptor>
-    <connectorDescriptor
-          categoryId="org.eclipse.recommenders.rcp.discovery.category.science"
-          description="WatchDog tells you how much time you spend testing your Java code. How much you actually code, versus only read. Plus, you can win an Android tablet (and more)."
-          id="WatchDog.feature"
-          license="MIT"
-          name="WatchDog"
-          provider="TU Delft"
-          siteUrl="http://updatesite.testroots.org/">
-       <iu id="WatchDog.feature.group"/>
-    </connectorDescriptor>
-  </extension>
+	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+		<connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.crowd"
+				name="IDE 2.0 - Building Amazon for Software Engineers"
+				description="The idea of IDE 2.0 is built around leveraging crowdsourcing in your IDE to make your IDE the smartest place on earth. All tools in this category improve your IDE by either improving the quality of your code completion, quickfixes or enhance your API documentation."
+				relevance="30">
+			<icon image48="images/crowd-48.png"/>
+		</connectorCategory>
+		<connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.incubation"
+				name="Code Recommenders Incubation Projects"
+				description="Incubation projects at Code Recommenders. Note that these incubators may not be production ready."
+				relevance="20">
+			<icon image48="images/incubation-48.png"/>
+		</connectorCategory>
+		<connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.science"
+				name="Scientific Projects"
+				description="Scientific extensions to Eclipse are developed by researchers across the world. By installing experimental science plugins, you can try the latest ideas and contribute to scientific progress."
+				relevance="10">
+			<icon image48="images/science-48.png"/>
+		</connectorCategory>
+	</extension>
+	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+		<connectorDescriptor id="com.codetrails.connect.hippie.rcp.feature"
+				categoryId="org.eclipse.recommenders.rcp.discovery.category.crowd"
+				name="Codetrails Connect, Community Ed."
+				description="Connect is powered by 39 million completion events collected from developers working on open source projects. Install it to leverage the power of crowdsourcing."
+				provider="Codetrails GmbH"
+				license="Codetrails Community License"
+				siteUrl="http://download.codetrails.com/updates/connect/stable/">
+				<iu id="com.codetrails.connect.hippie.rcp.feature.feature.group" />
+			<overview
+					summary="Codetrails Connect also gives your the opportunity to have private repositories where you can share knowledge for your private APIs only with selected people."
+					url="http://codetrails.com/connect/"/>
+		</connectorDescriptor>
+		<connectorDescriptor id="org.eclipse.recommenders.snipmatch.rcp.feature"
+				categoryId="org.eclipse.recommenders.rcp.discovery.category.crowd"
+				name="Snipmatch &#x2013; a Crowdsourced Snippet&#x2010;completion Engine"
+				description="Install this feature if you want to insert complex code snippets with just a few keystrokes."
+				provider="Eclipse Code Recommenders"
+				license="EPL"
+				siteUrl="http://download.eclipse.org/recommenders/updates/stable/">
+			<iu id="org.eclipse.recommenders.snipmatch.rcp.feature.feature.group"/>
+		</connectorDescriptor>
+		<connectorDescriptor id="org.eclipse.recommenders.templates.snipmatch.rcp.feature"
+				categoryId="org.eclipse.recommenders.rcp.discovery.category.incubation"
+				name="Code Recommenders Snipmatch Editor Extension (Incubator)"
+				description="Install this feature to add an advanced source editor with syntax&#x2010;highlighting capabilities to your Snippet Editor."
+				provider="Eclipse Code Recommenders"
+				license="EPL"
+				siteUrl="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/milestones/">
+			<iu id="org.eclipse.recommenders.templates.snipmatch.rcp.feature.feature.group"/>
+		</connectorDescriptor>
+		<connectorDescriptor id="WatchDog.feature"
+				categoryId="org.eclipse.recommenders.rcp.discovery.category.science"
+				name="WatchDog"
+				description="WatchDog tells you how much time you spend testing your Java code. How much you actually code, versus only read. Plus, you can win an Android tablet (and more)."
+				provider="TU Delft"
+				license="MIT"
+				siteUrl="http://updatesite.testroots.org/">
+			<iu id="WatchDog.feature.group"/>
+		</connectorDescriptor>
+	</extension>
 </plugin>
