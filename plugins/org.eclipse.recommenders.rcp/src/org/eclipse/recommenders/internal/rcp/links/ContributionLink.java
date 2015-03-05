@@ -37,10 +37,10 @@ public class ContributionLink implements Comparable<ContributionLink> {
     private final int priority;
     private final Image icon;
 
-    public ContributionLink(String text, String commandId, String priority, Image icon) {
+    public ContributionLink(String text, String commandId, int priority, Image icon) {
         this.text = checkNotNull(text);
         this.commandId = checkNotNull(commandId);
-        this.priority = parsePriority(priority);
+        this.priority = checkNotNull(priority);
         this.icon = icon;
     }
 
@@ -48,6 +48,18 @@ public class ContributionLink implements Comparable<ContributionLink> {
     public int compareTo(ContributionLink other) {
         Integer n = new Integer(priority);
         return n.compareTo(other.getPriority());
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getCommandId() {
+        return commandId;
+    }
+
+    public Image getIcon() {
+        return icon;
     }
 
     public int getPriority() {
@@ -89,12 +101,5 @@ public class ContributionLink implements Comparable<ContributionLink> {
         } catch (Exception e) {
             Logs.log(LOG_ERROR_FAILED_TO_EXECUTE_COMMAND, commandId, e);
         }
-    }
-
-    private int parsePriority(String priority) {
-        if (priority == null) {
-            return Integer.MAX_VALUE;
-        }
-        return Integer.parseInt(priority);
     }
 }
