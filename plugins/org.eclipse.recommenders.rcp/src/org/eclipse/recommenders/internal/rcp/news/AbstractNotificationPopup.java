@@ -10,7 +10,7 @@
  *
  *  Based on https://github.com/awltech/eclipse-mylyn-notifications
  */
-package org.eclipse.recommenders.internal.news.rcp;
+package org.eclipse.recommenders.internal.rcp.news;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.window.Window;
-import org.eclipse.recommenders.internal.news.rcp.SwtUtil.FadeJob;
-import org.eclipse.recommenders.internal.news.rcp.SwtUtil.IFadeListener;
 import org.eclipse.recommenders.internal.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.news.SwtUtil.FadeJob;
+import org.eclipse.recommenders.internal.rcp.news.SwtUtil.IFadeListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;

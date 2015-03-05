@@ -8,7 +8,7 @@
  * Contributors:
  *     Johannes Dorn - Initial API and implementation
  */
-package org.eclipse.recommenders.internal.news.rcp;
+package org.eclipse.recommenders.internal.rcp.news;
 
 import static java.text.MessageFormat.format;
 

@@ -8,7 +8,7 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.links.rcp;
+package org.eclipse.recommenders.internal.rcp.links;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;

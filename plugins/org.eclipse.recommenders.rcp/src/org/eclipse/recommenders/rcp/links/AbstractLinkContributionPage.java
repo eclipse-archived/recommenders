@@ -8,7 +8,7 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.links.rcp;
+package org.eclipse.recommenders.rcp.links;
 
 import static org.eclipse.recommenders.internal.rcp.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
 
@@ -21,6 +21,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.internal.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.links.ContributionLink;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;

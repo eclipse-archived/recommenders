@@ -8,23 +8,20 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.links.rcp;
+package org.eclipse.recommenders.internal.rcp.links;
 
 import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 
-public class OpenPreferencesHandler extends AbstractHandler {
+public class OpenBrowserHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(null, event.getParameter(COMMAND_HREF_ID),
-                null, null);
-        dialog.open();
+        BrowserUtils.openInExternalBrowser(event.getParameter(COMMAND_HREF_ID));
         return null;
     }
 }
