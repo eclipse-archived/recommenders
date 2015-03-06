@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.eclipse.recommenders.net
 Bundle-Version: 2.1.14.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.net
 Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",

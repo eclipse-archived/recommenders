@@ -5,7 +5,7 @@ Bundle-Version: 2.1.14.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Fragment-Host: org.eclipse.recommenders.stacktraces.rcp
 Require-Bundle: org.hamcrest,
  org.junit,

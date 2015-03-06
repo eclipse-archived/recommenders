@@ -65,7 +65,7 @@
 
 	<properties>
 		<recommendersVersion>2.1.14-SNAPSHOT</recommendersVersion>
-		<javaVersion>1.6</javaVersion>
+		<javaVersion>1.7</javaVersion>
 		<tychoVersion>0.22.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>luna</simrel>
@@ -368,8 +368,7 @@
 					<configuration>
 						<signature>
 							<groupId>org.codehaus.mojo.signature</groupId>
-							<artifactId>java16</artifactId>
-							<!-- Pre-1.6u18 signature -->
+							<artifactId>java17</artifactId>
 							<version>1.0</version>
 						</signature>
 					</configuration>

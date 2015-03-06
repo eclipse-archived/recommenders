@@ -7,7 +7,7 @@ Bundle-Vendor: %Bundle-Vendor
 Eclipse-ExtensibleAPI: true
 Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPlugin
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.observable,

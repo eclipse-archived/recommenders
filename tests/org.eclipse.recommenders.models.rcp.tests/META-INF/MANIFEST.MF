@@ -8,4 +8,4 @@ Fragment-Host: org.eclipse.recommenders.models.rcp
 Require-Bundle: org.hamcrest,
  org.junit,
  org.mockito
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

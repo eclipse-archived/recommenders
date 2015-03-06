@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.eclipse.recommenders.snipmatch.rcp;singleton:=true
 Bundle-Version: 2.1.14.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
