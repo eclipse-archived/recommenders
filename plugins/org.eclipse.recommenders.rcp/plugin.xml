@@ -25,36 +25,37 @@
 			label="%linkContribution.homepage.label"
 			icon="icons/obj16/homepage.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="0">
-		</linkContribution>
+			priority="0"/>
 		<linkContribution
 			commandId="org.eclipse.recommenders.rcp.commands.openBrowser"
 			label="%linkContribution.manual.label"
 			icon="icons/obj16/container_obj.gif"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="10">
-		</linkContribution>
+			priority="10"/>
 		<linkContribution
 			commandId="org.eclipse.recommenders.rcp.commands.openBrowser"
 			label="%linkContribution.marketplace.label"
 			icon="icons/obj16/favorite_star.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="20">
-		</linkContribution>
+			priority="20"/>
 		<linkContribution
 			commandId="org.eclipse.recommenders.rcp.commands.openBrowser"
 			label="%linkContribution.twitter.label"
 			icon="icons/obj16/bird_blue_16.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="30">
-		</linkContribution>
+			priority="30"/>
 		<linkContribution
 			commandId="org.eclipse.recommenders.rcp.commands.extensionDiscovery"
 			label="%linkContribution.extensionDiscovery.label"
 			icon="icons/obj16/lightbulb.gif"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="40">
-		</linkContribution>
+			priority="40"/>
+		<linkContribution
+			commandId="org.eclipse.recommenders.rcp.commands.openBrowser"
+			label="%linkContribution.uservoice.label"
+			icon="icons/obj16/uservoice.png"
+			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
+			priority="50"/>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
 		<command id="org.eclipse.recommenders.rcp.commands.openBrowser"
