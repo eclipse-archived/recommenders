@@ -71,4 +71,13 @@ public final class BrowserUtils {
             }
         });
     }
+
+    public static void openInDialogBrowser(String url) {
+        BrowserDialog browserDialog = new BrowserDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), url);
+        browserDialog.open();
+    }
+
+    public static void openInDialogBrowser(URL url) {
+        openInDialogBrowser(url.toExternalForm());
+    }
 }

@@ -57,7 +57,7 @@
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="50"/>
 		<linkContribution
-			commandId="org.eclipse.recommenders.rcp.commands.openBrowser"
+			commandId="org.eclipse.recommenders.rcp.commands.openBrowserDialog"
 			label="%linkContribution.newsletter.label"
 			icon="icons/obj16/newsletter.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
@@ -66,6 +66,14 @@
 	<extension point="org.eclipse.ui.commands">
 		<command id="org.eclipse.recommenders.rcp.commands.openBrowser"
 			defaultHandler="org.eclipse.recommenders.internal.rcp.links.OpenBrowserHandler"
+			name="%commands.openBrowser.name">
+			<commandParameter id="org.eclipse.recommenders.rcp.linkContribution.href"
+				name="%commandParameter.uri.name"
+				optional="false">
+			</commandParameter>
+		</command>
+		<command id="org.eclipse.recommenders.rcp.commands.openBrowserDialog"
+			defaultHandler="org.eclipse.recommenders.internal.rcp.links.OpenBrowserDialogHandler"
 			name="%commands.openBrowser.name">
 			<commandParameter id="org.eclipse.recommenders.rcp.linkContribution.href"
 				name="%commandParameter.uri.name"
