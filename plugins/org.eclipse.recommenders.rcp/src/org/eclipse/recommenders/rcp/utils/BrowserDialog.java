@@ -23,8 +23,9 @@ public class BrowserDialog extends Dialog {
 
     private static final Composite NULL_COMPOSITE = null;
 
+    private final String url;
+
     private Browser browser;
-    private String url;
 
     protected BrowserDialog(Shell parentShell, String url) {
         super(parentShell);
