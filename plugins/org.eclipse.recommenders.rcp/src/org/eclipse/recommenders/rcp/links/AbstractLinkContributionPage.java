@@ -16,8 +16,8 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.internal.rcp.Messages;
-import org.eclipse.recommenders.internal.rcp.links.ContributionsReader;
 import org.eclipse.recommenders.internal.rcp.links.ContributionLink;
+import org.eclipse.recommenders.internal.rcp.links.ContributionsReader;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -35,20 +35,24 @@ public abstract class AbstractLinkContributionPage extends PreferencePage implem
     @Override
     protected Control createContents(final Composite parent) {
         noDefaultAndApplyButton();
-        Composite composite = new Composite(parent, SWT.NONE);
-        GridDataFactory.fillDefaults().applyTo(composite);
-        GridLayoutFactory.swtDefaults().margins(0, 5).applyTo(composite);
+        List<ContributionLink> contributionLinks = getContributionLinks();
 
-        Group group = new Group(composite, SWT.NONE);
-        group.setText(Messages.PREFPAGE_LINKS_DESCRIPTION);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(group);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
+        if (!contributionLinks.isEmpty()) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            GridDataFactory.fillDefaults().applyTo(composite);
+            GridLayoutFactory.swtDefaults().margins(0, 5).applyTo(composite);
 
-        for (ContributionLink link : getContributionLinks()) {
-            link.appendLink(group);
+            Group group = new Group(composite, SWT.NONE);
+            group.setText(Messages.PREFPAGE_LINKS_DESCRIPTION);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(group);
+            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
+
+            for (ContributionLink link : contributionLinks) {
+                link.appendLink(group);
+            }
+            applyDialogFont(composite);
         }
 
-        applyDialogFont(composite);
         return parent;
     }
 
