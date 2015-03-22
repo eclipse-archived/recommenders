@@ -129,6 +129,7 @@ To release a new version of Code Recommenders, perform the following steps:
 
 - `export RELEASE_VERSION=x.y.z`
 - `git clean -df`
+- `mvn clean -Dtycho.mode=maven`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${RELEASE_VERSION}`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${RELEASE_VERSION}-SNAPSHOT`
 - `mvn tidy:pom`
@@ -144,7 +145,7 @@ Thereafter, switch to the next (SNAPSHOT) version:
 
 Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
 
-- `git commit -a -m "[releng] ${NEXT_VERSION}_VERSION"`
+- `git commit -a -m "[releng] ${NEXT_VERSION}-SNAPSHOT"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
 - `git push origin HEAD:refs/for/master`
 
