@@ -4,8 +4,8 @@
 		<connectorCategory id="org.eclipse.recommenders.rcp.discovery.category.incubation"
 				name="Code Recommenders Incubation Projects"
 				description="Incubation projects at Code Recommenders. Note that these incubators may not be production ready."
-				relevance="20">
-			<icon image48="images/incubation-48.png"/>
+				relevance="10">
+			<icon image48="images/incubation.png"/>
 		</connectorCategory>
 	</extension>
 	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
