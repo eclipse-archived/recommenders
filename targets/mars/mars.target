@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="153">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="154">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="0.0.0"/>
@@ -28,7 +28,8 @@
 <unit id="org.eclipse.rcp.id" version="0.0.0"/>
 <unit id="org.eclipse.rcp.sdk.id" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M5-201501291830/"/>
+<!-- Stable build for Mars M6 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
