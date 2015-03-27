@@ -11,7 +11,6 @@
       </programArgs>
       <vmArgs>-Xmx512m
 -XX:MaxPermSize=256m
--Dignore.org.eclipse.recommenders.stacktraces.rcp.server-url=http://localhost:9002/new
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -81,8 +80,9 @@
       <feature id="org.eclipse.recommenders.feature.rcp"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
       <feature id="org.eclipse.recommenders.snipmatch.rcp.feature"/>
-      <feature id="org.eclipse.recommenders.stacktraces.rcp.feature"/>
+      <feature id="org.eclipse.epp.logging.aeri.feature"/>
    </features>
+   
 
 
 </product>

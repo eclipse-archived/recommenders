@@ -36,8 +36,6 @@
 		<module>org.eclipse.recommenders.rcp</module>
 		<module>org.eclipse.recommenders.snipmatch</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp</module>
-		<module>org.eclipse.recommenders.stacktraces.model</module>
-		<module>org.eclipse.recommenders.stacktraces.rcp</module>
 		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.testing</module>
 		<module>org.eclipse.recommenders.testing.rcp</module>
