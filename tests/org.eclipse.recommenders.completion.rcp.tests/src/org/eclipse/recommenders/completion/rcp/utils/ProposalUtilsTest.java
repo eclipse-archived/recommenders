@@ -75,6 +75,8 @@ public class ProposalUtilsTest {
     private static IMethodName OBJECT_HASH_CODE = VmMethodName.get("Ljava/lang/Object.hashCode()I");
     private static IMethodName EXAMPLE_HASH_CODE = VmMethodName.get("LExample.hashCode()I");
 
+    private static IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");
+
     private final CharSequence code;
     private final IMethodName expectedMethod;
 
@@ -216,6 +218,15 @@ public class ProposalUtilsTest {
 
         scenarios
                 .add(scenario(method("new Object() { int hashCode() { return super.hashCode$ } };"), OBJECT_HASH_CODE));
+
+        scenarios.add(scenario(method("new Object[0].hashCode$"), OBJECT_HASH_CODE));
+
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=442723
+        scenarios.add(scenario(method("this.clone$"), OBJECT_CLONE));
+        scenarios.add(scenario(method("new Object[0].clone$"), OBJECT_CLONE));
+        scenarios.add(scenario(method("new Object[0][0].clone$"), OBJECT_CLONE));
+        scenarios.add(scenario(method("new String[0].clone$"), OBJECT_CLONE));
+        scenarios.add(scenario(classbody("Example<T>", "void method() { new T[0].clone$ }"), OBJECT_CLONE));
 
         return scenarios;
     }
