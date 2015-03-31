@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.apache.commons.lang3.StringUtils.startsWithAny;
+
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.CoreException;
@@ -263,7 +265,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
-                    throws JavaModelException {
+            throws JavaModelException {
         return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context));
     }
 
@@ -335,8 +337,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             GetterSetterCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             IField field = (IField) uiProposal.getJavaElement();
-            return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field, uiProposal
-                    .getDisplayString().startsWith("get"), uiProposal.getRelevance())); //$NON-NLS-1$
+            return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field, startsWithAny(
+                    uiProposal.getDisplayString(), "get", "is"), uiProposal.getRelevance())); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
