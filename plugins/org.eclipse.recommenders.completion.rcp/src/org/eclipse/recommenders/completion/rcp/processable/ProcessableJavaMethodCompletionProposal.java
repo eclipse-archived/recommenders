@@ -14,11 +14,16 @@ import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.utils.Reflections;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -26,7 +31,8 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletionProposal implements
-IProcessableProposal {
+        IProcessableProposal {
+
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
@@ -37,6 +43,37 @@ IProcessableProposal {
             final JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
+    }
+
+    // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435597
+    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections.getDeclaredField(
+            JavaContentAssistInvocationContext.class, "fCoreContext").orNull();
+    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections.getDeclaredField(
+            JavaContentAssistInvocationContext.class, "fCollector").orNull();
+    private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections.getDeclaredField(
+            CompletionProposalCollector.class, "fContext").orNull();
+
+    @Override
+    protected LazyJavaCompletionProposal createRequiredTypeCompletionProposal(CompletionProposal completionProposal,
+            JavaContentAssistInvocationContext invocationContext) {
+        if (JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT != null && JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR != null && COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT != null) {
+            try {
+                CompletionContext oldCoreContext = (CompletionContext) JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT
+                        .get(invocationContext);
+                CompletionProposalCollector collector = (CompletionProposalCollector) JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR
+                        .get(invocationContext);
+                CompletionContext newCoreContext = (CompletionContext) COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT.get(collector);
+                JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, newCoreContext);
+                LazyJavaCompletionProposal proposal = super.createRequiredTypeCompletionProposal(completionProposal,
+                        invocationContext);
+                JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, oldCoreContext);
+                return proposal;
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                return super.createRequiredTypeCompletionProposal(completionProposal, invocationContext);
+            }
+        } else {
+            return super.createRequiredTypeCompletionProposal(completionProposal, invocationContext);
+        }
     }
 
     // ===========

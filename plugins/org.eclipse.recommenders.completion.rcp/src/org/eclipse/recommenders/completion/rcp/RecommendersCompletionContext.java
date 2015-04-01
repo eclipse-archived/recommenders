@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -95,7 +93,6 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         this(jdtContext, astProvider, defaultFunctions());
     }
 
-    @Inject
     public RecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
             final IAstProvider astProvider, Map<CompletionContextKey, ICompletionContextFunction> functions) {
         set(JAVA_CONTENTASSIST_CONTEXT, jdtContext);
