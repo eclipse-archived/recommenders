@@ -1580,7 +1580,7 @@
         <setupTask
             xsi:type="setup:PreferenceTask"
             key="/instance/org.eclipse.recommenders.models.rcp/repository.url.list"
-            value="http://download.eclipse.org/recommenders/models/luna/&#x9;http://download.codetrails.com/models/clng&#x9;http://download.codetrails.com/models/paths-l2"/>
+            value="http://download.eclipse.org/recommenders/models/mars/&#x9;http://download.codetrails.com/models/clng&#x9;http://download.codetrails.com/models/paths-l2"/>
       </setupTask>
       <setupTask
           xsi:type="setup:CompoundTask"
