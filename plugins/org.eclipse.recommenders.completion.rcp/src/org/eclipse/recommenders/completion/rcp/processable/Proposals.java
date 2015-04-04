@@ -12,6 +12,8 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.CONTEXT;
 
+import java.util.Map;
+
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -21,8 +23,11 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 public final class Proposals {
+
+    private static Map<CacheKey, Image> cache = Maps.newHashMap();
 
     private Proposals() {
         throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
@@ -38,8 +43,14 @@ public final class Proposals {
      */
     public static void overlay(IProcessableProposal proposal, ImageDescriptor icon, int decorationCorner) {
         Image originalImage = proposal.getImage();
-        DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, icon, decorationCorner);
-        proposal.setImage(decorator.createImage());
+        CacheKey key = new CacheKey(originalImage, icon, decorationCorner);
+        Image newImage = cache.get(key);
+        if (newImage == null) {
+            DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, icon, decorationCorner);
+            newImage = decorator.createImage();
+            cache.put(key, newImage);
+        }
+        proposal.setImage(newImage);
     }
 
     public static IRecommendersCompletionContext getContext(IProcessableProposal proposal) {
@@ -88,5 +99,61 @@ public final class Proposals {
             }
         }
         return false;
+    }
+
+    private static final class CacheKey {
+        final Image image;
+        final ImageDescriptor overlay;
+        final int corner;
+
+        public CacheKey(Image image, ImageDescriptor overlay, int corner) {
+            super();
+            this.image = image;
+            this.overlay = overlay;
+            this.corner = corner;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + corner;
+            result = prime * result + (image == null ? 0 : image.hashCode());
+            result = prime * result + (overlay == null ? 0 : overlay.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            CacheKey other = (CacheKey) obj;
+            if (corner != other.corner) {
+                return false;
+            }
+            if (image == null) {
+                if (other.image != null) {
+                    return false;
+                }
+            } else if (!image.equals(other.image)) {
+                return false;
+            }
+            if (overlay == null) {
+                if (other.overlay != null) {
+                    return false;
+                }
+            } else if (!overlay.equals(other.overlay)) {
+                return false;
+            }
+            return true;
+        }
+
     }
 }
