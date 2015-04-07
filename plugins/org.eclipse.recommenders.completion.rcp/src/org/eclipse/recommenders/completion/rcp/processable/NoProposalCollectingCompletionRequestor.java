@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -52,7 +53,7 @@ public class NoProposalCollectingCompletionRequestor extends CompletionRequestor
 
     @Override
     public String[] getFavoriteReferences() {
-        return new String[0];
+        return CharOperation.NO_STRINGS;
     }
 
     @Override

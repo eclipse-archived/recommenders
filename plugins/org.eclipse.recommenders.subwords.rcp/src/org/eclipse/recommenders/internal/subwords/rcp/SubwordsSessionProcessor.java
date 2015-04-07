@@ -65,6 +65,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     // Negative value ensures subsequence matches have a lower relevance than standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -10000;
 
+    private static final int[] EMPTY_SEQUENCE = new int[0];
+
     private static Field CORE_CONTEXT = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
             "fCoreContext").orNull(); //$NON-NLS-1$
 
@@ -192,7 +194,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     public void process(final IProcessableProposal proposal) {
         proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
 
-            int[] bestSequence = new int[0];
+            int[] bestSequence = EMPTY_SEQUENCE;
             String matchingArea = CompletionContexts.getPrefixMatchingArea(proposal.getDisplayString());
             String prefix;
 

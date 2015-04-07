@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -88,8 +89,6 @@ import com.google.common.collect.Sets;
 public final class CompletionContextFunctions {
 
     private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
-
-    private static final char[] EMPTY = new char[0];
 
     private CompletionContextFunctions() {
         throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
@@ -346,7 +345,7 @@ public final class CompletionContextFunctions {
                 // final CompletionOnSingleNameReference c = cast(n);
                 // TODO is that correct?
                 // name = c.token;
-                name = new char[0];
+                name = CharOperation.NO_CHAR;
             } else if (n instanceof CompletionOnMemberAccess) {
                 final CompletionOnMemberAccess c = cast(n);
                 if (c.receiver instanceof ThisReference) {
@@ -367,7 +366,7 @@ public final class CompletionContextFunctions {
                     name = c.localVariableBinding().name;
                 }
             }
-            String res = new String(firstNonNull(name, EMPTY));
+            String res = new String(firstNonNull(name, CharOperation.NO_CHAR));
             res = res.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
             context.set(key, res);
             return res;
@@ -409,9 +408,9 @@ public final class CompletionContextFunctions {
         @Override
         public String compute(IRecommendersCompletionContext context, CompletionContextKey<String> key) {
             InternalCompletionContext ctx = context.get(INTERNAL_COMPLETIONCONTEXT, null);
-            char[] prefix = EMPTY;
+            char[] prefix = CharOperation.NO_CHAR;
             if (ctx != null) {
-                prefix = firstNonNull(ctx.getToken(), EMPTY);
+                prefix = firstNonNull(ctx.getToken(), CharOperation.NO_CHAR);
             }
             String res = new String(prefix);
             context.set(key, res);

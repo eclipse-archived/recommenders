@@ -14,12 +14,14 @@ import java.util.List;
 
 public class LCSS {
 
+    private static final int[] EMPTY_SEQUENCE = new int[0];
+
     /**
      * Returns the best, i.e, the longest continuous sequence - or the empty sequence if no subsequence could be found.
      */
     public static int[] bestSubsequence(String completion, String token) {
         int bestScore = -1;
-        int[] bestSequence = new int[0];
+        int[] bestSequence = EMPTY_SEQUENCE;
         for (int[] s1 : findSequences(completion, token)) {
             int score = scoreSubsequence(s1);
             if (score > bestScore) {
