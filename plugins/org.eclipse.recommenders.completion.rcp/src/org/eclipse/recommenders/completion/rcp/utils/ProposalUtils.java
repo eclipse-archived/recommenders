@@ -13,15 +13,12 @@
 package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.base.Optional.absent;
-import static java.lang.Math.min;
-import static org.eclipse.jdt.core.compiler.CharOperation.splitOn;
 import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionProposal;
@@ -46,7 +43,6 @@ import com.google.common.base.Preconditions;
 public final class ProposalUtils {
 
     private ProposalUtils() {
-        // Not meant to be instantiated
     }
 
     private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");
@@ -56,27 +52,10 @@ public final class ProposalUtils {
     /**
      * Workaround needed to handle proposals with generic signatures properly.
      *
-     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203"Bug 380203</a>.
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203">Bug 380203</a>.
      */
     private static final Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class, "originalSignature") //$NON-NLS-1$
             .orNull();
-
-    private static char[] getSignature(CompletionProposal proposal) {
-        char[] signature = null;
-        try {
-            if (canUseReflection(proposal)) {
-                signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
-            }
-        } catch (Exception e) {
-            log(org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
-        }
-        return signature != null ? signature : proposal.getSignature();
-    }
-
-    private static boolean canUseReflection(CompletionProposal proposal) {
-        return proposal instanceof InternalCompletionProposal && ORIGINAL_SIGNATURE != null
-                && ORIGINAL_SIGNATURE.isAccessible();
-    }
 
     /**
      * @see <a href="https://www.eclipse.org/forums/index.php/m/1408138/">Forum discussion of the lookup strategy
@@ -86,8 +65,6 @@ public final class ProposalUtils {
         Preconditions.checkArgument(isKindSupported(proposal));
 
         if (isArrayCloneMethod(proposal)) {
-            char[] signature = proposal.getSignature();
-            char[] receiverSignature = proposal.getReceiverSignature();
             return Optional.of(OBJECT_CLONE);
         }
 
@@ -111,10 +88,10 @@ public final class ProposalUtils {
         for (MethodBinding overload : overloads) {
             char[] signature = CompletionEngine.getSignature(overload);
 
-            if (Arrays.equals(proposalSignature, signature)) {
+            if (CharOperation.equals(proposalSignature, signature)) {
                 return CompilerBindings.toMethodName(overload);
             }
-            if (Arrays.equals(strippedProposalSignature, signature)) {
+            if (CharOperation.equals(strippedProposalSignature, signature)) {
                 return CompilerBindings.toMethodName(overload);
             }
         }
@@ -168,6 +145,51 @@ public final class ProposalUtils {
         return true;
     }
 
+    private static Optional<ReferenceBinding> getDeclaringType(CompletionProposal proposal, LookupEnvironment env) {
+        char[] declarationSignature = proposal.getDeclarationSignature();
+        if (declarationSignature[0] != 'L') {
+            // Should not happen. The declaring type is always a reference type.
+            return absent();
+        }
+
+        int endIndex = CharOperation.indexOf('<', declarationSignature, 1);
+        if (endIndex < 0) {
+            endIndex = CharOperation.indexOf(';', declarationSignature, 1);
+        }
+        char[][] compoundName = CharOperation.splitOn('.', declarationSignature, 1, endIndex);
+
+        return lookup(env, compoundName);
+    }
+
+    /**
+     * @see <a href="https://www.eclipse.org/forums/index.php/m/1410672/">Forum discussion as to why the
+     *      <code>ProblemReferenceBinding</code> handling is necessary</a>
+     */
+    private static Optional<ReferenceBinding> lookup(LookupEnvironment env, char[][] compoundName) {
+        ReferenceBinding result = env.getType(compoundName);
+        if (result instanceof ProblemReferenceBinding) {
+            result = cast(((ProblemReferenceBinding) result).closestMatch());
+        }
+        return Optional.fromNullable(result);
+    }
+
+    private static char[] getSignature(CompletionProposal proposal) {
+        char[] signature = null;
+        try {
+            if (canUseReflection(proposal)) {
+                signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
+            }
+        } catch (Exception e) {
+            log(org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
+        }
+        return signature != null ? signature : proposal.getSignature();
+    }
+
+    private static boolean canUseReflection(CompletionProposal proposal) {
+        return proposal instanceof InternalCompletionProposal && ORIGINAL_SIGNATURE != null
+                && ORIGINAL_SIGNATURE.isAccessible();
+    }
+
     private static char[] stripTypeParameters(char[] proposalSignature) {
         StringBuilder sb = new StringBuilder();
 
@@ -193,34 +215,5 @@ public final class ProposalUtils {
         }
 
         return sb.toString().toCharArray();
-    }
-
-    private static Optional<ReferenceBinding> getDeclaringType(CompletionProposal proposal, LookupEnvironment env) {
-        char[] declarationSignature = proposal.getDeclarationSignature();
-        if (declarationSignature[0] != 'L') {
-            // Should not happen. The declaring type is always a reference type.
-            return absent();
-        }
-
-        int semicolonIndex = ArrayUtils.indexOf(declarationSignature, ';');
-        int greaterThanIndex = ArrayUtils.indexOf(declarationSignature, '<');
-        if (greaterThanIndex == ArrayUtils.INDEX_NOT_FOUND) {
-            greaterThanIndex = Integer.MAX_VALUE;
-        }
-        char[][] compoundName = splitOn('.', declarationSignature, 1, min(semicolonIndex, greaterThanIndex));
-
-        return lookup(env, compoundName);
-    }
-
-    /**
-     * @see <a href="https://www.eclipse.org/forums/index.php/m/1410672/">Forum discussion as to why the
-     *      <code>ProblemReferenceBinding</code> handling is necessary</a>
-     */
-    private static Optional<ReferenceBinding> lookup(LookupEnvironment env, char[][] compoundName) {
-        ReferenceBinding result = env.getType(compoundName);
-        if (result instanceof ProblemReferenceBinding) {
-            result = cast(((ProblemReferenceBinding) result).closestMatch());
-        }
-        return Optional.fromNullable(result);
     }
 }
