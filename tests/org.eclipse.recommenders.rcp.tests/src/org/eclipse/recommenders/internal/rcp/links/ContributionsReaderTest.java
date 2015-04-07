@@ -26,20 +26,20 @@ import com.google.common.collect.ImmutableMap;
 
 public class ContributionsReaderTest {
 
-    private final String CONTRIBUTION_ELEMENT = "linkContribution";
+    private static final String CONTRIBUTION_ELEMENT = "linkContribution";
 
-    private final String PREF_PAGE_ID_ATTRIBUTE = "preferencePageId";
-    private final String LABEL_ATTRIBUTE = "label";
-    private final String COMMAND_ID_ATTRIBUTE = "commandId";
-    private final String PRIORITY_ATTRIBUTE = "priority";
-    private final String ICON_ELEMENT = "icon";
+    private static final String PREF_PAGE_ID_ATTRIBUTE = "preferencePageId";
+    private static final String LABEL_ATTRIBUTE = "label";
+    private static final String COMMAND_ID_ATTRIBUTE = "commandId";
+    private static final String PRIORITY_ATTRIBUTE = "priority";
+    private static final String ICON_ELEMENT = "icon";
 
     /**
      * Bundle-SymbolicName required in order to load the {@link DEFAULT_LINK_ICON}.
      */
-    private final String CONTRIBUTOR_ID = "org.eclipse.recommenders.rcp.tests";
+    private static final String CONTRIBUTOR_ID = "org.eclipse.recommenders.rcp.tests";
 
-    private final String DEFAULT_LINK_ICON = "icons/obj16/eclipse.png";
+    private static final String DEFAULT_LINK_ICON = "icons/obj16/eclipse.png";
 
     private IConfigurationElement mockConfigElement(String name, Map<String, String> map) {
         IConfigurationElement element = mock(IConfigurationElement.class, RETURNS_DEEP_STUBS);
