@@ -142,22 +142,30 @@ public final class SharedImages implements IDisposable {
 
     }
 
-    private ImageRegistry registry = new ImageRegistry();
+    private ImageRegistry registry = null;
 
     public synchronized ImageDescriptor getDescriptor(ImageResource resource) {
-        ImageDescriptor desc = registry.getDescriptor(toKey(resource));
+        ImageDescriptor desc = getRegistry().getDescriptor(toKey(resource));
         if (desc == null) {
             desc = register(resource);
         }
         return desc;
     }
 
+    private ImageRegistry getRegistry() {
+        if (registry == null) {
+            registry = new ImageRegistry();
+        }
+
+        return registry;
+    }
+
     public synchronized Image getImage(ImageResource resource) {
         String key = toKey(resource);
-        Image img = registry.get(key);
+        Image img = getRegistry().get(key);
         if (img == null) {
             register(resource);
-            img = registry.get(key);
+            img = getRegistry().get(key);
         }
         return img;
     }
@@ -165,7 +173,7 @@ public final class SharedImages implements IDisposable {
     private ImageDescriptor register(ImageResource resource) {
         ImageDescriptor desc = createFromFile(resource.getClass(), resource.getName());
         String key = toKey(resource);
-        registry.put(key, desc);
+        getRegistry().put(key, desc);
         return desc;
     }
 
@@ -175,6 +183,8 @@ public final class SharedImages implements IDisposable {
 
     @Override
     public void dispose() {
-        registry.dispose();
+        if (registry != null) {
+            registry.dispose();
+        }
     }
 }
