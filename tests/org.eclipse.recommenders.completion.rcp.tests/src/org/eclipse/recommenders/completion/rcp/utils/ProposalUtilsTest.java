@@ -37,45 +37,45 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class ProposalUtilsTest {
 
-    private static IMethodName METHOD_VOID = VmMethodName.get("LExample.method()V");
-    private static IMethodName METHOD_OBJECT = VmMethodName.get("LExample.method(Ljava/lang/Object;)V");
-    private static IMethodName METHOD_NUMBER = VmMethodName.get("LExample.method(Ljava/lang/Number;)V");
-    private static IMethodName METHOD_COLLECTION = VmMethodName.get("LExample.method(Ljava/util/Collection;)V");
-    private static IMethodName SET_INT_STRING = VmMethodName
+    private static final IMethodName METHOD_VOID = VmMethodName.get("LExample.method()V");
+    private static final IMethodName METHOD_OBJECT = VmMethodName.get("LExample.method(Ljava/lang/Object;)V");
+    private static final IMethodName METHOD_NUMBER = VmMethodName.get("LExample.method(Ljava/lang/Number;)V");
+    private static final IMethodName METHOD_COLLECTION = VmMethodName.get("LExample.method(Ljava/util/Collection;)V");
+    private static final IMethodName SET_INT_STRING = VmMethodName
             .get("Ljava/util/List.set(ILjava/lang/Object;)Ljava/lang/Object;");
 
-    private static IMethodName NESTED_METHOD_VOID = VmMethodName.get("LExample$Nested.method()V");
+    private static final IMethodName NESTED_METHOD_VOID = VmMethodName.get("LExample$Nested.method()V");
 
-    private static IMethodName METHOD_INTS = VmMethodName.get("LExample.method([I)V");
-    private static IMethodName METHOD_OBJECTS = VmMethodName.get("LExample.method([Ljava/lang/Object;)V");
+    private static final IMethodName METHOD_INTS = VmMethodName.get("LExample.method([I)V");
+    private static final IMethodName METHOD_OBJECTS = VmMethodName.get("LExample.method([Ljava/lang/Object;)V");
 
-    private static IMethodName INIT = VmMethodName.get("LExample.<init>()V");
-    private static IMethodName INIT_OBJECT = VmMethodName.get("LExample.<init>(Ljava/lang/Object;)V");
-    private static IMethodName INIT_NUMBER = VmMethodName.get("LExample.<init>(Ljava/lang/Number;)V");
-    private static IMethodName INIT_COLLECTION = VmMethodName.get("LExample.<init>(Ljava/util/Collection;)V");
+    private static final IMethodName INIT = VmMethodName.get("LExample.<init>()V");
+    private static final IMethodName INIT_OBJECT = VmMethodName.get("LExample.<init>(Ljava/lang/Object;)V");
+    private static final IMethodName INIT_NUMBER = VmMethodName.get("LExample.<init>(Ljava/lang/Number;)V");
+    private static final IMethodName INIT_COLLECTION = VmMethodName.get("LExample.<init>(Ljava/util/Collection;)V");
 
-    private static IMethodName NESTED_INIT = VmMethodName.get("LExample$Nested.<init>()V");
-    private static IMethodName NESTED_INIT_OBJECT = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Object;)V");
-    private static IMethodName NESTED_INIT_NUMBER = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Number;)V");
-    private static IMethodName NESTED_INIT_COLLECTION = VmMethodName
+    private static final IMethodName NESTED_INIT = VmMethodName.get("LExample$Nested.<init>()V");
+    private static final IMethodName NESTED_INIT_OBJECT = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Object;)V");
+    private static final IMethodName NESTED_INIT_NUMBER = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Number;)V");
+    private static final IMethodName NESTED_INIT_COLLECTION = VmMethodName
             .get("LExample$Nested.<init>(Ljava/util/Collection;)V");
-    private static IMethodName INNER_INIT_EXAMPLE = VmMethodName.get("LExample$Inner.<init>(LExample;)V");
-    private static IMethodName INNER_INIT_EXAMPLE_OBJECT = VmMethodName
+    private static final IMethodName INNER_INIT_EXAMPLE = VmMethodName.get("LExample$Inner.<init>(LExample;)V");
+    private static final IMethodName INNER_INIT_EXAMPLE_OBJECT = VmMethodName
             .get("LExample$Inner.<init>(LExample;Ljava/lang/Object;)V");
-    private static IMethodName INNER_INIT_EXAMPLE_NUMBER = VmMethodName
+    private static final IMethodName INNER_INIT_EXAMPLE_NUMBER = VmMethodName
             .get("LExample$Inner.<init>(LExample;Ljava/lang/Number;)V");
-    private static IMethodName INNER_INIT_EXAMPLE_COLLECTION = VmMethodName
+    private static final IMethodName INNER_INIT_EXAMPLE_COLLECTION = VmMethodName
             .get("LExample$Inner.<init>(LExample;Ljava/util/Collection;)V");
 
-    private static IMethodName COMPARE_TO_BOOLEAN = VmMethodName
+    private static final IMethodName COMPARE_TO_BOOLEAN = VmMethodName
             .get("Ljava/lang/Boolean.compareTo(Ljava/lang/Boolean;)I");
-    private static IMethodName COMPARE_TO_OBJECT = VmMethodName
+    private static final IMethodName COMPARE_TO_OBJECT = VmMethodName
             .get("Ljava/lang/Comparable.compareTo(Ljava/lang/Object;)I");
 
-    private static IMethodName OBJECT_HASH_CODE = VmMethodName.get("Ljava/lang/Object.hashCode()I");
-    private static IMethodName EXAMPLE_HASH_CODE = VmMethodName.get("LExample.hashCode()I");
+    private static final IMethodName OBJECT_HASH_CODE = VmMethodName.get("Ljava/lang/Object.hashCode()I");
+    private static final IMethodName EXAMPLE_HASH_CODE = VmMethodName.get("LExample.hashCode()I");
 
-    private static IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");
+    private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");
 
     private final CharSequence code;
     private final IMethodName expectedMethod;
