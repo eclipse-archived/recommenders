@@ -22,6 +22,7 @@ public class Messages extends NLS {
     public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT;
     public static String LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS;
     public static String LOG_ERROR_CANNOT_FETCH_CLASS_FILES;
+    public static String LOG_ERROR_CANNOT_FETCH_TYPES;
     public static String LOG_ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH;
     public static String LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT;
     public static String LOG_ERROR_CANNOT_DETERMINE_LOCATION;

@@ -26,6 +26,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.utils.Nullable;
 
@@ -79,6 +81,18 @@ public class JavaElementsFinder {
         return b.build();
     }
 
+    public static ImmutableList<IPackageFragmentRoot> findPackageFragmentRoots(IJavaProject project) {
+        Builder<IPackageFragmentRoot> b = ImmutableList.builder();
+        try {
+            for (IPackageFragmentRoot root : project.getPackageFragmentRoots()) {
+                b.add(root);
+            }
+        } catch (JavaModelException e) {
+            log(ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS, e, project);
+        }
+        return b.build();
+    }
+
     public static ImmutableList<IPackageFragment> findPackages(IPackageFragmentRoot root) {
         Builder<IPackageFragment> b = ImmutableList.builder();
         try {
@@ -120,6 +134,49 @@ public class JavaElementsFinder {
         }
     }
 
+    public static ImmutableList<IType> findTypes(IJavaProject project) {
+        Builder<IType> b = ImmutableList.builder();
+        for (ITypeRoot root : findTypeRoots(project)) {
+            try {
+                if (root instanceof ICompilationUnit) {
+                    for (IType type : ((ICompilationUnit) root).getTypes()) {
+                        b.add(type);
+                    }
+                } else if (root instanceof IClassFile) {
+                    b.add(((IClassFile) root).getType());
+                }
+            } catch (JavaModelException e) {
+                log(ERROR_CANNOT_FETCH_TYPES, e, root);
+            }
+        }
+        return b.build();
+    }
+
+    public static ImmutableList<ITypeRoot> findTypeRoots(IJavaProject project) {
+        Builder<ITypeRoot> b = ImmutableList.builder();
+        for (IPackageFragmentRoot root : findPackageFragmentRoots(project)) {
+            b.addAll(findTypeRoots(root));
+        }
+        return b.build();
+    }
+
+    public static ImmutableList<ITypeRoot> findTypeRoots(IPackageFragmentRoot root) {
+        Builder<ITypeRoot> b = ImmutableList.builder();
+        for (IPackageFragment pkg : findPackages(root)) {
+            b.addAll(findTypeRoots(pkg));
+        }
+        return b.build();
+    }
+
+    public static ImmutableList<ITypeRoot> findTypeRoots(IPackageFragment fragment) {
+        Builder<ITypeRoot> b = ImmutableList.builder();
+        ImmutableList<ICompilationUnit> cus = findCompilationUnits(fragment);
+        ImmutableList<IClassFile> classFiles = findClassFiles(fragment);
+        b.addAll(cus);
+        b.addAll(classFiles);
+        return b.build();
+    }
+
     /**
      * Returns the compilation unit's absolute location on the local hard drive - if it exists.
      */
@@ -140,6 +197,34 @@ public class JavaElementsFinder {
             return absent();
         }
         return Optional.of(file);
+    }
+
+    /**
+     * Returns the compilation unit's absolute location on the local hard drive - if it exists.
+     */
+    public static Optional<File> findLocation(@Nullable IPackageFragmentRoot root) {
+        if (root == null) {
+            return absent();
+        }
+        File res = null;
+
+        final IResource resource = root.getResource();
+        if (resource != null) {
+            if (resource.getLocation() == null) {
+                res = resource.getRawLocation().toFile().getAbsoluteFile();
+            } else {
+                res = resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        if (root.isExternal()) {
+            res = root.getPath().toFile().getAbsoluteFile();
+        }
+
+        // if the file (for whatever reasons) does not exist return absent().
+        if (res != null && !res.exists()) {
+            return absent();
+        }
+        return fromNullable(res);
     }
 
     public static boolean hasSourceAttachment(IPackageFragmentRoot fragmentRoot) {

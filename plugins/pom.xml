@@ -38,7 +38,8 @@
 		<module>org.eclipse.recommenders.snipmatch.rcp</module>
 		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.testing</module>
-		<module>org.eclipse.recommenders.testing.rcp</module>
+        <module>org.eclipse.recommenders.testing.rcp</module>
+        <module>org.eclipse.recommenders.types.rcp</module>
 		<module>org.eclipse.recommenders.utils</module>
 	</modules>
 
