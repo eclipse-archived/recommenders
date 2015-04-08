@@ -20,8 +20,10 @@ import com.google.common.collect.Lists;
 
 public class SequenceFinder {
 
-    List<int[]> curSequences = Lists.newLinkedList();
-    List<int[]> nextSequences = Lists.newLinkedList();
+    private static final int[] EMPTY_SEQUENCE = new int[0];
+
+    private List<int[]> curSequences = Lists.newLinkedList();
+    private List<int[]> nextSequences = Lists.newLinkedList();
 
     private int pCompletion, pToken;
     private String completion, token;
@@ -37,7 +39,7 @@ public class SequenceFinder {
             rewriteCompletion();
         }
 
-        int[] start = new int[0];
+        int[] start = EMPTY_SEQUENCE;
         curSequences.add(start);
 
         for (pToken = 0; pToken < token.length(); pToken++) {

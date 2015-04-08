@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.ui.text.java.FillArgumentNamesCompletionProposalCollector;
@@ -159,7 +160,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         if (serializedFavorites != null && serializedFavorites.length() > 0) {
             return serializedFavorites.split(";"); //$NON-NLS-1$
         }
-        return new String[0];
+        return CharOperation.NO_STRINGS;
     }
 
     @Override
