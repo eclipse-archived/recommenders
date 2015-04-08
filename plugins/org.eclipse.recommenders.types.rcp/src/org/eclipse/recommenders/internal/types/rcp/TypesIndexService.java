@@ -39,7 +39,6 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -175,7 +174,7 @@ public class TypesIndexService implements IElementChangedListener, IStartup {
         // TODO this is bit naive but works for now..
         // if there is another job running, we should stop that one...
         jobs.put(project, job);
-        job.setRule(new MutexRule(project));
+        job.setRule(MutexRule.INSTANCE);
         // we don't re-index immediately. the old model won't be completely broken...
         job.schedule(TimeUnit.SECONDS.toMillis(3));
     }
@@ -257,25 +256,13 @@ public class TypesIndexService implements IElementChangedListener, IStartup {
         }
     }
 
-    public class MutexRule implements ISchedulingRule {
+    public static class MutexRule implements ISchedulingRule {
 
-        private IJavaProject project;
-
-        public MutexRule(IJavaProject project) {
-            this.project = project;
-        }
+        public static final MutexRule INSTANCE = new MutexRule();
 
         @Override
         public boolean isConflicting(ISchedulingRule rule) {
-            return sameProject(rule);
-        }
-
-        private boolean sameProject(ISchedulingRule rule) {
-            if (rule instanceof MutexRule) {
-                MutexRule mutex = (MutexRule) rule;
-                return Objects.equal(mutex.project, project);
-            }
-            return false;
+            return rule == this;
         }
 
         @Override
