@@ -16,7 +16,7 @@ import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
-import static org.eclipse.recommenders.internal.subwords.rcp.LogMessages.EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.subwords.rcp.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
@@ -30,10 +30,12 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
@@ -67,8 +69,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
-    private static Field CORE_CONTEXT = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
-            "fCoreContext").orNull(); //$NON-NLS-1$
+    private static Field CORE_CONTEXT = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
 
     private final SubwordsRcpPreferences prefs;
 
@@ -83,9 +85,14 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             JavaContentAssistInvocationContext jdtContext = recContext.getJavaContext();
             ICompilationUnit cu = jdtContext.getCompilationUnit();
             int offset = jdtContext.getInvocationOffset();
+
+            // Tricky: we bypass the normal code completion request (triggered at the actual cursor position) by
+            // replacing all required keys manually and triggering content assist where we need it:
+
+            // TODO maybe we can get rid of that call by simply using the 'right' collector for the first time? This
+            // would save ~5 ms I guess.
             NoProposalCollectingCompletionRequestor collector = new NoProposalCollectingCompletionRequestor();
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
-
             InternalCompletionContext compContext = collector.getCoreContext();
             CORE_CONTEXT.set(jdtContext, compContext);
             recContext.set(CompletionContextKey.INTERNAL_COMPLETIONCONTEXT, compContext);
@@ -107,7 +114,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             IEditorPart editor = lookupEditor(cu);
             Set<String> sortkeys = Sets.newHashSet();
             for (int trigger : triggerlocations) {
-                Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(viewer, editor, trigger);
+                Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(viewer, editor,
+                        trigger);
                 testAndInsertNewProposals(recContext, baseProposals, sortkeys, newProposals);
             }
 
@@ -116,12 +124,13 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         }
     }
 
-    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode,
-            ASTNode completionNodeParent, int length) {
+    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode, ASTNode completionNodeParent,
+            int length) {
         // It is important to trigger at higher locations first, as the base relevance assigned to a proposal by the JDT
         // may depend on the prefix. Proposals which are made for both an empty prefix and a non-empty prefix are thus
         // assigned a base relevance that is as close as possible to that the JDT would assign without subwords
         // completion enabled.
+        // TODO MB Need an example.
         SortedSet<Integer> triggerlocations = Sets.newTreeSet(Ordering.natural().reverse());
         int emptyPrefix = offset - length;
 
@@ -147,8 +156,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             // XXX not sure when this happens but is has happened in the past
             return Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
         }
-        JavaContentAssistInvocationContext newjdtContext = new JavaContentAssistInvocationContext(viewer,
-                triggerOffset, editor);
+        JavaContentAssistInvocationContext newjdtContext = new JavaContentAssistInvocationContext(viewer, triggerOffset,
+                editor);
         ICompilationUnit cu = newjdtContext.getCompilationUnit();
         ProposalCollectingCompletionRequestor collector = computeProposals(cu, newjdtContext, triggerOffset);
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
@@ -159,12 +168,48 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             Map<IJavaCompletionProposal, CompletionProposal> baseProposals, Set<String> sortkeys,
             final Map<IJavaCompletionProposal, CompletionProposal> newProposals) {
         for (Entry<IJavaCompletionProposal, CompletionProposal> entry : newProposals.entrySet()) {
-            IJavaCompletionProposal p = entry.getKey();
-            String displayString = p.getDisplayString();
-            String completion = CompletionContexts.getPrefixMatchingArea(displayString);
-            if (!sortkeys.contains(displayString) && containsSubsequence(completion, crContext.getPrefix())) {
-                baseProposals.put(p, entry.getValue());
-                sortkeys.add(displayString);
+            IJavaCompletionProposal javaProposal = entry.getKey();
+            CompletionProposal coreProposal = entry.getValue();
+
+            // we need a completion string (close to a display string) that allows to spot duplicated proposals
+            // key point: we don't want to use the display string of lazy completion proposals for performance reasons.
+            String completionIdentifier;
+            if (javaProposal instanceof LazyJavaCompletionProposal && coreProposal != null) {
+                switch (coreProposal.getKind()) {
+                case CompletionProposal.CONSTRUCTOR_INVOCATION:
+                    // result: ClassSimpleName(Lsome/Param;I)V
+                    completionIdentifier = new StringBuilder().append(coreProposal.getName())
+                            .append(coreProposal.getSignature()).toString();
+                    break;
+                case CompletionProposal.TYPE_REF:
+                    // result: ClassSimpleName fully.qualified.ClassSimpleName
+                    char[] signature = coreProposal.getSignature();
+                    char[] simpleName = Signature.getSignatureSimpleName(signature);
+                    completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature)
+                            .toString();
+                    break;
+                case CompletionProposal.PACKAGE_REF:
+                    // result: org.eclipse.my.package
+                    completionIdentifier = new String(coreProposal.getDeclarationSignature());
+                    break;
+                case CompletionProposal.METHOD_REF:
+                    // result: myMethodName(Lsome/Param;I)V
+                    completionIdentifier = new StringBuilder().append(coreProposal.getName())
+                            .append(coreProposal.getSignature()).toString();
+                    break;
+                default:
+                    // result: display string. This should not happen. We should issue a warning here...
+                    completionIdentifier = javaProposal.getDisplayString();
+                    Logs.log(ERROR_UNEXPECTED_FALL_THROUGH, javaProposal.getClass());
+                    break;
+                }
+            } else {
+                completionIdentifier = javaProposal.getDisplayString();
+            }
+            String completion = CompletionContexts.getPrefixMatchingArea(completionIdentifier);
+            if (!sortkeys.contains(completionIdentifier) && containsSubsequence(completion, crContext.getPrefix())) {
+                baseProposals.put(javaProposal, coreProposal);
+                sortkeys.add(completionIdentifier);
             }
         }
     }
