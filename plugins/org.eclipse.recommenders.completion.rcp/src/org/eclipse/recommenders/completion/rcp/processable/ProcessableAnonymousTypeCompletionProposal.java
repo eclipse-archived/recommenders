@@ -12,8 +12,11 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
@@ -23,32 +26,50 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeProposalInfo;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.utils.Reflections;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCompletionProposal implements
-IProcessableProposal {
+public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCompletionProposal
+        implements IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
 
+    private static final Field F_SUPER_TYPE = Reflections
+            .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull();
+
     public ProcessableAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
-            JavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) throws JavaModelException {
-        super(context.getProject(), context.getCompilationUnit(), context, coreProposal.getReplaceStart(), uiProposal
-                .getReplacementLength(), String.valueOf(coreProposal.getCompletion()), uiProposal
-                .getStyledDisplayString(), String.valueOf(coreProposal.getDeclarationSignature()), (IType) context
-                .getProject().findElement(String.valueOf(coreProposal.getDeclarationKey()), null), uiProposal
-                .getRelevance());
+            AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
+                    throws JavaModelException {
+        super(context.getProject(), context.getCompilationUnit(), context, coreProposal.getReplaceStart(),
+                uiProposal.getReplacementLength(), String.valueOf(coreProposal.getCompletion()),
+                uiProposal.getStyledDisplayString(), String.valueOf(coreProposal.getDeclarationSignature()),
+                findSupertype(uiProposal, coreProposal, context), uiProposal.getRelevance());
         this.coreProposal = coreProposal;
+    }
+
+    private static IType findSupertype(AnonymousTypeCompletionProposal uiProposal, CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) throws JavaModelException {
+        if (F_SUPER_TYPE != null) {
+            try {
+                IType superType = (IType) F_SUPER_TYPE.get(uiProposal);
+                if (superType != null) {
+                    return superType;
+                }
+            } catch (Exception e) {
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+            }
+        }
+        return (IType) context.getProject().findElement(String.valueOf(coreProposal.getDeclarationKey()), null);
     }
 
     protected ProcessableAnonymousTypeCompletionProposal(final IJavaProject jproject, final ICompilationUnit cu,
