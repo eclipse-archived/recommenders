@@ -13,8 +13,12 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.eclipse.jdt.core.CompletionProposal.*;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionContext;
@@ -29,16 +33,20 @@ import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
+    private static final Field F_PROPOSALS = Reflections
+            .getDeclaredField(CompletionProposalCollector.class, "fJavaProposals").orNull();
     private Logger log = LoggerFactory.getLogger(getClass());
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
     private JavaContentAssistInvocationContext jdtuiContext;
@@ -141,8 +149,8 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     protected boolean shouldFillArgumentNames() {
         try {
             // when running a test suite this throws a NPE
-            return PreferenceConstants.getPreferenceStore().getBoolean(
-                    PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
+            return PreferenceConstants.getPreferenceStore()
+                    .getBoolean(PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
         } catch (final Exception e) {
             return true;
         }
@@ -155,8 +163,8 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     private String[] getFavoriteStaticMembers() {
-        final String serializedFavorites = PreferenceConstants.getPreferenceStore().getString(
-                PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
+        final String serializedFavorites = PreferenceConstants.getPreferenceStore()
+                .getString(PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
         if (serializedFavorites != null && serializedFavorites.length() > 0) {
             return serializedFavorites.split(";"); //$NON-NLS-1$
         }
@@ -171,11 +179,29 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     private IJavaCompletionProposal[] createJdtProposals(final CompletionProposal proposal) {
-        final int oldLength = collector.getJavaCompletionProposals().length;
+        if (F_PROPOSALS != null) {
+            try {
+                @SuppressWarnings("unchecked")
+                List<IJavaCompletionProposal> list = (List<IJavaCompletionProposal>) F_PROPOSALS.get(collector);
+                // call order (size, accept, size, get) matters.
+                // First get the old amount of proposals. than add the new one. Then check how many new proposals
+                // are actually added (it may be more than one). These new proposals are then returned:
+                int oldSize = list.size();
+                collector.accept(proposal);
+                int newSize = list.size();
+                List<IJavaCompletionProposal> res = list.subList(oldSize, newSize);
+                return Iterables.toArray(res, IJavaCompletionProposal.class);
+            } catch (Exception e) {
+                // log and use the fallback mechanism
+                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+            }
+        }
+        // fallback if the above code fails (that's the old code). We may remove this later if we now it works reliably.
+        // Error reporting will tell us.
+        final int oldSize = collector.getJavaCompletionProposals().length;
         collector.accept(proposal);
-        // order matters ;)
         final IJavaCompletionProposal[] jdtProposals = collector.getJavaCompletionProposals();
-        return subarray(jdtProposals, oldLength, jdtProposals.length);
+        return subarray(jdtProposals, oldSize, jdtProposals.length);
     }
 
     public void setReplacementLength(final int y) {
