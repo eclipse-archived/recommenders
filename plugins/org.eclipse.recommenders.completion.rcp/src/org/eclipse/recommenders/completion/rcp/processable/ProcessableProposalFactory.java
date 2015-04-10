@@ -217,7 +217,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
     private static void setProposalInfo(IProcessableProposal crProposal, IJavaCompletionProposal uiProposal) {
         // XXX this method should under no circumstances throw any exception
-        if (Checks.isNull(proposalInfoMethod, crProposal, uiProposal)) {
+        if (Checks.anyIsNull(proposalInfoMethod, crProposal, uiProposal)) {
             return;
         }
         try {

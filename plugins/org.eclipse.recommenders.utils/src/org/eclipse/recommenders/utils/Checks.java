@@ -34,7 +34,7 @@ public final class Checks {
      *            the values to check for null
      * @return
      */
-    public static boolean isNull(Object... values) {
+    public static boolean anyIsNull(Object... values) {
         for (Object v : values) {
             if (v == null) {
                 return true;

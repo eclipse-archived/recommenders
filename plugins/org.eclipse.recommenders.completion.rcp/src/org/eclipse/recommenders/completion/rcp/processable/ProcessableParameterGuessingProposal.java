@@ -12,7 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethod;
 
 import java.lang.reflect.Field;
@@ -92,28 +92,34 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     }
 
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435597
-    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections.getDeclaredField(
-            JavaContentAssistInvocationContext.class, "fCoreContext").orNull();
-    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections.getDeclaredField(
-            JavaContentAssistInvocationContext.class, "fCollector").orNull();
-    private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections.getDeclaredField(
-            CompletionProposalCollector.class, "fContext").orNull();
+    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull();
+    private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull();
+    private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections
+            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull();
 
     @Override
     protected LazyJavaCompletionProposal createRequiredTypeCompletionProposal(CompletionProposal completionProposal,
             JavaContentAssistInvocationContext invocationContext) {
-        if (JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT != null && JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR != null && COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT != null) {
+        if (!anyIsNull(JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT,
+                JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR, COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT)) {
             try {
                 CompletionContext oldCoreContext = (CompletionContext) JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT
                         .get(invocationContext);
-                CompletionProposalCollector collector = (CompletionProposalCollector) JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR
-                        .get(invocationContext);
-                CompletionContext newCoreContext = (CompletionContext) COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT.get(collector);
-                JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, newCoreContext);
-                LazyJavaCompletionProposal proposal = super.createRequiredTypeCompletionProposal(completionProposal,
-                        invocationContext);
-                JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, oldCoreContext);
-                return proposal;
+                if (!oldCoreContext.isExtended()) {
+                    CompletionProposalCollector collector = (CompletionProposalCollector) JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR
+                            .get(invocationContext);
+                    CompletionContext newCoreContext = (CompletionContext) COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT
+                            .get(collector);
+                    JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, newCoreContext);
+                    LazyJavaCompletionProposal proposal = super.createRequiredTypeCompletionProposal(completionProposal,
+                            invocationContext);
+                    JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT.set(invocationContext, oldCoreContext);
+                    return proposal;
+                } else {
+                    return super.createRequiredTypeCompletionProposal(completionProposal, invocationContext);
+                }
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 return super.createRequiredTypeCompletionProposal(completionProposal, invocationContext);
             }
@@ -124,7 +130,8 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
     // JDT parts below
     /** Tells whether this class is in debug mode. */
-    private static final boolean DEBUG = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.jdt.ui/debug/ResultCollector")); //$NON-NLS-1$//$NON-NLS-2$
+    private static final boolean DEBUG = "true" //$NON-NLS-1$
+            .equalsIgnoreCase(Platform.getDebugOption("org.eclipse.jdt.ui/debug/ResultCollector")); //$NON-NLS-1$
 
     private ICompletionProposal[][] fChoices; // initialized by guessParameters()
     private Position[] fPositions; // initialized by guessParameters()
@@ -198,7 +205,8 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
                         if (event.character == ',') {
                             for (int i = 0; i < fPositions.length - 1; i++) { // not for the last one
                                 Position position = fPositions[i];
-                                if (position.offset <= offset2 && offset2 + length <= position.offset + position.length) {
+                                if (position.offset <= offset2
+                                        && offset2 + length <= position.offset + position.length) {
                                     try {
                                         ITypedRegion partition = TextUtilities.getPartition(document,
                                                 IJavaPartitions.JAVA_PARTITIONING, offset2 + length, false);
@@ -383,8 +391,8 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
             final Position position = new Position(0, 0);
 
             final boolean isLastParameter = i == count - 1;
-            ICompletionProposal[] argumentProposals = guesser.parameterProposals(parameterTypes[i], paramName,
-                    position, assignableElements[i], fFillBestGuess, isLastParameter);
+            ICompletionProposal[] argumentProposals = guesser.parameterProposals(parameterTypes[i], paramName, position,
+                    assignableElements[i], fFillBestGuess, isLastParameter);
             if (argumentProposals.length == 0) {
                 final JavaCompletionProposal proposal = new JavaCompletionProposal(paramName, 0, paramName.length(),
                         null, paramName, 0);
