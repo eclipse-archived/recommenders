@@ -26,6 +26,8 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final LogMessages EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+    public static final LogMessages ERROR_UNEXPECTED_FALL_THROUGH = new LogMessages(ERROR,
+            Messages.LOG_ERROR_UNEXPECTED_FALLTHROUGH);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
