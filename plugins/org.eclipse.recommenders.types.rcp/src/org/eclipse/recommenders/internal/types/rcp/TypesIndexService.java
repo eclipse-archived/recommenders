@@ -67,7 +67,7 @@ public class TypesIndexService implements IElementChangedListener, IStartup {
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
-        process(delta);
+        // process(delta);
     }
 
     private void process(IJavaElementDelta delta) {
