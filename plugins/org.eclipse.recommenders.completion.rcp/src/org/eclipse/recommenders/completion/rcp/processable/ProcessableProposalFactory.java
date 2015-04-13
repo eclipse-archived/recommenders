@@ -67,8 +67,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
 
-    private static Method proposalInfoMethod = Reflections.getDeclaredMethod(AbstractJavaCompletionProposal.class,
-            "getProposalInfo").orNull(); //$NON-NLS-1$
+    private static Method proposalInfoMethod = Reflections
+            .getDeclaredMethod(AbstractJavaCompletionProposal.class, "getProposalInfo").orNull(); //$NON-NLS-1$
 
     static {
         // No all versions of JDT offer all kinds of CompletionProposal. Probe using reflection.
@@ -254,8 +254,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
     private boolean shouldFillArgumentNames() {
         try {
-            final boolean res = PreferenceConstants.getPreferenceStore().getBoolean(
-                    PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS);
+            final boolean res = PreferenceConstants.getPreferenceStore()
+                    .getBoolean(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS);
             return res;
         } catch (final Exception e) {
         }
@@ -265,7 +265,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
-            throws JavaModelException {
+                    throws JavaModelException {
         return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context));
     }
 
@@ -273,8 +273,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     public IProcessableProposal newJavaFieldWithCastedReceiverCompletionProposal(CompletionProposal coreProposal,
             JavaFieldWithCastedReceiverCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
-            return postConstruct(new ProcessableJavaFieldWithCastedReceiverCompletionProposal(coreProposal, uiProposal,
-                    context));
+            return postConstruct(
+                    new ProcessableJavaFieldWithCastedReceiverCompletionProposal(coreProposal, uiProposal, context));
         } catch (JavaModelException e) {
             throw Throwables.propagate(e);
         }
@@ -337,8 +337,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             GetterSetterCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             IField field = (IField) uiProposal.getJavaElement();
-            return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field, startsWithAny(
-                    uiProposal.getDisplayString(), "get", "is"), uiProposal.getRelevance())); //$NON-NLS-1$ //$NON-NLS-2$
+            return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field,
+                    startsWithAny(uiProposal.getDisplayString(), "get", "is"), uiProposal.getRelevance())); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }

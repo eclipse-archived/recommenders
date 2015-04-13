@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.HashMap;
@@ -54,6 +55,7 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -74,6 +76,9 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
+    private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
 
     public ProcessableLazyGenericTypeProposal(final CompletionProposal coreProposal,
             final JavaContentAssistInvocationContext context) {
@@ -212,7 +217,6 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     private IRegion fSelectedRegion; // initialized by apply()
     private TypeArgumentProposal[] fTypeArgumentProposals;
     private boolean fCanUseDiamond;
-    private String lastPrefix;
 
     /*
      * @see ICompletionProposalExtension#apply(IDocument, char)
@@ -576,7 +580,8 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
      *             if extracting the super type signatures fails, or if <code>subType</code> contains no super type
      *             signature to <code>superType</code>
      */
-    private String findMatchingSuperTypeSignature(final IType subType, final IType superType) throws JavaModelException {
+    private String findMatchingSuperTypeSignature(final IType subType, final IType superType)
+            throws JavaModelException {
         final String[] signatures = getSuperTypeSignatures(subType, superType);
         for (int i = 0; i < signatures.length; i++) {
             final String signature = signatures[i];
@@ -591,8 +596,8 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
             // TODO handle local types
         }
 
-        throw new JavaModelException(new CoreException(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IStatus.OK,
-                "Illegal hierarchy", null))); //$NON-NLS-1$
+        throw new JavaModelException(new CoreException(
+                new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IStatus.OK, "Illegal hierarchy", null))); //$NON-NLS-1$
     }
 
     /**
@@ -911,6 +916,24 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
     }
 
     // ===========
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
+    }
+
     @Override
     public boolean isPrefix(final String prefix, final String completion) {
         lastPrefix = prefix;

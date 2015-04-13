@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.lang.reflect.Field;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.Reflections;
 
 import com.google.common.base.Optional;
@@ -37,6 +39,8 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
     private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
 
     protected ProcessableJavaMethodCompletionProposal(final CompletionProposal coreProposal,
             final JavaContentAssistInvocationContext context) {
@@ -82,6 +86,23 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
     }
 
     // ===========
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
+    }
 
     @Override
     public boolean isPrefix(final String prefix, final String completion) {

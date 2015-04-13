@@ -60,8 +60,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
-public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer implements
-ICompletionListener, ICompletionListenerExtension2 {
+public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer
+        implements ICompletionListener, ICompletionListenerExtension2 {
 
     private final CompletionRcpPreferences preferences;
     private final IAstProvider astProvider;

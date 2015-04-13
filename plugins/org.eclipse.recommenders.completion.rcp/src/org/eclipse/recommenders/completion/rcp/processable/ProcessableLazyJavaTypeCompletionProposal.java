@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -19,20 +20,23 @@ import java.util.Map;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableLazyJavaTypeCompletionProposal extends LazyJavaTypeCompletionProposal implements
-IProcessableProposal {
+public class ProcessableLazyJavaTypeCompletionProposal extends LazyJavaTypeCompletionProposal
+        implements IProcessableProposal {
 
     private final Map<IProposalTag, Object> tags = Maps.newHashMap();
     private final CompletionProposal coreProposal;
 
     private ProposalProcessorManager mgr;
     private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
 
     protected ProcessableLazyJavaTypeCompletionProposal(final CompletionProposal coreProposal,
             final JavaContentAssistInvocationContext context) {
@@ -41,6 +45,23 @@ IProcessableProposal {
     }
 
     // ===========
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
+    }
 
     @Override
     public boolean isPrefix(final String prefix, final String completion) {

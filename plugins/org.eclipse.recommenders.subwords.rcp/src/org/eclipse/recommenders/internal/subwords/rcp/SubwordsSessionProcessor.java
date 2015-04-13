@@ -173,45 +173,50 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
             // we need a completion string (close to a display string) that allows to spot duplicated proposals
             // key point: we don't want to use the display string of lazy completion proposals for performance reasons.
-            String completionIdentifier;
-            if (javaProposal instanceof LazyJavaCompletionProposal && coreProposal != null) {
-                switch (coreProposal.getKind()) {
-                case CompletionProposal.CONSTRUCTOR_INVOCATION:
-                    // result: ClassSimpleName(Lsome/Param;I)V
-                    completionIdentifier = new StringBuilder().append(coreProposal.getName())
-                            .append(coreProposal.getSignature()).toString();
-                    break;
-                case CompletionProposal.TYPE_REF:
-                    // result: ClassSimpleName fully.qualified.ClassSimpleName
-                    char[] signature = coreProposal.getSignature();
-                    char[] simpleName = Signature.getSignatureSimpleName(signature);
-                    completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature)
-                            .toString();
-                    break;
-                case CompletionProposal.PACKAGE_REF:
-                    // result: org.eclipse.my.package
-                    completionIdentifier = new String(coreProposal.getDeclarationSignature());
-                    break;
-                case CompletionProposal.METHOD_REF:
-                    // result: myMethodName(Lsome/Param;I)V
-                    completionIdentifier = new StringBuilder().append(coreProposal.getName())
-                            .append(coreProposal.getSignature()).toString();
-                    break;
-                default:
-                    // result: display string. This should not happen. We should issue a warning here...
-                    completionIdentifier = javaProposal.getDisplayString();
-                    Logs.log(ERROR_UNEXPECTED_FALL_THROUGH, javaProposal.getClass());
-                    break;
-                }
-            } else {
-                completionIdentifier = javaProposal.getDisplayString();
-            }
+            String completionIdentifier = computeCompletionIdentifier(javaProposal, coreProposal);
             String completion = CompletionContexts.getPrefixMatchingArea(completionIdentifier);
+
             if (!sortkeys.contains(completionIdentifier) && containsSubsequence(completion, crContext.getPrefix())) {
                 baseProposals.put(javaProposal, coreProposal);
                 sortkeys.add(completionIdentifier);
             }
         }
+    }
+
+    private String computeCompletionIdentifier(IJavaCompletionProposal javaProposal, CompletionProposal coreProposal) {
+        String completionIdentifier;
+        if (javaProposal instanceof LazyJavaCompletionProposal && coreProposal != null) {
+            switch (coreProposal.getKind()) {
+            case CompletionProposal.CONSTRUCTOR_INVOCATION:
+                // result: ClassSimpleName(Lsome/Param;I)V
+                completionIdentifier = new StringBuilder().append(coreProposal.getName())
+                        .append(coreProposal.getSignature()).toString();
+                break;
+            case CompletionProposal.TYPE_REF:
+                // result: ClassSimpleName fully.qualified.ClassSimpleName
+                char[] signature = coreProposal.getSignature();
+                char[] simpleName = Signature.getSignatureSimpleName(signature);
+                completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature).toString();
+                break;
+            case CompletionProposal.PACKAGE_REF:
+                // result: org.eclipse.my.package
+                completionIdentifier = new String(coreProposal.getDeclarationSignature());
+                break;
+            case CompletionProposal.METHOD_REF:
+                // result: myMethodName(Lsome/Param;I)V
+                completionIdentifier = new StringBuilder().append(coreProposal.getName())
+                        .append(coreProposal.getSignature()).toString();
+                break;
+            default:
+                // result: display string. This should not happen. We should issue a warning here...
+                completionIdentifier = javaProposal.getDisplayString();
+                Logs.log(ERROR_UNEXPECTED_FALL_THROUGH, javaProposal.getClass());
+                break;
+            }
+        } else {
+            completionIdentifier = javaProposal.getDisplayString();
+        }
+        return completionIdentifier;
     }
 
     @Override
@@ -237,10 +242,14 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     @Override
     public void process(final IProcessableProposal proposal) {
+
+        String completionIdentifier = computeCompletionIdentifier(proposal, proposal.getCoreProposal().orNull());
+        final String matchingArea = CompletionContexts.getPrefixMatchingArea(completionIdentifier);
+
         proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
 
             int[] bestSequence = EMPTY_SEQUENCE;
-            String matchingArea = CompletionContexts.getPrefixMatchingArea(proposal.getDisplayString());
+
             String prefix;
 
             @Override

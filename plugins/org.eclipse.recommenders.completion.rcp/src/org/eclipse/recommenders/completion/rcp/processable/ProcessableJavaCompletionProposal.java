@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -27,18 +29,37 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal
-implements IProcessableProposal {
+        implements IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private final CompletionProposal coreProposal;
     private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
 
     public ProcessableJavaCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context) throws JavaModelException {
         super(uiProposal.getReplacementString(), coreProposal.getReplaceStart(), uiProposal.getReplacementLength(),
                 uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context);
         this.coreProposal = coreProposal;
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
     }
 
     @Override

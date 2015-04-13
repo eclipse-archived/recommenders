@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -45,14 +47,16 @@ import com.google.common.collect.Maps;
  * A method proposal with filled in argument names.
  */
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableFilledArgumentNamesMethodProposal extends JavaMethodCompletionProposal implements
-IProcessableProposal {
+public class ProcessableFilledArgumentNamesMethodProposal extends JavaMethodCompletionProposal
+        implements IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private IRegion fSelectedRegion; // initialized by apply()
     private int[] fArgumentOffsets;
     private int[] fArgumentLengths;
     private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
     private CompletionProposal coreProposal;
     private ProposalProcessorManager mgr;
 
@@ -195,6 +199,23 @@ IProcessableProposal {
     }
 
     // ===========
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
+    }
 
     @Override
     public boolean isPrefix(final String prefix, final String completion) {

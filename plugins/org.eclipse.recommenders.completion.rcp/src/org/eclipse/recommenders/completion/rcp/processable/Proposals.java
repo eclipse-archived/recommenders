@@ -19,8 +19,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
@@ -99,6 +103,27 @@ public final class Proposals {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns a deep copy of the given styles string.
+     */
+    public static StyledString copyStyledString(final StyledString displayString) {
+        final StyledString copy = new StyledString(displayString.getString());
+        for (final StyleRange range : displayString.getStyleRanges()) {
+            copy.setStyle(range.start, range.length, new Styler() {
+
+                @Override
+                public void applyStyles(final TextStyle textStyle) {
+                    textStyle.background = range.background;
+                    textStyle.borderColor = range.borderColor;
+                    textStyle.borderStyle = range.borderStyle;
+                    textStyle.font = range.font;
+                    textStyle.foreground = range.foreground;
+                }
+            });
+        }
+        return copy;
     }
 
     private static final class CacheKey {

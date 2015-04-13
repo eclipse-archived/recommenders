@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
+import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
@@ -24,14 +25,15 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
+import org.eclipse.jface.viewers.StyledString;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclarationCompletionProposal implements
-IProcessableProposal {
+public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclarationCompletionProposal
+        implements IProcessableProposal {
 
     public static ProcessableMethodDeclarationCompletionProposal newProposal(CompletionProposal proposal, IType type,
             int relevance) throws CoreException {
@@ -45,8 +47,8 @@ IProcessableProposal {
             String constructorName = type.getElementName();
             if (constructorName.length() > 0 && constructorName.startsWith(prefix)
                     && !hasMethod(methods, constructorName)) {
-                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, constructorName, null,
-                        offset, length, relevance + 500);
+                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, constructorName, null, offset,
+                        length, relevance + 500);
             }
         }
 
@@ -73,6 +75,8 @@ IProcessableProposal {
     private CompletionProposal coreProposal;
     private ProposalProcessorManager mgr;
     private String lastPrefix;
+    private String lastPrefixStyled;
+    private StyledString initialDisplayString;
 
     public ProcessableMethodDeclarationCompletionProposal(CompletionProposal proposal, IType type, String methodName,
             String returnTypeSig, int start, int length, int relevance) {
@@ -81,6 +85,23 @@ IProcessableProposal {
     }
 
     // ===========
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        if (initialDisplayString == null) {
+            initialDisplayString = super.getStyledDisplayString();
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        if (lastPrefixStyled != lastPrefix) {
+            lastPrefixStyled = lastPrefix;
+            StyledString copy = copyStyledString(initialDisplayString);
+            StyledString decorated = mgr.decorateStyledDisplayString(copy);
+            setStyledDisplayString(decorated);
+        }
+        return super.getStyledDisplayString();
+    }
 
     @Override
     public boolean isPrefix(final String prefix, final String completion) {

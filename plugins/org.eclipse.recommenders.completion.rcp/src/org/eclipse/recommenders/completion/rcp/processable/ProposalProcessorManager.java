@@ -25,8 +25,6 @@ public class ProposalProcessorManager {
 
     private final Set<ProposalProcessor> processors = Sets.newLinkedHashSet();
     private final IProcessableProposal proposal;
-    // lazy value. Do not fetch directly!
-    private StyledString lazyInitialDisplayString;
 
     public ProposalProcessorManager(IProcessableProposal proposal) {
         this.proposal = proposal;
@@ -38,41 +36,20 @@ public class ProposalProcessorManager {
 
     public boolean prefixChanged(String prefix) {
         boolean keepProposal = false;
-        StyledString tmpStyledString = workingCopyInitialStyledString(proposal);
         int tmpRelevance = 0;
 
         for (ProposalProcessor p : processors) {
             keepProposal |= p.isPrefix(prefix);
-            p.modifyDisplayString(tmpStyledString);
             tmpRelevance += p.modifyRelevance();
         }
         proposal.setRelevance(tmpRelevance);
-        proposal.setStyledDisplayString(tmpStyledString);
         return keepProposal;
     }
 
-    private StyledString workingCopyInitialStyledString(IProcessableProposal proposal) {
-        if (lazyInitialDisplayString == null) {
-            lazyInitialDisplayString = deepCopy(proposal.getStyledDisplayString());
+    public StyledString decorateStyledDisplayString(StyledString mutableStyledString) {
+        for (ProposalProcessor p : processors) {
+            p.modifyDisplayString(mutableStyledString);
         }
-        return deepCopy(lazyInitialDisplayString);
-    }
-
-    public static StyledString deepCopy(final StyledString displayString) {
-        final StyledString copy = new StyledString(displayString.getString());
-        for (final StyleRange range : displayString.getStyleRanges()) {
-            copy.setStyle(range.start, range.length, new Styler() {
-
-                @Override
-                public void applyStyles(final TextStyle textStyle) {
-                    textStyle.background = range.background;
-                    textStyle.borderColor = range.borderColor;
-                    textStyle.borderStyle = range.borderStyle;
-                    textStyle.font = range.font;
-                    textStyle.foreground = range.foreground;
-                }
-            });
-        }
-        return copy;
+        return mutableStyledString;
     }
 }
