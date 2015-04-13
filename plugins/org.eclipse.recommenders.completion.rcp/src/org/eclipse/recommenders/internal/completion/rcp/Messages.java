@@ -18,11 +18,13 @@ public class Messages extends NLS {
 
     public static String PROPOSAL_LABEL_DISCOVER_EXTENSIONS;
     public static String PROPOSAL_LABEL_ENABLE_COMPLETION;
+    public static String PROPOSAL_LABEL_ENABLED_COMPLETION;
     public static String PROPOSAL_LABEL_NO_PROPOSALS;
 
     public static String PROPOSAL_TOOLTIP_DISCOVER_EXTENSIONS;
     public static String PROPOSAL_TOOLTIP_ENABLE_COMPLETION;
-
+    // by-default enabled info text:
+    public static String PROPOSAL_TOOLTIP_ENABLED_COMPLETION;
     public static String PROPOSAL_CATEGORY_CODE_RECOMMENDERS;
 
     public static String PREFPAGE_TITLE_COMPLETIONS;
@@ -42,6 +44,7 @@ public class Messages extends NLS {
     public static String DIALOG_TITLE_FAILURE;
 
     public static String JOB_DISABLING_CONTENT_ASSIST_CATEGORY;
+    public static String JOB_ENABLING_CONTENT_ASSIST_CATEGORY;
 
     public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
     public static String LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT;

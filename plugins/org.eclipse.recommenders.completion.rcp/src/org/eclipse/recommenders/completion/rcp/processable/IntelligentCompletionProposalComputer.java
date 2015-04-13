@@ -44,14 +44,17 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.source.ContentAssistantFacade;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.EnabledCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.ImmutableList;
@@ -114,14 +117,16 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
         storeContext(context);
 
         if (!isContentAssistConfigurationOkay()) {
+            enableRecommenders();
             int offset = context.getInvocationOffset();
-            EnableCompletionProposal config = new EnableCompletionProposal(images, offset);
+            EnabledCompletionProposal info = new EnabledCompletionProposal(images.getImage(Images.OBJ_LIGHTBULB),
+                    offset);
             boolean hasOtherProposals = !crContext.getProposals().isEmpty();
             if (hasOtherProposals) {
                 // Return the configure proposal
-                return ImmutableList.<ICompletionProposal>of(config);
+                return ImmutableList.<ICompletionProposal>of(info);
             } else {
-                return ImmutableList.<ICompletionProposal>of(config, new EmptyCompletionProposal(offset));
+                return ImmutableList.<ICompletionProposal>of(info, new EmptyCompletionProposal(offset));
             }
         } else {
             List<ICompletionProposal> res = Lists.newLinkedList();
@@ -148,6 +153,11 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
 
             return res;
         }
+    }
+
+    private void enableRecommenders() {
+        new DisableContentAssistCategoryJob(MYLYN_ALL_CATEGORY).schedule();
+        new DisableContentAssistCategoryJob(JDT_ALL_CATEGORY).schedule();
     }
 
     @Override
