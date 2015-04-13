@@ -31,6 +31,7 @@
 		<module>org.eclipse.recommenders.models.rcp</module>
 		<module>org.eclipse.recommenders.mylyn.rcp</module>
 		<module>org.eclipse.recommenders.net</module>
+		<module>org.eclipse.recommenders.news.rcp</module>
 		<module>org.eclipse.recommenders.overrides</module>
 		<module>org.eclipse.recommenders.overrides.rcp</module>
 		<module>org.eclipse.recommenders.rcp</module>
@@ -38,8 +39,8 @@
 		<module>org.eclipse.recommenders.snipmatch.rcp</module>
 		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.testing</module>
-        <module>org.eclipse.recommenders.testing.rcp</module>
-        <module>org.eclipse.recommenders.types.rcp</module>
+		<module>org.eclipse.recommenders.testing.rcp</module>
+		<module>org.eclipse.recommenders.types.rcp</module>
 		<module>org.eclipse.recommenders.utils</module>
 	</modules>
 
