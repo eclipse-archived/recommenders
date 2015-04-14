@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.Beta;
 
@@ -46,4 +47,13 @@ public abstract class ProposalProcessor {
     public int modifyRelevance() {
         return 0;
     }
+
+    /**
+     * Enables processors to decorate or completely replace the given image. The returned image will be used as input
+     * for subsequent processors.
+     */
+    public Image modifyImage(Image image) {
+        return image;
+    }
+
 }

@@ -38,6 +38,7 @@ public class ProcessableOverrideCompletionProposal
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
+    private Image decoratedImage;
 
     public ProcessableOverrideCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context) {
@@ -60,6 +61,14 @@ public class ProcessableOverrideCompletionProposal
     }
 
     // ===========
+
+    @Override
+    public Image getImage() {
+        if (decoratedImage == null) {
+            decoratedImage = mgr.decorateImage(super.getImage());
+        }
+        return decoratedImage;
+    }
 
     @Override
     public StyledString getStyledDisplayString() {

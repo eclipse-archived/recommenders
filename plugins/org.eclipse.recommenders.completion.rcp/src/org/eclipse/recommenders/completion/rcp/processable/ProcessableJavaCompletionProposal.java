@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -37,12 +38,21 @@ public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
+    private Image decoratedImage;
 
     public ProcessableJavaCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context) throws JavaModelException {
         super(uiProposal.getReplacementString(), coreProposal.getReplaceStart(), uiProposal.getReplacementLength(),
                 uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context);
         this.coreProposal = coreProposal;
+    }
+
+    @Override
+    public Image getImage() {
+        if (decoratedImage == null) {
+            decoratedImage = mgr.decorateImage(super.getImage());
+        }
+        return decoratedImage;
     }
 
     @Override

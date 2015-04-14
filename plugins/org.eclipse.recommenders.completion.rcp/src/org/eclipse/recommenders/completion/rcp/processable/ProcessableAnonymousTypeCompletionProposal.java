@@ -45,10 +45,10 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;
-    private AnonymousTypeCompletionProposal uiProposal;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
+    private Image decoratedImage;
 
     public ProcessableAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
@@ -58,7 +58,6 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
                 uiProposal.getStyledDisplayString(), String.valueOf(coreProposal.getDeclarationSignature()),
                 findSupertype(uiProposal, coreProposal, context), uiProposal.getRelevance());
         this.coreProposal = coreProposal;
-        this.uiProposal = uiProposal;
     }
 
     private static IType findSupertype(AnonymousTypeCompletionProposal uiProposal, CompletionProposal coreProposal,
@@ -76,10 +75,6 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
         return (IType) context.getProject().findElement(String.valueOf(coreProposal.getDeclarationKey()), null);
     }
 
-    protected Image getImageForType(IType type) {
-        return uiProposal.getImage();
-    }
-
     @Override
     protected ProposalInfo getProposalInfo() {
         ProposalInfo info = super.getProposalInfo();
@@ -89,6 +84,14 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
             setProposalInfo(info);
         }
         return info;
+    }
+
+    @Override
+    public Image getImage() {
+        if (decoratedImage == null) {
+            decoratedImage = mgr.decorateImage(super.getImage());
+        }
+        return decoratedImage;
     }
 
     @Override

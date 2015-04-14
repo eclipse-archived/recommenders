@@ -34,6 +34,7 @@ import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -199,6 +200,13 @@ public class ProcessableFilledArgumentNamesMethodProposal extends JavaMethodComp
     }
 
     // ===========
+
+    // getImage() is final, thus we re-implement computeImage()
+    @Override
+    protected Image computeImage() {
+        Image image = super.computeImage();
+        return mgr.decorateImage(image);
+    }
 
     @Override
     public StyledString getStyledDisplayString() {

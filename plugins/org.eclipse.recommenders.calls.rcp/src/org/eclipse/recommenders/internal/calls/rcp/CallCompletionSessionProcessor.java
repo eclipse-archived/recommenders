@@ -17,7 +17,6 @@ import static java.math.RoundingMode.HALF_EVEN;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
-import static org.eclipse.recommenders.completion.rcp.processable.Proposals.overlay;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Logs.log;
@@ -38,12 +37,13 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameRef
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
+import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
@@ -72,9 +72,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private final IProjectCoordinateProvider pcProvider;
     private final ICallModelProvider modelProvider;
-    private CallsRcpPreferences prefs;
-    private ImageDescriptor overlay;
-
+    private final CallsRcpPreferences prefs;
+    private final OverlayImageProposalProcessor overlayProcessor;
     private IRecommendersCompletionContext ctx;
     private LookupEnvironment env;
     private Iterable<Recommendation<IMethodName>> recommendations;
@@ -85,12 +84,12 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private Map<Recommendation<IMethodName>, Integer> recommendationsIndex;
 
     @Inject
-    public CallCompletionSessionProcessor(final IProjectCoordinateProvider pcProvider,
-            final ICallModelProvider modelProvider, CallsRcpPreferences prefs, SharedImages images) {
+    public CallCompletionSessionProcessor(IProjectCoordinateProvider pcProvider, ICallModelProvider modelProvider,
+            CallsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
         this.prefs = prefs;
-        overlay = images.getDescriptor(OVR_STAR);
+        this.overlayProcessor = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     }
 
     @Override
@@ -144,8 +143,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         // set override-context:
         IMethod overrides = ctx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
         if (overrides != null) {
-            IMethodName crOverrides = pcProvider.toName(overrides).or(
-                    org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
+            IMethodName crOverrides = pcProvider.toName(overrides)
+                    .or(org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
             model.setObservedOverrideContext(crOverrides);
         }
 
@@ -217,13 +216,12 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             if (matcher.match(observed)) {
                 final int boost = prefs.changeProposalRelevance ? 1 : 0;
                 final String label = prefs.decorateProposalText ? Messages.PROPOSAL_LABEL_USED : ""; //$NON-NLS-1$
-
-                if (prefs.decorateProposalIcon) {
-                    overlay(proposal, overlay);
-                }
-
                 ProposalProcessorManager manager = proposal.getProposalProcessorManager();
                 manager.addProcessor(new SimpleProposalProcessor(boost, label));
+
+                if (prefs.decorateProposalIcon) {
+                    manager.addProcessor(overlayProcessor);
+                }
                 return true;
             }
         }
@@ -239,6 +237,9 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
             Integer score = recommendationsIndex.get(call);
             final int boost = prefs.changeProposalRelevance ? 200 + score : 0;
+            if (boost > 0) {
+                proposal.setTag(RECOMMENDERS_SCORE, score);
+            }
 
             String label = ""; //$NON-NLS-1$
             if (prefs.decorateProposalText) {
@@ -247,16 +248,14 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                         : Messages.PROPOSAL_LABEL_PERCENTAGE;
                 label = format(format, relevance);
             }
-            if (prefs.decorateProposalIcon) {
-                overlay(proposal, overlay);
-            }
-
-            if (boost > 0) {
-                proposal.setTag(RECOMMENDERS_SCORE, score);
-            }
 
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
             mgr.addProcessor(new SimpleProposalProcessor(boost, label));
+
+            if (prefs.decorateProposalIcon) {
+                mgr.addProcessor(overlayProcessor);
+            }
+
             // we found the proposal we are looking for. So quit.
             return;
         }

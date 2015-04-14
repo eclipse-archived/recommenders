@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.GetterSetterCompletionProposal;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -37,6 +38,7 @@ public class ProcessableGetterSetterCompletionProposal extends GetterSetterCompl
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
+    private Image decoratedImage;
 
     public ProcessableGetterSetterCompletionProposal(CompletionProposal coreProposal, IField field, boolean isGetter,
             int relevance) throws JavaModelException {
@@ -46,6 +48,14 @@ public class ProcessableGetterSetterCompletionProposal extends GetterSetterCompl
     }
 
     // ===========
+
+    @Override
+    public Image getImage() {
+        if (decoratedImage == null) {
+            decoratedImage = mgr.decorateImage(super.getImage());
+        }
+        return decoratedImage;
+    }
 
     @Override
     public StyledString getStyledDisplayString() {

@@ -26,10 +26,11 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
-import org.eclipse.recommenders.completion.rcp.processable.Proposals;
+import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -52,9 +53,11 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(OverrideCompletionSessionProcessor.class);
 
-    private IProjectCoordinateProvider pcProvider;
-    private IOverrideModelProvider modelProvider;
-    private JavaElementResolver jdtCache;
+    private final IProjectCoordinateProvider pcProvider;
+    private final IOverrideModelProvider modelProvider;
+    private final JavaElementResolver jdtCache;
+    private final OverridesRcpPreferences prefs;
+    private final OverlayImageProposalProcessor overlayProcessor;
 
     private IRecommendersCompletionContext ctx;
     private IType enclosingType;
@@ -62,18 +65,16 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private ProjectCoordinate pc;
     private IOverrideModel model;
     private List<Recommendation<IMethodName>> recommendations;
-    private ImageDescriptor overlay;
-    private OverridesRcpPreferences prefs;
 
     @Inject
     public OverrideCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IOverrideModelProvider modelProvider, final JavaElementResolver cache, SharedImages images,
+            IOverrideModelProvider modelProvider, JavaElementResolver cache, SharedImages images,
             OverridesRcpPreferences prefs) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
-        jdtCache = cache;
+        this.jdtCache = cache;
         this.prefs = prefs;
-        overlay = images.getDescriptor(OVR_STAR);
+        this.overlayProcessor = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     };
 
     @Override
@@ -168,19 +169,19 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 // XXX rather high value but otherwise the default constructor shows up between the overrides
                 // proposals
                 final int boost = prefs.changeProposalRelevance ? 1000 + asPercentage(r) : 0;
-                final String label = prefs.decorateProposalText ? format(
-                        Messages.PROPOSAL_LABEL_PERCENTAGE, r.getRelevance()) : ""; //$NON-NLS-1$
-
-                if (prefs.decorateProposalIcon) {
-                    Proposals.overlay(proposal, overlay);
-                }
+                final String label = prefs.decorateProposalText
+                        ? format(Messages.PROPOSAL_LABEL_PERCENTAGE, r.getRelevance()) : ""; //$NON-NLS-1$
 
                 if (boost > 0) {
                     // TODO Shouldn't this convey the real boost?
                     proposal.setTag(RECOMMENDERS_SCORE, asPercentage(r));
                 }
 
-                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(boost, label));
+                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+                mgr.addProcessor(new SimpleProposalProcessor(boost, label));
+                if (prefs.decorateProposalIcon) {
+                    mgr.addProcessor(overlayProcessor);
+                }
                 return;
             }
         }

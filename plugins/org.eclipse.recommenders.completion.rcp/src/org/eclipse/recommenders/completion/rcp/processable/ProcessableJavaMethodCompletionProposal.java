@@ -26,6 +26,7 @@ import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.Reflections;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -86,6 +87,13 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
     }
 
     // ===========
+
+    // getImage() is final, thus we re-implement computeImage()
+    @Override
+    protected Image computeImage() {
+        Image image = super.computeImage();
+        return mgr.decorateImage(image);
+    }
 
     @Override
     public StyledString getStyledDisplayString() {

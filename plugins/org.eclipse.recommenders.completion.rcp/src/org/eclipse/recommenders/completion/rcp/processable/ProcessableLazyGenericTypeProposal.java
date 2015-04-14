@@ -917,6 +917,13 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
 
     // ===========
 
+    // getImage() is final, thus we re-implement computeImage()
+    @Override
+    protected Image computeImage() {
+        Image image = super.computeImage();
+        return mgr.decorateImage(image);
+    }
+
     @Override
     public StyledString getStyledDisplayString() {
         if (initialDisplayString == null) {

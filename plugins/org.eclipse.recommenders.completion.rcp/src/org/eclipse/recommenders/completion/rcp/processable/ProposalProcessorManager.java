@@ -13,9 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.TextStyle;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Sets;
@@ -51,5 +49,13 @@ public class ProposalProcessorManager {
             p.modifyDisplayString(mutableStyledString);
         }
         return mutableStyledString;
+    }
+
+    public Image decorateImage(Image proposalImage) {
+        Image img = proposalImage;
+        for (ProposalProcessor p : processors) {
+            img = p.modifyImage(img);
+        }
+        return img;
     }
 }

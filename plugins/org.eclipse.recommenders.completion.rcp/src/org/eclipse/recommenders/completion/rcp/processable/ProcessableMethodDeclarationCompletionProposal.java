@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -77,6 +78,7 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
+    private Image decoratedImage;
 
     public ProcessableMethodDeclarationCompletionProposal(CompletionProposal proposal, IType type, String methodName,
             String returnTypeSig, int start, int length, int relevance) {
@@ -85,6 +87,14 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
     }
 
     // ===========
+
+    @Override
+    public Image getImage() {
+        if (decoratedImage == null) {
+            decoratedImage = mgr.decorateImage(super.getImage());
+        }
+        return decoratedImage;
+    }
 
     @Override
     public StyledString getStyledDisplayString() {

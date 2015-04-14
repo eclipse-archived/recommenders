@@ -60,6 +60,7 @@ import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -486,6 +487,13 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
     }
 
     // ===========
+
+    // getImage() is final, thus we re-implement computeImage()
+    @Override
+    protected Image computeImage() {
+        Image image = super.computeImage();
+        return mgr.decorateImage(image);
+    }
 
     @Override
     public StyledString getStyledDisplayString() {
