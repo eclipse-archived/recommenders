@@ -39,7 +39,6 @@ import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
 import org.eclipse.jdt.internal.corext.util.Strings;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
@@ -56,6 +55,7 @@ import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.completion.rcp.utils.Asts;
 import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -659,7 +659,7 @@ public class ProcessableLazyGenericTypeProposal extends LazyJavaTypeCompletionPr
             keys[i] = String.valueOf(chKeys[0]);
         }
 
-        final ASTParser parser = ASTParser.newParser(ASTProvider.SHARED_AST_LEVEL);
+        final ASTParser parser = ASTParser.newParser(Asts.getSharedAstLevel());
         parser.setProject(fCompilationUnit.getJavaProject());
         parser.setResolveBindings(true);
         parser.setStatementsRecovery(true);
