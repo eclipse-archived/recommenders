@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.types.rcp;
 
 import static com.google.common.base.Objects.equal;
+import static java.lang.Long.parseLong;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.internal.types.rcp.LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED;
@@ -19,13 +21,15 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -34,15 +38,21 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.IOUtils;
 import org.apache.lucene.util.Version;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -51,23 +61,39 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.recommenders.jdt.JavaElementsFinder;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.Names;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import com.google.common.util.concurrent.AbstractFuture;
 import com.google.common.util.concurrent.AbstractIdleService;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public class ProjectTypesIndex extends AbstractIdleService {
 
-    private static final String F_EXTENDS = "extends";
-    private static final String F_IMPLEMENTS = "implements";
-    private static final String F_INSTANCEOF = "instanceof";
-    private static final String V_JAVA_LANG_OBJECT = "java.lang.Object";
+    private static final int TICKS = 80000;
+
+    private static final String F_PACAKGE_FRAGEMENT_ROOT_TYPE = "pfrType";
+
     private static final String F_NAME = "name";
+    private static final String F_SIMPLE_NAME = "simpleName";
+    private static final String F_LAST_MODIFIED = "lastModified";
     private static final String F_LOCATION = "location";
+    // private static final String F_EXTENDS = "extends";
+    // private static final String F_IMPLEMENTS = "implements";
+    private static final String F_INSTANCEOF = "instanceof";
+
+    private static final String V_JAVA_LANG_OBJECT = "java.lang.Object";
+    private static final String V_ARCHIVE = "archive";
 
     private IJavaProject project;
     private File indexDir;
@@ -75,6 +101,8 @@ public class ProjectTypesIndex extends AbstractIdleService {
     private Directory directory;
     private IndexWriter writer;
     private IndexReader reader;
+
+    private IndexSearcher searcher;
 
     public ProjectTypesIndex(IJavaProject project, File indexDir) {
         this.project = project;
@@ -90,6 +118,90 @@ public class ProjectTypesIndex extends AbstractIdleService {
         IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_35, new KeywordAnalyzer());
         writer = new IndexWriter(directory, conf);
         writer.commit();
+
+        if (needsRebuild()) {
+            rebuild();
+        }
+    }
+
+    public boolean needsRebuild() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            List<IPackageFragmentRoot> roots = findArchivePackageFragmentRoots();
+            Map<File, Long> indexedRoots = getSavedState();
+
+            for (IPackageFragmentRoot root : roots) {
+                File location = JavaElementsFinder.findLocation(root).orNull();
+                if (indexedRoots.remove(location) == null) {
+                    // this root was unknown:
+                    sb.append("  [+] ").append(location).append("\n");
+                } else if (!isCurrent(root)) {
+                    // this root's timestamp is different to what we indexed before:
+                    sb.append("  [*] ").append(location).append("\n");
+                }
+            }
+            if (!indexedRoots.isEmpty()) {
+                // there is a root that we did not index before:
+                for (File file : indexedRoots.keySet()) {
+                    sb.append("  [-] ").append(file.getAbsolutePath()).append("\n");
+                }
+
+            }
+        } catch (IOException e) {
+            Logs.log(LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+        }
+        if (sb.length() > 0) {
+            Logs.log(LogMessages.INFO_REINDEXING_REQUIRED, sb.toString());
+            return true;
+        }
+        return false;
+    }
+
+    private List<IPackageFragmentRoot> findArchivePackageFragmentRoots() {
+        Iterable<IPackageFragmentRoot> filter = Iterables.filter(JavaElementsFinder.findPackageFragmentRoots(project),
+                new ArchiveFragmentRootsOnlyPredicate());
+        return Ordering.usingToString().sortedCopy(filter);
+    }
+
+    private Map<File, Long> getSavedState() throws IOException {
+        Map<File, Long> res = Maps.newHashMap();
+        IndexSearcher searcher = getSearcher();
+        TopDocs topDocs = searcher.search(new TermQuery(termPackageFragmentRootType()), Integer.MAX_VALUE);
+        for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+            Document doc = searcher.doc(scoreDoc.doc);
+            File location = new File(doc.get(F_LOCATION));
+            Long lastModified = parseLong(doc.get(F_LAST_MODIFIED));
+            res.put(location, lastModified);
+        }
+        return res;
+    }
+
+    private Term termPackageFragmentRootType() {
+        return new Term(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE);
+    }
+
+    @SuppressWarnings("unused")
+    private boolean isIndexed(IPackageFragmentRoot root) throws IOException {
+        File rootLocation = JavaElementsFinder.findLocation(root).orNull();
+        TermQuery query = new TermQuery(termLocation(rootLocation));
+        IndexSearcher searcher = getSearcher();
+        return searcher.search(query, 1).totalHits > 0;
+    }
+
+    private boolean isCurrent(IPackageFragmentRoot root) throws IOException {
+        File rootLocation = JavaElementsFinder.findLocation(root).orNull();
+
+        BooleanQuery query = new BooleanQuery();
+        query.add(new TermQuery(termLocation(rootLocation)), Occur.MUST);
+        query.add(NumericRangeQuery.newLongRange(F_LAST_MODIFIED, rootLocation.lastModified(),
+                rootLocation.lastModified(), true, true), Occur.MUST);
+
+        IndexSearcher searcher = getSearcher();
+        return searcher.search(query, 1).totalHits > 0;
+    }
+
+    private Term termLocation(File rootLocation) {
+        return new Term(F_LOCATION, rootLocation.getAbsolutePath());
     }
 
     public boolean isEmpty() {
@@ -106,26 +218,31 @@ public class ProjectTypesIndex extends AbstractIdleService {
         IOUtils.close(reader, writer, directory);
     }
 
-    public ImmutableSet<String> subtypes(IType expected) {
+    public ImmutableSet<String> subtypes(IType expected, String prefix) {
         if (expected == null) {
             return ImmutableSet.of();
         } else {
-            return subtypes(expected.getFullyQualifiedName());
+            return subtypes(expected.getFullyQualifiedName(), prefix);
         }
     }
 
-    public ImmutableSet<String> subtypes(ITypeName expected) {
-        return subtypes(Names.vm2srcQualifiedType(expected));
+    public ImmutableSet<String> subtypes(ITypeName expected, String prefix) {
+        return subtypes(Names.vm2srcQualifiedType(expected), prefix);
     }
 
-    public ImmutableSet<String> subtypes(String type) {
+    public ImmutableSet<String> subtypes(String type, String prefix) {
         ImmutableSet.Builder<String> b = ImmutableSet.builder();
-        if (StringUtils.isBlank(type)) {
+        if (!isRunning() || isBlank(type)) {
             return b.build();
         }
-        IndexReader reader = getReader();
-        try (IndexSearcher searcher = new IndexSearcher(reader)) {
-            TopDocs search = searcher.search(new TermQuery(new Term(F_INSTANCEOF, type)), Integer.MAX_VALUE);
+        IndexSearcher searcher = getSearcher();
+        BooleanQuery query = new BooleanQuery();
+        query.add(new TermQuery(new Term(F_INSTANCEOF, type)), Occur.MUST);
+        if (isNotBlank(prefix)) {
+            query.add(new WildcardQuery(new Term(F_SIMPLE_NAME, prefix + "*")), Occur.MUST);
+        }
+        try {
+            TopDocs search = searcher.search(query, Integer.MAX_VALUE);
             for (ScoreDoc sdoc : search.scoreDocs) {
                 Document doc = searcher.doc(sdoc.doc);
                 String name = doc.get(F_NAME);
@@ -137,21 +254,24 @@ public class ProjectTypesIndex extends AbstractIdleService {
         return b.build();
     }
 
-    private synchronized IndexReader getReader() {
+    private synchronized IndexSearcher getSearcher() {
+
         if (reader == null) {
             reader = createReader();
-            return reader;
+            searcher = new IndexSearcher(reader);
+            return searcher;
         }
         try {
             IndexReader newReader = IndexReader.openIfChanged(reader);
             if (newReader != null) {
                 reader.close();
                 reader = newReader;
+                searcher = new IndexSearcher(reader);
             }
         } catch (Exception e) {
             log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         }
-        return reader;
+        return searcher;
     }
 
     private IndexReader createReader() {
@@ -170,17 +290,76 @@ public class ProjectTypesIndex extends AbstractIdleService {
         }
     }
 
-    public void rebuild(IProgressMonitor monitor) {
-        SubMonitor progress = SubMonitor.convert(monitor);
-        progress.beginTask("Indexing", 100000);
-        progress.subTask("Finding types");
-        ImmutableList<IType> types = findTypes(project);
-        progress.setWorkRemaining(types.size());
-        int count = 1;
-        for (IType type : types) {
-            progress.subTask(type.getFullyQualifiedName() + "(" + count++ + " / " + types.size() + ")");
-            indexType(type);
-            progress.worked(1);
+    private JobFuture active = null;
+
+    public ListenableFuture<IStatus> rebuild() {
+        if (!(active == null || active.isDone() || active.isCancelled())) {
+            active.cancel(true);
+        }
+        final JobFuture res = new JobFuture();
+        active = res;
+        Job job = new Job(String.format("Indexing type hierarchy of '%s'", project.getElementName())) {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                SubMonitor progress = SubMonitor.convert(monitor, "Indexing " + project.getElementName(), TICKS);
+                Thread thread = Thread.currentThread();
+                int priority = thread.getPriority();
+                try {
+                    thread.setPriority(Thread.MIN_PRIORITY);
+                    clear();
+                    rebuild(progress);
+                    commit();
+                } catch (OperationCanceledException e) {
+                    res.setException(e);
+                    res.setResult(Status.CANCEL_STATUS);
+                } catch (Exception e) {
+                    res.setException(e);
+                    res.setResult(new Status(IStatus.ERROR, "org.eclipse.recommenders.types.rcp", e.getMessage(), e));
+                } finally {
+                    thread.setPriority(priority);
+                    monitor.done();
+                }
+                res.setResult(Status.OK_STATUS);
+                return Status.OK_STATUS;
+            }
+        };
+        res.setJob(job);
+        job.schedule(2000);
+        return res;
+    }
+
+    private synchronized void rebuild(SubMonitor progress) {
+        List<IPackageFragmentRoot> roots = findArchivePackageFragmentRoots();
+        for (IPackageFragmentRoot root : roots) {
+            progress.subTask(root.getElementName());
+            ImmutableList<IType> types = findTypes(root);
+            for (IType type : types) {
+                if (progress.isCanceled()) {
+                    throw new OperationCanceledException();
+                }
+                indexType(type);
+                progress.worked(1);
+            }
+            File location = JavaElementsFinder.findLocation(root).orNull();
+            if (location != null) {
+                registerArchivePackageFragmentRoot(location);
+            }
+            commit();
+        }
+        progress.done();
+    }
+
+    private void registerArchivePackageFragmentRoot(File location) {
+
+        Document doc = new Document();
+        doc.add(new Field(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE, Store.NO, Index.NOT_ANALYZED));
+        doc.add(new Field(F_LOCATION, location.getAbsolutePath(), Store.YES, Index.NOT_ANALYZED));
+        doc.add(new NumericField(F_LAST_MODIFIED, Store.YES, true).setLongValue(location.lastModified()));
+        try {
+            writer.addDocument(doc);
+        } catch (Exception e) {
+            Logs.log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         }
     }
 
@@ -201,7 +380,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
     }
 
     public void refresh(IType type) {
-        ImmutableSet<String> subtypes = subtypes(type);
+        ImmutableSet<String> subtypes = subtypes(type, "");
         removeSubtypes(type);
         indexType(type);
         for (String subtypeName : subtypes) {
@@ -231,7 +410,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
             return;
         }
         BooleanQuery delete = new BooleanQuery();
-        delete.add(new TermQuery(new Term(F_LOCATION, location.getAbsolutePath())), Occur.MUST);
+        delete.add(new TermQuery(termLocation(location)), Occur.MUST);
         delete.add(new TermQuery(new Term(F_NAME, type.getFullyQualifiedName())), Occur.MUST);
         writer.deleteDocuments(delete);
     }
@@ -242,7 +421,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
             return;
         }
         BooleanQuery delete = new BooleanQuery();
-        delete.add(new TermQuery(new Term(F_LOCATION, location.getAbsolutePath())), Occur.MUST);
+        delete.add(new TermQuery(termLocation(location)), Occur.MUST);
         delete.add(new TermQuery(new Term(F_NAME, fragment.getElementName() + "*")), Occur.MUST);
         writer.deleteDocuments(delete);
     }
@@ -252,7 +431,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         if (location == null) {
             return;
         }
-        TermQuery delete = new TermQuery(new Term(F_LOCATION, location.getAbsolutePath()));
+        TermQuery delete = new TermQuery(termLocation(location));
         writer.deleteDocuments(delete);
     }
 
@@ -261,6 +440,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         {
             // name:
             doc.add(new Field(F_NAME, type.getFullyQualifiedName(), Store.YES, NOT_ANALYZED));
+            doc.add(new Field(F_SIMPLE_NAME, type.getElementName(), Store.NO, NOT_ANALYZED));
         }
         {
             // location:
@@ -271,23 +451,17 @@ public class ProjectTypesIndex extends AbstractIdleService {
         }
         {
             doc.add(new Field(F_INSTANCEOF, type.getFullyQualifiedName(), Store.NO, NOT_ANALYZED));
+
         }
         {
             // extends:
             try {
-
                 ITypeHierarchy h = type.newSupertypeHierarchy(null);
-                for (IType superInterface : h.getAllSuperInterfaces(type)) {
-                    String fullyQualifiedName = superInterface.getFullyQualifiedName();
-                    doc.add(new Field(F_IMPLEMENTS, fullyQualifiedName, Store.NO, NOT_ANALYZED));
-                    doc.add(new Field(F_INSTANCEOF, fullyQualifiedName, Store.NO, NOT_ANALYZED));
-                }
                 for (IType supertypes : h.getAllSupertypes(type)) {
                     String fullyQualifiedName = supertypes.getFullyQualifiedName();
                     if (equal(V_JAVA_LANG_OBJECT, fullyQualifiedName)) {
                         continue;
                     }
-                    doc.add(new Field(F_EXTENDS, fullyQualifiedName, Store.NO, NOT_ANALYZED));
                     doc.add(new Field(F_INSTANCEOF, fullyQualifiedName, Store.NO, NOT_ANALYZED));
                 }
             } catch (Exception e) {
@@ -351,4 +525,43 @@ public class ProjectTypesIndex extends AbstractIdleService {
         return project;
     }
 
+    private final class ArchiveFragmentRootsOnlyPredicate implements Predicate<IPackageFragmentRoot> {
+        @Override
+        public boolean apply(IPackageFragmentRoot input) {
+            if (!input.isArchive()) {
+                return false;
+            }
+            File location = JavaElementsFinder.findLocation(input).orNull();
+            if (location == null) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private final class JobFuture extends AbstractFuture<IStatus> {
+
+        private Job job;
+
+        public void setJob(Job job) {
+            this.job = job;
+        }
+
+        public boolean setResult(IStatus value) {
+            return super.set(value);
+        }
+
+        @Override
+        public boolean setException(Throwable throwable) {
+            return super.setException(throwable);
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            if (job != null)
+                return job.cancel();
+            return false;
+        }
+
+    }
 }

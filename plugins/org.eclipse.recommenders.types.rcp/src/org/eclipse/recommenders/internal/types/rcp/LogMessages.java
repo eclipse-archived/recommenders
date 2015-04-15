@@ -25,6 +25,9 @@ public final class LogMessages extends DefaultLogMessage {
     public static final ILogMessage ERROR_ACCESSING_SEARCHINDEX_FAILED = new LogMessages(IStatus.ERROR,
             "An Error occured while accessing search index");
 
+    public static final ILogMessage INFO_REINDEXING_REQUIRED = new LogMessages(IStatus.INFO,
+            "Full project indexing required:\n{0}");
+
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
     }

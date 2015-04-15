@@ -137,17 +137,31 @@ public class JavaElementsFinder {
     public static ImmutableList<IType> findTypes(IJavaProject project) {
         Builder<IType> b = ImmutableList.builder();
         for (ITypeRoot root : findTypeRoots(project)) {
-            try {
-                if (root instanceof ICompilationUnit) {
-                    for (IType type : ((ICompilationUnit) root).getTypes()) {
-                        b.add(type);
-                    }
-                } else if (root instanceof IClassFile) {
-                    b.add(((IClassFile) root).getType());
+            b.addAll(findTypes(root));
+        }
+        return b.build();
+    }
+
+    public static ImmutableList<IType> findTypes(IPackageFragmentRoot root) {
+        Builder<IType> b = ImmutableList.builder();
+        for (ITypeRoot typeRoot : findTypeRoots(root)) {
+            b.addAll(findTypes(typeRoot));
+        }
+        return b.build();
+    }
+
+    public static ImmutableList<IType> findTypes(ITypeRoot root) {
+        Builder<IType> b = ImmutableList.builder();
+        try {
+            if (root instanceof ICompilationUnit) {
+                for (IType type : ((ICompilationUnit) root).getTypes()) {
+                    b.add(type);
                 }
-            } catch (JavaModelException e) {
-                log(ERROR_CANNOT_FETCH_TYPES, e, root);
+            } else if (root instanceof IClassFile) {
+                b.add(((IClassFile) root).getType());
             }
+        } catch (JavaModelException e) {
+            log(ERROR_CANNOT_FETCH_TYPES, e, root);
         }
         return b.build();
     }
