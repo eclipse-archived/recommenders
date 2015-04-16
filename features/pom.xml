@@ -20,6 +20,7 @@
 		<module>org.eclipse.recommenders.devel.feature</module>
 		<module>org.eclipse.recommenders.jayes.feature</module>
 		<module>org.eclipse.recommenders.mylyn.rcp.feature</module>
+		<module>org.eclipse.recommenders.news.rcp.feature</module>
 		<module>org.eclipse.recommenders.rcp.feature</module>
 		<module>org.eclipse.recommenders.testing.rcp.feature</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp.feature</module>
