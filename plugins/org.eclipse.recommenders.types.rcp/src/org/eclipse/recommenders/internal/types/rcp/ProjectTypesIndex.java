@@ -254,7 +254,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         return b.build();
     }
 
-    private synchronized IndexSearcher getSearcher() {
+    private IndexSearcher getSearcher() {
 
         if (reader == null) {
             reader = createReader();
