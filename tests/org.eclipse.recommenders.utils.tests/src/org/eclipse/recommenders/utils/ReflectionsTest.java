@@ -46,6 +46,35 @@ public class ReflectionsTest {
     }
 
     @Test
+    public void testGetDeclaredMethodWithAlternativeSignatures() {
+        Optional<Method> result = Reflections.getDeclaredMethodWithAlternativeSignatures(Object.class, "equals",
+                new Class[] { String.class }, new Class[] { Object.class });
+
+        assertThat(result.isPresent(), is(true));
+    }
+
+    @Test
+    public void testGetDeclaredMethodWithoutMatchingAlternativeSignatures() {
+        Optional<Method> result = Reflections.getDeclaredMethodWithAlternativeSignatures(Object.class, "equals",
+                new Class[] { String.class });
+
+        assertThat(result.isPresent(), is(false));
+    }
+
+    @Test
+    public void testGetDeclaredMethodWithAlternativeSignaturesIsNullSafe() {
+        Optional<Method> declaringClassIsNull = Reflections.getDeclaredMethodWithAlternativeSignatures(null,
+                "hashCode");
+        Optional<Method> nameIsNull = Reflections.getDeclaredMethodWithAlternativeSignatures(Object.class, null);
+        Optional<Method> parameterTypeIsNull = Reflections.getDeclaredMethodWithAlternativeSignatures(Object.class,
+                "hashCode", (Class[][]) null);
+
+        assertThat(declaringClassIsNull.isPresent(), is(false));
+        assertThat(nameIsNull.isPresent(), is(false));
+        assertThat(parameterTypeIsNull.isPresent(), is(false));
+    }
+
+    @Test
     public void testGetDeclaredPublicField() {
         Optional<Field> result = Reflections.getDeclaredField(System.class, "in");
 

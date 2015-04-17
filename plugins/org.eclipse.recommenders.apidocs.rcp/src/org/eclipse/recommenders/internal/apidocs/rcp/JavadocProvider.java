@@ -16,7 +16,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.resolveSelectionLocationFromJavaElement;
 import static org.eclipse.recommenders.utils.Logs.log;
-import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethod;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethodWithAlternativeSignatures;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,27 +66,14 @@ public final class JavadocProvider extends ApidocProvider {
 
     /**
      * Use of reflection made necessary due to a change in method signature of
-     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}.
+     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}. There no exists a second alternative signature of
+     * {@link JavadocContentAccess2#getHTMLContent(IJavaElement, boolean)}.
      *
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=459519">Bug 459519</a>
      */
-    private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT;
-
-    static {
-        Method method = getDeclaredMethod(JavadocContentAccess2.class, "getHTMLContent", IMember.class, Boolean.TYPE)
-                .orNull();
-        if (method != null) {
-            JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = method;
-        } else {
-            method = getDeclaredMethod(JavadocContentAccess2.class, "getHTMLContent", IJavaElement.class, Boolean.TYPE)
-                    .orNull();
-            if (method != null) {
-                JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = method;
-            } else {
-                JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = null;
-            }
-        }
-    }
+    private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = getDeclaredMethodWithAlternativeSignatures(
+            JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE },
+            new Class[] { IJavaElement.class, Boolean.TYPE }).orNull();
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
 
@@ -146,58 +133,58 @@ public final class JavadocProvider extends ApidocProvider {
                 final Browser browser = new Browser(parent, SWT.NONE);
                 browser.setLayoutData(new GridData(GridData.FILL_BOTH));
                 browser.setText(html);
-                browser.addLocationListener(JavaElementLinks
-                        .createLocationListener(new JavaElementLinks.ILinkHandler() {
+                browser.addLocationListener(
+                        JavaElementLinks.createLocationListener(new JavaElementLinks.ILinkHandler() {
 
-                            @Override
-                            public void handleDeclarationLink(final IJavaElement target) {
-                                try {
-                                    JavaUI.openInEditor(target);
-                                } catch (final Exception e) {
-                                    JavaPlugin.log(e);
+                    @Override
+                    public void handleDeclarationLink(final IJavaElement target) {
+                        try {
+                            JavaUI.openInEditor(target);
+                        } catch (final Exception e) {
+                            JavaPlugin.log(e);
+                        }
+                    }
+
+                    @Override
+                    public boolean handleExternalLink(final URL url, final Display display) {
+                        try {
+                            if (url.getProtocol().equals("file")) { //$NON-NLS-1$
+                                // sometimes we have /, sometimes we have ///
+                                String path = url.getPath();
+                                path = StringUtils.removeStart(path, "///"); //$NON-NLS-1$
+                                path = StringUtils.removeStart(path, "/"); //$NON-NLS-1$
+                                final String type = "L" + StringUtils.substring(path, 0, -".html".length()); //$NON-NLS-1$ //$NON-NLS-2$
+                                final VmTypeName typeName = VmTypeName.get(type);
+                                final Optional<IType> opt = resolver.toJdtType(typeName);
+                                if (opt.isPresent()) {
+                                    workspaceBus.post(new JavaElementSelectionEvent(opt.get(),
+                                            JavaElementSelectionLocation.METHOD_DECLARATION));
                                 }
-                            }
 
-                            @Override
-                            public boolean handleExternalLink(final URL url, final Display display) {
-                                try {
-                                    if (url.getProtocol().equals("file")) { //$NON-NLS-1$
-                                        // sometimes we have /, sometimes we have ///
-                                        String path = url.getPath();
-                                        path = StringUtils.removeStart(path, "///"); //$NON-NLS-1$
-                                        path = StringUtils.removeStart(path, "/"); //$NON-NLS-1$
-                                        final String type = "L" + StringUtils.substring(path, 0, -".html".length()); //$NON-NLS-1$ //$NON-NLS-2$
-                                        final VmTypeName typeName = VmTypeName.get(type);
-                                        final Optional<IType> opt = resolver.toJdtType(typeName);
-                                        if (opt.isPresent()) {
-                                            workspaceBus.post(new JavaElementSelectionEvent(opt.get(),
-                                                    JavaElementSelectionLocation.METHOD_DECLARATION));
-                                        }
-
-                                    } else {
-                                        BrowserUtils.openInDefaultBrowser(url);
-                                    }
-                                } catch (final Exception e) {
-                                    log(ERROR_DURING_JAVADOC_SELECTION, e, url);
-                                }
-                                return true;
+                            } else {
+                                BrowserUtils.openInDefaultBrowser(url);
                             }
+                        } catch (final Exception e) {
+                            log(ERROR_DURING_JAVADOC_SELECTION, e, url);
+                        }
+                        return true;
+                    }
 
-                            @Override
-                            public void handleInlineJavadocLink(final IJavaElement target) {
-                                final JavaElementSelectionLocation location = resolveSelectionLocationFromJavaElement(target);
-                                workspaceBus.post(new JavaElementSelectionEvent(target, location));
-                            }
+                    @Override
+                    public void handleInlineJavadocLink(final IJavaElement target) {
+                        final JavaElementSelectionLocation location = resolveSelectionLocationFromJavaElement(target);
+                        workspaceBus.post(new JavaElementSelectionEvent(target, location));
+                    }
 
-                            @Override
-                            public void handleJavadocViewLink(final IJavaElement target) {
-                                handleInlineJavadocLink(target);
-                            }
+                    @Override
+                    public void handleJavadocViewLink(final IJavaElement target) {
+                        handleInlineJavadocLink(target);
+                    }
 
-                            @Override
-                            public void handleTextSet() {
-                            }
-                        }));
+                    @Override
+                    public void handleTextSet() {
+                    }
+                }));
             }
 
         });
@@ -257,8 +244,8 @@ public final class JavadocProvider extends ApidocProvider {
                 line = reader.readLine();
             }
 
-            final FontData fontData = JFaceResources.getFontRegistry().getFontData(
-                    PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
+            final FontData fontData = JFaceResources.getFontRegistry()
+                    .getFontData(PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
             return HTMLPrinter.convertTopLevelFont(buffer.toString(), fontData);
         } catch (final IOException ex) {
             JavaPlugin.log(ex);

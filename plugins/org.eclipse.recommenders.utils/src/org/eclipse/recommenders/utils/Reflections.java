@@ -53,4 +53,23 @@ public final class Reflections {
             return Optional.absent();
         }
     }
+
+    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(@Nullable Class<?> declaringClass, @Nullable String name,
+            @Nullable Class<?>[]... parameterTypesAlternatives) {
+        if (declaringClass == null || name == null || parameterTypesAlternatives == null) {
+            return Optional.absent();
+        }
+
+        for (Class<?>[] parameterTypesAlternative : parameterTypesAlternatives) {
+            try {
+                Method method = declaringClass.getDeclaredMethod(name, parameterTypesAlternative);
+                method.setAccessible(true);
+                return Optional.of(method);
+            } catch (Exception e) {
+                // Ignore and try next alternative.
+            }
+        }
+        log(LogMessages.LOG_WARNING_REFLECTION_FAILED, name);
+        return Optional.absent();
+    }
 }
