@@ -45,7 +45,7 @@ public class Bug425994Test {
         proposals.add(new Object[] { new DiscoveryCompletionProposal(images) });
         proposals.add(new Object[] { new EnableSubwordsCompletionProposal(images, null) });
         proposals.add(new Object[] { new EmptyCompletionProposal(0) });
-        proposals.add(new Object[] { new EnableCompletionProposal(images, 0) });
+        proposals.add(new Object[] { new EnabledCompletionProposal(images, 0) });
 
         return proposals;
     }

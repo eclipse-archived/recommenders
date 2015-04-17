@@ -17,13 +17,10 @@ public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.completion.rcp.messages"; //$NON-NLS-1$
 
     public static String PROPOSAL_LABEL_DISCOVER_EXTENSIONS;
-    public static String PROPOSAL_LABEL_ENABLE_COMPLETION;
     public static String PROPOSAL_LABEL_ENABLED_COMPLETION;
     public static String PROPOSAL_LABEL_NO_PROPOSALS;
 
     public static String PROPOSAL_TOOLTIP_DISCOVER_EXTENSIONS;
-    public static String PROPOSAL_TOOLTIP_ENABLE_COMPLETION;
-    // by-default enabled info text:
     public static String PROPOSAL_TOOLTIP_ENABLED_COMPLETION;
     public static String PROPOSAL_CATEGORY_CODE_RECOMMENDERS;
 

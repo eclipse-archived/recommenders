@@ -28,11 +28,12 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.EnableContentAssistCategoryJob;
+import org.eclipse.recommenders.rcp.SharedImages;
+import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -53,10 +54,10 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
     // leave a bit space for other, maybe more important proposals
     private static final int RELEVANCE = Integer.MAX_VALUE - 10000;
 
-    public EnabledCompletionProposal(Image image, int offset) {
+    public EnabledCompletionProposal(SharedImages images, int offset) {
         StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLED_COMPLETION, DECORATIONS_STYLER);
         setStyledDisplayString(text);
-        setImage(image);
+        setImage(images.getImage(Images.OBJ_LIGHTBULB));
         setRelevance(RELEVANCE);
         setCursorPosition(offset);
         setReplacementString(""); //$NON-NLS-1$

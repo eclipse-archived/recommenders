@@ -50,11 +50,9 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
-import org.eclipse.recommenders.internal.completion.rcp.EnableCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.EnabledCompletionProposal;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
-import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.ImmutableList;
@@ -119,8 +117,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
         if (!isContentAssistConfigurationOkay()) {
             enableRecommenders();
             int offset = context.getInvocationOffset();
-            EnabledCompletionProposal info = new EnabledCompletionProposal(images.getImage(Images.OBJ_LIGHTBULB),
-                    offset);
+            EnabledCompletionProposal info = new EnabledCompletionProposal(images, offset);
             boolean hasOtherProposals = !crContext.getProposals().isEmpty();
             if (hasOtherProposals) {
                 // Return the configure proposal
