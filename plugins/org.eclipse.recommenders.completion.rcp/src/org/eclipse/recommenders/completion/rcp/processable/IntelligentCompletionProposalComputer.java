@@ -220,10 +220,12 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
     }
 
     protected void fireInitializeContext(IRecommendersCompletionContext crContext) {
-        for (SessionProcessor p : activeProcessors) {
+        for (Iterator<SessionProcessor> it = activeProcessors.iterator(); it.hasNext();) {
+            SessionProcessor p = it.next();
             try {
                 p.initializeContext(crContext);
             } catch (Throwable e) {
+                it.remove();
                 Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
@@ -238,6 +240,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                     it.remove();
                 }
             } catch (Throwable e) {
+                it.remove();
                 Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }

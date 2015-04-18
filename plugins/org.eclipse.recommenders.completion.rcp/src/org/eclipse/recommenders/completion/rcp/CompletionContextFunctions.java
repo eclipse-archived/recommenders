@@ -13,8 +13,10 @@ package org.eclipse.recommenders.completion.rcp;
 import static com.google.common.base.Objects.firstNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.StringUtils.substring;
+import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR_CHAR;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
 import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.jdt.JavaElementsFinder.resolveType;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
@@ -81,6 +83,7 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -209,19 +212,26 @@ public final class CompletionContextFunctions {
     public static class ExpectedTypeNamesContextFunction implements ICompletionContextFunction<Set<ITypeName>> {
 
         @Override
-        public Set<ITypeName> compute(IRecommendersCompletionContext context, CompletionContextKey<Set<ITypeName>> key) {
+        public Set<ITypeName> compute(IRecommendersCompletionContext context,
+                CompletionContextKey<Set<ITypeName>> key) {
             ASTNode completion = context.getCompletionNode().orNull();
             InternalCompletionContext core = context.get(INTERNAL_COMPLETIONCONTEXT, null);
 
-            char[][] keys;
+            char[][] signatures;
             if (isArgumentCompletion(completion) && context.getPrefix().isEmpty()) {
                 ICompilationUnit cu = context.getCompilationUnit();
                 int offset = context.getInvocationOffset();
-                keys = simulateCompletionWithFakePrefix(cu, offset);
+                signatures = simulateCompletionWithFakePrefix(cu, offset);
             } else {
-                keys = core.getExpectedTypesSignatures();
+                signatures = core.getExpectedTypesSignatures();
             }
-            Set<ITypeName> res = RecommendersCompletionContext.createTypeNamesFromSignatures(keys);
+            Set<ITypeName> res = Sets.newHashSet();
+            for (char[] signature : Objects.firstNonNull(signatures, NO_CHAR_CHAR)) {
+                IJavaElement enclosing = context.getEnclosingElement().orNull();
+                ITypeName resolved = resolveType(signature, enclosing).orNull();
+                if (resolved != null)
+                    res.add(resolved);
+            }
             context.set(key, res);
             return res;
         }
@@ -250,7 +260,7 @@ public final class CompletionContextFunctions {
 
                     @Override
                     public void acceptContext(CompletionContext context) {
-                        res.setValue(context.getExpectedTypesKeys());
+                        res.setValue(context.getExpectedTypesSignatures());
                         super.acceptContext(context);
                     }
 

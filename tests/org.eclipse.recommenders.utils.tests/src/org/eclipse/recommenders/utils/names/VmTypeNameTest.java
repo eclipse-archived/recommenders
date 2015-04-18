@@ -238,4 +238,10 @@ public class VmTypeNameTest {
         VmTypeName actual = VmTypeName.get("Ljava/util/Map$Entry<Ljava/lang/Integer;Ljava/lang/String;>");
         assertEquals("Ljava/util/Map$Entry", actual.getIdentifier());
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGenericTypeArray() {
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464925
+        VmTypeName.get("[[TE");
+    }
 }
