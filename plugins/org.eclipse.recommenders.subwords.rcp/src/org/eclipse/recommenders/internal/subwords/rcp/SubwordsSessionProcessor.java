@@ -20,6 +20,7 @@ import static org.eclipse.recommenders.internal.subwords.rcp.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -50,6 +51,7 @@ import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCom
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.ui.IEditorPart;
@@ -71,6 +73,9 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private static Field CORE_CONTEXT = Reflections
             .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
+    private static Field CU = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class, "fCU").orNull(); //$NON-NLS-1$
+    private static Field CU_COMPUTED = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCUComputed").orNull(); //$NON-NLS-1$
 
     private final SubwordsRcpPreferences prefs;
 
@@ -110,12 +115,9 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             SortedSet<Integer> triggerlocations = computeTriggerLocations(offset, completionNode, completionNodeParent,
                     length);
 
-            ITextViewer viewer = jdtContext.getViewer();
-            IEditorPart editor = lookupEditor(cu);
             Set<String> sortkeys = Sets.newHashSet();
             for (int trigger : triggerlocations) {
-                Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(viewer, editor,
-                        trigger);
+                Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(jdtContext, trigger);
                 testAndInsertNewProposals(recContext, baseProposals, sortkeys, newProposals);
             }
 
@@ -150,18 +152,33 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         return prefix == null ? "" : prefix.toString(); //$NON-NLS-1$
     }
 
-    private Map<IJavaCompletionProposal, CompletionProposal> getNewProposals(ITextViewer viewer, IEditorPart editor,
-            int triggerOffset) {
+    private Map<IJavaCompletionProposal, CompletionProposal> getNewProposals(
+            JavaContentAssistInvocationContext originalContext, int triggerOffset) {
         if (triggerOffset < 0) {
             // XXX not sure when this happens but is has happened in the past
             return Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
         }
-        JavaContentAssistInvocationContext newjdtContext = new JavaContentAssistInvocationContext(viewer, triggerOffset,
+        ICompilationUnit cu = originalContext.getCompilationUnit();
+        ITextViewer viewer = originalContext.getViewer();
+        IEditorPart editor = lookupEditor(cu);
+        JavaContentAssistInvocationContext newJdtContext = new JavaContentAssistInvocationContext(viewer, triggerOffset,
                 editor);
-        ICompilationUnit cu = newjdtContext.getCompilationUnit();
-        ProposalCollectingCompletionRequestor collector = computeProposals(cu, newjdtContext, triggerOffset);
+        setCompilationUnit(newJdtContext, cu);
+        ProposalCollectingCompletionRequestor collector = computeProposals(cu, newJdtContext, triggerOffset);
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
         return proposals != null ? proposals : Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
+    }
+
+    private void setCompilationUnit(JavaContentAssistInvocationContext newJdtContext, ICompilationUnit cu) {
+        if (Checks.anyIsNull(CU, CU_COMPUTED)) {
+            return;
+        }
+        try {
+            CU.set(newJdtContext, cu);
+            CU_COMPUTED.set(newJdtContext, true);
+        } catch (Exception e) {
+            Logs.log(EXCEPTION_DURING_CODE_COMPLETION, e);
+        }
     }
 
     private void testAndInsertNewProposals(IRecommendersCompletionContext crContext,
