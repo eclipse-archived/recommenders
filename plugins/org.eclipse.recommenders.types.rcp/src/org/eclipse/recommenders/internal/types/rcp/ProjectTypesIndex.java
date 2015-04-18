@@ -227,7 +227,14 @@ public class ProjectTypesIndex extends AbstractIdleService {
     }
 
     public ImmutableSet<String> subtypes(ITypeName expected, String prefix) {
-        return subtypes(Names.vm2srcQualifiedType(expected), prefix);
+        try {
+            return subtypes(Names.vm2srcQualifiedType(expected), prefix);
+        } catch (Exception e) {
+            // temporary workaround for 
+            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464925
+            log(LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+            return ImmutableSet.of();
+        }
     }
 
     public ImmutableSet<String> subtypes(String type, String prefix) {
