@@ -198,9 +198,8 @@ public class ProjectCoordinatesView extends ViewPart {
         };
 
         TableSortConfigurator.newConfigurator(tableViewer, refreshAction)
-                .add(locationColumn.getColumn(), COMPARE_LOCATION)
-                .add(coordinateColumn.getColumn(), COMPARE_COORDINATE).initialize(locationColumn.getColumn(), SWT.UP)
-                .configure();
+                .add(locationColumn.getColumn(), COMPARE_LOCATION).add(coordinateColumn.getColumn(), COMPARE_COORDINATE)
+                .initialize(locationColumn.getColumn(), SWT.UP).configure();
 
         addFilterFunctionality();
         addClearCacheButton();
@@ -265,7 +264,8 @@ public class ProjectCoordinatesView extends ViewPart {
         IAction showConflictingCoord = new TableFilterAction(Messages.MENUITEM_SHOW_CONFLICTING_COORDINATES_ONLY,
                 Action.AS_RADIO_BUTTON, conflictingCoordinatesFilter);
         IAction showManualAssignedCoord = new TableFilterAction(
-                Messages.MENUITEM_SHOW_MANUALLY_ASSIGNED_COORDINATES_ONLY, Action.AS_RADIO_BUTTON, manualAssignedFilter);
+                Messages.MENUITEM_SHOW_MANUALLY_ASSIGNED_COORDINATES_ONLY, Action.AS_RADIO_BUTTON,
+                manualAssignedFilter);
 
         MenuManager showMenu = new MenuManager(Messages.MENUITEM_SHOW);
         showMenu.add(showAll);
@@ -422,8 +422,8 @@ public class ProjectCoordinatesView extends ViewPart {
                 monitor.beginTask(Messages.TASK_ASSIGNING_PROJECT_COORDINATES, dependencyInfos.size());
                 strategies = pcAdvisorsService.getAdvisors();
                 for (DependencyInfo dependencyInfo : dependencyInfos) {
-                    monitor.subTask(format(Messages.TASK_ASSIGNING_PROJECT_COORDINATE_TO, dependencyInfo.getFile()
-                            .getName()));
+                    monitor.subTask(
+                            format(Messages.TASK_ASSIGNING_PROJECT_COORDINATE_TO, dependencyInfo.getFile().getName()));
                     for (IProjectCoordinateAdvisor strategy : strategies) {
                         data.put(dependencyInfo, strategy.suggest(dependencyInfo));
                     }
@@ -514,6 +514,11 @@ public class ProjectCoordinatesView extends ViewPart {
     }
 
     private void refreshTableUI() {
+        if (table.isDisposed()) {
+            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464840
+            // We might be too late and the view may have been closed already.
+            return;
+        }
         tableViewer.setLabelProvider(new ViewLabelProvider());
         locationColumn.setLabelProvider(new LocationTooltip());
         coordinateColumn.setLabelProvider(new CoordinateTooltip());
@@ -691,7 +696,8 @@ public class ProjectCoordinatesView extends ViewPart {
         refreshData();
     }
 
-    private static Optional<ProjectCoordinate> findFirstMatchingCoordinate(Collection<Optional<ProjectCoordinate>> pcs) {
+    private static Optional<ProjectCoordinate> findFirstMatchingCoordinate(
+            Collection<Optional<ProjectCoordinate>> pcs) {
         return fromNullable(getFirst(presentInstances(pcs), null));
     }
 
