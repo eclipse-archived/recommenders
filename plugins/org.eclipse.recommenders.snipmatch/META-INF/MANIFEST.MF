@@ -9,7 +9,6 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.apache.lucene.core;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.runtime,
  org.eclipse.jgit,
- org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.models
@@ -23,7 +22,17 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)",
  org.slf4j;version="[1.7.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.snipmatch,
- org.eclipse.recommenders.snipmatch.model,
- org.eclipse.recommenders.snipmatch.model.impl,
- org.eclipse.recommenders.snipmatch.model.util
+Export-Package: org.eclipse.recommenders.snipmatch;uses:="org.eclipse.recommenders.utils,org.eclipse.jgit.lib",
+ org.eclipse.recommenders.snipmatch.model;uses:="org.eclipse.emf.ecore,org.eclipse.recommenders.snipmatch,org.eclipse.emf.common.util",
+ org.eclipse.recommenders.snipmatch.model.impl;
+  uses:="org.eclipse.emf.ecore,
+   org.eclipse.emf.ecore.impl,
+   org.eclipse.recommenders.snipmatch,
+   org.eclipse.emf.common.util,
+   org.eclipse.recommenders.snipmatch.model",
+ org.eclipse.recommenders.snipmatch.model.util;
+  uses:="org.eclipse.emf.ecore,
+   org.eclipse.recommenders.snipmatch.model,
+   org.eclipse.emf.common.notify,
+   org.eclipse.emf.common.notify.impl,
+   org.eclipse.emf.ecore.util"

@@ -8,38 +8,62 @@ Eclipse-ExtensibleAPI: true
 Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.core.databinding,
- org.eclipse.core.databinding.beans,
- org.eclipse.core.databinding.observable,
- org.eclipse.core.databinding.property,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
- org.eclipse.jface.databinding,
  org.eclipse.jface.text,
- org.eclipse.recommenders.injection;bundle-version="2.0.0",
- org.eclipse.recommenders.jdt;bundle-version="2.0.0",
- org.eclipse.recommenders.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.utils;bundle-version="2.0.0",
+ org.eclipse.recommenders.injection,
+ org.eclipse.recommenders.jdt,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.utils,
  org.eclipse.ui,
  org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor,
- org.eclipse.equinox.p2.ui.discovery,
- org.eclipse.equinox.p2.discovery.compatibility,
- org.eclipse.equinox.p2.discovery
+ org.eclipse.ui.workbench.texteditor
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.mutable;version="[3.0.0,4.0.0)",
  org.slf4j;version="[1.6.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.completion.rcp;uses:="com.goo
- gle.common.base,com.google.common.collect",org.eclipse.recommenders.c
- ompletion.rcp.processable;uses:="com.google.common.base",org.eclipse.
- recommenders.completion.rcp.tips,org.eclipse.recommenders.completion.
- rcp.utils;uses:="com.google.common.base",org.eclipse.recommenders.int
- ernal.completion.rcp;x-internal:=true,org.eclipse.recommenders.intern
- al.completion.rcp.tips;x-internal:=true
+Export-Package: org.eclipse.recommenders.completion.rcp;
+  uses:="org.eclipse.jdt.core,
+   org.eclipse.jdt.internal.compiler.lookup,
+   com.google.common.base,
+   org.eclipse.jdt.core.dom,
+   org.eclipse.ui.progress,
+   org.eclipse.jface.text,
+   org.eclipse.jdt.ui.text.java,
+   org.eclipse.ui,
+   org.eclipse.core.runtime,
+   org.eclipse.recommenders.rcp,
+   com.google.common.collect",
+ org.eclipse.recommenders.completion.rcp.processable;
+  uses:="org.eclipse.jdt.core.compiler,
+   org.eclipse.jdt.core,
+   org.eclipse.jface.text.source,
+   org.eclipse.swt.graphics,
+   com.google.common.base,
+   org.eclipse.jface.text,
+   org.eclipse.jdt.internal.ui.text.java,
+   org.eclipse.jface.viewers,
+   org.eclipse.recommenders.completion.rcp,
+   org.eclipse.jface.text.contentassist,
+   org.eclipse.jdt.ui.text.java,
+   org.eclipse.core.runtime,
+   org.eclipse.jdt.internal.codeassist,
+   org.eclipse.jface.resource,
+   org.eclipse.recommenders.internal.completion.rcp,
+   org.eclipse.recommenders.rcp,
+   com.google.common.collect",
+ org.eclipse.recommenders.completion.rcp.tips;
+  uses:="org.eclipse.jface.text.contentassist,
+   org.eclipse.core.runtime,
+   org.eclipse.jface.text,
+   org.eclipse.swt.widgets,
+   org.eclipse.jdt.internal.ui.text.java",
+ org.eclipse.recommenders.completion.rcp.utils;uses:="org.eclipse.jdt.core,org.eclipse.jdt.internal.compiler.lookup,com.google.common.base",
+ org.eclipse.recommenders.internal.completion.rcp;x-internal:=true,
+ org.eclipse.recommenders.internal.completion.rcp.tips;x-internal:=true
