@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 
@@ -56,7 +57,8 @@ public class DownloadModelArchiveJob extends Job {
     private final boolean forceDownload;
     private final EventBus bus;
 
-    public DownloadModelArchiveJob(IModelRepository repository, ModelCoordinate mc, boolean forceDownload, EventBus bus) {
+    public DownloadModelArchiveJob(IModelRepository repository, ModelCoordinate mc, boolean forceDownload,
+            EventBus bus) {
         super(MessageFormat.format(Messages.JOB_RESOLVING_MODEL, mc));
         this.repository = repository;
         this.mc = mc;
@@ -68,8 +70,8 @@ public class DownloadModelArchiveJob extends Job {
     protected IStatus run(final IProgressMonitor monitor) {
         try {
             String message = MessageFormat.format(Messages.TASK_RESOLVING_MODEL, mc);
-            MultipleDownloadCallback downloadCallback = new MultipleDownloadCallback(monitor, message,
-                    TOTAL_WORK_UNITS, MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB);
+            MultipleDownloadCallback downloadCallback = new MultipleDownloadCallback(monitor, message, TOTAL_WORK_UNITS,
+                    MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB);
             File result = repository.resolve(mc, forceDownload, downloadCallback).orNull();
             boolean isDownloadSuccessful = downloadCallback.isDownloadSucceeded();
             if (isDownloadSuccessful) {
@@ -83,12 +85,13 @@ public class DownloadModelArchiveJob extends Job {
             if (result == null) {
                 if (isIndex(mc)) {
                     // Failure to download the index is serious; display an error message.
-                    final Display display = Display.getDefault();
+                    final Display display = PlatformUI.getWorkbench().getDisplay();
                     display.asyncExec(new Runnable() {
 
                         @Override
                         public void run() {
-                            IndexDownloadFailureDialog dialog = new IndexDownloadFailureDialog(display.getActiveShell());
+                            IndexDownloadFailureDialog dialog = new IndexDownloadFailureDialog(
+                                    display.getActiveShell());
                             if (!dialog.isIgnored()) {
                                 dialog.open();
                             }
@@ -97,14 +100,14 @@ public class DownloadModelArchiveJob extends Job {
                 }
 
                 // Log that as informational but do not open a (extra, in case of index downloads) popup.
-                IStatus err = new Status(IStatus.INFO, Constants.BUNDLE_ID, format(Messages.LOG_INFO_NO_MODEL_RESOLVED,
-                        mc));
+                IStatus err = new Status(IStatus.INFO, Constants.BUNDLE_ID,
+                        format(Messages.LOG_INFO_NO_MODEL_RESOLVED, mc));
                 StatusManager.getManager().handle(err, StatusManager.LOG);
                 return Status.CANCEL_STATUS;
             }
         } catch (Exception e) {
-            return new Status(IStatus.ERROR, Constants.BUNDLE_ID, format(Messages.LOG_ERROR_MODEL_RESOLUTION_FAILURE,
-                    mc), e);
+            return new Status(IStatus.ERROR, Constants.BUNDLE_ID,
+                    format(Messages.LOG_ERROR_MODEL_RESOLUTION_FAILURE, mc), e);
         } finally {
             monitor.done();
         }
