@@ -17,6 +17,8 @@ public class BaseRecommendersCompletionContextTest {
                 //
                 "[Ljava.lang.String;".toCharArray(),
                 // generics:
+                "[[TE".toCharArray(),
+                //
                 "Lcom.codetrails.analysis.GenericWalaBasedArtifactAnalyzer;:TT".toCharArray(), });
     }
 }

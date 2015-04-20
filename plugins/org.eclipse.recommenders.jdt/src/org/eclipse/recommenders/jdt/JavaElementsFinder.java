@@ -11,9 +11,14 @@
 package org.eclipse.recommenders.jdt;
 
 import static com.google.common.base.Optional.*;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.eclipse.jdt.core.IJavaElement.*;
 import static org.eclipse.jdt.core.IPackageFragmentRoot.*;
+import static org.eclipse.jdt.core.compiler.CharOperation.charToString;
 import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
+import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
 
 import java.io.File;
 
@@ -23,13 +28,21 @@ import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.recommenders.internal.jdt.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
+import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -248,5 +261,116 @@ public class JavaElementsFinder {
             log(ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH, e, fragmentRoot);
             return false;
         }
+    }
+
+    /**
+     * 
+     * @param typeSignature
+     *            e.g., QList;
+     * @param enclosing
+     * @return
+     */
+    public static Optional<ITypeName> resolveType(char[] typeSignature, @Nullable IJavaElement enclosing) {
+        typeSignature = CharOperation.replaceOnCopy(typeSignature, '.', '/');
+        VmTypeName res = null;
+        try {
+            int dimensions = Signature.getArrayCount(typeSignature);
+            outer: switch (typeSignature[dimensions]) {
+
+            case Signature.C_BOOLEAN:
+            case Signature.C_BYTE:
+            case Signature.C_CHAR:
+            case Signature.C_DOUBLE:
+            case Signature.C_FLOAT:
+            case Signature.C_INT:
+            case Signature.C_LONG:
+            case Signature.C_SHORT:
+            case Signature.C_VOID:
+                // take the whole string including any arrays
+                res = VmTypeName.get(new String(typeSignature, 0, typeSignature.length));
+                break;
+            case Signature.C_RESOLVED:
+                // take the whole string including any arrays but remove the trailing ';'
+                res = VmTypeName.get(new String(typeSignature, 0, typeSignature.length - 1 /* ';' */));
+                break;
+            case Signature.C_UNRESOLVED:
+                if (enclosing == null) {
+                    break;
+                }
+                // take the whole string (e.g. QList; or [QList;)
+                String unresolved = new String(typeSignature, dimensions + 1,
+                        typeSignature.length - (dimensions + 2 /* 'Q' + ';' */));
+                IType ancestor = (IType) enclosing.getAncestor(IJavaElement.TYPE);
+                if (ancestor == null) {
+                    break;
+                }
+                final String[][] resolvedNames = ancestor.resolveType(unresolved);
+                if (isEmpty(resolvedNames)) {
+                    break;
+                }
+                String array = repeat('[', dimensions);
+                final String pkg = resolvedNames[0][0].replace('.', '/');
+                final String name = resolvedNames[0][1].replace('.', '$');
+                res = VmTypeName.get(array + 'L' + pkg + '/' + name);
+                break;
+            case Signature.C_TYPE_VARIABLE:
+                String varName = new String(typeSignature, dimensions + 1,
+                        typeSignature.length - (dimensions + 2 /* 'Q' + ';' */));
+                array = repeat('[', dimensions);
+
+                for (IJavaElement cur = enclosing; cur instanceof IType
+                        || cur instanceof IMethod; cur = cur.getParent()) {
+                    switch (cur.getElementType()) {
+                    case TYPE: {
+                        IType type = (IType) cur;
+                        ITypeParameter param = type.getTypeParameter(varName);
+                        if (param.exists()) {
+                            String[] signatures = getBoundSignatures(param);
+                            if (isEmpty(signatures)) {
+                                res = VmTypeName.OBJECT;
+                                break outer;
+                            }
+                            // XXX we only consider the first type.
+                            char[] append = array.concat(signatures[0]).toCharArray();
+                            return resolveType(append, type);
+                        }
+                    }
+                    case METHOD: {
+                        IMethod method = (IMethod) cur;
+                        ITypeParameter param = method.getTypeParameter(varName);
+                        if (param.exists()) {
+                            String[] signatures = getBoundSignatures(param);
+                            if (isEmpty(signatures)) {
+                                res = dimensions == 0 ? OBJECT
+                                        : VmTypeName.get(repeat('[', dimensions) + OBJECT.getIdentifier());
+                                break outer;
+                            }
+                            // XXX we only consider the first type.
+                            char[] append = array.concat(signatures[0]).toCharArray();
+                            return resolveType(append, method);
+                        }
+                    }
+                    }
+                }
+
+                break;
+            default:
+                break;
+            }
+        } catch (Exception e) {
+            Logs.log(LogMessages.FAILED_TO_CREATE_TYPENAME, e,
+                    charToString(typeSignature) + (enclosing != null ? " in " + enclosing.getElementName() : ""));
+        }
+        return Optional.<ITypeName>fromNullable(res);
+    }
+
+    private static String[] getBoundSignatures(ITypeParameter param) throws JavaModelException {
+        String[] res = CharOperation.NO_STRINGS;
+        try {
+            res = param.getBoundsSignatures();
+        } catch (NullPointerException e) {
+            // swallow. That happened during testing in JDT Mars M6
+        }
+        return res;
     }
 }

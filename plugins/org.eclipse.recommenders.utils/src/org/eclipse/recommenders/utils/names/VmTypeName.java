@@ -80,8 +80,10 @@ public class VmTypeName implements ITypeName {
     protected VmTypeName(final String vmTypeName) {
         ensureIsNotNull(vmTypeName);
         ensureIsFalse(vmTypeName.length() == 0, "empty size for type name not permitted");
-        if (vmTypeName.length() == 1) {
-            switch (vmTypeName.charAt(0)) {
+        loop: for (int i = 0; i < vmTypeName.length(); i++) {
+            switch (vmTypeName.charAt(i)) {
+            case '[':
+                continue;
             case 'B':
             case 'C':
             case 'D':
@@ -91,18 +93,12 @@ public class VmTypeName implements ITypeName {
             case 'S':
             case 'V':
             case 'Z':
-                break;
-            default:
-                throwUnreachable("Invalid type name: " + vmTypeName);
-            }
-        } else {
-            switch (vmTypeName.charAt(0)) {
-            case '[':
             case 'L':
-                break;
+                break loop;
             default:
                 throwUnreachable("Invalid type name: " + vmTypeName);
             }
+
         }
 
         int off = 0;
