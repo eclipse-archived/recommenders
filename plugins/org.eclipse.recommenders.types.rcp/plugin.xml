@@ -2,20 +2,14 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
-		<processor
-        class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.types.rcp.TypesCompletionSessionProcessor"
-        description="Reorders JDT&apos;s Type Proposals where appropriate"
-        enabledByDefault="false"
-        icon="icons/view16/bullet_yellow.png"
-        id="org.eclipse.recommenders.types.rcp.sessionprocessors.call"
-        name="Types Completion"
-        preferencePage="org.eclipse.recommenders.calls.rcp.preferencePages.calls"/>
+		<processor id="org.eclipse.recommenders.types.rcp.sessionprocessors.types"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.types.rcp.TypesCompletionSessionProcessor"
+			enabledByDefault="false"
+			icon="icons/view16/bullet_yellow.png"
+			name="%sessionprocessors.types.name"
+			description="%sessionprocessors.types.description"/>
 	</extension>
- <extension
-       name="Code Recommenders Completion Index"
-       point="org.eclipse.ui.startup">
-    <startup
-          class="org.eclipse.recommenders.internal.types.rcp.TypesIndexService">
-    </startup>
- </extension>
+	<extension point="org.eclipse.ui.startup" name="%startup.typesIndexService.name">
+		<startup class="org.eclipse.recommenders.internal.types.rcp.TypesIndexService"/>
+	</extension>
 </plugin>
