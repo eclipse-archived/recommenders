@@ -12,12 +12,11 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
-@SuppressWarnings("restriction")
 public final class LogMessages extends DefaultLogMessage {
 
     private static int code = 1;
@@ -28,6 +27,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
     public static final LogMessages ERROR_UNEXPECTED_FALL_THROUGH = new LogMessages(ERROR,
             Messages.LOG_ERROR_UNEXPECTED_FALLTHROUGH);
+    public static final ILogMessage ERROR_COMPLETION_CONTEXT_NOT_COLLECTED = new LogMessages(ERROR,
+            Messages.LOG_ERROR_COMPLETION_CONTEXT_NOT_COLLECTED);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

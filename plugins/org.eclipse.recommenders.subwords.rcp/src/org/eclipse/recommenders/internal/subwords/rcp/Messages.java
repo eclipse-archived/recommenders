@@ -24,6 +24,10 @@ public final class Messages extends NLS {
     public static String PROPOSAL_LABEL_ENABLE_SUBWORDS_COMPLETION;
     public static String PROPOSAL_TOOLTIP_ENABLE_SUBWORDS_COMPLETION;
 
+    public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+    public static String LOG_ERROR_UNEXPECTED_FALLTHROUGH;
+    public static String LOG_ERROR_COMPLETION_CONTEXT_NOT_COLLECTED;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }
