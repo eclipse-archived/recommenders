@@ -114,9 +114,9 @@ public final class JavaElementSelections {
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
         ensureIsNotNull(editor);
-        final Optional<ITypeRoot> root = findTypeRoot(editor);
-        if (root.isPresent()) {
-            return resolveJavaElementFromTypeRootInEditor(root.get(), offset);
+        ITypeRoot root = findTypeRoot(editor).orNull();
+        if (root != null && root.exists()) {
+            return resolveJavaElementFromTypeRootInEditor(root, offset);
         }
         return absent();
     }
@@ -126,7 +126,8 @@ public final class JavaElementSelections {
      * enclosing {@link IJavaElement} is returned (e.g., the declaring method or type). If both selection resolutions
      * fail, {@link Optional#absent()} is returned.
      */
-    public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root, final int offset) {
+    public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root,
+            final int offset) {
         ensureIsNotNull(root);
         try {
             if (isInvalidSelection(root, offset)) {
@@ -262,7 +263,8 @@ public final class JavaElementSelections {
         return superparent instanceof FieldDeclaration && VariableDeclarationFragment.NAME_PROPERTY == locationInParent;
     }
 
-    private static JavaElementSelectionLocation mapLocationInParent(final StructuralPropertyDescriptor locationInParent) {
+    private static JavaElementSelectionLocation mapLocationInParent(
+            final StructuralPropertyDescriptor locationInParent) {
         final JavaElementSelectionLocation res = MAPPING.get(locationInParent);
         return res != null ? res : JavaElementSelectionLocation.UNKNOWN;
     }
