@@ -220,7 +220,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 // result: ClassSimpleName fully.qualified.ClassSimpleName
                 char[] signature = coreProposal.getSignature();
                 char[] simpleName = Signature.getSignatureSimpleName(signature);
-                int indexOf = CharOperation.indexOf('.', simpleName);
+                int indexOf = CharOperation.lastIndexOf('.', simpleName);
                 simpleName = CharOperation.subarray(simpleName, indexOf + 1, simpleName.length);
                 completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature).toString();
                 break;
