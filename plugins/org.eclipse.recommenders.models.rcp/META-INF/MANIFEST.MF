@@ -17,10 +17,10 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.jdt.core,
  org.eclipse.jdt.launching,
  org.eclipse.jface.databinding,
- org.eclipse.recommenders.injection;bundle-version="2.0.0",
- org.eclipse.recommenders.models;bundle-version="2.0.0",
- org.eclipse.recommenders.rcp;bundle-version="2.0.0",
- org.eclipse.recommenders.utils;bundle-version="2.0.0",
+ org.eclipse.recommenders.injection,
+ org.eclipse.recommenders.models,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.utils,
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
@@ -36,6 +36,10 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)",
  org.eclipse.ui.internal.ide,
  org.slf4j;version="[1.6.0,2.0.0)"
-Export-Package: org.eclipse.recommenders.internal.models.rcp;x-interna
- l:=true,org.eclipse.recommenders.models.rcp;uses:="com.google.common.
- base"
+Export-Package: org.eclipse.recommenders.internal.models.rcp;x-internal:=true,
+ org.eclipse.recommenders.models.rcp;
+  uses:="org.eclipse.recommenders.models,
+   org.eclipse.jdt.core,
+   org.eclipse.jdt.core.dom,
+   com.google.common.base,
+   org.eclipse.recommenders.utils.names"
