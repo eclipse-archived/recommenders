@@ -29,8 +29,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal
-        implements IProcessableProposal {
+public class ProcessableJavaCompletionProposal extends JavaCompletionProposal implements IProcessableProposal {
 
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;

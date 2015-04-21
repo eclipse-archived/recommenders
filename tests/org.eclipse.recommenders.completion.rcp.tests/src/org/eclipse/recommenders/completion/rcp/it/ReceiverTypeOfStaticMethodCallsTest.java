@@ -1,24 +1,15 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
+import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.testing.CodeBuilder;
-import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
-import org.eclipse.recommenders.utils.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,18 +49,9 @@ public class ReceiverTypeOfStaticMethodCallsTest {
     public void testReceiverTypeOfStaticMethodCall() throws Exception {
         CharSequence code = CodeBuilder.method(type + ".$;");
 
-        IRecommendersCompletionContext sut = exercise(code);
+        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
         IType receiverType = sut.getReceiverType().get();
 
         assertThat(receiverType.getElementName(), is(equalTo(type)));
-    }
-
-    private IRecommendersCompletionContext exercise(CharSequence code) throws CoreException {
-        JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
-        ICompilationUnit cu = struct.getFirst();
-        int completionIndex = struct.getSecond().iterator().next();
-        JavaContentAssistInvocationContext ctx = new JavaContentAssistContextMock(cu, completionIndex);
-        return new RecommendersCompletionContext(ctx, new CachingAstProvider());
     }
 }

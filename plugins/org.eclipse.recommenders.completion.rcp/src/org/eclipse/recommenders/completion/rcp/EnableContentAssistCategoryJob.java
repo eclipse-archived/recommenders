@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
  */
 public class EnableContentAssistCategoryJob extends UIJob {
 
-    private String categoryId;
+    private final String categoryId;
 
     /**
      * @param categoryId

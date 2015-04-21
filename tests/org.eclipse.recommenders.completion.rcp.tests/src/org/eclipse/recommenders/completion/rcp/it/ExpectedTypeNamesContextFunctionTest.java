@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
+import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.names.VmTypeName.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -9,16 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
-import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
-import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.hamcrest.CoreMatchers;
@@ -32,12 +24,12 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class ExpectedTypeNamesContextFunctionTest {
 
-    private static ITypeName OBJECT_ARRAY = VmTypeName.get("[Ljava/lang/Object");
-    private static ITypeName STRING = VmTypeName.get("Ljava/lang/String");
-    private static ITypeName STRING_ARRAY = VmTypeName.get("[Ljava/lang/String");
-    private static ITypeName FILE = VmTypeName.get("Ljava/io/File");
-    private static ITypeName COLLECTION = VmTypeName.get("Ljava/util/Collection");
-    private static ITypeName URI = VmTypeName.get("Ljava/net/URI");
+    private static final ITypeName OBJECT_ARRAY = VmTypeName.get("[Ljava/lang/Object");
+    private static final ITypeName STRING = VmTypeName.get("Ljava/lang/String");
+    private static final ITypeName STRING_ARRAY = VmTypeName.get("[Ljava/lang/String");
+    private static final ITypeName FILE = VmTypeName.get("Ljava/io/File");
+    private static final ITypeName COLLECTION = VmTypeName.get("Ljava/util/Collection");
+    private static final ITypeName URI = VmTypeName.get("Ljava/net/URI");
 
     private final CharSequence code;
     private final ITypeName[] expectedTypes;
@@ -75,12 +67,12 @@ public class ExpectedTypeNamesContextFunctionTest {
         // scenarios.add(scenario(classbody("<N extends Number> void method(N n) { } void caller() { method($); }"),
         // get("Ljava/lang/Number")));
 
-        scenarios.add(
-                scenario(classbody("<T> void method(Collection<?> c) { } void caller() { method($); }"), COLLECTION));
-        scenarios.add(
-                scenario(classbody("<T> void method(Collection<T> c) { } void caller() { method($); }"), COLLECTION));
-        scenarios.add(scenario(classbody("<T> void method(Collection<? extends T> c) { } void caller() { method($); }"),
+        scenarios.add(scenario(classbody("<T> void method(Collection<?> c) { } void caller() { method($); }"),
                 COLLECTION));
+        scenarios.add(scenario(classbody("<T> void method(Collection<T> c) { } void caller() { method($); }"),
+                COLLECTION));
+        scenarios.add(scenario(
+                classbody("<T> void method(Collection<? extends T> c) { } void caller() { method($); }"), COLLECTION));
         scenarios.add(scenario(classbody("<T> void method(Collection<? super T> c) { } void caller() { method($); }"),
                 COLLECTION));
 
@@ -96,20 +88,11 @@ public class ExpectedTypeNamesContextFunctionTest {
 
     @Test
     public void test() throws Exception {
-        IRecommendersCompletionContext sut = createCompletionContext(code);
+        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
 
         Set<ITypeName> result = sut.getExpectedTypeNames();
 
         assertThat(result, CoreMatchers.hasItems(expectedTypes));
         assertThat(result.size(), is(equalTo(expectedTypes.length)));
-    }
-
-    private IRecommendersCompletionContext createCompletionContext(CharSequence code) throws CoreException {
-        JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
-        ICompilationUnit cu = struct.getFirst();
-        int completionIndex = struct.getSecond().iterator().next();
-        JavaContentAssistInvocationContext javaContext = new JavaContentAssistContextMock(cu, completionIndex);
-        return new RecommendersCompletionContext(javaContext, new CachingAstProvider());
     }
 }

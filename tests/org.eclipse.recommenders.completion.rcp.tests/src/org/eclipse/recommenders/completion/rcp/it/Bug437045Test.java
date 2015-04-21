@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.eclipse.jdt.ui.PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS;
+import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -8,19 +9,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.testing.CodeBuilder;
-import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
-import org.eclipse.recommenders.utils.Pair;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -87,20 +79,10 @@ public class Bug437045Test {
     public void testReceiverTypeOfInstanceMethod() throws Exception {
         CharSequence code = CodeBuilder.method("$");
 
-        IRecommendersCompletionContext sut = exercise(code);
+        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
         Set<IJavaCompletionProposal> proposals = sut.getProposals().keySet();
 
         assertThat(proposals, hasItem(hasDisplayString(startsWith(expected))));
-    }
-
-    private IRecommendersCompletionContext exercise(CharSequence code) throws CoreException {
-        JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
-        ICompilationUnit cu = struct.getFirst();
-        int completionIndex = struct.getSecond().iterator().next();
-        JavaContentAssistInvocationContext ctx = new JavaContentAssistContextMock(cu, completionIndex);
-
-        return new RecommendersCompletionContext(ctx, new CachingAstProvider());
     }
 
     private static Matcher<IJavaCompletionProposal> hasDisplayString(Matcher<String> matcher) {

@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.names.VmMethodName.get;
 import static org.hamcrest.CoreMatchers.*;
@@ -8,21 +9,11 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
-import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
-import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.junit.Test;
@@ -55,8 +46,10 @@ public class ProposalUtilsTest {
     private static final IMethodName INIT_COLLECTION = VmMethodName.get("LExample.<init>(Ljava/util/Collection;)V");
 
     private static final IMethodName NESTED_INIT = VmMethodName.get("LExample$Nested.<init>()V");
-    private static final IMethodName NESTED_INIT_OBJECT = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Object;)V");
-    private static final IMethodName NESTED_INIT_NUMBER = VmMethodName.get("LExample$Nested.<init>(Ljava/lang/Number;)V");
+    private static final IMethodName NESTED_INIT_OBJECT = VmMethodName
+            .get("LExample$Nested.<init>(Ljava/lang/Object;)V");
+    private static final IMethodName NESTED_INIT_NUMBER = VmMethodName
+            .get("LExample$Nested.<init>(Ljava/lang/Number;)V");
     private static final IMethodName NESTED_INIT_COLLECTION = VmMethodName
             .get("LExample$Nested.<init>(Ljava/util/Collection;)V");
     private static final IMethodName INNER_INIT_EXAMPLE = VmMethodName.get("LExample$Inner.<init>(LExample;)V");
@@ -237,22 +230,11 @@ public class ProposalUtilsTest {
 
     @Test
     public void test() throws Exception {
-        IRecommendersCompletionContext context = extractProposals(code);
+        IRecommendersCompletionContext context = createRecommendersCompletionContext(code);
         Collection<CompletionProposal> proposals = context.getProposals().values();
         Optional<LookupEnvironment> environment = context.get(CompletionContextKey.LOOKUP_ENVIRONMENT);
         IMethodName actualMethod = ProposalUtils.toMethodName(getOnlyElement(proposals), environment.orNull()).get();
 
         assertThat(actualMethod, is(equalTo(expectedMethod)));
-    }
-
-    private IRecommendersCompletionContext extractProposals(CharSequence code) throws CoreException {
-        JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
-        ICompilationUnit cu = struct.getFirst();
-        int completionIndex = struct.getSecond().iterator().next();
-        JavaContentAssistInvocationContext javaContext = new JavaContentAssistContextMock(cu, completionIndex);
-        IRecommendersCompletionContext recommendersContext = new RecommendersCompletionContext(javaContext,
-                new CachingAstProvider());
-        return recommendersContext;
     }
 }
