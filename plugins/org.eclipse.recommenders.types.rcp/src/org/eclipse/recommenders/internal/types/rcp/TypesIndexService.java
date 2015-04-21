@@ -139,7 +139,7 @@ public class TypesIndexService implements IElementChangedListener, IStartup {
             return;
         }
         if (index.needsRebuild()) {
-            index.rebuild();
+            index.setRebuildAfterNextAccess(true);
         }
     }
 
