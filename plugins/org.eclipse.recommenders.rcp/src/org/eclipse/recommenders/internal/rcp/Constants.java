@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp;
 public final class Constants {
 
     private Constants() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static final String PREF_UUID = "recommenders.uuid"; //$NON-NLS-1$

@@ -31,10 +31,10 @@ import com.google.common.collect.Maps;
 
 public final class Proposals {
 
-    private static Map<CacheKey, Image> cache = Maps.newHashMap();
+    private static final Map<CacheKey, Image> CACHE = Maps.newHashMap();
 
     private Proposals() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static void overlay(IProcessableProposal proposal, ImageDescriptor icon) {
@@ -48,11 +48,11 @@ public final class Proposals {
     public static void overlay(IProcessableProposal proposal, ImageDescriptor icon, int decorationCorner) {
         Image originalImage = proposal.getImage();
         CacheKey key = new CacheKey(originalImage, icon, decorationCorner);
-        Image newImage = cache.get(key);
+        Image newImage = CACHE.get(key);
         if (newImage == null) {
             DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, icon, decorationCorner);
             newImage = decorator.createImage();
-            cache.put(key, newImage);
+            CACHE.put(key, newImage);
         }
         proposal.setImage(newImage);
     }

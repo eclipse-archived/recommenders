@@ -56,13 +56,13 @@ public class FileSnippetRepositoryTest {
     private FileSnippetRepository sut;
 
     @Rule
-    public final TemporaryFolder tempFolder = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     private File snippetsDir;
 
     @Before
     public void setUp() throws IOException {
-        File baseDir = tempFolder.newFolder();
+        File baseDir = tmp.newFolder();
         snippetsDir = new File(baseDir, "snippets");
         snippetsDir.mkdirs();
         sut = new FileSnippetRepository("Repo1", baseDir);

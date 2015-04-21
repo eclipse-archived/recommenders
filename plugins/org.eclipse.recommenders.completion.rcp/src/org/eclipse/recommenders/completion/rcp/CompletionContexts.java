@@ -35,20 +35,24 @@ import com.google.common.base.Optional;
 
 @Beta
 @SuppressWarnings("restriction")
-public class CompletionContexts {
+public final class CompletionContexts {
+
+    private CompletionContexts() {
+        // Not meant to be instantiated
+    }
 
     /**
      * Given a completion's display string like 'ArrayList()', it returns the substring of the display string used to
      * match a user-entered prefix and the completion, i.e., 'ArrayList' without brackets in this case.
      * <p>
      * Examples:
-     * 
+     *
      * <pre>
      * add(Object o) --> add
      * ArrayList(Collection c) --> ArrayList
      * org.eclipse.other --> org.eclipse.other
      * </pre>
-     * 
+     *
      */
     public static String getPrefixMatchingArea(String displayString) {
         int end = displayString.length();

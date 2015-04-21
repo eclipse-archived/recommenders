@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 public final class XtendUtils {
 
     private XtendUtils() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     public static <K> List<K> newListWithFrequency(final Pair<K, Integer>... initial) {

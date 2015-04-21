@@ -20,7 +20,7 @@ import com.google.common.base.Optional;
 public final class Reflections {
 
     private Reflections() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     public static Optional<Field> getDeclaredField(@Nullable Class<?> declaringClass, @Nullable String name) {

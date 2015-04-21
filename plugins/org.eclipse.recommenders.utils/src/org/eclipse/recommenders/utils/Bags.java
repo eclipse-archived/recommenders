@@ -24,7 +24,7 @@ import com.google.common.collect.Ordering;
 public final class Bags {
 
     private Bags() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     private static final Comparator<Entry<?>> BY_COUNT = new Comparator<Multiset.Entry<?>>() {

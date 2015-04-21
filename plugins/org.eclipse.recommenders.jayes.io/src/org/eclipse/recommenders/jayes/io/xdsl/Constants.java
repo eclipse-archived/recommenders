@@ -13,7 +13,7 @@ package org.eclipse.recommenders.jayes.io.xdsl;
 public final class Constants {
 
     private Constants() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     public static final String PROBABILITIES = "probabilities";

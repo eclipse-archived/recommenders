@@ -21,11 +21,11 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public final class Jobs {
 
-    private Jobs() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
-    }
-
     public static final ISchedulingRule EXCLUSIVE = new SequentialSchedulingRule();
+
+    private Jobs() {
+        // Not meant to be instantiated
+    }
 
     public static IProgressMonitor getProgressGroup() {
         return Job.getJobManager().createProgressGroup();

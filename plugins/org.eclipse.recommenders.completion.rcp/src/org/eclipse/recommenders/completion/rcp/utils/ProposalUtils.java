@@ -46,7 +46,7 @@ import com.google.common.base.Preconditions;
 public final class ProposalUtils {
 
     private ProposalUtils() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");

@@ -30,7 +30,7 @@ import com.google.common.base.Optional;
 public final class CompilerBindings {
 
     private CompilerBindings() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     /**

@@ -72,7 +72,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
-public class JdtUtils {
+public final class JdtUtils {
+
+    private JdtUtils() {
+        // Not meant to be instantiated
+    }
 
     private static final Util.BindingsToNodesMap EMPTY_NODE_MAP = new Util.BindingsToNodesMap() {
 
@@ -233,7 +237,8 @@ public class JdtUtils {
     /**
      * Returns a list of all public instance methods and fields declared in the given type or any of its super-types
      */
-    public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(final IType type) {
+    public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(
+            final IType type) {
         final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
 
         try {
@@ -311,7 +316,8 @@ public class JdtUtils {
     }
 
     public static Collection<IMember> findAllPublicStaticFieldsAndStaticMethods(final IType type) {
-        return findAllRelevanFieldsAndMethods(type, STATIC_PUBLIC_FIELDS_ONLY_FILTER, STATIC_PUBLIC_METHODS_ONLY_FILTER);
+        return findAllRelevanFieldsAndMethods(type, STATIC_PUBLIC_FIELDS_ONLY_FILTER,
+                STATIC_PUBLIC_METHODS_ONLY_FILTER);
     }
 
     private static IType[] findAllSupertypesIncludeingArgument(final IType returnType) {
@@ -374,8 +380,8 @@ public class JdtUtils {
             if (superclassName == null) {
                 return absent();
             }
-            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-                    superclassName, type);
+            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(superclassName,
+                    type);
             if (!opt.isPresent()) {
                 return absent();
             }
@@ -543,8 +549,8 @@ public class JdtUtils {
      * @param parent
      *            must be an {@link IType} or something that has an {@link IType} as parent.
      */
-    public static Optional<String> resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-            String typeSignature, final IJavaElement parent) {
+    public static Optional<String> resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(String typeSignature,
+            final IJavaElement parent) {
         ensureIsNotNull(typeSignature);
         ensureIsNotNull(parent);
         // remove generics information if available:

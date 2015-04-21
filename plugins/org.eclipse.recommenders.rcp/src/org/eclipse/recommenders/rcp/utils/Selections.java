@@ -28,7 +28,7 @@ import com.google.common.collect.Sets;
 public final class Selections {
 
     private Selections() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static <T> Optional<T> getFirstSelected(OpenEvent e) {

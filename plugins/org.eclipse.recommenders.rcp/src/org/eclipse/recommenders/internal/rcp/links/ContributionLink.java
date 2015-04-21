@@ -45,9 +45,8 @@ public class ContributionLink implements Comparable<ContributionLink> {
     }
 
     @Override
-    public int compareTo(ContributionLink other) {
-        Integer n = new Integer(priority);
-        return n.compareTo(other.getPriority());
+    public int compareTo(ContributionLink that) {
+        return Integer.compare(this.getPriority(), that.getPriority());
     }
 
     public String getText() {

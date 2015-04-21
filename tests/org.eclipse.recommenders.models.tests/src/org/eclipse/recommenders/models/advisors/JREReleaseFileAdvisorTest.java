@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,21 +32,21 @@ public class JREReleaseFileAdvisorTest {
     private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.0.0");
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     private File javaHomeDirectory;
     private File releaseFile;
 
     private File createDummyFile() throws IOException {
-        return folder.newFolder("dummy.jar");
+        return tmp.newFolder("dummy.jar");
     }
 
     private void createJavaHomeDirectory() throws IOException {
-        javaHomeDirectory = folder.newFolder("JAVA_HOME");
+        javaHomeDirectory = tmp.newFolder("JAVA_HOME");
     }
 
     private void createReleaseFile() throws IOException {
-        releaseFile = folder.newFile("JAVA_HOME" + File.separator + "release");
+        releaseFile = tmp.newFile("JAVA_HOME" + File.separator + "release");
     }
 
     private void fillReleaseFileWithVersion() throws IOException {

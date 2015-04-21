@@ -20,9 +20,13 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
-public class AnonymousId {
+public final class AnonymousId {
 
     private static UUID anonymousId;
+
+    private AnonymousId() {
+        // Not meant to be instantiated
+    }
 
     public static synchronized UUID getId() {
         if (anonymousId == null) {

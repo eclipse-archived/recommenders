@@ -18,9 +18,14 @@ import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.recommenders.utils.Reflections;
 
 @SuppressWarnings("restriction")
-public class Asts {
+public final class Asts {
+
     private static final Field SHARED_AST_LEVEL = Reflections.getDeclaredField(ASTProvider.class, "SHARED_AST_LEVEL")
             .orNull();
+
+    private Asts() {
+        // Not meant to be instantiated
+    }
 
     public static int getSharedAstLevel() {
         try {

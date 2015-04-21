@@ -40,7 +40,11 @@ import org.eclipse.recommenders.utils.Logs;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-public class RepositoryConfigurations {
+public final class RepositoryConfigurations {
+
+    private RepositoryConfigurations() {
+        // Not meant to be instantiated
+    }
 
     public static SnippetRepositoryConfigurations loadConfigurations(File file) {
         SnippetRepositoryConfigurations configurations = SnipmatchRcpModelFactory.eINSTANCE

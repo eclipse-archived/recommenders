@@ -17,9 +17,13 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-public class RecommendationMatchers {
+public final class RecommendationMatchers {
 
     private static final double DELTA = 0.01;
+
+    private RecommendationMatchers() {
+        // Not meant to be instantiated
+    }
 
     public static <T> Matcher<Recommendation<T>> recommendation(T method, double relevance) {
         return new RecommendationMatcher<T>(method, relevance);

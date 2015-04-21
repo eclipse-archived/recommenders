@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -15,7 +15,7 @@ import static org.hamcrest.number.IsCloseTo.closeTo;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public class IsCloseTo extends TypeSafeMatcher<double[]> {
+public final class IsCloseTo extends TypeSafeMatcher<double[]> {
 
     private double[] array;
     private double tolerance;

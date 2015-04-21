@@ -25,8 +25,6 @@ public class BrowserDialog extends Dialog {
 
     private final String url;
 
-    private Browser browser;
-
     protected BrowserDialog(Shell parentShell, String url) {
         super(parentShell);
         this.url = url;
@@ -44,7 +42,7 @@ public class BrowserDialog extends Dialog {
         GridLayoutFactory.fillDefaults().spacing(1, 1).margins(0, 0).numColumns(1).applyTo(container);
         GridDataFactory.swtDefaults().grab(true, true).applyTo(container);
 
-        browser = new Browser(container, SWT.NONE);
+        Browser browser = new Browser(container, SWT.NONE);
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).hint(1000, 500).grab(true, true).applyTo(browser);
 
         browser.setUrl(url);

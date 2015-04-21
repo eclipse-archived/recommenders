@@ -39,7 +39,7 @@ public class GitSnippetRepositoryTest {
     private static final String SECOND_FILE = "second-file";
 
     @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     @Mock
     private IWorkspaceRoot root;
@@ -55,14 +55,14 @@ public class GitSnippetRepositoryTest {
 
     @Before
     public void init() throws Exception {
-        remotePath = tempFolder.newFolder("remote-snipmatch");
-        basedir = tempFolder.newFolder("local-snipmatch");
+        remotePath = tmp.newFolder("remote-snipmatch");
+        basedir = tmp.newFolder("local-snipmatch");
 
         IProjectDescription projectDescription = mock(IProjectDescription.class);
         when(project.getDescription()).thenReturn(projectDescription);
         when(projectDescription.getNatureIds()).thenReturn(new String[0]);
 
-        IPath path = new Path(tempFolder.getRoot().getAbsolutePath());
+        IPath path = new Path(tmp.getRoot().getAbsolutePath());
         when(root.getLocation()).thenReturn(path);
         when(root.getProject(anyString())).thenReturn(project);
 

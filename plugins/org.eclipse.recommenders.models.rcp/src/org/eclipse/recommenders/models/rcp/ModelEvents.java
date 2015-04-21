@@ -16,7 +16,11 @@ import org.eclipse.recommenders.models.ModelCoordinate;
 
 import com.google.common.annotations.Beta;
 
-public class ModelEvents {
+public final class ModelEvents {
+
+    private ModelEvents() {
+        // Not meant to be instantiated
+    }
 
     /**
      * Triggered when a model repository url was changed (most like in the a preference page).
@@ -84,8 +88,5 @@ public class ModelEvents {
         public ProjectCoordinateChangeEvent(DependencyInfo dependencyInfo) {
             this.dependencyInfo = dependencyInfo;
         }
-    }
-
-    private ModelEvents() {
     }
 }

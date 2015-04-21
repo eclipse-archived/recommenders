@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-public class AdvisorDescriptors {
+public final class AdvisorDescriptors {
 
     private static final String ENABLED_BY_DEFAULT_ATTRIBUTE = "enabledByDefault"; //$NON-NLS-1$
     private static final String DEFAULT_PRIORITY_ATTRIBUTE = "defaultPriority"; //$NON-NLS-1$
@@ -33,6 +33,10 @@ public class AdvisorDescriptors {
     private static final char SEPARATOR = ';';
 
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.models.rcp.advisors"; //$NON-NLS-1$
+
+    private AdvisorDescriptors() {
+        // Not meant to be instantiated
+    }
 
     public static List<AdvisorDescriptor> getRegisteredAdvisors() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(

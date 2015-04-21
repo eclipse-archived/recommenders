@@ -19,7 +19,7 @@ import org.eclipse.recommenders.jayes.factor.Cut;
 public final class BayesNodeUtil {
 
     private BayesNodeUtil() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     /**

@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 public final class Constants {
 
     private Constants() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static final String BUNDLE_ID = "org.eclipse.recommenders.models.rcp"; //$NON-NLS-1$

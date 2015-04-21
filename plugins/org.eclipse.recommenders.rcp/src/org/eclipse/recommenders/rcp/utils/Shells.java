@@ -17,7 +17,11 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 
-public class Shells {
+public final class Shells {
+
+    private Shells() {
+        // Not meant to be instantiated
+    }
 
     public static Optional<Shell> getActiveWindowShell() {
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

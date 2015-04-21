@@ -23,10 +23,10 @@ import com.google.inject.Module;
 
 public final class InjectionService {
 
-    private static InjectionService instance = new InjectionService(1);
+    private static final InjectionService INSTANCE = new InjectionService(1);
 
     public static InjectionService getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     private InjectionService(final int blockDI) {
@@ -35,7 +35,7 @@ public final class InjectionService {
 
     private Injector lazyInjector;
 
-    ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     public synchronized Injector getInjector() {
         if (lock.isLocked()) {
@@ -66,5 +66,4 @@ public final class InjectionService {
     public <T> T requestAnnotatedInstance(final Class<T> clazz, Annotation annotation) {
         return getInjector().getInstance(Key.get(clazz, annotation));
     }
-
 }

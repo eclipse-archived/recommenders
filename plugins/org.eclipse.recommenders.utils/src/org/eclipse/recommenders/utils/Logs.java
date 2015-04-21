@@ -37,7 +37,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
-public class Logs {
+public final class Logs {
 
     public interface ILogMessage {
 
@@ -95,6 +95,10 @@ public class Logs {
         @Override
         public abstract Bundle bundle();
 
+    }
+
+    private Logs() {
+        // Not meant to be instantiated
     }
 
     public static IStatus toStatus(ILogMessage msg, Throwable t, Object... args) {

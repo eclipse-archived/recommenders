@@ -15,7 +15,7 @@ import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
 public final class MathUtils {
 
     private MathUtils() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     public static void exp(double[] vector) {

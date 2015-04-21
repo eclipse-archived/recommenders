@@ -125,10 +125,6 @@ public class SnippetMetadataPage extends FormPage {
     private Composite btnContainerExtraSearchTerms;
     private Composite btnContainerTags;
 
-    private Button btnAddDependency;
-    private Button btnAddExtraSearchTerm;
-    private Button btnAddTag;
-
     private Button btnRemoveDependency;
     private Button btnRemoveExtraSearchTerm;
     private Button btnRemoveTag;
@@ -291,7 +287,7 @@ public class SnippetMetadataPage extends FormPage {
                 managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
                 btnContainerExtraSearchTerms.setLayout(new GridLayout(1, false));
 
-                btnAddExtraSearchTerm = managedForm.getToolkit().createButton(btnContainerExtraSearchTerms,
+                Button btnAddExtraSearchTerm = managedForm.getToolkit().createButton(btnContainerExtraSearchTerms,
                         Messages.EDITOR_BUTTON_ADD_EXTRASEARCH_TERM, SWT.NONE);
                 btnAddExtraSearchTerm.addSelectionListener(new SelectionAdapter() {
                     @Override
@@ -334,7 +330,7 @@ public class SnippetMetadataPage extends FormPage {
                 managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
                 btnContainerTags.setLayout(new GridLayout(1, false));
 
-                btnAddTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_ADD_TAGS,
+                Button btnAddTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_ADD_TAGS,
                         SWT.NONE);
                 btnAddTag.addSelectionListener(new SelectionAdapter() {
                     @Override
@@ -378,7 +374,7 @@ public class SnippetMetadataPage extends FormPage {
                 managedForm.getToolkit().paintBordersFor(btnContainerDependencies);
                 btnContainerDependencies.setLayout(new GridLayout(1, false));
 
-                btnAddDependency = managedForm.getToolkit().createButton(btnContainerDependencies,
+                Button btnAddDependency = managedForm.getToolkit().createButton(btnContainerDependencies,
                         Messages.EDITOR_BUTTON_ADD_DEPENDENCY, SWT.NONE);
                 btnAddDependency.addSelectionListener(new SelectionAdapter() {
                     @Override

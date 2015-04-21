@@ -12,7 +12,11 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 
 import java.util.List;
 
-public class LCSS {
+public final class LCSS {
+
+    private LCSS() {
+        // Not meant to be instantiated
+    }
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 

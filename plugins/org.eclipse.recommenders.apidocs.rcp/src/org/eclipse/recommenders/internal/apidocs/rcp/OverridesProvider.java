@@ -215,7 +215,7 @@ public final class OverridesProvider extends ApidocProvider {
         private final Composite parent;
         private Composite container;
 
-        double totalNumberOfExamples;
+        private double totalNumberOfExamples;
         private List<MethodPattern> patterns;
 
         public OverridePatternsRenderer(final IType type, final ClassOverridePatterns directive, final Composite parent) {

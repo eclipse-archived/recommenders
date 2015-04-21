@@ -64,7 +64,7 @@ public class ModelRepositoryTest {
     private static final String[] CHECKSUM_EXTENSIONS = new String[] { "sha1", "md5" };
 
     @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     @Test
     public void testGetLocationOnEmptyLocalRepository() throws Exception {

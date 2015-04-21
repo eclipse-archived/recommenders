@@ -54,7 +54,7 @@ import com.google.common.base.Optional;
 public final class ASTNodeUtils {
 
     private ASTNodeUtils() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     /**

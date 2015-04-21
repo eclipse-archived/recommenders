@@ -7,7 +7,7 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetProposal;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public class SnippetProposalMatcher extends TypeSafeMatcher<SnippetProposal> {
+public final class SnippetProposalMatcher extends TypeSafeMatcher<SnippetProposal> {
 
     private final String displayString;
     private final int repoPriority;

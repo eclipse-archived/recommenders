@@ -40,7 +40,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Ordering;
 
 @SuppressWarnings("restriction")
-public class SnippetProposal extends TemplateProposal implements ICompletionProposalExtension6 {
+public final class SnippetProposal extends TemplateProposal implements ICompletionProposalExtension6 {
 
     private final ISnippet snippet;
     private final int repositoryRelevance;

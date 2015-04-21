@@ -27,7 +27,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-public class ContributionsReader {
+public final class ContributionsReader {
+
+    private ContributionsReader() {
+        // Not meant to be instantiated
+    }
 
     private static final String PREF_CONTRIBUTION_ID = "org.eclipse.recommenders.rcp.linkContribution"; //$NON-NLS-1$
     private static final String CONTRIBUTION_ELEMENT = "linkContribution"; //$NON-NLS-1$

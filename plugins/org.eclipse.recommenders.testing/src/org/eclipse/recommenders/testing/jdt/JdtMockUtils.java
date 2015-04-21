@@ -20,7 +20,11 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 
-public class JdtMockUtils {
+public final class JdtMockUtils {
+
+    private JdtMockUtils() {
+        // Not meant to be instantiated
+    }
 
     public static IType someType() {
         return mockJavaElement(IType.class, TYPE);

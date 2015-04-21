@@ -12,7 +12,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 import com.google.common.base.Preconditions;
 
-public class SearchContextMatcher extends TypeSafeMatcher<ISearchContext> {
+public final class SearchContextMatcher extends TypeSafeMatcher<ISearchContext> {
 
     private final String searchTerm;
     private final Location location;

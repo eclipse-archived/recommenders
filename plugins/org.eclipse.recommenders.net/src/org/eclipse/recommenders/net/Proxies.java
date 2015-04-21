@@ -30,7 +30,7 @@ import com.google.common.base.Optional;
 public final class Proxies {
 
     private Proxies() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     private static final String DOUBLEBACKSLASH = "\\\\"; //$NON-NLS-1$

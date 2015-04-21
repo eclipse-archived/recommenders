@@ -19,7 +19,7 @@ import org.w3c.dom.xpath.XPathResult;
 public final class XPathUtil {
 
     private XPathUtil() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     public static Iterator<Node> evalXPath(XPathEvaluator eval, String xpath, Node context) {

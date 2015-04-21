@@ -30,6 +30,9 @@ public class UtilsTest {
     private static final double[] TEST_DOUBLE_VECTOR = new double[] { 2.0, 3.0, 5.0, 7.0 };
     private static final double TOLERANCE = 1e-5;
 
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
     @Test
     public void testSum() {
         assertEquals(MathUtils.sum(TEST_DOUBLE_VECTOR), 17.0, TOLERANCE);
@@ -69,9 +72,6 @@ public class UtilsTest {
         assertArrayEquals(new double[] { 2.0 / 17.0, 3.0 / 17.0, 5.0 / 17.0, 7.0 / 17.0 },
                 MathUtils.normalize(TEST_DOUBLE_VECTOR.clone()), TOLERANCE);
     }
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testMultiDimensionalCounter() {

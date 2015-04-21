@@ -49,7 +49,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 @SuppressWarnings("restriction")
-public class JavaElementsFinder {
+public final class JavaElementsFinder {
+
+    private JavaElementsFinder() {
+        // Not meant to be instantiated
+    }
 
     public static ImmutableList<IJavaProject> findAccessibleJavaProjects() {
         Builder<IJavaProject> b = ImmutableList.builder();
@@ -264,7 +268,7 @@ public class JavaElementsFinder {
     }
 
     /**
-     * 
+     *
      * @param typeSignature
      *            e.g., QList;
      * @param enclosing

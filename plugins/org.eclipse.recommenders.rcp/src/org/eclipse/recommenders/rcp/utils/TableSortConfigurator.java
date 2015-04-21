@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
-public class TableSortConfigurator {
+public final class TableSortConfigurator {
 
     private final TableViewer tableViewer;
     private final IAction refreshUiAction;

@@ -23,9 +23,13 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchTemplateContextType;
 
 @SuppressWarnings("restriction")
-public class SnippetSourceValidator {
+public final class SnippetSourceValidator {
 
     private static final String VALID_SNIPPET = ""; //$NON-NLS-1$
+
+    private SnippetSourceValidator() {
+        // Not meant to be instantiated
+    }
 
     public static String isSourceValid(String source) {
         TemplateContextType contextType = SnipmatchTemplateContextType.getInstance();

@@ -137,7 +137,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> firstElement = cast(o1);
                 Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> secondElement = cast(o2);
 
-                int compareScore = -firstElement.getKey().getType().compareTo(secondElement.getKey().getType());
+                int compareScore = secondElement.getKey().getType().compareTo(firstElement.getKey().getType());
                 if (compareScore == 0) {
                     return firstElement.getKey().getFile().getName()
                             .compareToIgnoreCase(secondElement.getKey().getFile().getName());

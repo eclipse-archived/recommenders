@@ -32,7 +32,11 @@ import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 @SuppressWarnings({ "rawtypes", "restriction" })
-public class CallCompletionContextFunctions {
+public final class CallCompletionContextFunctions {
+
+    private CallCompletionContextFunctions() {
+        // Not meant to be instantiated
+    }
 
     // TODO need to rename
     public static final CompletionContextKey<IType> RECEIVER_TYPE2 = new CompletionContextKey<IType>();

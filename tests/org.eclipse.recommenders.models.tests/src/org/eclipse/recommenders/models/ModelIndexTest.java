@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 public class ModelIndexTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     private static ProjectCoordinate PC_1 = new ProjectCoordinate("org.example", "project", "1.0.0");
     private static ProjectCoordinate PC_2 = new ProjectCoordinate("org.example", "extended.project", "2.0.0");
@@ -96,7 +96,7 @@ public class ModelIndexTest {
     }
 
     private File createOnDiskIndex(Collection<ProjectCoordinate> projectCoordinates) throws Exception {
-        File location = folder.newFolder();
+        File location = tmp.newFolder();
         Document[] documents = createDocuments(projectCoordinates);
         Directory directory = onDiskIndex(location, documents);
         directory.close();

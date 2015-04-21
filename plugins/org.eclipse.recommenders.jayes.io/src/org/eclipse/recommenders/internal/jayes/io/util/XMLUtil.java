@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.jayes.io.util;
 public final class XMLUtil {
 
     private XMLUtil() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     /**

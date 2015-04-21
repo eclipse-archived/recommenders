@@ -13,7 +13,11 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
-public class EditorUtils {
+public final class EditorUtils {
+
+    public EditorUtils() {
+        // Not meant to be instantiated
+    }
 
     public static void addActionToForm(ScrolledForm form, Action action, String tooltip) {
         action.setToolTipText(tooltip);

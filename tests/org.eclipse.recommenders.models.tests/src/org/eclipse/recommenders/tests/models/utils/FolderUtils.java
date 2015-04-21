@@ -12,7 +12,11 @@ package org.eclipse.recommenders.tests.models.utils;
 
 import java.io.File;
 
-public class FolderUtils {
+public final class FolderUtils {
+
+    private FolderUtils() {
+        // Not meant to be instantiated
+    }
 
     public static File dir(String... dirs) {
         File file = File.listRoots()[0];

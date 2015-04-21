@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
 public final class AstBindings {
 
     private AstBindings() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static Optional<ITypeName> toTypeName(ITypeBinding b) {

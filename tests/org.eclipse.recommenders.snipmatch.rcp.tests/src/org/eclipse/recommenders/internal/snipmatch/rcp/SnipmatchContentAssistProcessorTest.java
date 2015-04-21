@@ -71,18 +71,15 @@ public class SnipmatchContentAssistProcessorTest {
     private static final ImmutableSet<DependencyInfo> DEPENDENCIES = ImmutableSet.of(PROJECT_INFO);
     private static final ImmutableSet<DependencyInfo> NO_DEPENDENCIES = ImmutableSet.of();
 
-    private IDependencyListener dependencyListener;
-    private IProjectCoordinateProvider pcProvider;
-    private ICompilationUnit compilationUnit;
     private SnippetRepositoryConfigurations configs;
     private Repositories repos;
     private SnipmatchContentAssistProcessor sut;
     private ITextViewer viewer;
 
     public void setUp(Document document, Point selectedRange, ImmutableSet<DependencyInfo> dependencies) {
-        dependencyListener = mock(IDependencyListener.class);
+        IDependencyListener dependencyListener = mock(IDependencyListener.class);
 
-        pcProvider = mock(IProjectCoordinateProvider.class);
+        IProjectCoordinateProvider pcProvider = mock(IProjectCoordinateProvider.class);
 
         IJavaProject javaProject = mock(IJavaProject.class, RETURNS_DEEP_STUBS);
         when(javaProject.getProject().getLocation().toFile()).thenReturn(PROJECT_DIR);
@@ -91,7 +88,7 @@ public class SnipmatchContentAssistProcessorTest {
         when(pcProvider.resolve(PROJECT_INFO)).thenReturn(Optional.of(EXAMPLE_COORDINATE));
         when(dependencyListener.getDependenciesForProject(PROJECT_INFO)).thenReturn(dependencies);
 
-        compilationUnit = mock(ICompilationUnit.class);
+        ICompilationUnit compilationUnit = mock(ICompilationUnit.class);
         when(compilationUnit.getJavaProject()).thenReturn(javaProject);
 
         configs = SnipmatchRcpModelFactory.eINSTANCE.createSnippetRepositoryConfigurations();

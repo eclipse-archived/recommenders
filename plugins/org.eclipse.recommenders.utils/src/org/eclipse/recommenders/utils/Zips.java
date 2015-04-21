@@ -48,7 +48,11 @@ import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.OutputSupplier;
 
-public class Zips {
+public final class Zips {
+
+    private Zips() {
+        // Not meant to be instantiated
+    }
 
     public static ZipFile NULL() {
         try {

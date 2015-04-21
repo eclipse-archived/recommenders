@@ -87,9 +87,9 @@ public class SepsetComputer {
         @Override
         public int compare(final Pair<OrderIgnoringPair<Integer>, List<Integer>> sepSet1,
                 final Pair<OrderIgnoringPair<Integer>, List<Integer>> sepSet2) {
-            final int compareNumberOfVariables = compare(sepSet1.getSecond().size(), sepSet2.getSecond().size());
+            final int compareNumberOfVariables = compare(sepSet2.getSecond().size(), sepSet1.getSecond().size());
             if (compareNumberOfVariables != 0) {
-                return -compareNumberOfVariables;
+                return compareNumberOfVariables;
             }
             final int tableSize1 = getTableSize(sepSet1.getSecond());
             final int tableSize2 = getTableSize(sepSet2.getSecond());

@@ -31,7 +31,7 @@ import com.google.common.base.Strings;
 public final class UUIDs {
 
     private UUIDs() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static String getUUID() {

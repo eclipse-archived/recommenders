@@ -32,13 +32,13 @@ import com.google.common.collect.Maps;
 public class JREExecutionEnvironmentAdvisorTest {
 
     @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder tmp = new TemporaryFolder();
 
     private File javaHome;
 
     @Before
     public void init() throws IOException {
-        javaHome = folder.newFolder("JAVA_HOME");
+        javaHome = tmp.newFolder("JAVA_HOME");
     }
 
     private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.6.0");

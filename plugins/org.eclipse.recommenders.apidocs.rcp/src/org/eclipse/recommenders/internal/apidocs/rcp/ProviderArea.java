@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
@@ -34,7 +34,6 @@ public class ProviderArea {
 
     private Composite container;
 
-    private Label separator;
     private Composite title;
     private Composite status;
     private Composite content;
@@ -44,13 +43,12 @@ public class ProviderArea {
 
     public ProviderArea(final ApidocProvider provider) {
         this.provider = provider;
-
     }
 
     public void createControl(final Composite parent) {
         container = createComposite(parent);
 
-        separator = new Label(container, SWT.HORIZONTAL | SWT.SEPARATOR);
+        Label separator = new Label(container, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(layoutDataFactory.indent(0, 5).create());
 
         createTitleArea();

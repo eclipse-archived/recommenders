@@ -6,7 +6,7 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.RepositoryProposal;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public class RepositoryProposalMatcher extends TypeSafeMatcher<RepositoryProposal> {
+public final class RepositoryProposalMatcher extends TypeSafeMatcher<RepositoryProposal> {
 
     private final String name;
     private final int matches;

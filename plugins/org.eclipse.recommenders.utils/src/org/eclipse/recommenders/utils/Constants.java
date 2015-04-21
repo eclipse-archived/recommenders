@@ -20,7 +20,7 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 public final class Constants {
 
     private Constants() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     /*

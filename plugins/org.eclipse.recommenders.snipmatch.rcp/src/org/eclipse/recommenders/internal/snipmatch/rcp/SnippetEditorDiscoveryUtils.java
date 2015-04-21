@@ -22,7 +22,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 public final class SnippetEditorDiscoveryUtils {
 
     private SnippetEditorDiscoveryUtils() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/snipmatch/directory.xml"; //$NON-NLS-1$

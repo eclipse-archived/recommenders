@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 public final class Constants {
 
     private Constants() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static final String BUNDLE_ID = "org.eclipse.recommenders.subwords.rcp"; //$NON-NLS-1$

@@ -19,7 +19,7 @@ import org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten;
 public final class NetExamples {
 
     private NetExamples() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     /**

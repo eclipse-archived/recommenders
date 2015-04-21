@@ -14,7 +14,11 @@ import static java.lang.String.format;
 
 import java.util.concurrent.CancellationException;
 
-public class Throws {
+public final class Throws {
+
+    private Throws() {
+        // Not meant to be instantiated
+    }
 
     public static IllegalArgumentException throwIllegalArgumentException(final String message) {
         throw new IllegalArgumentException(message);

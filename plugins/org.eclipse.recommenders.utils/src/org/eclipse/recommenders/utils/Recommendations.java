@@ -30,7 +30,7 @@ import com.google.common.collect.Ordering;
 public final class Recommendations {
 
     private Recommendations() {
-        throw new IllegalStateException("Not meant to be instantiated");
+        // Not meant to be instantiated
     }
 
     private static final Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {

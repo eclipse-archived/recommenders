@@ -27,7 +27,12 @@ import com.google.common.annotations.Beta;
  * respectively) to source strings.
  *
  */
-public class Names {
+public final class Names {
+
+    private Names() {
+        // Not meant to be instantiated
+    }
+
     public static enum PrimitiveType {
         BOOLEAN('Z', "boolean"),
         VOID('V', "void"),

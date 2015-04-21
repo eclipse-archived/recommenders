@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-public class WizardDescriptors {
+public final class WizardDescriptors {
 
     private static Logger LOG = LoggerFactory.getLogger(WizardDescriptors.class);
 
@@ -31,11 +31,15 @@ public class WizardDescriptors {
     private static final String CONFIGURATION_WIZARD = "wizard"; //$NON-NLS-1$
     private static final String EXT_ID_CONFIGURATION_WIZARDS = "org.eclipse.recommenders.snipmatch.rcp.configurationwizards"; //$NON-NLS-1$
 
+    private WizardDescriptors() {
+        // Not meant to be instantiated
+    }
+
     public static List<WizardDescriptor> loadAvailableWizards() {
         List<WizardDescriptor> wizardDescriptors = Lists.newArrayList();
         try {
-            final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                    EXT_ID_CONFIGURATION_WIZARDS);
+            final IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                    .getConfigurationElementsFor(EXT_ID_CONFIGURATION_WIZARDS);
 
             for (IConfigurationElement configurationElement : elements) {
 

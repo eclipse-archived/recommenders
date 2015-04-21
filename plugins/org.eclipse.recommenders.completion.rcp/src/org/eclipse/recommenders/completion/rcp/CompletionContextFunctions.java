@@ -94,7 +94,7 @@ public final class CompletionContextFunctions {
     private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
 
     private CompletionContextFunctions() {
-        throw new IllegalStateException("Not meant to be instantiated"); //$NON-NLS-1$
+        // Not meant to be instantiated
     }
 
     public static Map<CompletionContextKey, ICompletionContextFunction> defaultFunctions() {

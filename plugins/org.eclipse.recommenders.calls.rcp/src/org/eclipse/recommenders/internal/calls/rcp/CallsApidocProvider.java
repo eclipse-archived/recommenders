@@ -180,7 +180,7 @@ public final class CallsApidocProvider extends ApidocProvider {
         }
     }
 
-    private class CallRecommendationsRenderer implements Runnable {
+    private final class CallRecommendationsRenderer implements Runnable {
 
         private final IMethodName ctx;
         private final Iterable<Recommendation<IMethodName>> methodCalls;

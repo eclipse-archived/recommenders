@@ -18,9 +18,10 @@ import org.eclipse.equinox.internal.p2.ui.discovery.wizards.DiscoveryWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 
 @SuppressWarnings("restriction")
-public class Dialogs {
+public final class Dialogs {
 
     private Dialogs() {
+        // Not meant to be instantiated
     }
 
     /** Opens a dialog wizard displaying new code recommenders extensions. */
