@@ -73,11 +73,11 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
-    private static Field CORE_CONTEXT = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
-            "fCoreContext").orNull(); //$NON-NLS-1$
+    private static Field CORE_CONTEXT = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
     private static Field CU = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class, "fCU").orNull(); //$NON-NLS-1$
-    private static Field CU_COMPUTED = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
-            "fCUComputed").orNull(); //$NON-NLS-1$
+    private static Field CU_COMPUTED = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCUComputed").orNull(); //$NON-NLS-1$
 
     private final SubwordsRcpPreferences prefs;
 
@@ -133,8 +133,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         }
     }
 
-    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode,
-            ASTNode completionNodeParent, int length) {
+    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode, ASTNode completionNodeParent,
+            int length) {
         // It is important to trigger at higher locations first, as the base relevance assigned to a proposal by the JDT
         // may depend on the prefix. Proposals which are made for both an empty prefix and a non-empty prefix are thus
         // assigned a base relevance that is as close as possible to that the JDT would assign without subwords
@@ -168,8 +168,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         ICompilationUnit cu = originalContext.getCompilationUnit();
         ITextViewer viewer = originalContext.getViewer();
         IEditorPart editor = lookupEditor(cu);
-        JavaContentAssistInvocationContext newJdtContext = new JavaContentAssistInvocationContext(viewer,
-                triggerOffset, editor);
+        JavaContentAssistInvocationContext newJdtContext = new JavaContentAssistInvocationContext(viewer, triggerOffset,
+                editor);
         setCompilationUnit(newJdtContext, cu);
         ProposalCollectingCompletionRequestor collector = computeProposals(cu, newJdtContext, triggerOffset);
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
@@ -213,8 +213,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             switch (coreProposal.getKind()) {
             case CompletionProposal.CONSTRUCTOR_INVOCATION:
                 // result: ClassSimpleName(Lsome/Param;I)V
-                completionIdentifier = new StringBuilder().append(coreProposal.getName())
-                        .append(coreProposal.getSignature()).toString();
+                completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
+                        .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature()).toString();
                 break;
             case CompletionProposal.TYPE_REF:
                 // result: ClassSimpleName fully.qualified.ClassSimpleName
@@ -230,8 +230,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 break;
             case CompletionProposal.METHOD_REF:
                 // result: myMethodName(Lsome/Param;I)V
-                completionIdentifier = new StringBuilder().append(coreProposal.getName())
-                        .append(coreProposal.getSignature()).toString();
+                completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
+                        .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature()).toString();
                 break;
             default:
                 // result: display string. This should not happen. We should issue a warning here...
