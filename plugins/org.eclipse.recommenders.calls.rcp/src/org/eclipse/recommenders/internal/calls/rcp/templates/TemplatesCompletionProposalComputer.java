@@ -366,7 +366,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             }
             IType type = m.getDeclaringType();
             ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
-            return Optional.of(hierarchy.getSuperclass(type));
+            return Optional.fromNullable(hierarchy.getSuperclass(type));
         } catch (Exception e) {
             log.error("Failed to resolve super type of " + rCtx.getEnclosingElement(), e);
             return Optional.absent();
