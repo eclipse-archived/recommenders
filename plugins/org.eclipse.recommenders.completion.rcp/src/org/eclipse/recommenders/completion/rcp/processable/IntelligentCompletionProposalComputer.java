@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.internal.ui.text.java.JavaAllCompletionProposalComputer;
@@ -111,9 +112,11 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
         if (!(context instanceof JavaContentAssistInvocationContext)) {
             return Collections.emptyList();
         }
-
         storeContext(context);
 
+        if (!isTriggeredInJavaProject()) {
+            return Collections.emptyList();
+        }
         if (!isContentAssistConfigurationOkay()) {
             enableRecommenders();
             int offset = context.getInvocationOffset();
@@ -150,6 +153,17 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
 
             return res;
         }
+    }
+
+    private boolean isTriggeredInJavaProject() {
+        if (jdtContext == null) {
+            return false;
+        }
+        IJavaProject project = jdtContext.getProject();
+        if (project == null) {
+            return false;
+        }
+        return project.exists();
     }
 
     private void enableRecommenders() {
