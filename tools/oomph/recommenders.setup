@@ -1745,8 +1745,7 @@
         xsi:type="git:GitCloneTask"
         id="git.clone.recommenders.incubator.livedoc"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.livedoc"
-        pushURI=""
-        checkoutBranch="master">
+        pushURI="">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
@@ -1768,8 +1767,7 @@
         xsi:type="git:GitCloneTask"
         id="git.clone.recommenders.incubator.snipmatch"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.snipmatch"
-        pushURI=""
-        checkoutBranch="master">
+        pushURI="">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
@@ -1791,8 +1789,7 @@
         xsi:type="git:GitCloneTask"
         id="git.clone.recommenders.incubators.stats"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.stats"
-        pushURI=""
-        checkoutBranch="master">
+        pushURI="">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
