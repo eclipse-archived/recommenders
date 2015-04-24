@@ -1699,8 +1699,6 @@
       <requirement
           name="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
       <requirement
-          name="com.codetrails.connect.hippie.superclass.rcp.feature.feature.group"/>
-      <requirement
           name="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
       <requirement
           name="com.codetrails.connect.tracker.rcp.feature.feature.group"/>
@@ -1711,11 +1709,11 @@
       <requirement
           name="org.eclipse.mylyn.java_feature.feature.group"/>
       <repository
-          url="http://download.eclipse.org/recommenders/updates/head/"/>
+          url="http://download.eclipse.org/recommenders/updates/milestones/"/>
       <repository
           url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
       <repository
-          url="http://download.codetrails.com/updates/connect/head/"/>
+          url="http://download.codetrails.com/updates/connect/milestones/"/>
       <repository
           url="http://download.eclipse.org/technology/epp/logging/milestones/"/>
     </setupTask>
@@ -1745,8 +1743,10 @@
       label="Incubators">
     <setupTask
         xsi:type="git:GitCloneTask"
+        id="git.clone.recommenders.incubator.livedoc"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.livedoc"
-        pushURI="">
+        pushURI=""
+        checkoutBranch="master">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
@@ -1766,8 +1766,10 @@
     </setupTask>
     <setupTask
         xsi:type="git:GitCloneTask"
+        id="git.clone.recommenders.incubator.snipmatch"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.snipmatch"
-        pushURI="">
+        pushURI=""
+        checkoutBranch="master">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
@@ -1787,8 +1789,10 @@
     </setupTask>
     <setupTask
         xsi:type="git:GitCloneTask"
+        id="git.clone.recommenders.incubators.stats"
         remoteURI="recommenders.incubator/org.eclipse.recommenders.stats"
-        pushURI="">
+        pushURI=""
+        checkoutBranch="master">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
@@ -1841,7 +1845,7 @@
       <repository
           url="http://download.eclipse.org/recommenders/updates/milestones/"/>
       <repository
-          url="http://download.codetrails.com/updates/connect/"/>
+          url="http://download.codetrails.com/updates/connect/milestones"/>
       <repository
           url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/"/>
       <repository
