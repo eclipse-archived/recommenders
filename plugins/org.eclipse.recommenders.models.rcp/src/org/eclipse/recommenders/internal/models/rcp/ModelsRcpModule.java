@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -75,23 +76,34 @@ public class ModelsRcpModule extends AbstractModule {
         bind(EclipseModelIndex.class).in(SINGLETON);
         bind(IModelArchiveCoordinateAdvisor.class).to(EclipseModelIndex.class);
         bind(IModelIndex.class).to(EclipseModelIndex.class);
-        createAndBindNamedFile("index", INDEX_BASEDIR); //$NON-NLS-1$
+        createAndBindPerWorkspaceNamedFile("index", INDEX_BASEDIR); //$NON-NLS-1$
 
         //
         bind(EclipseModelRepository.class).in(SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class);
-        createAndBindNamedFile("repository", REPOSITORY_BASEDIR); //$NON-NLS-1$
+        createAndBindPerUserNamedFile("repository", REPOSITORY_BASEDIR); //$NON-NLS-1$
 
         // configure caching
         bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
-        createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS); //$NON-NLS-1$
-        createAndBindNamedFile("caches/identified-project-coordinates.json", IDENTIFIED_PROJECT_COORDINATES); //$NON-NLS-1$
-
+        createAndBindPerWorkspaceNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS); //$NON-NLS-1$
+        createAndBindPerWorkspaceNamedFile("caches/identified-project-coordinates.json", //$NON-NLS-1$
+                IDENTIFIED_PROJECT_COORDINATES);
     }
 
-    private void createAndBindNamedFile(String fileName, String name) {
-        File rootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-        File stateLocation = new File(rootLocation, ".recommenders"); //$NON-NLS-1$
+    private void createAndBindPerUserNamedFile(String fileName, String name) {
+        File userHome = SystemUtils.getUserHome();
+        File dotEclipse = new File(userHome, ".eclipse");
+        File stateLocation = new File(dotEclipse, Constants.BUNDLE_ID);
+        createAndBindNamedFile(fileName, name, stateLocation);
+    }
+
+    private void createAndBindPerWorkspaceNamedFile(String fileName, String name) {
+        File workspaceRoot = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+        File dotRecommenders = new File(workspaceRoot, ".recommenders"); //$NON-NLS-1$
+        createAndBindNamedFile(fileName, name, dotRecommenders);
+    }
+
+    private void createAndBindNamedFile(String fileName, String name, File stateLocation) {
         File file = new File(stateLocation, fileName);
         try {
             Files.createParentDirs(file);
@@ -134,8 +146,8 @@ public class ModelsRcpModule extends AbstractModule {
     @Named(MODEL_CLASSIFIER)
     public ImmutableSet<String> provideModelClassifiers() {
 
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                EXT_ID_MODEL_CLASSIFIER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                .getConfigurationElementsFor(EXT_ID_MODEL_CLASSIFIER);
 
         Builder<String> builder = ImmutableSet.builder();
         for (IConfigurationElement element : elements) {
@@ -149,8 +161,8 @@ public class ModelsRcpModule extends AbstractModule {
     @Provides
     @Singleton
     public Map<String, IInputStreamTransformer> provideTransformers() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                EXT_ID_TRANSFORMERS_CLASSIFIER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                .getConfigurationElementsFor(EXT_ID_TRANSFORMERS_CLASSIFIER);
         ImmutableMap.Builder<String, IInputStreamTransformer> builder = ImmutableMap.builder();
         for (IConfigurationElement element : elements) {
             try {
