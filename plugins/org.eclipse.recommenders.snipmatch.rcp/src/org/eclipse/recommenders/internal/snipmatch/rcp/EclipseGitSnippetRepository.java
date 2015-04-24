@@ -110,7 +110,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     private static final int COMMIT_MESSAGE_FIRST_LINE_LENGTH = 65;
     private static final int COMMIT_MESSAGE_LINE_LENGTH = 70;
 
-    private static Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
 
     private final EventBus bus;
 

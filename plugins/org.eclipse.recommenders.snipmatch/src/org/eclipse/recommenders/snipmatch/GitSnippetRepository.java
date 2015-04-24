@@ -44,9 +44,9 @@ import com.google.common.collect.Collections2;
 
 public class GitSnippetRepository extends FileSnippetRepository {
 
-    private static final String FORMAT = "format-";
+    private static final String FORMAT_PREFIX = "format-";
 
-    private static Logger LOG = LoggerFactory.getLogger(GitSnippetRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GitSnippetRepository.class);
 
     private final File basedir;
     private final String fetchUrl;
@@ -195,7 +195,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         branchList.setListMode(ListMode.REMOTE);
         List<Ref> branches = branchList.call();
 
-        String formatVersion = FORMAT_VERSION.substring(FORMAT.length());
+        String formatVersion = FORMAT_VERSION.substring(FORMAT_PREFIX.length());
         int version = Integer.parseInt(formatVersion);
 
         return getCheckoutBranch(branches, version);
@@ -205,7 +205,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         String remoteBranch = "refs/remotes/origin/format-" + version;
         for (Ref branch : branches) {
             if (branch.getName().equals(remoteBranch)) {
-                return FORMAT + version;
+                return FORMAT_PREFIX + version;
             }
         }
         if (version > 2) { // 2 == lowest, publicly available version

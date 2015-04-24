@@ -232,8 +232,9 @@ public class JayesCallModel implements ICallModel {
     @Override
     public List<Recommendation<IMethodName>> recommendCalls() {
         List<Recommendation<IMethodName>> recs = Lists.newLinkedList();
-        for (IMethodName method : callNodes.keySet()) {
-            BayesNode bayesNode = callNodes.get(method);
+        for (Entry<IMethodName, BayesNode> entry : callNodes.entrySet()) {
+            IMethodName method = entry.getKey();
+            BayesNode bayesNode = entry.getValue();
             boolean isAlreadyUsedAsEvidence = junctionTree.getEvidence().containsKey(bayesNode);
             if (!isAlreadyUsedAsEvidence) {
                 int indexForTrue = bayesNode.getOutcomeIndex(N_STATE_TRUE);

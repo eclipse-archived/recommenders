@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.junit.Test;
@@ -47,8 +48,10 @@ public class ContributionsReaderTest {
         when(element.getName()).thenReturn(name);
         when(element.getContributor().getName()).thenReturn(CONTRIBUTOR_ID);
 
-        for (String key : map.keySet()) {
-            when(element.getAttribute(key)).thenReturn(map.get(key));
+        for (Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            when(element.getAttribute(key)).thenReturn(value);
         }
 
         return element;

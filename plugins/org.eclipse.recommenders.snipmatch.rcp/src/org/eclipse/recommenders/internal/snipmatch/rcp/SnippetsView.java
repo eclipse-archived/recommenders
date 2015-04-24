@@ -63,7 +63,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
-import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView.KnownSnippet;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
@@ -90,7 +89,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -123,7 +121,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     public static final String TREE = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.tree"; //$NON-NLS-1$
     public static final String SWT_ID = "org.eclipse.swtbot.widget.key"; //$NON-NLS-1$
 
-    private static Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
     private Text txtSearch;
     private TreeViewer treeViewer;

@@ -59,7 +59,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
     private static final int DEFAULT_PRIORITY = 100;
 
-    private static Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
 
     private final Repositories repos;
     private final SnippetRepositoryConfigurations configs;

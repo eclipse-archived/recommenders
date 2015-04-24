@@ -92,7 +92,7 @@ public class TransformingModelProviderTest {
         return new PoolingModelProviderStub(repository, models, "type", transformers);
     }
 
-    private final class PoolingModelProviderStub extends PoolingModelProvider<UniqueTypeName, String> {
+    private static final class PoolingModelProviderStub extends PoolingModelProvider<UniqueTypeName, String> {
         private PoolingModelProviderStub(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
                 String modelType, Map<String, IInputStreamTransformer> transformers) {
             super(repository, index, modelType, transformers);
@@ -109,7 +109,7 @@ public class TransformingModelProviderTest {
         }
     }
 
-    private final class DummyTransformer implements IInputStreamTransformer {
+    private static final class DummyTransformer implements IInputStreamTransformer {
 
         @Override
         public InputStream transform(InputStream stream) throws IOException {

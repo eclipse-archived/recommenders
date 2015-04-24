@@ -57,8 +57,9 @@ public class LikelihoodWeightedSampling extends AbstractInferer {
 
     private double computeEvidenceProbability(Map<BayesNode, String> sample) {
         double factor = 1.0;
-        for (BayesNode n : evidence.keySet()) {
-            factor *= BayesNodeUtil.getSubCpt(n, sample)[n.getOutcomeIndex(evidence.get(n))];
+        for (Entry<BayesNode, String> entry : evidence.entrySet()) {
+            BayesNode n = entry.getKey();
+            factor *= BayesNodeUtil.getSubCpt(n, sample)[n.getOutcomeIndex(entry.getValue())];
         }
         return factor;
     }

@@ -27,13 +27,13 @@ public class ModelIndexTest {
     @Rule
     public final TemporaryFolder tmp = new TemporaryFolder();
 
-    private static ProjectCoordinate PC_1 = new ProjectCoordinate("org.example", "project", "1.0.0");
-    private static ProjectCoordinate PC_2 = new ProjectCoordinate("org.example", "extended.project", "2.0.0");
-    private static ProjectCoordinate PC_3 = new ProjectCoordinate("org.example", "example", "1.0.0");
-    private static ProjectCoordinate PC_4 = new ProjectCoordinate("com.example", "tutorial", "1.0.0");
+    private static final ProjectCoordinate PC_1 = new ProjectCoordinate("org.example", "project", "1.0.0");
+    private static final ProjectCoordinate PC_2 = new ProjectCoordinate("org.example", "extended.project", "2.0.0");
+    private static final ProjectCoordinate PC_3 = new ProjectCoordinate("org.example", "example", "1.0.0");
+    private static final ProjectCoordinate PC_4 = new ProjectCoordinate("com.example", "tutorial", "1.0.0");
 
-    private List<ProjectCoordinate> oldIndex;
-    private List<ProjectCoordinate> newIndex;
+    private final List<ProjectCoordinate> oldIndex;
+    private final List<ProjectCoordinate> newIndex;
 
     public ModelIndexTest(List<ProjectCoordinate> oldIndex, List<ProjectCoordinate> newIndex) throws Exception {
         this.oldIndex = oldIndex;

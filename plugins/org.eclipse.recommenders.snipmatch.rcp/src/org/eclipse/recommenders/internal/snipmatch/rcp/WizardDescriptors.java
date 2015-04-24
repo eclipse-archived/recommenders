@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 
 public final class WizardDescriptors {
 
-    private static Logger LOG = LoggerFactory.getLogger(WizardDescriptors.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WizardDescriptors.class);
 
     private static final String CONFIGURATION_WIZARD_NAME = "name"; //$NON-NLS-1$
     private static final String CONFIGURATION_WIZARD = "wizard"; //$NON-NLS-1$

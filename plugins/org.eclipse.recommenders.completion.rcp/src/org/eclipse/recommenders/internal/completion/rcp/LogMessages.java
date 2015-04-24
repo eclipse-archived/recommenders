@@ -26,7 +26,7 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
     public static final LogMessages LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
-    public static LogMessages LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
+    public static final LogMessages LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT);
     public static final LogMessages LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
             Messages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING);

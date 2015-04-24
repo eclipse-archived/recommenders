@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.jdt;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS {
+public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.jdt.messages"; //$NON-NLS-1$
 
