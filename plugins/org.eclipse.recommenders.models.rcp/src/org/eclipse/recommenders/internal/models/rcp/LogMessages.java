@@ -27,7 +27,7 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_SAVE_PREFERENCES);
     public static final LogMessages ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_ADVISOR_INSTANTIATION);
-    public static ILogMessage LOG_ERROR_BIND_FILE_NAME = new LogMessages(ERROR, Messages.LOG_ERROR_BIND_FILE_NAME);
+    public static final ILogMessage LOG_ERROR_BIND_FILE_NAME = new LogMessages(ERROR, Messages.LOG_ERROR_BIND_FILE_NAME);
     public static final ILogMessage LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED);
 

@@ -49,7 +49,7 @@ import com.google.common.io.Files;
 
 public class ModelRepositoryTest {
 
-    private static ModelCoordinate COORDINATE = new ModelCoordinate("org.example", "example", "model", "zip", "1.0.0");
+    private static final ModelCoordinate COORDINATE = new ModelCoordinate("org.example", "example", "model", "zip", "1.0.0");
 
     private static final URI METADATA_XML = asUri("org/example/example/1.0.0-SNAPSHOT/maven-metadata.xml");
     private static final URI METADATA_XML_SHA1 = asUri("org/example/example/1.0.0-SNAPSHOT/maven-metadata.xml.sha1");

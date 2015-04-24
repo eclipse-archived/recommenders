@@ -29,9 +29,9 @@ import com.google.common.base.Optional;
 @Beta
 public final class ScopeAccessWorkaround {
 
-    private static Field EXTENDED_CONTEXT = Reflections.getDeclaredField(InternalCompletionContext.class,
+    private static final Field EXTENDED_CONTEXT = Reflections.getDeclaredField(InternalCompletionContext.class,
             "extendedContext").orNull(); //$NON-NLS-1$
-    private static Field ASSIST_SCOPE = Reflections.getDeclaredField(InternalExtendedCompletionContext.class,
+    private static final Field ASSIST_SCOPE = Reflections.getDeclaredField(InternalExtendedCompletionContext.class,
             "assistScope").orNull(); //$NON-NLS-1$
 
     private ScopeAccessWorkaround() {

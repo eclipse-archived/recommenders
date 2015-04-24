@@ -73,10 +73,11 @@ public class PoolingModelProviderTest {
         IModelArchiveCoordinateAdvisor models = mock(IModelArchiveCoordinateAdvisor.class);
         when(models.suggest(any(ProjectCoordinate.class), anyString())).thenReturn(of(UNKNOWN));
 
-        return new PoolingModelProviderStub(repository, models, "calls", Collections.EMPTY_MAP);
+        return new PoolingModelProviderStub(repository, models, "calls",
+                Collections.<String, IInputStreamTransformer>emptyMap());
     }
 
-    private final class PoolingModelProviderStub extends PoolingModelProvider<UniqueTypeName, String> {
+    private static final class PoolingModelProviderStub extends PoolingModelProvider<UniqueTypeName, String> {
         private PoolingModelProviderStub(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
                 String modelType, Map<String, IInputStreamTransformer> transformers) {
             super(repository, index, modelType, transformers);

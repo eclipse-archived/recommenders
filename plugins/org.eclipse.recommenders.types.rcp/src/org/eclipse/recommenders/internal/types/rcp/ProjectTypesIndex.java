@@ -542,9 +542,13 @@ public class ProjectTypesIndex extends AbstractIdleService {
         return project;
     }
 
-    private final class ArchiveFragmentRootsOnlyPredicate implements Predicate<IPackageFragmentRoot> {
+    private static final class ArchiveFragmentRootsOnlyPredicate implements Predicate<IPackageFragmentRoot> {
+
         @Override
         public boolean apply(IPackageFragmentRoot input) {
+            if (input == null) {
+                return false;
+            }
             if (!input.isArchive()) {
                 return false;
             }
@@ -556,7 +560,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         }
     }
 
-    private final class JobFuture extends AbstractFuture<IStatus> {
+    private static final class JobFuture extends AbstractFuture<IStatus> {
 
         private Job job;
 

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetRepositoryWizard {
 
-    private static Logger LOG = LoggerFactory.getLogger(SnippetRepositoryTypeSelectionWizard.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnippetRepositoryTypeSelectionWizard.class);
 
     private java.util.List<WizardDescriptor> availableWizards;
     private AbstractSnippetRepositoryWizard selectedWizard;
