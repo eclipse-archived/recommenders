@@ -10,8 +10,9 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SERVICE_NOT_RUNNING;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -28,12 +29,14 @@ import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurati
 import org.eclipse.recommenders.utils.Openable;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 
-public class Repositories implements IRcpService, Openable, Closeable {
+public class Repositories extends AbstractIdleService implements IRcpService, Openable, Closeable {
 
     private final SnippetRepositoryConfigurations configurations;
     private final SnipmatchRcpPreferences prefs;
@@ -50,6 +53,11 @@ public class Repositories implements IRcpService, Openable, Closeable {
     @Override
     @PostConstruct
     public void open() throws IOException {
+        startAsync();
+    }
+
+    @Override
+    protected void startUp() throws Exception {
         repositories.clear();
         for (SnippetRepositoryConfiguration config : configurations.getRepos()) {
             if (!prefs.isRepositoryEnabled(config)) {
@@ -64,6 +72,11 @@ public class Repositories implements IRcpService, Openable, Closeable {
     @Override
     @PreDestroy
     public void close() throws IOException {
+        stopAsync();
+    }
+
+    @Override
+    protected void shutDown() throws Exception {
         for (ISnippetRepository repo : repositories) {
             repo.close();
         }
@@ -71,10 +84,19 @@ public class Repositories implements IRcpService, Openable, Closeable {
     }
 
     public Set<ISnippetRepository> getRepositories() {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return ImmutableSet.of();
+        }
         return repositories;
     }
 
     public Optional<ISnippetRepository> getRepository(String id) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return absent();
+        }
+
         for (ISnippetRepository repo : repositories) {
             if (repo.getId().equals(id)) {
                 return of(repo);
@@ -84,10 +106,11 @@ public class Repositories implements IRcpService, Openable, Closeable {
     }
 
     @Subscribe
-    public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws IOException {
-        close();
+    public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws Exception {
+        // we do not use public API methods stop()/start() since Services are not designed to be restarted.
+        shutDown();
         // TODO: Since opening a snippet repository is potentially expensive only the affected ones should be processed.
-        open();
+        startUp();
     }
 
     /**

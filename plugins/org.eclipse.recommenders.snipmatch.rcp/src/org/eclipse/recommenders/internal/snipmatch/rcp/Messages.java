@@ -189,6 +189,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_LOADING_DEFAULT_REPO_CONFIGURATION;
     public static String LOG_ERROR_LOADING_REPO_CONFIGURATION;
     public static String LOG_ERROR_LOADING_DEFAULT_GIT_REPO_CONFIGURATION;
+    public static String LOG_ERROR_SERVICE_NOT_RUNNING;
     public static String LOG_ERROR_STORING_DEFAULT_REPO_CONFIGURATION;
     public static String LOG_ERROR_STORING_DISABLED_REPOSITORY_CONFIGURATIONS;
     public static String LOG_WARNING_DEFAULT_GIT_REPO_URL_DUPLICATE;
@@ -214,7 +215,6 @@ public final class Messages extends NLS {
     public static String MONITOR_REFRESHING_TABLE;
 
     public static String LIST_SEPARATOR;
-
 
     static {
         // initialize resource bundle

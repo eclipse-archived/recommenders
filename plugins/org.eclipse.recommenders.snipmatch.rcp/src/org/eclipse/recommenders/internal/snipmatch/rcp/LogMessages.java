@@ -50,6 +50,8 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage ERROR_CREATING_INDEX_HEAD_DIFF = new LogMessages(ERROR,
             Messages.LOG_ERROR_CREATING_INDEX_HEAD_DIFF);
+    public static final ILogMessage ERROR_SERVICE_NOT_RUNNING = new LogMessages(ERROR,
+            Messages.LOG_ERROR_SERVICE_NOT_RUNNING);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
