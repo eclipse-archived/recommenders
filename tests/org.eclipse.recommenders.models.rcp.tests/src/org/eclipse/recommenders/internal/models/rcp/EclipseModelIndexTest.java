@@ -98,6 +98,8 @@ public class EclipseModelIndexTest {
         IModelRepository repository = mock(IModelRepository.class);
 
         EclipseModelIndex sut = spy(new EclipseModelIndex(basedir, prefs, repository, bus));
+        sut.startAsync();
+        sut.awaitRunning();
 
         final ArgumentCaptor<File> captor = ArgumentCaptor.forClass(File.class);
         when(sut.createModelIndex(captor.capture())).thenAnswer(new Answer<IModelIndex>() {

@@ -12,8 +12,11 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.eclipse.recommenders.internal.models.rcp.LogMessages.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.INDEX_BASEDIR;
 import static org.eclipse.recommenders.models.ModelCoordinate.HINT_REPOSITORY_URL;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -58,12 +62,13 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
+import com.google.common.util.concurrent.AbstractIdleService;
 
 /**
  * The Eclipse RCP wrapper around an IModelIndex that responds to (@link ModelRepositoryChangedEvent)s by closing the
  * underlying, downloading the new index if required and reopening the index.
  */
-public class EclipseModelIndex implements IModelIndex, IRcpService {
+public class EclipseModelIndex extends AbstractIdleService implements IModelIndex, IRcpService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EclipseModelIndex.class);
 
@@ -92,9 +97,34 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         this.bus = bus;
     }
 
+    @PreDestroy
+    @Override
+    public void close() throws IOException {
+        stopAsync();
+        try {
+            awaitTerminated(5, SECONDS);
+        } catch (TimeoutException e) {
+            log(ERROR_CLOSING_MODEL_INDEX_SERVICE, e);
+        }
+    }
+
+    @Override
+    protected void shutDown() throws Exception {
+        cache.invalidateAll();
+        for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
+            removeDelegate(delegate);
+            delegate.getSecond().close();
+        }
+    }
+
     @PostConstruct
     @Override
     public void open() throws IOException {
+        startAsync();
+    }
+
+    @Override
+    protected void startUp() throws Exception {
         Checks.ensureNoDuplicates(prefs.remotes);
         clearDelegates();
         basedir.mkdir();
@@ -144,7 +174,7 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     }
 
     @VisibleForTesting
-    public IModelIndex createModelIndex(File indexLocation) {
+    protected IModelIndex createModelIndex(File indexLocation) {
         return new ModelIndex(indexLocation);
     }
 
@@ -159,21 +189,10 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         return createCopyWithRepositoryUrlHint(mc, remoteUrl);
     }
 
-    @VisibleForTesting
-    public boolean indexAlreadyDownloaded(File location) {
+    private boolean indexAlreadyDownloaded(File location) {
         return location.exists() && location.listFiles().length > 1;
         // 2 = if this folder contains an index, there must be more than one file...
         // On mac, we often have hidden files in the folder. This is just simple heuristic.
-    }
-
-    @PreDestroy
-    @Override
-    public void close() throws IOException {
-        cache.invalidateAll();
-        for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
-            removeDelegate(delegate);
-            delegate.getSecond().close();
-        }
     }
 
     /**
@@ -181,6 +200,10 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
      */
     @Override
     public Optional<ModelCoordinate> suggest(final ProjectCoordinate pc, final String modelType) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return absent();
+        }
         Pair<ProjectCoordinate, String> key = Pair.newPair(pc, modelType);
         try {
             return cache.get(key, new Callable<Optional<ModelCoordinate>>() {
@@ -209,6 +232,10 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Override
     public ImmutableSet<ModelCoordinate> suggestCandidates(ProjectCoordinate pc, String modelType) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return ImmutableSet.of();
+        }
         Set<ModelCoordinate> candidates = Sets.newHashSet();
         for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
@@ -218,24 +245,12 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
         return ImmutableSet.copyOf(candidates);
     }
 
-    public Set<ModelCoordinate> addRepositoryUrlHint(Set<ModelCoordinate> modelCoordinates, String url) {
-        Set<ModelCoordinate> modelCoordinatesWithUrlHint = Sets.newHashSet();
-        for (ModelCoordinate modelCoordinate : modelCoordinates) {
-            modelCoordinatesWithUrlHint.add(createCopyWithRepositoryUrlHint(modelCoordinate, url));
-        }
-        return modelCoordinatesWithUrlHint;
-    }
-
-    private ModelCoordinate createCopyWithRepositoryUrlHint(ModelCoordinate mc, String url) {
-        Map<String, String> hints = Maps.newHashMap(mc.getHints());
-        hints.put(ModelCoordinate.HINT_REPOSITORY_URL, url);
-        ModelCoordinate copy = new ModelCoordinate(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
-                mc.getExtension(), mc.getVersion(), hints);
-        return copy;
-    }
-
     @Override
     public ImmutableSet<ModelCoordinate> getKnownModels(String modelType) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return ImmutableSet.of();
+        }
         Set<ModelCoordinate> models = Sets.newHashSet();
         for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
@@ -247,6 +262,10 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return absent();
+        }
         for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
             IModelIndex index = delegate.getSecond();
             Optional<ProjectCoordinate> suggest = index.suggestProjectCoordinateByArtifactId(artifactId);
@@ -260,6 +279,10 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
 
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint) {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return absent();
+        }
         for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
             IModelIndex index = delegate.getSecond();
             Optional<ProjectCoordinate> suggest = index.suggestProjectCoordinateByFingerprint(fingerprint);
@@ -272,24 +295,38 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     }
 
     @Subscribe
-    public void onEvent(ModelRepositoryOpenedEvent e) throws IOException {
-        open();
+    public void onEvent(ModelRepositoryOpenedEvent e) throws Exception {
+        if (!isRunning()) {
+            // Log this to see whether my expectations are correct
+            log(ERROR_SERVICE_NOT_RUNNING);
+        }
+        startUp();
     }
 
     @Subscribe
     public void onEvent(ModelIndexOpenedEvent e) {
+        // We don't check whether the service is running here, because this event is fired during opening.
         // When the model index is finally opened, invalidate the cache, as we may have cached a "not found" for
         // something that can be found in the newly opened index.
         cache.invalidateAll();
     }
 
     @Subscribe
-    public void onEvent(ModelRepositoryClosedEvent e) throws IOException {
-        close();
+    public void onEvent(ModelRepositoryClosedEvent e) throws Exception {
+        if (!isRunning()) {
+            // Log this to see whether my expectations are correct
+            log(ERROR_SERVICE_NOT_RUNNING);
+        }
+        // XXX: this is closing the repo but not setting the service state to stopped.
+        shutDown();
     }
 
     @Subscribe
     public void onEvent(ModelArchiveDownloadedEvent e) throws IOException {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+            return;
+        }
         if (isIndex(e.model)) {
             File location = repository.getLocation(e.model, false).orNull();
             String remoteUrl = e.model.getHint(HINT_REPOSITORY_URL).orNull();
@@ -320,5 +357,21 @@ public class EclipseModelIndex implements IModelIndex, IRcpService {
     @Override
     public void updateIndex(File index) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    public static Set<ModelCoordinate> addRepositoryUrlHint(Set<ModelCoordinate> modelCoordinates, String url) {
+        Set<ModelCoordinate> modelCoordinatesWithUrlHint = Sets.newHashSet();
+        for (ModelCoordinate modelCoordinate : modelCoordinates) {
+            modelCoordinatesWithUrlHint.add(createCopyWithRepositoryUrlHint(modelCoordinate, url));
+        }
+        return modelCoordinatesWithUrlHint;
+    }
+
+    private static ModelCoordinate createCopyWithRepositoryUrlHint(ModelCoordinate mc, String url) {
+        Map<String, String> hints = Maps.newHashMap(mc.getHints());
+        hints.put(ModelCoordinate.HINT_REPOSITORY_URL, url);
+        ModelCoordinate copy = new ModelCoordinate(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
+                mc.getExtension(), mc.getVersion(), hints);
+        return copy;
     }
 }

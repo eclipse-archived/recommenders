@@ -16,6 +16,9 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.models.rcp.messages"; //$NON-NLS-1$
 
+
+
+
     public static String BUTTON_LABEL_DOWN;
     public static String BUTTON_LABEL_UP;
 
@@ -95,12 +98,14 @@ public final class Messages extends NLS {
     public static String TASK_REFRESHING;
     public static String TASK_RESOLVING_MODEL;
 
+    public static String LOG_ERROR_CLOSING_MODEL_INDEX_SERVICE;
     public static String LOG_ERROR_ADVISOR_INSTANTIATION;
     public static String LOG_ERROR_BIND_FILE_NAME;
     public static String LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED;
     public static String LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE;
     public static String LOG_ERROR_MODEL_RESOLUTION_FAILURE;
     public static String LOG_ERROR_SAVE_PREFERENCES;
+    public static String LOG_ERROR_SERVICE_NOT_RUNNING;
 
     public static String LOG_INFO_NO_MODEL_RESOLVED;
 
