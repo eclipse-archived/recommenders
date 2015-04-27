@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.calls.rcp.it;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
+import static org.eclipse.recommenders.coordinates.ProjectCoordinate.UNKNOWN;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 

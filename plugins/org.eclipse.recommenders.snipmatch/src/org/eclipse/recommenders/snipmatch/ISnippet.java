@@ -13,7 +13,7 @@ package org.eclipse.recommenders.snipmatch;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Uuidable;
 
 public interface ISnippet extends Uuidable {

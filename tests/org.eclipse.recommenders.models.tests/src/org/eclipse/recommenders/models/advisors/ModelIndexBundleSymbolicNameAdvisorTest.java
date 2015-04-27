@@ -11,18 +11,19 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.models.DependencyType.*;
+import static org.eclipse.recommenders.coordinates.DependencyType.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.osgi.OsgiManifestAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelIndex;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class ModelIndexBundleSymbolicNameAdvisorTest {
         when(mockedIndexer.suggestProjectCoordinateByArtifactId(COORDINATE.getArtifactId())).thenReturn(of(COORDINATE));
 
         OsgiManifestAdvisor mockedOsgiAdvisor = spy(new OsgiManifestAdvisor());
-        when(mockedOsgiAdvisor.doSuggest(dependencyInfo)).thenReturn(of(COORDINATE));
+        when(mockedOsgiAdvisor.suggest(dependencyInfo)).thenReturn(of(COORDINATE));
 
         ModelIndexBundleSymbolicNameAdvisor sut = new ModelIndexBundleSymbolicNameAdvisor(mockedIndexer,
                 mockedOsgiAdvisor);
@@ -76,7 +77,7 @@ public class ModelIndexBundleSymbolicNameAdvisorTest {
                 Optional.<ProjectCoordinate>absent());
 
         OsgiManifestAdvisor mockedOsgiAdvisor = spy(new OsgiManifestAdvisor());
-        when(mockedOsgiAdvisor.doSuggest(dependencyInfo)).thenReturn(of(COORDINATE));
+        when(mockedOsgiAdvisor.suggest(dependencyInfo)).thenReturn(of(COORDINATE));
 
         ModelIndexBundleSymbolicNameAdvisor sut = new ModelIndexBundleSymbolicNameAdvisor(mockedIndexer,
                 mockedOsgiAdvisor);

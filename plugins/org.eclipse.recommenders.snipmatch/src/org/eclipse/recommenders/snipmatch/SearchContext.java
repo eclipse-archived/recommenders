@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 import com.google.common.collect.Sets;
 

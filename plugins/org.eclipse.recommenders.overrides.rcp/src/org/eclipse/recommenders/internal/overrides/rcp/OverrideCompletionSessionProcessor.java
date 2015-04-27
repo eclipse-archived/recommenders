@@ -33,7 +33,7 @@ import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalP
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.overrides.IOverrideModel;

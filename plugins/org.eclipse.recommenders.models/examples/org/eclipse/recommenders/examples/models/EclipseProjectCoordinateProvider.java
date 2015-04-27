@@ -12,8 +12,8 @@ package org.eclipse.recommenders.examples.models;
 
 import static org.eclipse.recommenders.utils.Throws.throwNotImplemented;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.examples.models.CompletionEngineExample.IJavaElement;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 
 import com.google.common.base.Optional;
 

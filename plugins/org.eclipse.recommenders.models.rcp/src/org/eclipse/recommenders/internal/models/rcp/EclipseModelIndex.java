@@ -34,11 +34,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ModelIndex;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEvent;

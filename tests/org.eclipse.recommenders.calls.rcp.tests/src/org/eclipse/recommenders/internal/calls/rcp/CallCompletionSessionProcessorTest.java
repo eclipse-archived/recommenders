@@ -20,7 +20,7 @@ import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;

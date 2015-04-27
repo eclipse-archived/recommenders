@@ -12,7 +12,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
 import org.eclipse.jdt.ui.SharedASTProvider
 import org.eclipse.jface.text.TextSelection
-import org.eclipse.recommenders.models.ProjectCoordinate
+import org.eclipse.recommenders.coordinates.ProjectCoordinate
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture

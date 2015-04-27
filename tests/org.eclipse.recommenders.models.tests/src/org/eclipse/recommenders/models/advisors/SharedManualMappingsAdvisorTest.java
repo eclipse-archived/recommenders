@@ -12,22 +12,19 @@ package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Files.append;
-import static org.eclipse.recommenders.models.DependencyType.JAR;
-import static org.eclipse.recommenders.tests.models.utils.FolderUtils.dir;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.eclipse.recommenders.coordinates.DependencyType.JAR;
+import static org.eclipse.recommenders.testing.FolderUtils.dir;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

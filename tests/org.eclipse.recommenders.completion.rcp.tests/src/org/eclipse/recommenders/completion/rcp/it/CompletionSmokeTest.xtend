@@ -15,6 +15,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions
 import org.eclipse.recommenders.completion.rcp.processable.IntelligentCompletionProposalComputer
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor
+import org.eclipse.recommenders.coordinates.ProjectCoordinate
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor
 import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
@@ -23,7 +24,6 @@ import org.eclipse.recommenders.internal.overrides.rcp.OverrideCompletionSession
 import org.eclipse.recommenders.internal.overrides.rcp.OverridesRcpPreferences
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor
-import org.eclipse.recommenders.models.ProjectCoordinate
 import org.eclipse.recommenders.models.UniqueTypeName
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.overrides.IOverrideModel
@@ -48,6 +48,7 @@ import static org.mockito.Mockito.*
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
 import com.google.common.collect.ImmutableSet
 import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
+import org.eclipse.recommenders.coordinates.ProjectCoordinate
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {

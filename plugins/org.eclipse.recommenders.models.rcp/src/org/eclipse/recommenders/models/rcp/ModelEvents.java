@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.models.rcp;
 
-import org.eclipse.recommenders.models.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 

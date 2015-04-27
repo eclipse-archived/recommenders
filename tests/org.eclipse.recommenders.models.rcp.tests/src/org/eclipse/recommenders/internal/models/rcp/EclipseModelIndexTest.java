@@ -19,10 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.Urls;
 import org.junit.Rule;

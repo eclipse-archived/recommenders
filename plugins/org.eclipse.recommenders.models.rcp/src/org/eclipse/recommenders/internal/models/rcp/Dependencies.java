@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.launching.JavaRuntime.getVMInstall;
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -26,8 +26,8 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;

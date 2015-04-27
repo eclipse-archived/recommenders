@@ -11,8 +11,9 @@ Require-Bundle: org.apache.lucene.core;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.jgit,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.ecore.xmi,
- org.eclipse.recommenders.utils,
- org.eclipse.recommenders.models
+ org.eclipse.recommenders.coordinates,
+ org.eclipse.recommenders.models,
+ org.eclipse.recommenders.utils
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.cache;version="[15.0.0,16.0.0)",

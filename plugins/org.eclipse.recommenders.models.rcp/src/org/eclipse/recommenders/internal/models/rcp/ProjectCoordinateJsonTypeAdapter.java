@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import java.io.IOException;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

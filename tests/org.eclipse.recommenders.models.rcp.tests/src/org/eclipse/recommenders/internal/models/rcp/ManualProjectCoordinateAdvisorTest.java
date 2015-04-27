@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

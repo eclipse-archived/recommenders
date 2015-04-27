@@ -4,7 +4,7 @@ import static java.lang.String.format;
 
 import java.util.Set;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.snipmatch.ISearchContext;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.hamcrest.Description;

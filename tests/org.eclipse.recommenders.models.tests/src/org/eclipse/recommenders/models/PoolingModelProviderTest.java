@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.zip.ZipFile;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Zips;
 import org.junit.BeforeClass;
 import org.junit.Test;

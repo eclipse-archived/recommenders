@@ -65,37 +65,37 @@
 			description="%advisors.sharedManualMappings.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenPomProperties"
-			class="org.eclipse.recommenders.models.advisors.MavenPomPropertiesAdvisor"
+			class="org.eclipse.recommenders.coordinates.maven.MavenPomPropertiesAdvisor"
 			defaultPriority="20"
 			name="%advisors.mavenPomProperties.name"
 			description="%advisors.mavenPomProperties.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.mavenPomXml"
-			class="org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor"
+			class="org.eclipse.recommenders.coordinates.maven.MavenPomXmlAdvisor"
 			defaultPriority="30"
 			name="%advisors.mavenPomXml.name"
 			description="%advisors.mavenPomXml.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreExecutionEnvironment"
-			class="org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor"
+			class="org.eclipse.recommenders.coordinates.jre.JREExecutionEnvironmentAdvisor"
 			defaultPriority="40"
 			name="%advisors.jreExecutionEnvironment.name"
 			description="%advisors.jreExecutionEnvironment.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreReleaseFile"
-			class="org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor"
+			class="org.eclipse.recommenders.coordinates.jre.JREReleaseFileAdvisor"
 			defaultPriority="50"
 			name="%advisors.jreReleaseFile.name"
 			description="%advisors.jreReleaseFile.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.jreDirectoryName"
-			class="org.eclipse.recommenders.models.advisors.JREDirectoryNameAdvisor"
+			class="org.eclipse.recommenders.coordinates.jre.JREDirectoryNameAdvisor"
 			defaultPriority="60"
 			name="%advisors.jreDirectoryName.name"
 			description="%advisors.jreDirectoryName.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.androidDirectoryName"
-			class="org.eclipse.recommenders.models.advisors.AndroidDirectoryNameAdvisor"
+			class="org.eclipse.recommenders.coordinates.jre.AndroidDirectoryNameAdvisor"
 			defaultPriority="70"
 			name="%advisors.androidDirectoryName.name"
 			description="%advisors.androidDirectoryName.description">
@@ -113,7 +113,7 @@
 			description="%advisors.modelIndexFingerprint.description">
 		</advisor>
 		<advisor id="org.eclipse.recommenders.models.rcp.advisors.osgiManifest"
-			class="org.eclipse.recommenders.models.advisors.OsgiManifestAdvisor"
+			class="org.eclipse.recommenders.coordinates.osgi.OsgiManifestAdvisor"
 			defaultPriority="100"
 			name="%advisors.osgiManifest.name"
 			description="%advisors.osgiManifest.description">

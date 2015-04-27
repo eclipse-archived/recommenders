@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.models;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 /**

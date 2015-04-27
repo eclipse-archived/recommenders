@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.examples.models;
 
-import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
+import static org.eclipse.recommenders.coordinates.ProjectCoordinate.UNKNOWN;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.examples.models.CompletionEngineExample.IJavaElement;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.IModelProvider;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 

@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
 
 public class AdvisorDescriptor {
 

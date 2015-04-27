@@ -1,6 +1,6 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.snipmatch.rcp.util.RepositoryProposalMatcher.repository;
 import static org.eclipse.recommenders.snipmatch.rcp.util.SearchContextMatcher.context;
 import static org.eclipse.recommenders.snipmatch.rcp.util.SnippetProposalMatcher.snippet;
@@ -24,10 +24,10 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IDependencyListener;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;

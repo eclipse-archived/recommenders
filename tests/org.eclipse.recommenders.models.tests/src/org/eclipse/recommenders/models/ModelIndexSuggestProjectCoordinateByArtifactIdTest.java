@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

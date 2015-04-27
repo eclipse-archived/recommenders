@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.models.rcp.advisors;
 
-import static org.eclipse.recommenders.models.advisors.MavenCentralFingerprintSearchAdvisor.SEARCH_MAVEN_ORG;
+import static org.eclipse.recommenders.coordinates.maven.MavenCentralFingerprintSearchAdvisor.SEARCH_MAVEN_ORG;
 
 import java.net.URI;
 
@@ -19,10 +19,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
-import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.models.advisors.MavenCentralFingerprintSearchAdvisor;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.maven.MavenCentralFingerprintSearchAdvisor;
 import org.eclipse.recommenders.utils.Urls;
 
 import com.google.common.base.Optional;

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.models;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 import com.google.common.base.Objects;
 

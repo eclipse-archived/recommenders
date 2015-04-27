@@ -65,10 +65,10 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
-import org.eclipse.recommenders.models.Coordinates;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.ModelCoordinates;
 import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
@@ -405,7 +405,7 @@ public class ModelRepositoriesView extends ViewPart {
 
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
             coordinatesGroupedByProjectCoordinate
-                    .put(Coordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+                    .put(ModelCoordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
         }
         return coordinatesGroupedByProjectCoordinate;
     }
@@ -660,7 +660,7 @@ public class ModelRepositoriesView extends ViewPart {
             private KnownCoordinate createKey(ModelCoordinate mc) {
                 Optional<String> remoteUrl = mc.getHint(ModelCoordinate.HINT_REPOSITORY_URL);
                 if (remoteUrl.isPresent()) {
-                    return new KnownCoordinate(remoteUrl.get(), Coordinates.toProjectCoordinate(mc),
+                    return new KnownCoordinate(remoteUrl.get(), ModelCoordinates.toProjectCoordinate(mc),
                             Collections.<ModelCoordinate>emptyList());
                 }
                 return null;

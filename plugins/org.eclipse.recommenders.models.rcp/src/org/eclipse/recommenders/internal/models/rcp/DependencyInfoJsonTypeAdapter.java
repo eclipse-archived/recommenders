@@ -14,8 +14,8 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonDeserializationContext;

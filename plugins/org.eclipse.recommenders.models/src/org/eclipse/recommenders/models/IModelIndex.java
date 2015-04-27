@@ -13,6 +13,8 @@ package org.eclipse.recommenders.models;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 

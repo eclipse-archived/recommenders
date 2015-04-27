@@ -12,10 +12,11 @@ package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
 
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.coordinates.AbstractProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.IModelIndex;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Fingerprints;
 
 import com.google.common.base.Optional;

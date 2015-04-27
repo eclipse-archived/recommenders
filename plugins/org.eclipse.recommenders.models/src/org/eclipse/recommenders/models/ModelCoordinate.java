@@ -11,7 +11,7 @@
  */
 package org.eclipse.recommenders.models;
 
-import static org.eclipse.recommenders.models.Coordinates.isValidId;
+import static org.eclipse.recommenders.coordinates.Coordinates.isValidId;
 import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Versions.isValidVersion;
 
@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.eclipse.recommenders.coordinates.Coordinates;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.Versions;
 

@@ -14,10 +14,10 @@ package org.eclipse.recommenders.models.rcp.actions;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.internal.models.rcp.EclipseModelRepository;
-import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.IModelIndex;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 
 import com.google.common.base.Optional;

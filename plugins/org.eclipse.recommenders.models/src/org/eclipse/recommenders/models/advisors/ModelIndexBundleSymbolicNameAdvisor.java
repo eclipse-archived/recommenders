@@ -11,13 +11,15 @@
 package org.eclipse.recommenders.models.advisors;
 
 import static com.google.common.base.Optional.absent;
-import static org.eclipse.recommenders.models.Coordinates.tryNewProjectCoordinate;
 import static org.eclipse.recommenders.utils.Versions.canonicalizeVersion;
 
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.DependencyType;
+import org.eclipse.recommenders.coordinates.AbstractProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.Coordinates;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.osgi.OsgiManifestAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
-import org.eclipse.recommenders.models.ProjectCoordinate;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -31,8 +33,8 @@ public class ModelIndexBundleSymbolicNameAdvisor extends AbstractProjectCoordina
     /*
      * Reusing the OSGI advisor may be a little bit redundant but it's not too high for the amount of code we save.
      */
-    OsgiManifestAdvisor osgi;
-    IModelIndex indexer;
+    private final OsgiManifestAdvisor osgi;
+    private final IModelIndex indexer;
 
     public ModelIndexBundleSymbolicNameAdvisor(IModelIndex indexer) {
         this(indexer, new OsgiManifestAdvisor());
@@ -46,7 +48,7 @@ public class ModelIndexBundleSymbolicNameAdvisor extends AbstractProjectCoordina
 
     @Override
     protected Optional<ProjectCoordinate> doSuggest(DependencyInfo dependencyInfo) {
-        ProjectCoordinate osgiPc = osgi.doSuggest(dependencyInfo).orNull();
+        ProjectCoordinate osgiPc = osgi.suggest(dependencyInfo).orNull();
         if (osgiPc == null) {
             return absent();
         }
@@ -55,7 +57,7 @@ public class ModelIndexBundleSymbolicNameAdvisor extends AbstractProjectCoordina
         if (indexPc == null) {
             return absent();
         }
-        return tryNewProjectCoordinate(indexPc.getGroupId(), indexPc.getArtifactId(),
+        return Coordinates.tryNewProjectCoordinate(indexPc.getGroupId(), indexPc.getArtifactId(),
                 canonicalizeVersion(indexPc.getVersion()));
     }
 

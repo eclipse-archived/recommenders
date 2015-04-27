@@ -13,6 +13,7 @@ package org.eclipse.recommenders.models;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.utils.Openable;
 
 import com.google.common.base.Optional;

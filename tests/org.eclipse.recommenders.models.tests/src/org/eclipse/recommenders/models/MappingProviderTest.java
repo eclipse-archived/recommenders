@@ -17,7 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.DependencyType;
+import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinateAdvisorService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.models;
 
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+
 import com.google.common.collect.ImmutableSet;
 
 public interface IDependencyListener {

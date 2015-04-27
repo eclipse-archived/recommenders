@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.testing.JarFileMockBuilder;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Zips;

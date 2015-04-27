@@ -22,9 +22,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.recommenders.models.DependencyInfo;
-import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.rcp.IRcpService;
 
 import com.google.common.base.Charsets;

@@ -12,7 +12,7 @@ package org.eclipse.recommenders.snipmatch;
 
 import java.util.Set;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 public interface ISearchContext {
 

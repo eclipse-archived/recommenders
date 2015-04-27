@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.recommenders.coordinates.tests
+Bundle-Version: 2.2.0.qualifier
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Fragment-Host: org.eclipse.recommenders.coordinates
+Require-Bundle: org.eclipse.recommenders.testing,
+ org.hamcrest,
+ org.junit,
+ org.mockito
