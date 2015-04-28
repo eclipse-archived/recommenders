@@ -8,7 +8,7 @@
  * Contributors:
  *     Olav Lenz - initial API and implementation
  */
-package org.eclipse.recommenders.coordinates.rt;
+package org.eclipse.recommenders.coordinates.jre;
 
 import static org.junit.Assert.*;
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     Andreas Sewe - initial API and implementation
  */
-package org.eclipse.recommenders.coordinates.rt;
+package org.eclipse.recommenders.coordinates.jre;
 
 import static org.eclipse.recommenders.coordinates.DependencyType.JAR;
 import static org.eclipse.recommenders.testing.FolderUtils.dir;

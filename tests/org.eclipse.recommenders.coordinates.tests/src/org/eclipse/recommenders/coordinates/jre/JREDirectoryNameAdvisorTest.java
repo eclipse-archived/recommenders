@@ -9,7 +9,7 @@
  *     Andreas Sewe - initial API and implementation
  *     Olav Lenz - made tests run on Windows
  */
-package org.eclipse.recommenders.coordinates.rt;
+package org.eclipse.recommenders.coordinates.jre;
 
 import static org.eclipse.recommenders.testing.FolderUtils.dir;
 import static org.hamcrest.CoreMatchers.*;
