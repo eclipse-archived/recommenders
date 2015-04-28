@@ -18,6 +18,7 @@ import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
+import static org.eclipse.recommenders.internal.calls.rcp.LogMessages.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 import static org.eclipse.recommenders.utils.Logs.log;
@@ -102,7 +103,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
         env = ctx.get(CompletionContextKey.LOOKUP_ENVIRONMENT).orNull();
         if (env == null) {
-            log(LogMessages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
+            log(WARNING_MISSING_LOOKUP_ENVIRONMENT);
             return false;
         }
 
@@ -207,7 +208,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         case CompletionProposal.METHOD_NAME_REFERENCE:
             IMethodName proposedMethod = ProposalUtils.toMethodName(coreProposal, env).orNull();
             if (proposedMethod == null) {
-                log(LogMessages.LOG_ERROR_PROPOSAL_MATCHING_FAILED, coreProposal);
+                log(ERROR_PROPOSAL_MATCHING_FAILED, coreProposal);
                 return;
             }
 

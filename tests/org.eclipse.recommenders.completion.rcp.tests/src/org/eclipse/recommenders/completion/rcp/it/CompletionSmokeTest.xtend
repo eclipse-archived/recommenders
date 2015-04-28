@@ -468,6 +468,10 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
     def getProcessor() {
         return processor
     }
+    
+    def getContext(){
+        return crContext;
+    }
 
     override isContentAssistConfigurationOkay() {
         true;

@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
+import static org.eclipse.recommenders.internal.calls.rcp.LogMessages.ERROR_RECEIVER_TYPE_LOOKUP_FAILED;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,9 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.calls.ICallModel;
@@ -106,14 +111,19 @@ public final class CallCompletionContextFunctions {
             try {
                 receiverType = findReceiver(context);
             } catch (Exception e) {
+                log(ERROR_RECEIVER_TYPE_LOOKUP_FAILED, e);
             }
             context.set(RECEIVER_TYPE2, receiverType);
             return receiverType;
         }
 
         private IType findReceiver(IRecommendersCompletionContext context) throws Exception {
+            ASTNode completionNode = context.getCompletionNode().orNull();
             IType receiverType = context.getReceiverType().orNull();
             String receiverName = context.getReceiverName();
+            if (isCompletionOnUnresolvedTypeName(completionNode, receiverType, receiverName)) {
+                return null;
+            }
             if (isExplicitThis(receiverName) || isImplicitThis(receiverType, receiverName)) {
                 final IMethod m = context.getEnclosingMethod().orNull();
                 if (m == null || JdtFlags.isStatic(m)) {
@@ -132,6 +142,15 @@ public final class CallCompletionContextFunctions {
                 }
             }
             return receiverType;
+        }
+
+        private boolean isCompletionOnUnresolvedTypeName(ASTNode completionNode, IType receiverType,
+                String receiverName) {
+            if (!(completionNode instanceof CompletionOnQualifiedNameReference)) {
+                return false;
+            }
+            CompletionOnQualifiedNameReference ref = (CompletionOnQualifiedNameReference) completionNode;
+            return ref.binding instanceof ProblemBinding && receiverType == null && isEmpty(receiverName);
         }
 
         private boolean isImplicitThis(IType receiverType, String receiverName) {

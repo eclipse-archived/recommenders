@@ -14,6 +14,7 @@ import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
@@ -22,10 +23,13 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT = new LogMessages(WARNING,
-            Messages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
-    public static final LogMessages LOG_ERROR_PROPOSAL_MATCHING_FAILED = new LogMessages(ERROR,
+    public static final LogMessages ERROR_PROPOSAL_MATCHING_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_PROPOSAL_MATCHING_FAILED);
+    public static final ILogMessage ERROR_RECEIVER_TYPE_LOOKUP_FAILED = new LogMessages(ERROR,
+            Messages.LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED);
+
+    public static final LogMessages WARNING_MISSING_LOOKUP_ENVIRONMENT = new LogMessages(WARNING,
+            Messages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
