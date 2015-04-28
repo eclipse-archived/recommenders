@@ -680,6 +680,8 @@ class CallCompletionAstAnalyzerTest {
         computer = Stubs.newCallComputer
         processor = computer.getProcessor
         CompletionSmokeTest.complete(computer, cu, struct.second.head)
+        CompletionSmokeTest.complete(computer, cu, struct.second.head)
+        
         model = processor.model
     }
 }

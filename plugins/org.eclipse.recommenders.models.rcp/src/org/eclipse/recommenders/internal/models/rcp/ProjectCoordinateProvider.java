@@ -11,13 +11,16 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.coordinates.DependencyType.*;
 import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createDependencyInfoForJre;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
+import static org.eclipse.recommenders.utils.Result.*;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -41,6 +45,7 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
@@ -180,8 +185,8 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
 
     private Optional<DependencyInfo> extractDependencyInfo(IJavaProject javaProject) {
         File location = getLocation(javaProject).orNull();
-        DependencyInfo request = new DependencyInfo(location, PROJECT, ImmutableMap.of(PROJECT_NAME,
-                javaProject.getElementName()));
+        DependencyInfo request = new DependencyInfo(location, PROJECT,
+                ImmutableMap.of(PROJECT_NAME, javaProject.getElementName()));
         return of(request);
     }
 
@@ -222,4 +227,47 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         return javaElementResolver.toRecMethod(method);
     }
 
+    @Override
+    public Result<UniqueTypeName> tryToUniqueName(IType type) {
+        Result<ProjectCoordinate> pc = tryToProjectCoordinate(type);
+        switch (pc.getReason()) {
+        case REASON_NOT_IN_CACHE:
+            return Result.absent(REASON_NOT_IN_CACHE);
+        case OK:
+            return Result.of(new UniqueTypeName(pc.get(), toName(type)));
+        case ABSENT:
+        default:
+            return Result.absent();
+        }
+    }
+
+    @Override
+    public Result<UniqueMethodName> tryToUniqueName(IMethod method) {
+        Result<ProjectCoordinate> pc = tryToProjectCoordinate(method);
+        switch (pc.getReason()) {
+        case REASON_NOT_IN_CACHE:
+            return Result.absent(REASON_NOT_IN_CACHE);
+        case OK:
+            Optional<IMethodName> name = toName(method);
+            if (name.isPresent()) {
+                return Result.of(new UniqueMethodName(pc.get(), name.get()));
+            }
+        case ABSENT:
+        default:
+            return Result.absent();
+        }
+    }
+
+    private Result<ProjectCoordinate> tryToProjectCoordinate(IJavaElement element) {
+        IPackageFragmentRoot root = cast(element.getAncestor(PACKAGE_FRAGMENT_ROOT));
+        if (root == null) {
+            return Result.absent();
+        }
+        Optional<DependencyInfo> info = dependencyInfoCache.getIfPresent(root);
+        if (info == null) {
+            return Result.absent(REASON_NOT_IN_CACHE);
+        }
+        Result<ProjectCoordinate> pc = pcAdvisorService.trySuggest(info.get());
+        return pc;
+    }
 }

@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static com.google.common.base.Optional.absent;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PROJECT_COORDINATES;
+import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +43,7 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChang
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
+import org.eclipse.recommenders.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,6 +145,15 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     }
 
     @Override
+    public Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo) {
+        Optional<ProjectCoordinate> pc = projectCoordinateCache.getIfPresent(dependencyInfo);
+        if (pc == null) {
+            return Result.absent(REASON_NOT_IN_CACHE);
+        }
+        return Result.of(pc.get());
+    }
+
+    @Override
     public ImmutableList<IProjectCoordinateAdvisor> getAdvisors() {
         return delegate.getAdvisors();
     }
@@ -220,4 +231,5 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
     public void clearCache() {
         projectCoordinateCache.invalidateAll();
     }
+
 }

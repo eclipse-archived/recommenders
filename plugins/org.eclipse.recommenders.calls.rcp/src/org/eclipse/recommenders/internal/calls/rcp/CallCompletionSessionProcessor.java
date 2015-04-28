@@ -19,8 +19,10 @@ import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLO
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
+import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Recommendations.top;
+import static org.eclipse.recommenders.utils.Result.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -48,11 +50,13 @@ import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorMana
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.utils.ProposalUtils;
+import org.eclipse.recommenders.internal.models.rcp.PrefetchModelArchiveJob;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -126,17 +130,21 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findReceiverTypeAndModel() {
-        IType receiverType = ctx.get(RECEIVER_TYPE2, null);
+        final IType receiverType = ctx.get(RECEIVER_TYPE2, null);
         if (receiverType == null) {
             return false;
         }
-        UniqueTypeName name = pcProvider.toUniqueName(receiverType).orNull();
-        if (name == null) {
+        Result<UniqueTypeName> res = pcProvider.tryToUniqueName(receiverType);
+        switch (res.getReason()) {
+        case OK:
+            model = modelProvider.acquireModel(res.get()).orNull();
+            return model != null;
+        case REASON_NOT_IN_CACHE:
+            new PrefetchModelArchiveJob<ICallModel>(receiverType, pcProvider, modelProvider).schedule(200);
+        case ABSENT:
+        default:
             return false;
         }
-        // TODO loop until we find a model. later
-        model = modelProvider.acquireModel(name).orNull();
-        return model != null;
     }
 
     private boolean findRecommendations() {

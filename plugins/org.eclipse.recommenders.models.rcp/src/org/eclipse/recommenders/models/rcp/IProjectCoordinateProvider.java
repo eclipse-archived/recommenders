@@ -20,6 +20,7 @@ import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
@@ -49,7 +50,11 @@ public interface IProjectCoordinateProvider {
 
     Optional<UniqueTypeName> toUniqueName(IType type);
 
+    Result<UniqueTypeName> tryToUniqueName(IType type);
+
     Optional<IMethodName> toName(IMethod method);
 
     Optional<UniqueMethodName> toUniqueName(IMethod method);
+
+    Result<UniqueMethodName> tryToUniqueName(IMethod method);
 }

@@ -12,6 +12,8 @@ package org.eclipse.recommenders.coordinates;
 
 import java.util.List;
 
+import org.eclipse.recommenders.utils.Result;
+
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -33,5 +35,7 @@ public interface IProjectCoordinateAdvisorService extends IProjectCoordinateAdvi
      * Sets a advisors for this registry. Overwrites any previously configured advisors.
      */
     void setAdvisors(List<IProjectCoordinateAdvisor> advisors);
+
+    Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo);
 
 }

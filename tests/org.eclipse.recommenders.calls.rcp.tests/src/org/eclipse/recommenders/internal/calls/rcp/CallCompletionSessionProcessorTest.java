@@ -25,6 +25,7 @@ import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -228,7 +229,7 @@ public class CallCompletionSessionProcessorTest {
         when(context.get(eq(RECEIVER_CALLS), anyListOf(IMethodName.class))).thenReturn(observedCalls);
 
         pcProvider = mock(IProjectCoordinateProvider.class);
-        when(pcProvider.toUniqueName(receiverType)).thenReturn(fromNullable(uniqueTypeName));
+        when(pcProvider.tryToUniqueName(receiverType)).thenReturn(Result.fromNullable(uniqueTypeName));
 
         modelProvider = mock(ICallModelProvider.class);
         ICallModel model;

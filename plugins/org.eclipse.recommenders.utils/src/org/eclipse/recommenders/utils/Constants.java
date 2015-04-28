@@ -106,4 +106,10 @@ public final class Constants {
     public static final String N_STATE_TRUE = "true";
     /** {@value} */
     public static final String N_STATE_FALSE = "false";
+
+    /*
+     * Common Result constants
+     */
+    public static final int REASON_NOT_IN_CACHE = 1;
+
 }

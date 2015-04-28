@@ -11,8 +11,11 @@
 package org.eclipse.recommenders.coordinates;
 
 import static com.google.common.base.Optional.absent;
+import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 
 import java.util.List;
+
+import org.eclipse.recommenders.utils.Result;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -50,5 +53,10 @@ public class ProjectCoordinateAdvisorService implements IProjectCoordinateAdviso
             }
         }
         return absent();
+    }
+
+    @Override
+    public Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo) {
+        return Result.absent(REASON_NOT_IN_CACHE);
     }
 }

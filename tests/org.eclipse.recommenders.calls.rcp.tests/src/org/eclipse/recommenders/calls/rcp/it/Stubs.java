@@ -31,6 +31,7 @@ import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -155,12 +156,12 @@ public class Stubs {
     public static MockedIntelligentCompletionProposalComputer newCallComputer() {
         IProjectCoordinateProvider pcProvider = mock(IProjectCoordinateProvider.class);
 
-        when(pcProvider.toUniqueName((IType) anyObject())).thenAnswer(new Answer<Optional<UniqueTypeName>>() {
+        when(pcProvider.tryToUniqueName((IType) anyObject())).thenAnswer(new Answer<Result<UniqueTypeName>>() {
 
             @Override
-            public Optional<UniqueTypeName> answer(InvocationOnMock invocation) throws Throwable {
+            public Result<UniqueTypeName> answer(InvocationOnMock invocation) throws Throwable {
                 // wanna refine this later.
-                return of(new UniqueTypeName(UNKNOWN, VmTypeName.OBJECT));
+                return Result.of(new UniqueTypeName(UNKNOWN, VmTypeName.OBJECT));
             }
         });
 
