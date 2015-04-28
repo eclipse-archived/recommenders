@@ -25,8 +25,8 @@ public class FeedDescriptors {
 
     private static final String ENABLED_BY_DEFAULT_ATTRIBUTE = "enabledByDefault"; //$NON-NLS-1$
 
-    private static final char DISABLED_FLAG = '!';
-    private static final char SEPARATOR = ';';
+    public static final char DISABLED_FLAG = '!';
+    public static final char SEPARATOR = ';';
 
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.news.rcp.feed"; //$NON-NLS-1$
 
@@ -79,20 +79,24 @@ public class FeedDescriptors {
 
     public static String store(List<FeedDescriptor> descriptors) {
         StringBuilder sb = new StringBuilder();
-
         Iterator<FeedDescriptor> it = descriptors.iterator();
         while (it.hasNext()) {
             FeedDescriptor descriptor = it.next();
-            if (!descriptor.isEnabled()) {
-                sb.append(DISABLED_FLAG);
-            }
-            sb.append(descriptor.getId());
-            if (it.hasNext()) {
-                sb.append(SEPARATOR);
+            if (!sb.toString().contains(descriptor.getId())) {
+                if (!descriptor.isEnabled()) {
+                    sb.append(DISABLED_FLAG);
+                }
+                sb.append(descriptor.getId());
+                if (it.hasNext()) {
+                    sb.append(SEPARATOR);
+                }
             }
         }
-
-        return sb.toString();
+        String result = sb.toString();
+        if (result.length() > 1 && result.lastIndexOf(SEPARATOR) == result.length() - 1) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result;
     }
 
     private static FeedDescriptor find(List<FeedDescriptor> descriptors, String id) {
