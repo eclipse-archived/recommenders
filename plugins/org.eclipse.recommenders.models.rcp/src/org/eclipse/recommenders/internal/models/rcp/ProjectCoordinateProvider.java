@@ -263,11 +263,14 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         if (root == null) {
             return Result.absent();
         }
-        Optional<DependencyInfo> info = dependencyInfoCache.getIfPresent(root);
-        if (info == null) {
-            return Result.absent(REASON_NOT_IN_CACHE);
+        try {
+            DependencyInfo info = dependencyInfoCache.get(root).orNull();
+            if (info == null) {
+                return Result.absent();
+            }
+            return pcAdvisorService.trySuggest(info); // Pass-through REASON_NOT_IN_CACHE results
+        } catch (Exception e) {
+            return Result.absent(e);
         }
-        Result<ProjectCoordinate> pc = pcAdvisorService.trySuggest(info.get());
-        return pc;
     }
 }
