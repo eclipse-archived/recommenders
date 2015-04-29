@@ -6,7 +6,7 @@
 		<view id="org.eclipse.recommenders.apidocs.rcp.views.apidocs"
 			category="org.eclipse.recommenders.rcp.views.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.ApidocsView"
-			icon="icons/extdoc.png"
+			icon="icons/view16/apidocs.png"
 			name="%views.apidocs.name"
 			restorable="true"/>
 	</extension>
@@ -15,16 +15,16 @@
 	</extension>
 	<extension point="org.eclipse.recommenders.apidocs.rcp.providers">
 		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.JavadocProvider"
-				image="icons/provider.javadoc.gif"
+				image="icons/obj16/javadoc.gif"
 				name="%providers.javadoc.name"/>
 		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.OverridesProvider"
-				image="icons/provider.subclassing.gif"
+				image="icons/obj16/overrides.gif"
 				name="%providers.overrides.name"/>
 		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.SelfCallsProvider"
-				image="icons/tag_orange.png"
+				image="icons/obj16/selfCalls.png"
 				name="%providers.selfCalls.name"/>
 		<provider class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.apidocs.rcp.StaticHooksProvider"
-				image="icons/provider.hooks.png"
+				image="icons/obj16/staticHooks.png"
 				name="%providers.staticHooks.name"/>
 	</extension>
 	<extension point="org.eclipse.recommenders.models.rcp.models">
