@@ -54,7 +54,7 @@
 					<artifactId>tycho-eclipserun-plugin</artifactId>
 					<executions>
 						<execution>
-							<!-- See http://wiki.eclipse.org/Equinox/p2/p2.mirrorsURL -->
+							<!-- See <http://wiki.eclipse.org/Equinox/p2/p2.mirrorsURL>. -->
 							<id>add-p2-mirrors-url-property</id>
 							<goals>
 								<goal>eclipse-run</goal>
@@ -72,7 +72,7 @@
 							</configuration>
 						</execution>
 						<execution>
-							<!-- See http://wiki.eclipse.org/Equinox_p2_download_stats -->
+							<!-- See <http://wiki.eclipse.org/Equinox_p2_download_stats>. -->
 							<id>add-p2-stats-uri-property</id>
 							<goals>
 								<goal>eclipse-run</goal>
