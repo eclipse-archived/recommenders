@@ -46,6 +46,10 @@ public class ProposalSorter extends AbstractProposalSorter {
             return compareRepositoryWithSnippet((RepositoryProposal) lhs, (SnippetProposal) rhs);
         } else if (lhs instanceof SnippetProposal && rhs instanceof RepositoryProposal) {
             return -compareRepositoryWithSnippet((RepositoryProposal) rhs, (SnippetProposal) lhs);
+        } else if (lhs instanceof ContextLoadingProposal) {
+            return -1;
+        } else if (rhs instanceof ContextLoadingProposal) {
+            return +1;
         } else {
             return FALLBACK_SORTER.compare(lhs, rhs);
         }

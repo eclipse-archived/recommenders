@@ -45,6 +45,8 @@ public interface IProjectCoordinateProvider {
 
     Optional<ProjectCoordinate> resolve(DependencyInfo info);
 
+    Result<ProjectCoordinate> tryResolve(DependencyInfo info);
+
     // TODO: convenience method to save a few lines of code to get from an IDE element to a qualified name
     ITypeName toName(IType type);
 
@@ -57,4 +59,5 @@ public interface IProjectCoordinateProvider {
     Optional<UniqueMethodName> toUniqueName(IMethod method);
 
     Result<UniqueMethodName> tryToUniqueName(IMethod method);
+
 }

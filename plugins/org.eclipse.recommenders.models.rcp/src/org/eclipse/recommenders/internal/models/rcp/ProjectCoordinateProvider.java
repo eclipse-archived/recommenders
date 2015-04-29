@@ -196,6 +196,11 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     }
 
     @Override
+    public Result<ProjectCoordinate> tryResolve(DependencyInfo info) {
+        return pcAdvisorService.trySuggest(info);
+    }
+
+    @Override
     public Optional<UniqueTypeName> toUniqueName(IType type) {
         ProjectCoordinate base = resolve(type).orNull();
         if (null == base) {

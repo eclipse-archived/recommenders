@@ -555,7 +555,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
     }
 
     private void reload() {
-        Job reconnectJob = new Job(Messages.JOB_RECONNECTING_SNIPPET_REPOSITORY) {
+        Job reconnectJob = new Job(Messages.JOB_NAME_RECONNECTING_SNIPPET_REPOSITORY) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -892,8 +892,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 Job.getJobManager().cancel(SearchJob.SEARCH_JOB_FAMILY);
                 Job.getJobManager().cancel(RefreshTableJob.REFRESH_TABLE_JOB_FAMILY);
                 final String query = txtSearch.isDisposed() ? "" : txtSearch.getText();
-                Job searchSnippetsJob = new SearchJob(Messages.JOB_SEARCHING_SNIPPET_REPOSITORIES, query);
-                Job refreshTableJob = new RefreshTableJob(Messages.JOB_REFRESHING_SNIPPETS_VIEW);
+                Job searchSnippetsJob = new SearchJob(Messages.JOB_NAME_SEARCHING_SNIPPET_REPOSITORIES, query);
+                Job refreshTableJob = new RefreshTableJob(Messages.JOB_NAME_REFRESHING_SNIPPETS_VIEW);
                 Jobs.sequential(Messages.JOB_GROUP_UPDATING_SNIPPETS_VIEW, searchSnippetsJob, refreshTableJob);
             }
         });

@@ -38,6 +38,7 @@ import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryC
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class SnipmatchContentAssistProcessorTest {
         when(javaProject.getProject().getLocation().toFile()).thenReturn(PROJECT_DIR);
         when(javaProject.getElementName()).thenReturn("example");
 
-        when(pcProvider.resolve(PROJECT_INFO)).thenReturn(Optional.of(EXAMPLE_COORDINATE));
+        when(pcProvider.tryResolve(PROJECT_INFO)).thenReturn(Result.of(EXAMPLE_COORDINATE));
         when(dependencyListener.getDependenciesForProject(PROJECT_INFO)).thenReturn(dependencies);
 
         ICompilationUnit compilationUnit = mock(ICompilationUnit.class);

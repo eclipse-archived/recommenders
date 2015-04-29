@@ -160,7 +160,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                 return;
             }
             if (openJob == null && !delegateOpen) {
-                openJob = new Job(Messages.JOB_OPENING_SNIPPET_REPOSITORY) {
+                openJob = new Job(Messages.JOB_NAME_OPENING_SNIPPET_REPOSITORY) {
 
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
@@ -655,7 +655,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         int timeout = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.REMOTE_CONNECTION_TIMEOUT);
         final PushOperation push = new PushOperation(repository, config.getName(), false, timeout);
         push.setCredentialsProvider(new EGitCredentialsProvider());
-        Job pushJob = new Job(Messages.JOB_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO) {
+        Job pushJob = new Job(Messages.JOB_NAME_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {

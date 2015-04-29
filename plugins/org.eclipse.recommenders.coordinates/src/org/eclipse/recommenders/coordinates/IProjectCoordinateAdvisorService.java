@@ -37,5 +37,4 @@ public interface IProjectCoordinateAdvisorService extends IProjectCoordinateAdvi
     void setAdvisors(List<IProjectCoordinateAdvisor> advisors);
 
     Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo);
-
 }

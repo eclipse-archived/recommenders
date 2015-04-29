@@ -27,6 +27,10 @@ public final class Messages extends NLS {
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_SNIPPET_TITLE;
 
+    public static String PROPOSAL_INFO_IDENTIFYING_PROJECT_DEPENDENCIES;
+
+    public static String PROPOSAL_LABEL_IDENTIFYING_PROJECT_DEPENDENCIES;
+
     public static String DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME;
     public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
@@ -140,13 +144,15 @@ public final class Messages extends NLS {
     public static String SNIPPETS_VIEW_MENUITEM_REMOVE_SNIPPET;
     public static String SNIPPETS_VIEW_MENUITEM_SHARE_SNIPPET;
 
+    public static String JOB_NAME_IDENTIFYING_PROJECT_DEPENDENCIES;
+    public static String JOB_NAME_OPENING_SNIPPET_REPOSITORY;
+    public static String JOB_NAME_RECONNECTING_SNIPPET_REPOSITORY;
+    public static String JOB_NAME_SEARCHING_SNIPPET_REPOSITORIES;
+    public static String JOB_NAME_REFRESHING_SNIPPETS_VIEW;
+    public static String JOB_NAME_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
+
     public static String JOB_GROUP_UPDATING_SNIPPETS_VIEW;
-    public static String JOB_OPENING_SNIPPET_REPOSITORY;
-    public static String JOB_RECONNECTING_SNIPPET_REPOSITORY;
-    public static String JOB_REFRESHING_SNIPPETS_VIEW;
     public static String JOB_RESETTING_GIT_REPOSITORY;
-    public static String JOB_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
-    public static String JOB_SEARCHING_SNIPPET_REPOSITORIES;
 
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_NEW;

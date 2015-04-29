@@ -13,56 +13,23 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import java.util.Set;
 
 import org.eclipse.jdt.core.CompletionContext;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
-import org.eclipse.recommenders.internal.models.rcp.Dependencies;
-import org.eclipse.recommenders.models.IDependencyListener;
-import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.utils.Logs;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 public class JavaEditorSearchContext extends SearchContext {
 
     private final JavaContentAssistInvocationContext invocationContext;
 
     public JavaEditorSearchContext(String searchText, JavaContentAssistInvocationContext invocationContext,
-            IDependencyListener dependencyListener, IProjectCoordinateProvider pcProvider) {
-        super(searchText, getLocation(invocationContext), getAvailableDependencies(invocationContext, pcProvider,
-                dependencyListener));
+            Set<ProjectCoordinate> projectCoordinates) {
+        super(searchText, getLocation(invocationContext), projectCoordinates);
         this.invocationContext = invocationContext;
-    }
-
-    private static Set<ProjectCoordinate> getAvailableDependencies(
-            JavaContentAssistInvocationContext invocationContext, IProjectCoordinateProvider pcProvider,
-            IDependencyListener dependencyListener) {
-        IJavaProject project = invocationContext.getCompilationUnit().getJavaProject();
-        ImmutableSet<DependencyInfo> availableDependencies = dependencyListener.getDependenciesForProject(Dependencies
-                .createDependencyInfoForProject(project));
-
-        return resolve(pcProvider, availableDependencies);
-    }
-
-    private static Set<ProjectCoordinate> resolve(IProjectCoordinateProvider pcProvider,
-            Set<DependencyInfo> dependencyInfos) {
-        Set<ProjectCoordinate> result = Sets.newHashSet();
-
-        for (DependencyInfo dependencyInfo : dependencyInfos) {
-            ProjectCoordinate pc = pcProvider.resolve(dependencyInfo).orNull();
-            if (pc != null) {
-                result.add(pc);
-            }
-        }
-
-        return result;
     }
 
     private static Location getLocation(JavaContentAssistInvocationContext context) {

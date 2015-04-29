@@ -17,11 +17,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
@@ -36,6 +38,9 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.models.rcp.Dependencies;
 import org.eclipse.recommenders.models.IDependencyListener;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -44,12 +49,15 @@ import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Result;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class SnipmatchContentAssistProcessor implements IContentAssistProcessor {
@@ -58,11 +66,14 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     private final SnippetRepositoryConfigurations configs;
     private final IProjectCoordinateProvider pcProvider;
     private final IDependencyListener dependencyListener;
+    private final Image contextLoadingImage;
     private final Image snippetImage;
     private final TemplateContextType snipmatchContextType;
 
     private JavaContentAssistInvocationContext context;
+    private ImmutableSet<DependencyInfo> availableDependencies;
     private String terms;
+    private ContextLoadingProposal contextLoadingProposal;
 
     @Inject
     public SnipmatchContentAssistProcessor(SnippetRepositoryConfigurations configs, Repositories repos,
@@ -71,11 +82,19 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
         this.configs = configs;
         this.dependencyListener = dependencyListener;
         this.pcProvider = pcProvider;
+        contextLoadingImage = images.getImage(SharedImages.Images.OBJ_HOURGLASS);
         snippetImage = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
         snipmatchContextType = SnipmatchTemplateContextType.getInstance();
     }
 
     public void setContext(JavaContentAssistInvocationContext context) {
+        IJavaProject project = context.getCompilationUnit().getJavaProject();
+        availableDependencies = dependencyListener
+                .getDependenciesForProject(Dependencies.createDependencyInfoForProject(project));
+        if (!allProjectCoordinatesCached(pcProvider, availableDependencies)) {
+            contextLoadingProposal = new ContextLoadingProposal(pcProvider, availableDependencies, contextLoadingImage);
+            contextLoadingProposal.schedule();
+        }
         this.context = context;
     }
 
@@ -90,8 +109,8 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             return new ICompletionProposal[0];
         }
 
-        JavaEditorSearchContext searchContext = new JavaEditorSearchContext(terms, context, dependencyListener,
-                pcProvider);
+        Set<ProjectCoordinate> projectCoordinates = tryResolve(pcProvider, availableDependencies);
+        JavaEditorSearchContext searchContext = new JavaEditorSearchContext(terms, context, projectCoordinates);
 
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
 
@@ -101,7 +120,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
         Collections.sort(sortedConfigs, new Comparator<SnippetRepositoryConfiguration>() {
             @Override
             public int compare(SnippetRepositoryConfiguration o1, SnippetRepositoryConfiguration o2) {
-                return Integer.valueOf(o1.getPriority()).compareTo(o2.getPriority());
+                return Integer.compare(o1.getPriority(), o2.getPriority());
             }
         });
 
@@ -148,7 +167,15 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
             }
         }
 
+        if (isResolvingProjectDependencies()) {
+            proposals.add(contextLoadingProposal);
+        }
+
         return Iterables.toArray(proposals, ICompletionProposal.class);
+    }
+
+    private boolean isResolvingProjectDependencies() {
+        return contextLoadingProposal != null && contextLoadingProposal.isStillLoading();
     }
 
     @Override
@@ -174,5 +201,30 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     @Override
     public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
         return null;
+    }
+
+    private static boolean allProjectCoordinatesCached(IProjectCoordinateProvider pcProvider,
+            Set<DependencyInfo> dependencyInfos) {
+        for (DependencyInfo dependencyInfo : dependencyInfos) {
+            Result<ProjectCoordinate> pc = pcProvider.tryResolve(dependencyInfo);
+            if (pc.getReason() == org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static Set<ProjectCoordinate> tryResolve(IProjectCoordinateProvider pcProvider,
+            Set<DependencyInfo> dependencyInfos) {
+        Set<ProjectCoordinate> result = Sets.newHashSet();
+
+        for (DependencyInfo dependencyInfo : dependencyInfos) {
+            ProjectCoordinate pc = pcProvider.tryResolve(dependencyInfo).or(null);
+            if (pc != null) {
+                result.add(pc);
+            }
+        }
+
+        return result;
     }
 }
