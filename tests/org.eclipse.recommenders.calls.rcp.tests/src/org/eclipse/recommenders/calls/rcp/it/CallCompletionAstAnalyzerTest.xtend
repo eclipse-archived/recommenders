@@ -17,6 +17,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference
 
 class CallCompletionAstAnalyzerTest {
 
@@ -664,6 +665,22 @@ class CallCompletionAstAnalyzerTest {
         verifyCalls(newHashSet())
     }
 
+    @Test
+    def void testUnresolvedImportProblemBinding() {
+        code = CodeBuilder.method(
+            '''
+                Window.g$;
+            ''')
+
+        exercise()
+        
+        val context = computer.getContext
+        val completionNode = context.completionNode.orNull as CompletionOnQualifiedNameReference
+        // binding is not null && is a problem binding:
+        Assert.assertFalse(completionNode.binding.isValidBinding)
+
+    }
+
     def verifyDefinition(DefinitionKind expected) {
         val actual = model.observedDefinitionKind.orNull
         Assert.assertEquals(expected, actual)
@@ -680,8 +697,6 @@ class CallCompletionAstAnalyzerTest {
         computer = Stubs.newCallComputer
         processor = computer.getProcessor
         CompletionSmokeTest.complete(computer, cu, struct.second.head)
-        CompletionSmokeTest.complete(computer, cu, struct.second.head)
-        
         model = processor.model
     }
 }
