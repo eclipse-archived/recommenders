@@ -29,10 +29,10 @@ public class SessionProcessorDescriptor {
     private final String id;
     private final String name;
     private final String description;
-    private final Image icon;
     private final int priority;
     private final boolean enabledByDefault;
     private final String preferencePage;
+    private Image icon;
 
     private SessionProcessor processor;
 
@@ -41,7 +41,6 @@ public class SessionProcessorDescriptor {
         this.id = config.getAttribute("id"); //$NON-NLS-1$
         this.name = config.getAttribute("name"); //$NON-NLS-1$
         this.description = firstNonNull(config.getAttribute("description"), ""); //$NON-NLS-1$ //$NON-NLS-2$
-        this.icon = createIcon(config);
         String priorityString = config.getAttribute("priority"); //$NON-NLS-1$
         this.priority = priorityString == null ? DEFAULT_PRIORITY : Integer.parseInt(priorityString);
         String enabledByDefaultString = config.getAttribute("enabledByDefault"); //$NON-NLS-1$
@@ -63,12 +62,6 @@ public class SessionProcessorDescriptor {
         this.processor = processor;
     }
 
-    private static Image createIcon(IConfigurationElement config) {
-        String pluginId = config.getContributor().getName();
-        String iconPath = config.getAttribute("icon"); //$NON-NLS-1$
-        return AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, iconPath).createImage();
-    }
-
     public String getId() {
         return id;
     }
@@ -81,8 +74,18 @@ public class SessionProcessorDescriptor {
         return description;
     }
 
-    public Image getIcon() {
+    public synchronized Image getIcon() {
+        if (icon == null) {
+            // postpone expensive file operations until really necessary
+            icon = createIcon(config);
+        }
         return icon;
+    }
+
+    private static Image createIcon(IConfigurationElement config) {
+        String pluginId = config.getContributor().getName();
+        String iconPath = config.getAttribute("icon"); //$NON-NLS-1$
+        return AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, iconPath).createImage();
     }
 
     public int getPriority() {
