@@ -149,8 +149,11 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         Optional<ProjectCoordinate> pc = projectCoordinateCache.getIfPresent(dependencyInfo);
         if (pc == null) {
             return Result.absent(REASON_NOT_IN_CACHE);
+        } else if (pc.isPresent()) {
+            return Result.of(pc.get());
+        } else {
+            return Result.absent();
         }
-        return Result.of(pc.get());
     }
 
     @Override
