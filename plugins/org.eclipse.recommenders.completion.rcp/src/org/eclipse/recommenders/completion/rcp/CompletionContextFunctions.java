@@ -15,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR_CHAR;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.*;
 import static org.eclipse.recommenders.jdt.JavaElementsFinder.resolveType;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findFirstDeclaration;
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -229,8 +229,9 @@ public final class CompletionContextFunctions {
             for (char[] signature : Objects.firstNonNull(signatures, NO_CHAR_CHAR)) {
                 IJavaElement enclosing = context.getEnclosingElement().orNull();
                 ITypeName resolved = resolveType(signature, enclosing).orNull();
-                if (resolved != null)
+                if (resolved != null) {
                     res.add(resolved);
+                }
             }
             context.set(key, res);
             return res;
@@ -268,8 +269,8 @@ public final class CompletionContextFunctions {
                     public void accept(CompletionProposal proposal) {
                     }
                 });
-            } catch (JavaModelException x) {
-                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
+            } catch (JavaModelException e) {
+                log(ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET, e, cu.getElementName(), offset);
             } finally {
                 discardWorkingCopy(wc);
             }
@@ -282,7 +283,7 @@ public final class CompletionContextFunctions {
                     wc.discardWorkingCopy();
                 }
             } catch (JavaModelException x) {
-                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
+                log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, x);
             }
         }
 
@@ -398,7 +399,7 @@ public final class CompletionContextFunctions {
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
             } catch (final Exception e) {
-                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+                log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
             InternalCompletionContext internal = collector.getCoreContext();
             context.set(INTERNAL_COMPLETIONCONTEXT, internal);
@@ -523,12 +524,12 @@ public final class CompletionContextFunctions {
             try {
                 internalCompletionContextClass = InternalCompletionContext.class;
             } catch (LinkageError e) {
-                Logs.log(LogMessages.LOG_WARNING_LINKAGE_ERROR, e);
+                Logs.log(LogMessages.WARNING_LINKAGE_ERROR, e);
             }
             try {
                 internalExtendedCompletionContextClass = InternalExtendedCompletionContext.class;
             } catch (LinkageError e) {
-                Logs.log(LogMessages.LOG_WARNING_LINKAGE_ERROR, e);
+                Logs.log(LogMessages.WARNING_LINKAGE_ERROR, e);
             }
         }
 
@@ -557,7 +558,7 @@ public final class CompletionContextFunctions {
                 context.set(key, env);
                 return env;
             } catch (Exception e) {
-                Logs.log(LogMessages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT, e);
+                Logs.log(LogMessages.ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT, e);
                 return null;
             }
         }

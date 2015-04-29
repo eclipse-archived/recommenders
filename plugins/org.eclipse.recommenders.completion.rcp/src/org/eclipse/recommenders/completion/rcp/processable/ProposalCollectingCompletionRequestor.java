@@ -13,7 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.eclipse.jdt.core.CompletionProposal.*;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -193,7 +193,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
                 return Iterables.toArray(res, IJavaCompletionProposal.class);
             } catch (Exception e) {
                 // log and use the fallback mechanism
-                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+                log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
         }
         // fallback if the above code fails (that's the old code). We may remove this later if we now it works reliably.

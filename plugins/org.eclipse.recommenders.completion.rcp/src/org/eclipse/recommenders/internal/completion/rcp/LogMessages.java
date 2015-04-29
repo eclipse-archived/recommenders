@@ -22,15 +22,18 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages LOG_ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
+    public static final LogMessages ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
-    public static final LogMessages LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
+    public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
-    public static final LogMessages LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
+    public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET = new LogMessages(ERROR,
+            Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET);
+    public static final LogMessages ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT);
-    public static final LogMessages LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
+    public static final LogMessages ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
             Messages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING);
-    public static final LogMessages LOG_WARNING_LINKAGE_ERROR = new LogMessages(WARNING,
+
+    public static final LogMessages WARNING_LINKAGE_ERROR = new LogMessages(WARNING,
             Messages.LOG_WARNING_LINKAGE_ERROR);
 
     private LogMessages(int severity, String message) {

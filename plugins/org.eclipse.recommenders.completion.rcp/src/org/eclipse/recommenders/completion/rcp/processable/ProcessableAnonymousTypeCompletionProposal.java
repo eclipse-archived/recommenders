@@ -13,7 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -69,7 +69,7 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
                     return superType;
                 }
             } catch (Exception e) {
-                log(LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+                log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
         }
         return (IType) context.getProject().findElement(String.valueOf(coreProposal.getDeclarationKey()), null);

@@ -15,7 +15,7 @@ package org.eclipse.recommenders.completion.rcp.utils;
 import static com.google.common.base.Optional.absent;
 import static java.lang.Math.min;
 import static org.eclipse.jdt.core.compiler.CharOperation.splitOn;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
@@ -101,7 +101,7 @@ public final class ProposalUtils {
         try {
             overloads = declaringType.getMethods(methodName);
         } catch (AbortCompilation e) {
-            log(LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, null, proposal);
+            log(ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, null, proposal);
             return absent();
         }
 

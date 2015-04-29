@@ -14,7 +14,7 @@ import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ACTIV
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.LOG_ERROR_SESSION_PROCESSOR_FAILED;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_SESSION_PROCESSOR_FAILED;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -96,7 +96,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 processors.add(d.getProcessor());
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, d.getId());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, d.getId());
             }
         }
         activeProcessors.clear();
@@ -240,7 +240,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 p.initializeContext(crContext);
             } catch (Throwable e) {
                 it.remove();
-                Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                Logs.log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -255,7 +255,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 }
             } catch (Throwable e) {
                 it.remove();
-                Logs.log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                Logs.log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -266,7 +266,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 proposal.getRelevance();
                 p.process(proposal);
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
         proposal.getProposalProcessorManager().prefixChanged(crContext.getPrefix());
@@ -277,7 +277,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 p.endSession(proposals);
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -287,7 +287,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 p.aboutToShow(proposals);
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -297,7 +297,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 p.aboutToClose();
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -322,7 +322,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 p.selected(proposal);
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
     }
@@ -333,7 +333,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             try {
                 p.applied(proposal);
             } catch (Throwable e) {
-                log(LOG_ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
+                log(ERROR_SESSION_PROCESSOR_FAILED, e, p.getClass());
             }
         }
         unregisterCompletionListener();
