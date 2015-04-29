@@ -14,8 +14,8 @@ import static org.eclipse.recommenders.coordinates.Coordinates.isValidId;
 import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Versions.isValidVersion;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
+
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Versions;
 
@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
 /**
  * Represents a triple "group-id:artifact-id:version".
  */
-public class ProjectCoordinate {
+public final class ProjectCoordinate {
 
     /**
      * Constant that represents an unknown project coordinate. Use this constant whenever <code>null</code> or
@@ -69,12 +69,17 @@ public class ProjectCoordinate {
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, false);
+        return Objects.hash(groupId, artifactId, version);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals(Object other) {
+        if (!(other instanceof ProjectCoordinate)) {
+            return false;
+        }
+        ProjectCoordinate that = (ProjectCoordinate) other;
+        return Objects.equals(this.artifactId, that.artifactId) && Objects.equals(this.groupId, that.groupId)
+                && Objects.equals(this.version, that.version);
     }
 
     @Override
