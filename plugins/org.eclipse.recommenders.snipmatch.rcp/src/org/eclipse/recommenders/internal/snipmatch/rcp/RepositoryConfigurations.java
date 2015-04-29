@@ -61,7 +61,7 @@ public final class RepositoryConfigurations {
                 configurations = (SnippetRepositoryConfigurations) resource.getContents().get(0);
             }
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_LOADING_REPO_CONFIGURATION, file, e);
+            Logs.log(LogMessages.ERROR_LOADING_REPO_CONFIGURATION, e, file);
         }
 
         return configurations;
@@ -84,7 +84,7 @@ public final class RepositoryConfigurations {
         try {
             resource.save(Collections.EMPTY_MAP);
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_STORING_REPO_CONFIGURATION, file, e);
+            Logs.log(LogMessages.ERROR_STORING_REPO_CONFIGURATION, e, file);
         }
     }
 
