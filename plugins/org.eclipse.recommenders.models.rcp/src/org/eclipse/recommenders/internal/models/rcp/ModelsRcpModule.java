@@ -48,7 +48,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
 
-@SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule {
 
     private static final String EXT_ID_MODEL_CLASSIFIER = "org.eclipse.recommenders.models.rcp.models"; //$NON-NLS-1$
@@ -108,7 +107,7 @@ public class ModelsRcpModule extends AbstractModule {
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            Logs.log(LogMessages.LOG_ERROR_BIND_FILE_NAME, fileName, e);
+            Logs.log(LogMessages.ERROR_BIND_FILE_NAME, fileName, e);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }
@@ -171,7 +170,7 @@ public class ModelsRcpModule extends AbstractModule {
                 String fileExtension = element.getAttribute(TRANSFORMER_FILE_EXTENSION_ATTRIBUTE);
                 builder.put(fileExtension, transformer);
             } catch (CoreException e) {
-                Logs.log(LogMessages.LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED,
+                Logs.log(LogMessages.ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED,
                         element.getAttribute(TRANSFORMER_CLASS_ATTRIBUTE), e);
             }
         }

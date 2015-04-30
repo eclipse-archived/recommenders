@@ -35,8 +35,10 @@ import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+@SuppressWarnings("restriction")
 public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDialog {
 
     private static final String DIALOG_SETTINGS = "ProjectCoordinateSelectionDialog"; //$NON-NLS-1$
@@ -149,13 +151,8 @@ public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDial
     }
 
     @Override
-    protected Comparator getItemsComparator() {
-        return new Comparator() {
-            @Override
-            public int compare(Object arg0, Object arg1) {
-                return arg0.toString().compareTo(arg1.toString());
-            }
-        };
+    protected Comparator<?> getItemsComparator() {
+        return Ordering.usingToString();
     }
 
     @Override

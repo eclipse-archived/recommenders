@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
-import static org.eclipse.recommenders.internal.models.rcp.LogMessages.SAVE_PREFERENCES_FAILED;
+import static org.eclipse.recommenders.internal.models.rcp.LogMessages.ERROR_SAVE_PREFERENCES_FAILED;
 import static org.eclipse.recommenders.models.IModelIndex.INDEX;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -152,7 +152,7 @@ public class DownloadModelArchiveJob extends Job {
             try {
                 ((ScopedPreferenceStore) getPrefStore()).save();
             } catch (IOException e) {
-                log(SAVE_PREFERENCES_FAILED, e);
+                log(ERROR_SAVE_PREFERENCES_FAILED, e);
             }
         }
 

@@ -12,8 +12,10 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.absent;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.eclipse.recommenders.internal.models.rcp.LogMessages.ERROR_IN_ADVISOR_SERVICE_SUGGEST;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PROJECT_COORDINATES;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -43,6 +44,7 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChang
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +61,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
+import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinateAdvisorService, IRcpService {
+public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
+        implements IProjectCoordinateAdvisorService, IRcpService {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -92,7 +96,6 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
                 .registerTypeAdapter(Optional.class, new OptionalJsonTypeAdapter<ProjectCoordinate>())
                 .enableComplexMapKeySerialization().serializeNulls().create();
         projectCoordinateCache = createCache();
-        configureAdvisorList(prefs.advisorConfiguration);
     }
 
     private LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> createCache() {
@@ -104,6 +107,72 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
                         return delegate.suggest(info);
                     }
                 });
+    }
+
+    @Override
+    public ImmutableList<IProjectCoordinateAdvisor> getAdvisors() {
+        return delegate.getAdvisors();
+    }
+
+    @Override
+    public void addAdvisor(IProjectCoordinateAdvisor advisor) {
+        delegate.addAdvisor(advisor);
+    }
+
+    @Override
+    public void setAdvisors(List<IProjectCoordinateAdvisor> advisors) {
+        delegate.setAdvisors(advisors);
+    }
+
+    public AdvisorDescriptor getDescriptor(IProjectCoordinateAdvisor advisor) {
+        return descriptors.get(advisor);
+    }
+
+    /**
+     * Looks up the ProjectCoordinate and resolves if necessary. This method blocks until the service is started and may
+     * be long-running.
+     */
+    @Override
+    public Optional<ProjectCoordinate> suggest(DependencyInfo dependencyInfo) {
+        try {
+            awaitRunning();
+            return projectCoordinateCache.get(dependencyInfo);
+        } catch (Exception e) {
+            log(ERROR_IN_ADVISOR_SERVICE_SUGGEST, e, dependencyInfo.toString());
+            return absent();
+        }
+    }
+
+    @Override
+    public Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo) {
+        Optional<ProjectCoordinate> pc = projectCoordinateCache.getIfPresent(dependencyInfo);
+        if (pc == null) {
+            return Result.absent(REASON_NOT_IN_CACHE);
+        } else if (pc.isPresent()) {
+            return Result.of(pc.get());
+        } else {
+            return Result.absent();
+        }
+    }
+
+    @PostConstruct
+    public void open() throws IOException {
+        startAsync();
+    }
+
+    @Override
+    protected void startUp() throws Exception {
+        configureAdvisorList(prefs.advisorConfiguration);
+
+        if (!persistenceFile.exists()) {
+            return;
+        }
+        String json = Files.toString(persistenceFile, Charsets.UTF_8);
+        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
+
+        for (Entry<DependencyInfo, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
+            projectCoordinateCache.put(entry.getKey(), entry.getValue());
+        }
     }
 
     private void configureAdvisorList(String advisorConfiguration) {
@@ -130,62 +199,13 @@ public class EclipseProjectCoordinateAdvisorService implements IProjectCoordinat
         return advisors;
     }
 
-    public AdvisorDescriptor getDescriptor(IProjectCoordinateAdvisor advisor) {
-        return descriptors.get(advisor);
-    }
-
-    @Override
-    public Optional<ProjectCoordinate> suggest(DependencyInfo dependencyInfo) {
-        try {
-            return projectCoordinateCache.get(dependencyInfo);
-        } catch (ExecutionException e) {
-            LOG.error("Exception occured while accessing project coordinates cache.", e); //$NON-NLS-1$
-            return absent();
-        }
-    }
-
-    @Override
-    public Result<ProjectCoordinate> trySuggest(DependencyInfo dependencyInfo) {
-        Optional<ProjectCoordinate> pc = projectCoordinateCache.getIfPresent(dependencyInfo);
-        if (pc == null) {
-            return Result.absent(REASON_NOT_IN_CACHE);
-        } else if (pc.isPresent()) {
-            return Result.of(pc.get());
-        } else {
-            return Result.absent();
-        }
-    }
-
-    @Override
-    public ImmutableList<IProjectCoordinateAdvisor> getAdvisors() {
-        return delegate.getAdvisors();
-    }
-
-    @Override
-    public void addAdvisor(IProjectCoordinateAdvisor advisor) {
-        delegate.addAdvisor(advisor);
-    }
-
-    @Override
-    public void setAdvisors(List<IProjectCoordinateAdvisor> advisors) {
-        delegate.setAdvisors(advisors);
-    }
-
-    @PostConstruct
-    public void open() throws IOException {
-        if (!persistenceFile.exists()) {
-            return;
-        }
-        String json = Files.toString(persistenceFile, Charsets.UTF_8);
-        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
-
-        for (Entry<DependencyInfo, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
-            projectCoordinateCache.put(entry.getKey(), entry.getValue());
-        }
-    }
-
     @PreDestroy
     public void close() throws IOException {
+        stopAsync();
+    }
+
+    @Override
+    protected void shutDown() throws Exception {
         String json = cacheGson.toJson(projectCoordinateCache.asMap(), cacheType);
         Files.write(json, persistenceFile, Charsets.UTF_8);
     }

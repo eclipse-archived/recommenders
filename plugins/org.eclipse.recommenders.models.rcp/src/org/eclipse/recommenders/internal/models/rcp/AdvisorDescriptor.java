@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.internal.models.rcp.LogMessages.ADVISOR_INSTANTIATION_FAILED;
+import static org.eclipse.recommenders.internal.models.rcp.LogMessages.ERROR_ADVISOR_INSTANTIATION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.eclipse.core.runtime.CoreException;
@@ -56,7 +56,7 @@ public class AdvisorDescriptor {
             return (IProjectCoordinateAdvisor) config.createExecutableExtension("class"); //$NON-NLS-1$
         } catch (CoreException e) {
             String pluginId = config.getContributor().getName();
-            log(ADVISOR_INSTANTIATION_FAILED, e, pluginId, config.getAttribute("class")); //$NON-NLS-1$
+            log(ERROR_ADVISOR_INSTANTIATION_FAILED, e, pluginId, config.getAttribute("class")); //$NON-NLS-1$
             throw e;
         }
     }
