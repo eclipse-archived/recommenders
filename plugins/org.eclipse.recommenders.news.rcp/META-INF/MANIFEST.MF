@@ -6,3 +6,10 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.recommenders.utils
+Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
+ com.google.common.collect;version="[15.0.0,16.0.0)",
+ org.apache.commons.lang3;version="[3.0.0,4.0.0)"
+
