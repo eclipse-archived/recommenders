@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.completion.rcp.it
 
 import com.google.common.base.Optional
+import com.google.common.collect.ImmutableSet
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.jdt.core.ICompilationUnit
@@ -23,6 +24,7 @@ import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences
 import org.eclipse.recommenders.internal.overrides.rcp.OverrideCompletionSessionProcessor
 import org.eclipse.recommenders.internal.overrides.rcp.OverridesRcpPreferences
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
+import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor
 import org.eclipse.recommenders.models.UniqueTypeName
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
@@ -33,6 +35,8 @@ import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.rcp.JavaElementResolver
 import org.eclipse.recommenders.rcp.SharedImages
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
+import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
+import org.eclipse.recommenders.utils.Result
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.IEditorPart
@@ -45,10 +49,6 @@ import org.junit.runners.Parameterized.Parameters
 import static org.eclipse.recommenders.testing.CodeBuilder.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
-import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences
-import com.google.common.collect.ImmutableSet
-import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock
-import org.eclipse.recommenders.coordinates.ProjectCoordinate
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -260,6 +260,17 @@ class CompletionSmokeTest {
             static {
             }''').exercise
     }
+    
+    @Test
+    def void COMMENTS_03() {
+        classbody(
+            '''
+            /**
+            * ArrayLis$
+            */
+            static {
+            }''').exercise
+    }
 
     @Test
     def void OLD_TEST_CLASS() {
@@ -397,6 +408,8 @@ class CompletionSmokeTest {
         when(pcp.toName(anyObject() as IMethod)).thenReturn(Optional.absent())
         when(pcp.toUniqueName(anyObject() as IType)).thenReturn(
             Optional.of(new UniqueTypeName(ProjectCoordinate.UNKNOWN, VmTypeName.NULL)))
+        when(pcp.tryToUniqueName(anyObject() as IType)).thenReturn(
+            Result.of(new UniqueTypeName(ProjectCoordinate.UNKNOWN, VmTypeName.NULL)))
 
         val sut = createSut(pcp, jer)
         val sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "", sut)

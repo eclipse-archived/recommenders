@@ -73,12 +73,12 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
-    private static final Field CORE_CONTEXT = Reflections.getDeclaredField(
-            JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
-    private static final Field CU = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCU").orNull(); //$NON-NLS-1$
-    private static final Field CU_COMPUTED = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
-            "fCUComputed").orNull(); //$NON-NLS-1$
+    private static final Field CORE_CONTEXT = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
+    private static final Field CU = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class, "fCU") //$NON-NLS-1$
+            .orNull();
+    private static final Field CU_COMPUTED = Reflections
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCUComputed").orNull(); //$NON-NLS-1$
 
     private final SubwordsRcpPreferences prefs;
 
@@ -130,12 +130,12 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             }
 
         } catch (Exception e) {
-            Logs.log(LogMessages.EXCEPTION_DURING_CODE_COMPLETION, e);
+            Logs.log(LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
         }
     }
 
-    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode,
-            ASTNode completionNodeParent, int length) {
+    private SortedSet<Integer> computeTriggerLocations(int offset, ASTNode completionNode, ASTNode completionNodeParent,
+            int length) {
         // It is important to trigger at higher locations first, as the base relevance assigned to a proposal by the JDT
         // may depend on the prefix. Proposals which are made for both an empty prefix and a non-empty prefix are thus
         // assigned a base relevance that is as close as possible to that the JDT would assign without subwords
@@ -169,8 +169,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         ICompilationUnit cu = originalContext.getCompilationUnit();
         ITextViewer viewer = originalContext.getViewer();
         IEditorPart editor = lookupEditor(cu);
-        JavaContentAssistInvocationContext newJdtContext = new JavaContentAssistInvocationContext(viewer,
-                triggerOffset, editor);
+        JavaContentAssistInvocationContext newJdtContext = new JavaContentAssistInvocationContext(viewer, triggerOffset,
+                editor);
         setCompilationUnit(newJdtContext, cu);
         ProposalCollectingCompletionRequestor collector = computeProposals(cu, newJdtContext, triggerOffset);
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
@@ -185,7 +185,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             CU.set(newJdtContext, cu);
             CU_COMPUTED.set(newJdtContext, true);
         } catch (Exception e) {
-            Logs.log(EXCEPTION_DURING_CODE_COMPLETION, e);
+            Logs.log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
         }
     }
 
@@ -212,12 +212,23 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         String completionIdentifier;
         if (javaProposal instanceof LazyJavaCompletionProposal && coreProposal != null) {
             switch (coreProposal.getKind()) {
-            case CompletionProposal.CONSTRUCTOR_INVOCATION:
+            case CompletionProposal.CONSTRUCTOR_INVOCATION: {
                 // result: ClassSimpleName(Lsome/Param;I)V
                 completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
                         .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature()).toString();
                 break;
-            case CompletionProposal.TYPE_REF:
+            }
+            case CompletionProposal.JAVADOC_TYPE_REF: {
+                // result: ClassSimpleName fully.qualified.ClassSimpleName
+                char[] signature = coreProposal.getSignature();
+                char[] simpleName = Signature.getSignatureSimpleName(signature);
+                int indexOf = CharOperation.lastIndexOf('.', simpleName);
+                simpleName = CharOperation.subarray(simpleName, indexOf + 1, simpleName.length);
+                completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature)
+                        .append(" javadoc").toString();
+                break;
+            }
+            case CompletionProposal.TYPE_REF: {
                 // result: ClassSimpleName fully.qualified.ClassSimpleName
                 char[] signature = coreProposal.getSignature();
                 char[] simpleName = Signature.getSignatureSimpleName(signature);
@@ -225,15 +236,25 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 simpleName = CharOperation.subarray(simpleName, indexOf + 1, simpleName.length);
                 completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature).toString();
                 break;
+            }
             case CompletionProposal.PACKAGE_REF:
                 // result: org.eclipse.my.package
                 completionIdentifier = new String(coreProposal.getDeclarationSignature());
                 break;
             case CompletionProposal.METHOD_REF:
+            case CompletionProposal.METHOD_NAME_REFERENCE: {
                 // result: myMethodName(Lsome/Param;I)V
                 completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
                         .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature()).toString();
                 break;
+            }
+            case CompletionProposal.JAVADOC_METHOD_REF: {
+                // result: myMethodName(Lsome/Param;I)V
+                completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
+                        .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature())
+                        .append(" javadoc").toString();
+                break;
+            }
             default:
                 // result: display string. This should not happen. We should issue a warning here...
                 completionIdentifier = javaProposal.getDisplayString();
@@ -257,7 +278,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         try {
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
         } catch (final Exception e) {
-            log(EXCEPTION_DURING_CODE_COMPLETION, e);
+            log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
         }
         return collector;
     }

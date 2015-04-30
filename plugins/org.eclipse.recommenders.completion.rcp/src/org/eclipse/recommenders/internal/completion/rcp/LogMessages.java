@@ -14,6 +14,7 @@ import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
@@ -32,6 +33,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT);
     public static final LogMessages ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING = new LogMessages(ERROR,
             Messages.LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING);
+    public static final ILogMessage ERROR_UNEXPECTED_PROPOSAL_KIND = new LogMessages(ERROR,
+            Messages.LOG_ERROR_UNEXPECTED_PROPOSAL_KIND);
 
     public static final LogMessages WARNING_LINKAGE_ERROR = new LogMessages(WARNING,
             Messages.LOG_WARNING_LINKAGE_ERROR);

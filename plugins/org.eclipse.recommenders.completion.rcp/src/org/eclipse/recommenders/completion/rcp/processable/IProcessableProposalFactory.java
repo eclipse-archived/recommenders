@@ -16,9 +16,11 @@ import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.GetterSetterCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyPackageCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 @SuppressWarnings("restriction")
@@ -61,4 +63,10 @@ public interface IProcessableProposalFactory {
 
     IProcessableProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
             LazyPackageCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
+
+    IProcessableProposal newJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
+            JavadocLinkTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
+
+    IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
+            LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 }

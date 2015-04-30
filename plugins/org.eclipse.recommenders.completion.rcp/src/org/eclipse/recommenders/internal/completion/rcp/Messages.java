@@ -48,8 +48,10 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT;
     public static String LOG_ERROR_SESSION_PROCESSOR_FAILED;
     public static String LOG_ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
+    public static String LOG_ERROR_UNEXPECTED_PROPOSAL_KIND;
 
     public static String LOG_WARNING_LINKAGE_ERROR;
+
 
     static {
         // initialize resource bundle

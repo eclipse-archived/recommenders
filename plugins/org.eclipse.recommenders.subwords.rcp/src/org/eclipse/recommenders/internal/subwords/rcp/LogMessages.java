@@ -23,7 +23,7 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
+    public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
     public static final LogMessages ERROR_UNEXPECTED_FALL_THROUGH = new LogMessages(ERROR,
             Messages.LOG_ERROR_UNEXPECTED_FALLTHROUGH);

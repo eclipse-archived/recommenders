@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.apache.commons.lang3.StringUtils.startsWithAny;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_UNEXPECTED_PROPOSAL_KIND;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 
@@ -29,12 +31,14 @@ import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyGenericTypeProposal;
+import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyPackageCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposal;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
@@ -61,6 +65,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<JavaCompletionProposal> javaCompletionProposalClass;
     private static Class<LazyGenericTypeProposal> lazyGenericTypeProposalClass;
     private static Class<LazyJavaTypeCompletionProposal> lazyJavaTypeCompletionProposalClass;
+    private static Class<JavadocLinkTypeCompletionProposal> javadocLinkTypeCompletionProposalClass;
+    private static Class<LazyJavaCompletionProposal> lazyJavaCompletionProposaClass;
     private static Class<FilledArgumentNamesMethodProposal> filledArgumentNamesMethodProposalClass;
     private static Class<ParameterGuessingProposal> parameterGuessingProposalClass;
     private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
@@ -75,68 +81,82 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         try {
             javaMethodCompletionProposalClass = JavaMethodCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             javaFieldWithCastedReceiverCompletionProposalClass = JavaFieldWithCastedReceiverCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             overrideCompletionProposalClass = OverrideCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             anonymousTypeCompletionProposalClass = AnonymousTypeCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             javaCompletionProposalClass = JavaCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             lazyGenericTypeProposalClass = LazyGenericTypeProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
+        }
+        try {
+            lazyJavaCompletionProposaClass = LazyJavaCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            logWarning(e);
         }
         try {
             lazyJavaTypeCompletionProposalClass = LazyJavaTypeCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             filledArgumentNamesMethodProposalClass = FilledArgumentNamesMethodProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             parameterGuessingProposalClass = ParameterGuessingProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             methodDeclarationCompletionProposalClass = MethodDeclarationCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             lazyPackageCompletionProposalClass = LazyPackageCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
         try {
             getterSetterCompletionProposalClass = GetterSetterCompletionProposal.class;
         } catch (NoClassDefFoundError e) {
-            LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+            logWarning(e);
         }
+        try {
+            javadocLinkTypeCompletionProposalClass = JavadocLinkTypeCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            logWarning(e);
+        }
+    }
+
+    private static void logWarning(NoClassDefFoundError e) {
+        LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
     }
 
     public ProcessableProposalFactory() {
@@ -203,10 +223,20 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
                         (GetterSetterCompletionProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
+            } else if (javadocLinkTypeCompletionProposalClass == c) {
+                IProcessableProposal res = factory.newJavadocLinkTypeCompletionProposal(coreProposal,
+                        (JavadocLinkTypeCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
+            } else if (lazyJavaCompletionProposaClass == c) {
+                IProcessableProposal res = factory.newLazyJavaCompletionProposa(coreProposal,
+                        (LazyJavaCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
             }
-            // return the fallback proposal
-            LOG.warn("Unknown JDT proposal type '{}' ('{}'). Returning original proposal instead.", c, //$NON-NLS-1$
-                    uiProposal.getDisplayString());
+
+            // log error and return the fallback proposal
+            log(ERROR_UNEXPECTED_PROPOSAL_KIND, c, uiProposal.getDisplayString());
             return uiProposal;
         } catch (final Exception e) {
             LOG.warn("Wrapping JDT proposal '{}' ('{}') failed. Returning original proposal instead.", c, //$NON-NLS-1$
@@ -291,6 +321,12 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     }
 
     @Override
+    public IProcessableProposal newJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
+            JavadocLinkTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableJavadocLinkTypeCompletionProposal(coreProposal, context));
+    }
+
+    @Override
     public IProcessableProposal newJavaMethodCompletionProposal(CompletionProposal coreProposal,
             JavaContentAssistInvocationContext context) {
         return postConstruct(new ProcessableJavaMethodCompletionProposal(coreProposal, context));
@@ -348,5 +384,11 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     public IProcessableProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
             LazyPackageCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         return postConstruct(new ProcessableLazyPackageCompletionProposal(coreProposal, context));
+    }
+
+    @Override
+    public IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
+            LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableLazyJavaCompletionProposal(coreProposal, context));
     }
 }
