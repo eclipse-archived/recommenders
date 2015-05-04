@@ -49,6 +49,7 @@ public class TipsSessionProcessor extends SessionProcessor {
     private final Map<ICompletionTipProposal, String> unseenTips = Maps.newHashMap();
     private final HashSet<String> seenTips;
 
+    private IRecommendersCompletionContext context;
     private boolean tipsSeen;
 
     public TipsSessionProcessor() {
@@ -74,6 +75,8 @@ public class TipsSessionProcessor extends SessionProcessor {
 
     @Override
     public boolean startSession(IRecommendersCompletionContext context) {
+        this.context = context;
+
         if (unseenTips.isEmpty()) {
             return false;
         }
@@ -99,7 +102,7 @@ public class TipsSessionProcessor extends SessionProcessor {
 
             @Override
             public boolean apply(ICompletionTipProposal input) {
-                return input.isApplicable();
+                return input.isApplicable(context);
             }
         }));
         tipsSeen = false;

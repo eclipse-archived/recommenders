@@ -52,13 +52,14 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
             ABOUT_PREFERENCES, ABOUT_DISABLE, HTTP_HOMEPAGE);
 
     // leave a bit space for other, maybe more important proposals
-    private static final int RELEVANCE = Integer.MAX_VALUE - 10000;
+    public static final int RELEVANCE_STEP_SIZE = 10000;
+    public static final int ENABLE_CODE_COMPLETION_RELEVANCE = Integer.MAX_VALUE - RELEVANCE_STEP_SIZE;
 
     public EnabledCompletionProposal(SharedImages images, int offset) {
         StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLED_COMPLETION, DECORATIONS_STYLER);
         setStyledDisplayString(text);
         setImage(images.getImage(Images.OBJ_LIGHTBULB));
-        setRelevance(RELEVANCE);
+        setRelevance(ENABLE_CODE_COMPLETION_RELEVANCE);
         setCursorPosition(offset);
         setReplacementString(""); //$NON-NLS-1$
     }

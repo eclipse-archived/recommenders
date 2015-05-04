@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jface.text.Document;
 import org.eclipse.recommenders.internal.completion.rcp.tips.DiscoveryCompletionProposal;
-import org.eclipse.recommenders.internal.subwords.rcp.EnableSubwordsCompletionProposal;
+import org.eclipse.recommenders.internal.subwords.rcp.SubwordsCompletionWelcomeProposal;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class Bug425994Test {
         LinkedList<Object[]> proposals = Lists.newLinkedList();
 
         proposals.add(new Object[] { new DiscoveryCompletionProposal(images) });
-        proposals.add(new Object[] { new EnableSubwordsCompletionProposal(images, null) });
+        proposals.add(new Object[] { new SubwordsCompletionWelcomeProposal(images, null) });
         proposals.add(new Object[] { new EmptyCompletionProposal(0) });
         proposals.add(new Object[] { new EnabledCompletionProposal(images, 0) });
 
