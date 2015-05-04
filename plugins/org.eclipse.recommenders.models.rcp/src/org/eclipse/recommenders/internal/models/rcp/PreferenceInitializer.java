@@ -24,7 +24,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(BUNDLE_ID);
         s.put(PREF_REPOSITORY_URL_LIST, SERVER_URL);
-        s.put(PREF_ADVISOR_LIST_SORTED, AdvisorDescriptors.store(AdvisorDescriptors.getRegisteredAdvisors()));
         s.putBoolean(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, true);
     }
 }

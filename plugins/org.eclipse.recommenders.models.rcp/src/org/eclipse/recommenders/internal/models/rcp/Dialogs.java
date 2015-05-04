@@ -18,6 +18,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Shell;
 

@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
-import static org.eclipse.recommenders.internal.models.rcp.LogMessages.ERROR_SAVE_PREFERENCES_FAILED;
+import static org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages.ERROR_SAVE_PREFERENCES_FAILED;
 import static org.eclipse.recommenders.models.IModelIndex.INDEX;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;

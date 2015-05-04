@@ -16,7 +16,6 @@ import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSI
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.recommenders.models.rcp.ModelEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 
 import com.google.common.base.Joiner;
@@ -33,8 +32,6 @@ public class ModelsRcpPreferences {
 
     public String[] remotes;
 
-    public String advisorConfiguration;
-
     private final EventBus bus;
 
     static final String URL_SEPARATOR = "\t"; //$NON-NLS-1$
@@ -50,16 +47,6 @@ public class ModelsRcpPreferences {
         remotes = splitRemoteRepositoryString(newRemote);
         if (!isEquals(remotes, old)) {
             bus.post(new ModelRepositoryUrlChangedEvent());
-        }
-    }
-
-    @Inject
-    public void setAdvisorConfiguration(@Preference(Constants.PREF_ADVISOR_LIST_SORTED) String newAdvisorConfiguration)
-            throws Exception {
-        String old = advisorConfiguration;
-        advisorConfiguration = newAdvisorConfiguration;
-        if (!isEquals(advisorConfiguration, old)) {
-            bus.post(new AdvisorConfigurationChangedEvent());
         }
     }
 

@@ -31,8 +31,8 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateProvider;
 import org.eclipse.recommenders.jdt.templates.SnippetCodeBuilder;
+import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
@@ -72,8 +72,8 @@ public class CreateSnippetHandler extends AbstractHandler {
         IDocument doc = viewer.getDocument();
         ITextSelection textSelection = cast(viewer.getSelectionProvider().getSelection());
 
-        ProjectCoordinateProvider pcProvider = InjectionService.getInstance().requestInstance(
-                ProjectCoordinateProvider.class);
+        IProjectCoordinateProvider pcProvider = InjectionService.getInstance().requestInstance(
+                IProjectCoordinateProvider.class);
 
         String code = new SnippetCodeBuilder(ast, doc, new Region(textSelection.getOffset(), textSelection.getLength()))
         .build();

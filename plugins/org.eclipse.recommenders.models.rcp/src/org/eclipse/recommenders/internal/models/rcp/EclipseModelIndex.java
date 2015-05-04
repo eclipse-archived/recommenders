@@ -13,8 +13,8 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.eclipse.recommenders.internal.models.rcp.LogMessages.*;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.INDEX_BASEDIR;
+import static org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.models.ModelCoordinate.HINT_REPOSITORY_URL;
 import static org.eclipse.recommenders.utils.Logs.log;
 
