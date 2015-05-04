@@ -9,6 +9,8 @@ package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.eclipse.recommenders.internal.news.rcp.Constants.PREF_FEED_LIST_SORTED;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
@@ -23,6 +25,10 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     @Preference(Constants.PREF_NEWS_ENABLED)
     private boolean enabled;
 
+    @Inject
+    @Preference(Constants.PREF_FEED_LIST_SORTED)
+    private String feeds;
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -32,5 +38,9 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(Constants.PLUGIN_ID);
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.store(FeedDescriptors.getRegisteredFeeds()));
+    }
+
+    public List<FeedDescriptor> getEnabledFeedDescriptors() {
+        return FeedDescriptors.load(feeds, FeedDescriptors.getRegisteredFeeds());
     }
 }

@@ -7,24 +7,24 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IRssService;
+import org.eclipse.recommenders.news.rcp.IRssService.NewFeedItemsEvent;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
@@ -33,13 +33,15 @@ import com.google.common.eventbus.Subscribe;
 
 public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
 
+    private final IRssService service;
     private final SharedImages images;
     private final EventBus bus;
 
     private Button button;
 
     @Inject
-    public NewsToolbarContribution(SharedImages images, EventBus bus) {
+    public NewsToolbarContribution(IRssService service, SharedImages images, EventBus bus) {
+        this.service = service;
         this.images = images;
         this.bus = bus;
         bus.register(this);
@@ -58,16 +60,22 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 super.widgetSelected(e);
-                button.setImage(images.getImage(SharedImages.Images.OBJ_CONTAINER));
-                new Job("read") {
+                Map<FeedDescriptor, List<IFeedMessage>> messages = service.getMessages(3);
+                // TODO create notification with clickable links
+                for (Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
+                    System.out.println(entry.getKey().getName());
+                    for (IFeedMessage message : entry.getValue()) {
+                        System.out.println("-- " + message.getTitle() + " - " + message.getDate());
+                        System.out.println("  -- " + message.getUrl());
+                    }
+                }
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
                     @Override
-                    protected IStatus run(IProgressMonitor monitor) {
-                        bus.post(new NewFeedItemsEvent());
-                        return Status.OK_STATUS;
+                    public void run() {
+                        button.setImage(images.getImage(SharedImages.Images.OBJ_CONTAINER));
                     }
-
-                }.schedule(2000);
+                });
             }
         });
         return composite;
@@ -80,13 +88,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             @Override
             public void run() {
                 button.setImage(images.getImage(SharedImages.Images.OBJ_NEWSLETTER));
-
             }
-
         });
     }
-
-    public class NewFeedItemsEvent {
-    }
-
 }

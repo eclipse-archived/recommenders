@@ -11,16 +11,20 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.recommenders.news.rcp.IRssService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,14 +36,21 @@ import com.google.common.collect.Lists;
 
 public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    public NewsFeedPreferencePage() {
+    private final IRssService service;
+
+    private BooleanFieldEditor enabledEditor;
+
+    @Inject
+    public NewsFeedPreferencePage(IRssService service) {
         super(GRID);
+        this.service = service;
     }
 
     @Override
     protected void createFieldEditors() {
-        addField(new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
-                getFieldEditorParent()));
+        enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
+                getFieldEditorParent());
+        addField(enabledEditor);
         addField(new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS, getFieldEditorParent()));
     }
 
@@ -48,6 +59,19 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.PLUGIN_ID));
         setMessage(Messages.PREFPAGE_TITLE);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
+    }
+
+    @Override
+    public boolean performOk() {
+        IPreferenceStore store = getPreferenceStore();
+        boolean oldValue = store.getBoolean(Constants.PREF_NEWS_ENABLED);
+        boolean newValue = enabledEditor.getBooleanValue();
+        boolean result = super.performOk();
+        if (!oldValue && newValue) {
+            // News has been activated
+            service.start();
+        }
+        return result;
     }
 
     private static final class FeedEditor extends FieldEditor {
