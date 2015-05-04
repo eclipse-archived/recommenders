@@ -1,10 +1,10 @@
 /**
-* Copyright (c) 2015 Pawel Nowak.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*/
+ * Copyright (c) 2015 Pawel Nowak.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -37,6 +38,8 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     protected void createFieldEditors() {
+        addField(new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
+                getFieldEditorParent()));
         addField(new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS, getFieldEditorParent()));
     }
 
