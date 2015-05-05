@@ -11,10 +11,11 @@
 package org.eclipse.recommenders.completion.rcp.tips;
 
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 
 public interface ICompletionTipProposal extends ICompletionProposal {
 
-    boolean isApplicable();
+    boolean isApplicable(IRecommendersCompletionContext context);
 
     void setCursorPosition(int cursorPosition);
 }

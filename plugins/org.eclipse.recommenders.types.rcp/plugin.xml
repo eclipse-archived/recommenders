@@ -12,4 +12,8 @@
 	<extension point="org.eclipse.ui.startup" name="%startup.typesIndexService.name">
 		<startup class="org.eclipse.recommenders.internal.types.rcp.TypesIndexService"/>
 	</extension>
+	<extension point="org.eclipse.recommenders.completion.rcp.tips">
+		<proposal id="org.eclipse.recommenders.completion.rcp.tips.types"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.types.rcp.EnableTypesCompletionProposal"/>
+	</extension>
 </plugin>

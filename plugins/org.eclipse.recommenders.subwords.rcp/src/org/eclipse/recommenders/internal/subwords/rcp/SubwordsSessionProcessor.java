@@ -225,7 +225,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 int indexOf = CharOperation.lastIndexOf('.', simpleName);
                 simpleName = CharOperation.subarray(simpleName, indexOf + 1, simpleName.length);
                 completionIdentifier = new StringBuilder().append(simpleName).append(' ').append(signature)
-                        .append(" javadoc").toString();
+                        .append(" javadoc").toString(); //$NON-NLS-1$
                 break;
             }
             case CompletionProposal.TYPE_REF: {
@@ -252,7 +252,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 // result: myMethodName(Lsome/Param;I)V
                 completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
                         .append(coreProposal.getSignature()).append(coreProposal.getDeclarationSignature())
-                        .append(" javadoc").toString();
+                        .append(" javadoc").toString(); //$NON-NLS-1$
                 break;
             }
             default:
