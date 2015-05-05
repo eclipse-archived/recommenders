@@ -23,10 +23,10 @@ import com.google.common.base.Optional;
 
 public class ModelIndexFingerprintAdvisor extends AbstractProjectCoordinateAdvisor {
 
-    private final IModelIndex indexer;
+    private final IModelIndex index;
 
-    public ModelIndexFingerprintAdvisor(IModelIndex indexer) {
-        this.indexer = indexer;
+    public ModelIndexFingerprintAdvisor(IModelIndex index) {
+        this.index = index;
     }
 
     @Override
@@ -35,12 +35,11 @@ public class ModelIndexFingerprintAdvisor extends AbstractProjectCoordinateAdvis
             return absent();
         }
         String fingerprint = Fingerprints.sha1(dependencyInfo.getFile());
-        return indexer.suggestProjectCoordinateByFingerprint(fingerprint);
+        return index.suggestProjectCoordinateByFingerprint(fingerprint);
     }
 
     @Override
     protected boolean isApplicable(DependencyType dependencyType) {
         return dependencyType == DependencyType.JAR;
     }
-
 }

@@ -26,8 +26,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisorService;
-import org.eclipse.recommenders.models.IDependencyListener;
+import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
@@ -57,18 +56,13 @@ public class ModelsRcpModule extends AbstractModule {
     private static final String TRANSFORMER_CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
     private static final String TRANSFORMER_FILE_EXTENSION_ATTRIBUTE = "fileExtension"; //$NON-NLS-1$
 
-    public static final String IDENTIFIED_PROJECT_COORDINATES = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS"; //$NON-NLS-1$
     public static final String MODEL_CLASSIFIER = "MODEL_CLASSIFIER"; //$NON-NLS-1$
     public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR"; //$NON-NLS-1$
     public static final String INDEX_BASEDIR = "INDEX_BASEDIR"; //$NON-NLS-1$
-    public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS"; //$NON-NLS-1$
 
     @Override
     protected void configure() {
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(SINGLETON);
-
-        bind(EclipseProjectCoordinateAdvisorService.class).in(SINGLETON);
-        bind(IProjectCoordinateAdvisorService.class).to(EclipseProjectCoordinateAdvisorService.class);
 
         // bind all clients of IRecommendersModelIndex or its super interface IModelArchiveCoordinateProvider to a
         // single instance in Eclipse:
@@ -77,16 +71,9 @@ public class ModelsRcpModule extends AbstractModule {
         bind(IModelIndex.class).to(EclipseModelIndex.class);
         createAndBindPerWorkspaceNamedFile("index", INDEX_BASEDIR); //$NON-NLS-1$
 
-        //
         bind(EclipseModelRepository.class).in(SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class);
         createAndBindPerUserNamedFile("repository", REPOSITORY_BASEDIR); //$NON-NLS-1$
-
-        // configure caching
-        bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
-        createAndBindPerWorkspaceNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS); //$NON-NLS-1$
-        createAndBindPerWorkspaceNamedFile("caches/identified-project-coordinates.json", //$NON-NLS-1$
-                IDENTIFIED_PROJECT_COORDINATES);
     }
 
     private void createAndBindPerUserNamedFile(String fileName, String name) {
@@ -110,12 +97,6 @@ public class ModelsRcpModule extends AbstractModule {
             Logs.log(LogMessages.ERROR_BIND_FILE_NAME, fileName, e);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
-    }
-
-    @Singleton
-    @Provides
-    public IDependencyListener provideDependencyListener(EventBus bus) {
-        return new EclipseDependencyListener(bus);
     }
 
     @Provides

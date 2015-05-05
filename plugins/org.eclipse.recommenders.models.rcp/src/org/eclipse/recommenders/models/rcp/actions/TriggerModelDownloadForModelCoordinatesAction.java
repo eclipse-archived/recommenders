@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.recommenders.internal.models.rcp.DownloadModelArchiveJob;
 import org.eclipse.recommenders.internal.models.rcp.EclipseModelRepository;
-import org.eclipse.recommenders.internal.models.rcp.Messages;
+import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.rcp.utils.Jobs;
 

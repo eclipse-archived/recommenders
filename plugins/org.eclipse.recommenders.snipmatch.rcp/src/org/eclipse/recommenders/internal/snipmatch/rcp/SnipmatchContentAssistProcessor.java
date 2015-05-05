@@ -39,9 +39,9 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.recommenders.coordinates.DependencyInfo;
+import org.eclipse.recommenders.coordinates.IDependencyListener;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
-import org.eclipse.recommenders.internal.models.rcp.Dependencies;
-import org.eclipse.recommenders.models.IDependencyListener;
+import org.eclipse.recommenders.coordinates.rcp.DependencyInfos;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -90,7 +90,7 @@ public class SnipmatchContentAssistProcessor implements IContentAssistProcessor 
     public void setContext(JavaContentAssistInvocationContext context) {
         IJavaProject project = context.getCompilationUnit().getJavaProject();
         availableDependencies = dependencyListener
-                .getDependenciesForProject(Dependencies.createDependencyInfoForProject(project));
+                .getDependenciesForProject(DependencyInfos.createDependencyInfoForProject(project));
         if (!allProjectCoordinatesCached(pcProvider, availableDependencies)) {
             contextLoadingProposal = new ContextLoadingProposal(pcProvider, availableDependencies, contextLoadingImage);
             contextLoadingProposal.schedule();

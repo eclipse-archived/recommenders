@@ -59,5 +59,4 @@ public interface IProjectCoordinateProvider {
     Optional<UniqueMethodName> toUniqueName(IMethod method);
 
     Result<UniqueMethodName> tryToUniqueName(IMethod method);
-
 }
