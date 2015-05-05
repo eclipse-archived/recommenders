@@ -12,8 +12,9 @@
  */
 package org.eclipse.recommenders.completion.rcp.utils;
 
+import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Optional.absent;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING;
+import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
@@ -32,6 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.eclipse.recommenders.internal.completion.rcp.LogMessages;
 import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -45,7 +47,7 @@ public final class ProposalUtils {
     private ProposalUtils() {
     }
 
-    private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;");
+    private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;"); //$NON-NLS-1$
 
     private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
 
@@ -54,7 +56,8 @@ public final class ProposalUtils {
      *
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203">Bug 380203</a>.
      */
-    private static final Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class, "originalSignature") //$NON-NLS-1$
+    private static final Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class,
+            "originalSignature") //$NON-NLS-1$
             .orNull();
 
     /**
@@ -70,6 +73,7 @@ public final class ProposalUtils {
 
         ReferenceBinding declaringType = getDeclaringType(proposal, env).orNull();
         if (declaringType == null) {
+            log(LogMessages.ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE, toLogString(proposal));
             return absent();
         }
 
@@ -78,7 +82,9 @@ public final class ProposalUtils {
         try {
             overloads = declaringType.getMethods(methodName);
         } catch (AbortCompilation e) {
-            log(ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, null, proposal);
+            // We don't pass along the exception since that may contain private information which might not be
+            // anonymized.
+            log(LogMessages.ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, toLogString(proposal));
             return absent();
         }
 
@@ -88,15 +94,26 @@ public final class ProposalUtils {
         for (MethodBinding overload : overloads) {
             char[] signature = CompletionEngine.getSignature(overload);
 
-            if (CharOperation.equals(proposalSignature, signature)) {
-                return CompilerBindings.toMethodName(overload);
-            }
-            if (CharOperation.equals(strippedProposalSignature, signature)) {
-                return CompilerBindings.toMethodName(overload);
+            if (CharOperation.equals(proposalSignature, signature)
+                    || CharOperation.equals(strippedProposalSignature, signature)) {
+                Optional<IMethodName> result = CompilerBindings.toMethodName(overload);
+                if (!result.isPresent()) {
+                    log(LogMessages.ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME, overload, signature);
+                }
+                return result;
             }
         }
 
         return absent();
+    }
+
+    private static String toLogString(CompletionProposal proposal) {
+        if (proposal == null) {
+            return "null proposal"; //$NON-NLS-1$
+        }
+        return new StringBuilder().append(firstNonNull(proposal.getDeclarationSignature(), NO_CHAR)).append("#") //$NON-NLS-1$
+                .append(firstNonNull(proposal.getName(), NO_CHAR)).append("#") //$NON-NLS-1$
+                .append(firstNonNull(proposal.getSignature(), NO_CHAR)).toString();
     }
 
     private static boolean isKindSupported(CompletionProposal proposal) {

@@ -43,6 +43,8 @@ public final class Messages extends NLS {
     public static String JOB_DISABLING_CONTENT_ASSIST_CATEGORY;
     public static String JOB_ENABLING_CONTENT_ASSIST_CATEGORY;
 
+    public static String LOG_ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME;
+    public static String LOG_ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE;
     public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
     public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET;
     public static String LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT;
@@ -51,7 +53,6 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_UNEXPECTED_PROPOSAL_KIND;
 
     public static String LOG_WARNING_LINKAGE_ERROR;
-
 
     static {
         // initialize resource bundle
