@@ -19,7 +19,4 @@ public interface IRssService {
     void start();
 
     void start(FeedDescriptor feed);
-
-    public class NewFeedItemsEvent {
-    }
 }

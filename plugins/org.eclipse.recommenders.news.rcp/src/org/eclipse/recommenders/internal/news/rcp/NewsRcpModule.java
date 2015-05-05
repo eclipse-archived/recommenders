@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+@SuppressWarnings("restriction")
 public class NewsRcpModule extends AbstractModule {
 
     @Override
