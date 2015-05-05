@@ -49,6 +49,8 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
 import org.eclipse.aether.util.repository.SimpleResolutionErrorPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
@@ -59,6 +61,8 @@ import com.google.common.collect.Maps;
  * This class is thread-safe.
  */
 public class ModelRepository implements IModelRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModelRepository.class);
 
     private final RepositorySystem system;
     private final RepositorySystemSession defaultSession;
@@ -181,11 +185,14 @@ public class ModelRepository implements IModelRepository {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
             RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
-            .setAuthentication(authentication).setProxy(proxy).build();
+                    .setAuthentication(authentication).setProxy(proxy).build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
             return Optional.of(result.getArtifact().getFile());
         } catch (ArtifactResolutionException e) {
+            if (!session.isOffline()) {
+                LOG.warn("Failed to download {}", mc, e);
+            }
             return Optional.absent();
         }
     }
@@ -224,8 +231,8 @@ public class ModelRepository implements IModelRepository {
 
             @Override
             public void transferProgressed(TransferEvent e) throws TransferCancelledException {
-                callback.downloadProgressed(e.getResource().getResourceName(), e.getTransferredBytes(), e.getResource()
-                        .getContentLength());
+                callback.downloadProgressed(e.getResource().getResourceName(), e.getTransferredBytes(),
+                        e.getResource().getContentLength());
             }
 
             @Override
