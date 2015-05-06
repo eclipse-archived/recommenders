@@ -38,10 +38,12 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
 
     private ImmutableSet<String> subtypes;
 
-    private OverlayImageProposalProcessor overlayDecorator;
+    private final TypesIndexService service;
+    private final OverlayImageProposalProcessor overlayDecorator;
 
     @Inject
-    public TypesCompletionSessionProcessor(SharedImages images) {
+    public TypesCompletionSessionProcessor(TypesIndexService service, SharedImages images) {
+        this.service = service;
         overlayDecorator = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     }
 
@@ -53,7 +55,6 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
             return false;
         }
 
-        TypesIndexService service = TypesIndexService.getInstance();
         for (ITypeName expected : expectedTypes) {
             String oneCharPrefix = substring(context.getPrefix(), 0, 1);
             b.addAll(service.subtypes(expected, oneCharPrefix, context.getProject()));
