@@ -566,15 +566,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     }
                 });
                 try {
-                    repos.close();
-                } catch (IOException e) {
-                    // Snipmatch's default repositories cannot throw an
-                    // IOException here
-                    LOG.error(e.getMessage(), e);
-                }
-                try {
-                    repos.open();
-                } catch (IOException e) {
+                    repos.reload();
+                } catch (Exception e) {
                     // Snipmatch's default repositories cannot throw an
                     // IOException here
                     LOG.error(e.getMessage(), e);

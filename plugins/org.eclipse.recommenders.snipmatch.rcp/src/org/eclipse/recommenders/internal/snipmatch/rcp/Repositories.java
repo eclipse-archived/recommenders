@@ -83,6 +83,14 @@ public class Repositories extends AbstractIdleService implements IRcpService, Op
         repositories.clear();
     }
 
+    public void reload() throws Exception {
+        if (!isRunning()) {
+            log(ERROR_SERVICE_NOT_RUNNING);
+        }
+        shutDown();
+        startUp();
+    }
+
     public Set<ISnippetRepository> getRepositories() {
         if (!isRunning()) {
             log(ERROR_SERVICE_NOT_RUNNING);
@@ -107,10 +115,8 @@ public class Repositories extends AbstractIdleService implements IRcpService, Op
 
     @Subscribe
     public void onEvent(SnippetRepositoryConfigurationChangedEvent e) throws Exception {
-        // we do not use public API methods stop()/start() since Services are not designed to be restarted.
-        shutDown();
+        reload();
         // TODO: Since opening a snippet repository is potentially expensive only the affected ones should be processed.
-        startUp();
     }
 
     /**
