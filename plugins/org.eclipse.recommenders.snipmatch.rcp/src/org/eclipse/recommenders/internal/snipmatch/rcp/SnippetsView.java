@@ -870,21 +870,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
         refreshUI();
     }
 
-    private boolean isImportSupported() {
-        for (ISnippetRepository repo : repos.getRepositories()) {
-            if (repo.isImportSupported()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Subscribe
     public void onEvent(SnippetRepositoryContentChangedEvent e) throws IOException {
         refreshUI();
     }
 
     private void refreshUI() {
+        if (!repos.isRunning()) {
+            return;
+        }
         PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
             @Override
@@ -912,6 +906,15 @@ public class SnippetsView extends ViewPart implements IRcpService {
     @Override
     public void setFocus() {
         treeViewer.getControl().setFocus();
+    }
+
+    private boolean isImportSupported() {
+        for (ISnippetRepository repo : repos.getRepositories()) {
+            if (repo.isImportSupported()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private final class SearchJob extends Job {
