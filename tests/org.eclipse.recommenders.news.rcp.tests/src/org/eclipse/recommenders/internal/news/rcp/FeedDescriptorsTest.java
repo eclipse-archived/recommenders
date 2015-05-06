@@ -5,7 +5,7 @@
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
 */
-package org.eclipse.recommenders.internal.news.rcp.tests;
+package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.eclipse.recommenders.internal.news.rcp.FeedDescriptors.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -15,8 +15,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.FeedDescriptors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

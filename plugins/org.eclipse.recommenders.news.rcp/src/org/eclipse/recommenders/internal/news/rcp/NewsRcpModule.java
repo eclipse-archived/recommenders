@@ -11,8 +11,11 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
+import org.eclipse.recommenders.news.rcp.IRssService;
 import org.eclipse.ui.IWorkbench;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
@@ -28,6 +31,12 @@ public class NewsRcpModule extends AbstractModule {
     NewsRcpPreferences providePreferences(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
         return ContextInjectionFactory.make(NewsRcpPreferences.class, context);
+    }
+
+    @Provides
+    @Singleton
+    IRssService provideRssService(NewsRcpPreferences preferences, EventBus eventBus, NotificationEnvironment environment) {
+        return new RssService(preferences, eventBus, environment);
     }
 
 }
