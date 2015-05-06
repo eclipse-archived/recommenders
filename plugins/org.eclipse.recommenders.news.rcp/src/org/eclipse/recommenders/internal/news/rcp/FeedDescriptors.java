@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2015 Pawel Nowak.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*/
+ * Copyright (c) 2015 Pawel Nowak.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.Boolean.TRUE;
 
 import java.util.Arrays;
@@ -31,8 +32,8 @@ public class FeedDescriptors {
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.news.rcp.feed"; //$NON-NLS-1$
 
     public static List<FeedDescriptor> getRegisteredFeeds() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                .getConfigurationElementsFor(EXT_ID_PROVIDER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXT_ID_PROVIDER);
         Arrays.sort(elements, new Comparator<IConfigurationElement>() {
 
             @Override
@@ -42,16 +43,16 @@ public class FeedDescriptors {
         });
         final List<FeedDescriptor> descriptors = Lists.newLinkedList();
         for (final IConfigurationElement element : elements) {
-            boolean enabled = Boolean
-                    .valueOf(Objects.firstNonNull(element.getAttribute(ENABLED_BY_DEFAULT_ATTRIBUTE), TRUE.toString()));
+            boolean enabled = Boolean.valueOf(Objects.firstNonNull(element.getAttribute(ENABLED_BY_DEFAULT_ATTRIBUTE),
+                    TRUE.toString()));
             descriptors.add(new FeedDescriptor(element, enabled));
         }
         return descriptors;
     }
 
-    public static List<FeedDescriptor> load(String string, List<FeedDescriptor> available) {
+    public static List<FeedDescriptor> load(String preferenceString, List<FeedDescriptor> available) {
         List<FeedDescriptor> result = Lists.newArrayList();
-        for (String id : StringUtils.split(string, SEPARATOR)) {
+        for (String id : StringUtils.split(nullToEmpty(preferenceString), SEPARATOR)) {
             final boolean enabled;
             if (id.charAt(0) == DISABLED_FLAG) {
                 enabled = false;

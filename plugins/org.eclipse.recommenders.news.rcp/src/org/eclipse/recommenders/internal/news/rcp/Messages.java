@@ -20,6 +20,16 @@ public final class Messages extends NLS {
     public static String BUTTON_LABEL_UP;
     public static String BUTTON_LABEL_DOWN;
 
+    public static String JOB_NAME_CLOSE;
+    public static String JOB_NAME_FADE;
+    public static String LABEL_NOTIFICATION_NAME;
+    public static String LABEL_NO_NEW_FEEDS;
+
+    public static String NOTIFICATION_TITLE;
+
+    public static String LOG_ERROR_READING_PROPERTIES;
+    public static String LOG_ERROR_WRITING_PROPERTIES;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }
