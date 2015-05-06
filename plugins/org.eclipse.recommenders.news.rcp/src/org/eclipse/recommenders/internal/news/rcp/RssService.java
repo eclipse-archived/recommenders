@@ -133,7 +133,9 @@ public class RssService implements IRssService {
                         for (IFeedMessage message : readMessages(in, monitor, feed.getId())) {
                             if (!feedMessages.contains(message)) {
                                 feedMessages.add(message);
-                                newMessage = true;
+                                if (!readIds.contains(message.getId())) {
+                                    newMessage = true;
+                                }
                             }
                         }
                     } finally {

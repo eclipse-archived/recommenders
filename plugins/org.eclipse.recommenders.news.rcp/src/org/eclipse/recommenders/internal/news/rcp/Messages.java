@@ -23,12 +23,15 @@ public final class Messages extends NLS {
     public static String JOB_NAME_CLOSE;
     public static String JOB_NAME_FADE;
     public static String LABEL_NOTIFICATION_NAME;
-    public static String LABEL_NO_NEW_FEEDS;
+    public static String LABEL_NO_NEW_MESSAGS;
+    public static String TOOLTIP_NO_NEW_MESSAGES;
+    public static String TOOLTIP_NEW_MESSAGES;
 
     public static String NOTIFICATION_TITLE;
 
     public static String LOG_ERROR_READING_PROPERTIES;
     public static String LOG_ERROR_WRITING_PROPERTIES;
+
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
