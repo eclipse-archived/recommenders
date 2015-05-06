@@ -38,17 +38,7 @@ import com.google.common.collect.Maps;
 
 public class TypesIndexService implements IElementChangedListener, IStartup {
 
-    private static TypesIndexService INSTANCE;
-
-    public TypesIndexService() {
-        INSTANCE = this;
-    }
-
-    public static TypesIndexService getInstance() {
-        return INSTANCE;
-    }
-
-    private Map<IJavaProject, ProjectTypesIndex> _indexes = Maps.newHashMap();
+    private final Map<IJavaProject, ProjectTypesIndex> _indexes = Maps.newHashMap();
 
     @Override
     public void earlyStartup() {
