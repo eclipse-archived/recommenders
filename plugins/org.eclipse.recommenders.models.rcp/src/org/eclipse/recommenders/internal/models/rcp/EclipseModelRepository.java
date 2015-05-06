@@ -95,10 +95,15 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         bus.post(new ModelRepositoryOpenedEvent());
     }
 
-    @PreDestroy
-    void close() {
-        isOpen = false;
+    @VisibleForTesting
+    protected void close() {
+        closeSilently();
         bus.post(new ModelRepositoryClosedEvent());
+    }
+
+    @PreDestroy
+    void closeSilently() {
+        isOpen = false;
     }
 
     @Subscribe
