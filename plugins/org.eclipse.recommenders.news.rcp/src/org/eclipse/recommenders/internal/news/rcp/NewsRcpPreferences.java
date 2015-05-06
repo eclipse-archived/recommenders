@@ -40,7 +40,7 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.store(FeedDescriptors.getRegisteredFeeds()));
     }
 
-    public List<FeedDescriptor> getEnabledFeedDescriptors() {
+    public List<FeedDescriptor> getFeedDescriptors() {
         return FeedDescriptors.load(feeds, FeedDescriptors.getRegisteredFeeds());
     }
 }

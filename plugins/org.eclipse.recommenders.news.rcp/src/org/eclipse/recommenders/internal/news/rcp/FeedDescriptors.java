@@ -8,7 +8,6 @@
 package org.eclipse.recommenders.internal.news.rcp;
 
 import static com.google.common.base.Strings.nullToEmpty;
-import static java.lang.Boolean.TRUE;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,12 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class FeedDescriptors {
-
-    private static final String ENABLED_BY_DEFAULT_ATTRIBUTE = "enabledByDefault"; //$NON-NLS-1$
 
     public static final char DISABLED_FLAG = '!';
     public static final char SEPARATOR = ';';
@@ -32,8 +28,8 @@ public class FeedDescriptors {
     private static final String EXT_ID_PROVIDER = "org.eclipse.recommenders.news.rcp.feed"; //$NON-NLS-1$
 
     public static List<FeedDescriptor> getRegisteredFeeds() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                EXT_ID_PROVIDER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                .getConfigurationElementsFor(EXT_ID_PROVIDER);
         Arrays.sort(elements, new Comparator<IConfigurationElement>() {
 
             @Override
@@ -43,11 +39,11 @@ public class FeedDescriptors {
         });
         final List<FeedDescriptor> descriptors = Lists.newLinkedList();
         for (final IConfigurationElement element : elements) {
-            boolean enabled = Boolean.valueOf(Objects.firstNonNull(element.getAttribute(ENABLED_BY_DEFAULT_ATTRIBUTE),
-                    TRUE.toString()));
+            boolean enabled = true;
             descriptors.add(new FeedDescriptor(element, enabled));
         }
         return descriptors;
+
     }
 
     public static List<FeedDescriptor> load(String preferenceString, List<FeedDescriptor> available) {

@@ -39,6 +39,7 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
     private final IRssService service;
 
     private BooleanFieldEditor enabledEditor;
+    private FeedEditor feedEditor;
 
     @Inject
     public NewsFeedPreferencePage(IRssService service) {
@@ -51,7 +52,9 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
                 getFieldEditorParent());
         addField(enabledEditor);
-        addField(new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS, getFieldEditorParent()));
+        feedEditor = new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS,
+                getFieldEditorParent());
+        addField(feedEditor);
     }
 
     @Override
@@ -66,10 +69,20 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         IPreferenceStore store = getPreferenceStore();
         boolean oldValue = store.getBoolean(Constants.PREF_NEWS_ENABLED);
         boolean newValue = enabledEditor.getBooleanValue();
+        List<FeedDescriptor> oldFeedValue = FeedDescriptors.load(store.getString(Constants.PREF_FEED_LIST_SORTED),
+                feedEditor.getValue());
+        List<FeedDescriptor> newFeedValue = feedEditor.getValue();
         boolean result = super.performOk();
         if (!oldValue && newValue) {
             // News has been activated
             service.start();
+            return result;
+        }
+        for (FeedDescriptor oldFeed : oldFeedValue) {
+            FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
+            if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
+                service.start(newFeed);
+            }
         }
         return result;
     }
@@ -164,6 +177,14 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         @Override
         public int getNumberOfControls() {
             return 2;
+        }
+
+        public List<FeedDescriptor> getValue() {
+            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            for (FeedDescriptor descriptor : descriptors) {
+                descriptor.setEnabled(tableViewer.getChecked(descriptor));
+            }
+            return descriptors;
         }
     }
 }
