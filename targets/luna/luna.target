@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="153">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Luna (4.4)" sequenceNumber="154">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="0.0.0"/>
@@ -118,9 +118,8 @@
 <unit id="org.objenesis" version="1.0.0.v201105211943"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- This location points to the latest integration Orbit build. -->
-<!-- Once Luna SR2 is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
-<repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-I"/>
+<!-- This location points to the recommended Orbit build for Luna SR2. -->
+<repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
