@@ -10,29 +10,19 @@ package org.eclipse.recommenders.internal.news.rcp;
 import static java.lang.Long.parseLong;
 import static org.eclipse.recommenders.internal.news.rcp.FeedEvents.createNewFeedItemsEvent;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
-import org.eclipse.mylyn.internal.commons.notifications.feed.FeedEntry;
-import org.eclipse.mylyn.internal.commons.notifications.feed.FeedReader;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IRssService;
-import org.eclipse.recommenders.utils.Urls;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -68,105 +58,53 @@ public class RssService implements IRssService {
 
     @Override
     public void start() {
-        for (final FeedDescriptor feed : preferences.getEnabledFeedDescriptors()) {
-            start(feed);
+        for (final FeedDescriptor feed : preferences.getFeedDescriptors()) {
+            if (feed.isEnabled()) {
+                start(feed);
+            }
         }
     }
 
     @Override
     public void start(final FeedDescriptor feed) {
-        final Job messageCheckJob = new Job(feed.getId()) {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                try {
-                    pollFeed(monitor, feed);
-                    return Status.OK_STATUS;
-                } catch (Throwable t) {
-                    // fail silently
-                    return Status.CANCEL_STATUS;
-                }
-            }
-
-            @Override
-            public boolean shouldRun() {
-                if (!preferences.isEnabled() || !isFeedEnabled(feed)) {
-                    return false;
-                }
-                return true;
-            }
-
-        };
-        messageCheckJob.setSystem(true);
-        messageCheckJob.setPriority(Job.DECORATE);
-        messageCheckJob.addJobChangeListener(new JobChangeAdapter() {
+        final PollFeedJob job = new PollFeedJob(feed, preferences, environment);
+        job.setSystem(true);
+        job.setPriority(Job.DECORATE);
+        job.addJobChangeListener(new JobChangeAdapter() {
             @Override
             public void done(IJobChangeEvent event) {
+                boolean newMessage = false;
+                if (!groupedMessages.containsKey(feed)) {
+                    groupedMessages.put(feed, Lists.<IFeedMessage>newArrayList());
+                }
+                List<IFeedMessage> feedMessages = groupedMessages.get(feed);
+                for (IFeedMessage message : job.getMessages()) {
+                    if (!feedMessages.contains(message)) {
+                        feedMessages.add(message);
+                        if (!readIds.contains(message.getId())) {
+                            newMessage = true;
+                        }
+                    }
+                }
+
+                if (groupedMessages.size() > 0 && newMessage) {
+                    bus.post(createNewFeedItemsEvent());
+                }
+
                 if (!preferences.isEnabled() || !isFeedEnabled(feed)) {
                     return;
                 }
                 if (feed.getPollingInterval() != null) {
-                    messageCheckJob.schedule(TimeUnit.MINUTES.toMillis(parseLong(feed.getPollingInterval())));
+                    job.schedule(TimeUnit.MINUTES.toMillis(parseLong(feed.getPollingInterval())));
                     return;
                 }
-                messageCheckJob.schedule(TimeUnit.MINUTES.toMillis(DEFAULT_DELAY));
+                job.schedule(TimeUnit.MINUTES.toMillis(DEFAULT_DELAY));
             }
         });
-        messageCheckJob.schedule(START_DELAY);
-    }
 
-    private int pollFeed(IProgressMonitor monitor, FeedDescriptor feed) {
-        int status = -1;
-        boolean newMessage = false;
-        try {
-            HttpURLConnection connection = (HttpURLConnection) Urls.toUrl(feed.getUrl()).openConnection();
-            try {
-                connection.connect();
-                status = connection.getResponseCode();
-                if (status == HttpURLConnection.HTTP_OK && !monitor.isCanceled()) {
-
-                    InputStream in = new BufferedInputStream(connection.getInputStream());
-                    try {
-                        if (!groupedMessages.containsKey(feed)) {
-                            groupedMessages.put(feed, Lists.<IFeedMessage>newArrayList());
-                        }
-                        List<IFeedMessage> feedMessages = groupedMessages.get(feed);
-                        for (IFeedMessage message : readMessages(in, monitor, feed.getId())) {
-                            if (!feedMessages.contains(message)) {
-                                feedMessages.add(message);
-                                if (!readIds.contains(message.getId())) {
-                                    newMessage = true;
-                                }
-                            }
-                        }
-                    } finally {
-                        in.close();
-                    }
-                }
-            } finally {
-                connection.disconnect();
-            }
-        } catch (Exception e) {
-            // fail silently
+        if (PollFeedJob.getJobManager().find(job).length < 1) {
+            job.schedule(START_DELAY);
         }
-
-        if (groupedMessages.size() > 0 && newMessage) {
-            bus.post(createNewFeedItemsEvent());
-        }
-        return status;
-    }
-
-    private List<? extends IFeedMessage> readMessages(InputStream in, IProgressMonitor monitor, String eventId)
-            throws IOException {
-        FeedReader reader = new FeedReader(eventId, environment);
-        reader.parse(in, monitor);
-        return FluentIterable.from(reader.getEntries()).transform(new Function<FeedEntry, IFeedMessage>() {
-
-            @Override
-            public IFeedMessage apply(FeedEntry entry) {
-                return new FeedMessage(entry.getId(), entry.getDate(), entry.getDescription(), entry.getTitle(), Urls
-                        .toUrl(entry.getUrl()));
-            }
-        }).toList();
     }
 
     @Override
@@ -201,7 +139,7 @@ public class RssService implements IRssService {
     }
 
     private boolean isFeedEnabled(FeedDescriptor feed) {
-        for (FeedDescriptor fd : preferences.getEnabledFeedDescriptors()) {
+        for (FeedDescriptor fd : preferences.getFeedDescriptors()) {
             if (feed.getId().equals(fd.getId())) {
                 return true;
             }

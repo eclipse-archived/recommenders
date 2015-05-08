@@ -49,7 +49,7 @@
             id="org.eclipse.recommenders.news.rcp.planet.eclipse"
             name="%feed.planet.eclipse.name"
             url="http://planeteclipse.org/planet/rss20.xml"
-            pollingInterval="1">
+            pollingInterval="60">
       </feed>
    </extension>
 </plugin>
