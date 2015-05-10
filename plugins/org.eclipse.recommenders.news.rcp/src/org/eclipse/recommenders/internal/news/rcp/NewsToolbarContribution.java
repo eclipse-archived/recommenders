@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
+import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NewsNotificationPopup;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NoNewsNotificationPopup;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
@@ -83,12 +84,12 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
         }
 
         private void setNoAvailableNews() {
-            setImageDescriptor(images.getDescriptor(SharedImages.Images.OBJ_CONTAINER));
+            setImageDescriptor(CommonImages.RSS_INACTIVE);
             setToolTipText(Messages.TOOLTIP_NO_NEW_MESSAGES);
         }
 
         private void setAvailableNews() {
-            this.setImageDescriptor(images.getDescriptor(SharedImages.Images.OBJ_NEWSLETTER));
+            setImageDescriptor(CommonImages.RSS_ACTIVE);
             setToolTipText(Messages.TOOLTIP_NEW_MESSAGES);
         }
     }

@@ -18,15 +18,19 @@ import java.net.URL;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.FrameworkUtil;
 
-class CommonImages {
+public class CommonImages {
 
     private static final URL BASE_URL = FrameworkUtil.getBundle(CommonImages.class).getEntry("/icons/"); //$NON-NLS-1$
 
-    private static final String T_EVIEW = "eview16"; //$NON-NLS-1$s
+    private static final String T_EVIEW = "eview16"; //$NON-NLS-1$ s
 
     public static final ImageDescriptor NOTIFICATION_CLOSE = create(T_EVIEW, "notification-close.gif"); //$NON-NLS-1$
 
     public static final ImageDescriptor NOTIFICATION_CLOSE_HOVER = create(T_EVIEW, "notification-close-active.gif"); //$NON-NLS-1$
+
+    public static final ImageDescriptor RSS_ACTIVE = create(T_EVIEW, "rss-active.gif"); //$NON-NLS-1$
+
+    public static final ImageDescriptor RSS_INACTIVE = create(T_EVIEW, "rss-inactive.gif"); //$NON-NLS-1$ ;
 
     private static ImageDescriptor create(String prefix, String name) {
         try {
