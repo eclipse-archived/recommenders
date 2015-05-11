@@ -7,6 +7,10 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -26,6 +30,7 @@ public class FeedDescriptor {
         this.config = config;
         this.enabled = enabled;
         Preconditions.checkNotNull(getId());
+        Preconditions.checkArgument(isUrlValid(config.getAttribute("url")), Messages.FEED_DESCRIPTOR_MALFORMED_URL); //$NON-NLS-1$
     }
 
     public String getId() {
@@ -36,8 +41,8 @@ public class FeedDescriptor {
         return config.getAttribute("name"); //$NON-NLS-1$
     }
 
-    public String getUrl() {
-        return config.getAttribute("url"); //$NON-NLS-1$
+    public URL getUrl() {
+        return stringToUrl(config.getAttribute("url")); //$NON-NLS-1$
     }
 
     public String getDescription() {
@@ -87,4 +92,23 @@ public class FeedDescriptor {
         return result;
     }
 
+    private boolean isUrlValid(String url) {
+        URL u;
+        try {
+            u = new URL(url);
+            u.toURI();
+        } catch (MalformedURLException | URISyntaxException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private URL stringToUrl(String s) {
+        try {
+            return new URL(s);
+        } catch (MalformedURLException e) {
+            // should never happen
+            return null;
+        }
+    }
 }

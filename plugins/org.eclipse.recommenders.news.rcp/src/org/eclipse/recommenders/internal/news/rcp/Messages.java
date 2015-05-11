@@ -13,6 +13,8 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.news.rcp.messages"; //$NON-NLS-1$
 
+    public static String FEED_DESCRIPTOR_MALFORMED_URL;
+
     public static String PREFPAGE_TITLE;
     public static String PREFPAGE_DESCRIPTION;
     public static String FIELD_LABEL_FEEDS;
@@ -31,7 +33,6 @@ public final class Messages extends NLS {
 
     public static String LOG_ERROR_READING_PROPERTIES;
     public static String LOG_ERROR_WRITING_PROPERTIES;
-
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
