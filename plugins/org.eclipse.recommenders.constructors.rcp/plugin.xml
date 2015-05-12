@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page id="org.eclipse.recommenders.constructors.rcp.preferencePages.constructors"
+			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
+			class="org.eclipse.recommenders.internal.constructors.rcp.ConstructorsPreferencePage"
+			name="%preferencePages.constructors.name"/>
+	</extension>
+	<extension point="org.eclipse.equinox.preferences.preferences">
+		<initializer class="org.eclipse.recommenders.internal.constructors.rcp.PreferenceInitializer"/>
+	</extension>
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.constructors.rcp.ConstructorsRcpModule"/>
+	</extension>
+</plugin>
