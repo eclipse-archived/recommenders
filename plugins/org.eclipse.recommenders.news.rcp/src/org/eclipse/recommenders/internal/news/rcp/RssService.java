@@ -138,6 +138,13 @@ public class RssService implements IRssService {
         return ImmutableMap.copyOf(filteredMap);
     }
 
+    @Override
+    public void removeFeed(FeedDescriptor feed) {
+        if (groupedMessages.containsKey(feed)) {
+            groupedMessages.remove(feed);
+        }
+    }
+
     private boolean isFeedEnabled(FeedDescriptor feed) {
         for (FeedDescriptor fd : preferences.getFeedDescriptors()) {
             if (feed.getId().equals(fd.getId())) {

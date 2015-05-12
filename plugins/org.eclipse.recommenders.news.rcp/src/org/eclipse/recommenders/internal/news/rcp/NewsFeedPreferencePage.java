@@ -37,7 +37,6 @@ import com.google.common.collect.Lists;
 public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private final IRssService service;
-
     private BooleanFieldEditor enabledEditor;
     private FeedEditor feedEditor;
 
@@ -76,12 +75,14 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         if (!oldValue && newValue) {
             // News has been activated
             service.start();
-            return result;
         }
         for (FeedDescriptor oldFeed : oldFeedValue) {
             FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
             if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
                 service.start(newFeed);
+            }
+            if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
+                service.removeFeed(newFeed);
             }
         }
         return result;
