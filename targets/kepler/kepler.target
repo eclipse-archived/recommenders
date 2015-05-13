@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3)" sequenceNumber="153">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3)" sequenceNumber="154">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.jgit.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.epp.package.standard.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
 <!-- Stable repository for Kepler SR2. -->
-<repository location="http://download.eclipse.org/releases/kepler/"/>
+<repository location="http://download.eclipse.org/releases/kepler/201402280900/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.aether.feature.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.aether.connector.basic.feature.feature.group" version="0.0.0"/>
@@ -24,15 +21,15 @@
 <unit id="org.eclipse.aether.transport.http.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8272 -->
 <unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7276 -->
@@ -78,7 +75,7 @@
 <!-- This location points to the recommended Orbit build for Kepler SR2. -->
 <repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
 <unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
@@ -95,12 +92,12 @@
 <repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.lib" version="2.7.3.v201411190455"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201411190455/"/>
 </location>
 <!-- Needed for the SWTBot UI tests -->
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.feature.group" version="2.2.1.201402241301"/>
 <unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.2.1.201402241301"/>
 <unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
@@ -109,5 +106,5 @@
 <repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
 </location>
 </locations>
-<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 </target>
