@@ -28,8 +28,8 @@
 <unit id="org.eclipse.rcp.id" version="0.0.0"/>
 <unit id="org.eclipse.rcp.sdk.id" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable build for Mars M7 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M7-201504301445/"/>
+<!-- Stable build for Mars RC1 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5RC1-201505141000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
