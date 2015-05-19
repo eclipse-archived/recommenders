@@ -58,7 +58,7 @@ public final class CompletionContexts {
         int end = displayString.length();
         for (int i = 0; i < displayString.length(); i++) {
             char c = displayString.charAt(i);
-            if (!isJavaIdentifierPart(c) && c != '.') {
+            if (!(isJavaIdentifierPart(c) || c == '@' || c == '{' || c == '}') && c != '.') {
                 end = i;
                 break;
             }
