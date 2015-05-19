@@ -126,8 +126,12 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
                 if (!methodName.isInit()) {
                     continue;
                 }
+                int constructorCallCount = model.getConstructorCallCount(methodName);
+                if (constructorCallCount == 0) {
+                    continue;
+                }
                 foundConstructors.put(coreProposal, methodName);
-                runningTotal += model.getConstructorCallCount(methodName);
+                runningTotal += constructorCallCount;
             }
             final int foundConstructorsTotal = runningTotal;
 
@@ -173,17 +177,20 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
         if (relevance == null) {
             return;
         }
-        int score = 0;
-        if (relevance < 1d) {
-            int promille = DoubleMath.roundToInt(relevance * 10000, HALF_EVEN);
-            score = promille;
+
+        final int score;
+        if (relevance < 0.01) {
+            score = DoubleMath.roundToInt(relevance * 10000, HALF_EVEN);
         } else {
             score = 100 + DoubleMath.roundToInt(relevance * 100, HALF_EVEN);
         }
+        if (score == 0) {
+            return;
+        }
 
-        final int boost = prefs.changeProposalRelevance ? 200 + score : 0;
+        final int boost = prefs.changeProposalRelevance ? score : 0;
         if (boost > 0) {
-            proposal.setTag(RECOMMENDERS_SCORE, relevance);
+            proposal.setTag(RECOMMENDERS_SCORE, relevance * 100);
         }
 
         String label = ""; //$NON-NLS-1$
