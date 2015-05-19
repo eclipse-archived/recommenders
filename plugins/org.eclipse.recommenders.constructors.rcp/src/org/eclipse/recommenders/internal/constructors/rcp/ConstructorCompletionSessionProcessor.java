@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedTypeReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
@@ -58,7 +59,7 @@ import com.google.common.math.DoubleMath;
 public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
     private final ImmutableSet<Class<? extends ASTNode>> supportedCompletionRequests = ImmutableSet
-            .<Class<? extends ASTNode>>of(CompletionOnSingleTypeReference.class);
+            .<Class<? extends ASTNode>>of(CompletionOnSingleTypeReference.class, CompletionOnQualifiedTypeReference.class);
 
     private final IProjectCoordinateProvider pcProvider;
     private final IConstructorModelProvider modelProvider;
