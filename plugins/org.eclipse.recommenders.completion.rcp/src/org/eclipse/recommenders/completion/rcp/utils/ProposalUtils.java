@@ -15,8 +15,9 @@ package org.eclipse.recommenders.completion.rcp.utils;
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE;
+import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
@@ -35,7 +36,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
-import org.eclipse.recommenders.internal.completion.rcp.LogMessages;
 import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -75,7 +75,7 @@ public final class ProposalUtils {
 
         ReferenceBinding declaringType = getDeclaringType(proposal, env).orNull();
         if (declaringType == null) {
-            log(LogMessages.ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE, toLogString(proposal));
+            log(ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE, toLogString(proposal));
             return absent();
         }
 
@@ -86,7 +86,7 @@ public final class ProposalUtils {
         } catch (AbortCompilation e) {
             // We don't pass along the exception since that may contain private information which might not be
             // anonymized.
-            log(LogMessages.ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, toLogString(proposal));
+            log(ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, toLogString(proposal));
             return absent();
         }
 
@@ -100,7 +100,7 @@ public final class ProposalUtils {
                     || CharOperation.equals(strippedProposalSignature, signature)) {
                 Optional<IMethodName> result = CompilerBindings.toMethodName(overload);
                 if (!result.isPresent()) {
-                    log(LogMessages.ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME, overload, signature);
+                    log(ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME, overload, signature);
                 }
                 return result;
             }
@@ -113,8 +113,8 @@ public final class ProposalUtils {
         if (proposal == null) {
             return "null proposal"; //$NON-NLS-1$
         }
-        return new StringBuilder().append(firstNonNull(proposal.getDeclarationSignature(), NO_CHAR)).append("#") //$NON-NLS-1$
-                .append(firstNonNull(proposal.getName(), NO_CHAR)).append("#") //$NON-NLS-1$
+        return new StringBuilder().append(firstNonNull(proposal.getDeclarationSignature(), NO_CHAR)).append('#')
+                .append(firstNonNull(proposal.getName(), NO_CHAR)).append('#')
                 .append(firstNonNull(proposal.getSignature(), NO_CHAR)).toString();
     }
 
@@ -192,7 +192,9 @@ public final class ProposalUtils {
             }
             return fromNullable(result);
         } catch (Exception e) {
-            log(ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE, null, Arrays.toString(CharOperation.toStrings(compoundName)));
+            // We don't pass along the exception since that may contain private information which might not be
+            // anonymized.
+            log(ERROR_FAILED_TO_LOOK_UP_COMPOUND_NAME, Arrays.toString(CharOperation.toStrings(compoundName)));
             return absent();
         }
     }
@@ -204,7 +206,7 @@ public final class ProposalUtils {
                 signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
             }
         } catch (Exception e) {
-            log(org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
+            log(LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
         }
         return signature != null ? signature : proposal.getSignature();
     }
