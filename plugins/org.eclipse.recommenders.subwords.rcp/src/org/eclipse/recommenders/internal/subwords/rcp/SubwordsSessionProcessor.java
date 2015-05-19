@@ -258,7 +258,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             default:
                 // result: display string. This should not happen. We should issue a warning here...
                 completionIdentifier = javaProposal.getDisplayString();
-                Logs.log(ERROR_UNEXPECTED_FALL_THROUGH, javaProposal.getClass());
+                Logs.log(ERROR_UNEXPECTED_FALL_THROUGH, coreProposal.getKind(), javaProposal.getClass());
                 break;
             }
         } else {
