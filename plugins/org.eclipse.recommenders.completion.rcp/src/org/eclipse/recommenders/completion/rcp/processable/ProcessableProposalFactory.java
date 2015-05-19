@@ -38,6 +38,7 @@ import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocInlineTagCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposal;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -65,13 +66,14 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<JavaCompletionProposal> javaCompletionProposalClass;
     private static Class<LazyGenericTypeProposal> lazyGenericTypeProposalClass;
     private static Class<LazyJavaTypeCompletionProposal> lazyJavaTypeCompletionProposalClass;
-    private static Class<JavadocLinkTypeCompletionProposal> javadocLinkTypeCompletionProposalClass;
     private static Class<LazyJavaCompletionProposal> lazyJavaCompletionProposaClass;
     private static Class<FilledArgumentNamesMethodProposal> filledArgumentNamesMethodProposalClass;
     private static Class<ParameterGuessingProposal> parameterGuessingProposalClass;
     private static Class<MethodDeclarationCompletionProposal> methodDeclarationCompletionProposalClass;
     private static Class<LazyPackageCompletionProposal> lazyPackageCompletionProposalClass;
     private static Class<GetterSetterCompletionProposal> getterSetterCompletionProposalClass;
+    private static Class<JavadocLinkTypeCompletionProposal> javadocLinkTypeCompletionProposalClass;
+    private static Class<JavadocInlineTagCompletionProposal> javadocInlineTagCompletionProposalClass;
 
     private static Method proposalInfoMethod = Reflections
             .getDeclaredMethod(AbstractJavaCompletionProposal.class, "getProposalInfo").orNull(); //$NON-NLS-1$
@@ -153,6 +155,11 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         } catch (NoClassDefFoundError e) {
             logWarning(e);
         }
+        try {
+            javadocInlineTagCompletionProposalClass = JavadocInlineTagCompletionProposal.class;
+        } catch (NoClassDefFoundError e) {
+            logWarning(e);
+        }
     }
 
     private static void logWarning(NoClassDefFoundError e) {
@@ -226,6 +233,11 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             } else if (javadocLinkTypeCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavadocLinkTypeCompletionProposal(coreProposal,
                         (JavadocLinkTypeCompletionProposal) uiProposal, context);
+                setProposalInfo(res, uiProposal);
+                return res;
+            } else if (javadocInlineTagCompletionProposalClass == c) {
+                IProcessableProposal res = factory.newJavadocInlineTagCompletionProposal(coreProposal,
+                        (JavadocInlineTagCompletionProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (lazyJavaCompletionProposaClass == c) {
@@ -324,6 +336,12 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     public IProcessableProposal newJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
             JavadocLinkTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         return postConstruct(new ProcessableJavadocLinkTypeCompletionProposal(coreProposal, context));
+    }
+
+    @Override
+    public IProcessableProposal newJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
+            JavadocInlineTagCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableJavadocInlineTagCompletionProposal(coreProposal, context));
     }
 
     @Override

@@ -255,6 +255,11 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                         .append(" javadoc").toString(); //$NON-NLS-1$
                 break;
             }
+            case CompletionProposal.JAVADOC_BLOCK_TAG:
+            case CompletionProposal.JAVADOC_INLINE_TAG: {
+                completionIdentifier = javaProposal.getDisplayString();
+                break;
+            }
             default:
                 // result: display string. This should not happen. We should issue a warning here...
                 completionIdentifier = javaProposal.getDisplayString();

@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyPackageCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocInlineTagCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
@@ -66,6 +67,9 @@ public interface IProcessableProposalFactory {
 
     IProcessableProposal newJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
             JavadocLinkTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
+
+    IProcessableProposal newJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
+            JavadocInlineTagCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 
     IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
             LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
