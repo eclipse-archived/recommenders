@@ -27,6 +27,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME);
     public static final ILogMessage ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE = new LogMessages(ERROR,
             Messages.LOG_ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE);
+    public static final ILogMessage ERROR_FAILED_TO_LOOK_UP_COMPOUND_NAME = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_LOOK_UP_COMPOUND_NAME);
     public static final LogMessages ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
     public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
@@ -41,6 +43,7 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_UNEXPECTED_PROPOSAL_KIND);
 
     public static final LogMessages WARNING_LINKAGE_ERROR = new LogMessages(WARNING, Messages.LOG_WARNING_LINKAGE_ERROR);
+
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
