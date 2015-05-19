@@ -16,9 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
@@ -36,21 +33,21 @@ import com.google.common.eventbus.Subscribe;
 @SuppressWarnings("restriction")
 public class RssService implements IRssService {
 
-    private static final long DEFAULT_DELAY = TimeUnit.DAYS.toMinutes(1);
-    private static final long START_DELAY = 0;
-
     private final NewsRcpPreferences preferences;
     private final EventBus bus;
     private final NotificationEnvironment environment;
+    private final JobProvider provider;
 
     private final Set<String> readIds;
 
     private final HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
 
-    public RssService(NewsRcpPreferences preferences, EventBus bus, NotificationEnvironment environment) {
+    public RssService(NewsRcpPreferences preferences, EventBus bus, NotificationEnvironment environment,
+            JobProvider provider) {
         this.preferences = preferences;
         this.bus = bus;
         this.environment = environment;
+        this.provider = provider;
         bus.register(this);
 
         readIds = ReadFeedMessagesProperties.getReadIds();
@@ -58,6 +55,9 @@ public class RssService implements IRssService {
 
     @Override
     public void start() {
+        if (!preferences.isEnabled()) {
+            return;
+        }
         for (final FeedDescriptor feed : preferences.getFeedDescriptors()) {
             if (feed.isEnabled()) {
                 start(feed);
@@ -67,44 +67,8 @@ public class RssService implements IRssService {
 
     @Override
     public void start(final FeedDescriptor feed) {
-        final PollFeedJob job = new PollFeedJob(feed, preferences, environment);
-        job.setSystem(true);
-        job.setPriority(Job.DECORATE);
-        job.addJobChangeListener(new JobChangeAdapter() {
-            @Override
-            public void done(IJobChangeEvent event) {
-                boolean newMessage = false;
-                if (!groupedMessages.containsKey(feed)) {
-                    groupedMessages.put(feed, Lists.<IFeedMessage>newArrayList());
-                }
-                List<IFeedMessage> feedMessages = groupedMessages.get(feed);
-                for (IFeedMessage message : job.getMessages()) {
-                    if (!feedMessages.contains(message)) {
-                        feedMessages.add(message);
-                        if (!readIds.contains(message.getId())) {
-                            newMessage = true;
-                        }
-                    }
-                }
-
-                if (groupedMessages.size() > 0 && newMessage) {
-                    bus.post(createNewFeedItemsEvent());
-                }
-
-                if (!preferences.isEnabled() || !isFeedEnabled(feed)) {
-                    return;
-                }
-                if (feed.getPollingInterval() != null) {
-                    job.schedule(TimeUnit.MINUTES.toMillis(parseLong(feed.getPollingInterval())));
-                    return;
-                }
-                job.schedule(TimeUnit.MINUTES.toMillis(DEFAULT_DELAY));
-            }
-        });
-
-        if (PollFeedJob.getJobManager().find(job).length < 1) {
-            job.schedule(START_DELAY);
-        }
+        final PollFeedJob job = provider.getPollFeedJob(feed, preferences, environment, this);
+        provider.schedule(job);
     }
 
     @Override
@@ -138,13 +102,6 @@ public class RssService implements IRssService {
         return ImmutableMap.copyOf(filteredMap);
     }
 
-    @Override
-    public void removeFeed(FeedDescriptor feed) {
-        if (groupedMessages.containsKey(feed)) {
-            groupedMessages.remove(feed);
-        }
-    }
-
     private boolean isFeedEnabled(FeedDescriptor feed) {
         for (FeedDescriptor fd : preferences.getFeedDescriptors()) {
             if (feed.getId().equals(fd.getId())) {
@@ -154,9 +111,45 @@ public class RssService implements IRssService {
         return false;
     }
 
+    public void jobDone(FeedDescriptor feed, PollFeedJob job) {
+        boolean newMessage = false;
+        if (!groupedMessages.containsKey(feed)) {
+            groupedMessages.put(feed, Lists.<IFeedMessage>newArrayList());
+        }
+        List<IFeedMessage> feedMessages = groupedMessages.get(feed);
+        for (IFeedMessage message : job.getMessages()) {
+            if (!feedMessages.contains(message)) {
+                feedMessages.add(message);
+                if (!readIds.contains(message.getId())) {
+                    newMessage = true;
+                }
+            }
+        }
+
+        if (groupedMessages.size() > 0 && newMessage) {
+            bus.post(createNewFeedItemsEvent());
+        }
+
+        if (!preferences.isEnabled() || !isFeedEnabled(feed)) {
+            return;
+        }
+        if (feed.getPollingInterval() != null) {
+            job.schedule(TimeUnit.MINUTES.toMillis(parseLong(feed.getPollingInterval())));
+            return;
+        }
+        provider.schedule(job);
+    }
+
     @Subscribe
     public void handle(FeedMessageReadEvent event) {
         readIds.add(event.getId());
         ReadFeedMessagesProperties.writeReadIds(readIds);
+    }
+
+    @Override
+    public void removeFeed(FeedDescriptor feed) {
+        if (groupedMessages.containsKey(feed)) {
+            groupedMessages.remove(feed);
+        }
     }
 }

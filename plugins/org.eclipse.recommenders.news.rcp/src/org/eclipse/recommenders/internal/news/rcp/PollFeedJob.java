@@ -49,7 +49,7 @@ public class PollFeedJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         int status = -1;
         try {
-            HttpURLConnection connection = (HttpURLConnection) Urls.toUrl(feed.getUrl()).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) feed.getUrl().openConnection();
             try {
                 connection.connect();
                 status = connection.getResponseCode();
