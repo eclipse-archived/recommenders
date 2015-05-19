@@ -49,10 +49,15 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT);
 
-    public static final ILogMessage LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED = new LogMessages(WARNING,
+    public static final ILogMessage WARNING_EXCEPTION_PARSING_NEWS_FEED = new LogMessages(WARNING,
             Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED);
-    public static final ILogMessage LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM = new LogMessages(WARNING,
+    public static final ILogMessage WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM = new LogMessages(WARNING,
             Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED_ITEM);
+
+    public static final ILogMessage ERROR_ON_APACHE_HEAD_REQUEST = new LogMessages(ERROR,
+            Messages.LOG_ERROR_ON_APACHE_HEAD_REQUEST);
+    public static final ILogMessage ERROR_ON_P2_HEAD_REQUEST = new LogMessages(ERROR,
+            Messages.LOG_ERROR_ON_P2_HEAD_REQUEST);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

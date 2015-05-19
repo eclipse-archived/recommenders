@@ -60,7 +60,7 @@ public class CheckForProjectNewsJob extends Job {
         try {
             doRun();
         } catch (Exception e) {
-            Logs.log(LogMessages.LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED, e);
+            Logs.log(LogMessages.WARNING_EXCEPTION_PARSING_NEWS_FEED, e);
         }
         return Status.OK_STATUS;
     }

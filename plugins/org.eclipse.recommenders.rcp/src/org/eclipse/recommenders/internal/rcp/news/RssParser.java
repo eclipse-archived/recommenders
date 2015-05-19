@@ -60,7 +60,7 @@ public class RssParser {
             }
             return entries;
         } catch (Exception e) {
-            Logs.log(LogMessages.LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED, e);
+            Logs.log(LogMessages.WARNING_EXCEPTION_PARSING_NEWS_FEED, e);
             return Collections.emptyList();
         }
     }
@@ -78,7 +78,7 @@ public class RssParser {
             URL url = new URL(xPath.evaluate("link", item)); //$NON-NLS-1$
             return Optional.of(Pair.newPair(title, url));
         } catch (Exception e) {
-            Logs.log(LogMessages.LOG_WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM, e);
+            Logs.log(LogMessages.WARNING_EXCEPTION_PARSING_NEWS_FEED_ITEM, e);
             return Optional.absent();
         }
     }
