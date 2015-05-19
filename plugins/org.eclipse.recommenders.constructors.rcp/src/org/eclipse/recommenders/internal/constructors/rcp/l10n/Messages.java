@@ -24,6 +24,9 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_MIN_PROPOSAL_PROBABILITY;
     public static String FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE;
 
+    public static String PROPOSAL_LABEL_PROMILLE;
+    public static String PROPOSAL_LABEL_PERCENTAGE;
+
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }

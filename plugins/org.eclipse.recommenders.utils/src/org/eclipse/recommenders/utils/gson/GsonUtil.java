@@ -81,6 +81,8 @@ public class GsonUtil {
 
             builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
 
+            builder.registerTypeAdapterFactory(new MultisetTypeAdapterFactory());
+
             builder.enableComplexMapKeySerialization();
             builder.setPrettyPrinting();
             gson = builder.create();

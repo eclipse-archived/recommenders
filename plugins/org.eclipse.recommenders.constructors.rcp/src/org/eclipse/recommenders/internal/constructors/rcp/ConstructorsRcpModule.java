@@ -18,10 +18,12 @@ import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 
 public class ConstructorsRcpModule extends AbstractModule {
 
     protected void configure() {
+        bind(IConstructorModelProvider.class).to(EclipseConstructorModelProvider.class).in(Scopes.SINGLETON);
     };
 
     @Provides

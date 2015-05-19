@@ -53,20 +53,22 @@ public final class Constants {
     public static final String EXT_DATA = "data";
 
     /** {@value} */
-    public static final String DOT_POM = ".pom";
+    public static final String DOT_POM = '.' + EXT_POM;
     /** {@value} */
-    public static final String DOT_ZIP = ".zip";
+    public static final String DOT_ZIP = '.' + EXT_ZIP;
     /** {@value} */
-    public static final String DOT_JAR = ".jar";
+    public static final String DOT_JAR = '.' + EXT_JAR;
     /** {@value} */
-    public static final String DOT_JSON = ".json";
+    public static final String DOT_JSON = '.' + EXT_JSON;
     /** {@value} */
-    public static final String DOT_JBIF = ".jbif";
+    public static final String DOT_JBIF = '.' + EXT_JBIF;
     /** {@value} */
-    public static final String DOT_DATA = ".data";
+    public static final String DOT_DATA = '.' + EXT_DATA;
 
     /** {@value} */
     public static final String CLASS_CALL_MODELS = "call";
+    /** {@value} */
+    public static final String CLASS_CTOR_MODEL = "ctor";
     /** {@value} */
     public static final String CLASS_OVRM_MODEL = "ovrm";
     /** {@value} */

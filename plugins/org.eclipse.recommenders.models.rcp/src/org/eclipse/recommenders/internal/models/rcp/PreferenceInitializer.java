@@ -16,14 +16,18 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
+import com.google.common.base.Joiner;
+
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/mars/"; //$NON-NLS-1$
+    public static final String REPOSITORY_URL_LIST = Joiner.on('\t').join(
+            "http://download.eclipse.org/recommenders/models/mars/", //$NON-NLS-1$
+            "http://download.eclipse.org/recommenders/models/mars-ctor/"); //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(BUNDLE_ID);
-        s.put(PREF_REPOSITORY_URL_LIST, SERVER_URL);
+        s.put(PREF_REPOSITORY_URL_LIST, REPOSITORY_URL_LIST);
         s.putBoolean(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, true);
     }
 }
