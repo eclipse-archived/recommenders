@@ -38,10 +38,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Throwables;
 import com.google.common.eventbus.EventBus;
@@ -99,7 +99,7 @@ public class SnipmatchCompletionEngine {
             }
 
             private boolean isFocused(Control control) {
-                Control focusControl = Display.getCurrent().getFocusControl();
+                Control focusControl = PlatformUI.getWorkbench().getDisplay().getFocusControl();
                 return control.equals(focusControl);
             }
         };
@@ -154,6 +154,7 @@ public class SnipmatchCompletionEngine {
 
     private void createSearchPopup() {
         Shell parentShell = context.getViewer().getTextWidget().getShell();
+
         searchShell = new Shell(parentShell, SWT.ON_TOP);
         searchShell.setLayout(new FillLayout());
         searchShell.addListener(SWT.Traverse, new Listener() {
@@ -166,7 +167,6 @@ public class SnipmatchCompletionEngine {
                 }
             }
         });
-
         searchText = new StyledText(searchShell, SWT.SINGLE);
         searchText.setFont(fontRegistry.get("org.eclipse.recommenders.snipmatch.rcp.searchTextFont")); //$NON-NLS-1$
         searchText.setBackground(colorRegistry.get(PREF_SEARCH_BOX_BACKGROUND));
@@ -176,8 +176,13 @@ public class SnipmatchCompletionEngine {
             public void focusLost(FocusEvent e) {
                 if (!assistant.hasProposalPopupFocus()) {
                     state = AssistantControlState.ENABLE_HIDE;
-                    searchShell.dispose();
-                    assistant.uninstall();
+
+                    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            assistant.uninstall();
+                        }
+                    });
                 }
             }
         });
