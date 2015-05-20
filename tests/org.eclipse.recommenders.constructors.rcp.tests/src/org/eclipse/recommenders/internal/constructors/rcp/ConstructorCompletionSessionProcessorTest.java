@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.constructors.rcp;
 
-import static org.eclipse.recommenders.internal.constructors.rcp.SimpleProposalProcessorMatcher.processorWithBoostAndLabel;
+import static org.eclipse.recommenders.testing.rcp.completion.SimpleProposalProcessorMatcher.processorWithBoostAndLabel;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;

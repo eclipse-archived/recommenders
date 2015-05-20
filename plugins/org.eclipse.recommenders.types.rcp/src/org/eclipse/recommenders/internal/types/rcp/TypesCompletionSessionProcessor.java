@@ -35,26 +35,27 @@ import com.google.common.collect.ImmutableSet.Builder;
 public class TypesCompletionSessionProcessor extends SessionProcessor {
 
     private static final CompletionProposal NULL_PROPOSAL = new CompletionProposal();
+    public static final int BOOST = 50;
 
     private ImmutableSet<String> subtypes;
 
-    private final TypesIndexService service;
+    private final ITypesIndexService service;
     private final OverlayImageProposalProcessor overlayDecorator;
 
     @Inject
-    public TypesCompletionSessionProcessor(TypesIndexService service, SharedImages images) {
+    public TypesCompletionSessionProcessor(ITypesIndexService service, SharedImages images) {
         this.service = service;
         overlayDecorator = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     }
 
     @Override
     public boolean startSession(IRecommendersCompletionContext context) {
-        Builder<String> b = ImmutableSet.builder();
         Set<ITypeName> expectedTypes = context.getExpectedTypeNames();
         if (expectedTypes.isEmpty()) {
             return false;
         }
 
+        Builder<String> b = ImmutableSet.builder();
         for (ITypeName expected : expectedTypes) {
             String oneCharPrefix = substring(context.getPrefix(), 0, 1);
             b.addAll(service.subtypes(expected, oneCharPrefix, context.getProject()));
@@ -83,14 +84,14 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
     }
 
     private void handleProposal(IProcessableProposal proposal, char[] signature) {
+        // parse the type name and remove Generics from the name
         String name = new String(signature, 1, signature.length - 2);
         name = substringBefore(name, "<");
-        // parse the type name and remove Generics from the name
+
         if (subtypes.contains(name)) {
-            int increment = 50;
-            proposal.setTag(RECOMMENDERS_SCORE, increment);
+            proposal.setTag(RECOMMENDERS_SCORE, BOOST);
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-            mgr.addProcessor(new SimpleProposalProcessor(increment));
+            mgr.addProcessor(new SimpleProposalProcessor(BOOST));
             mgr.addProcessor(overlayDecorator);
         }
     }

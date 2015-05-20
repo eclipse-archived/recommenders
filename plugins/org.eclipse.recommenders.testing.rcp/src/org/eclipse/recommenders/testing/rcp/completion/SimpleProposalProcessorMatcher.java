@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.constructors.rcp;
+package org.eclipse.recommenders.testing.rcp.completion;
 
 import static org.mockito.Matchers.argThat;
 
@@ -19,6 +19,10 @@ public class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimplePropos
 
     private final int boost;
     private final String label;
+
+    public static SimpleProposalProcessor processorWithBoost(int boost) {
+        return argThat(new SimpleProposalProcessorMatcher(boost, null));
+    }
 
     public static SimpleProposalProcessor processorWithBoostAndLabel(int boost, String label) {
         return argThat(new SimpleProposalProcessorMatcher(boost, label));
@@ -38,6 +42,17 @@ public class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimplePropos
         if (boost != processor.getIncrement()) {
             return false;
         }
+
+        // if (label == null) {
+        // return true;
+        // }
+        // if (label != processor.getAddon()) {
+        // return false;
+        // }
+        if (label == null) {
+            return label == processor.getAddon();
+        }
+
         return label.equals(processor.getAddon());
     }
 }

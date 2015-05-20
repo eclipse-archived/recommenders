@@ -9,8 +9,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.ui,
+ org.eclipse.recommenders.completion.rcp,
  org.eclipse.recommenders.testing,
+ org.eclipse.ui,
+ org.hamcrest,
  org.mockito
 Import-Package: org.apache.commons.lang3;version="[3.1.0,4.0.0)"
-Export-Package: org.eclipse.recommenders.testing.rcp.jdt
+Export-Package: org.eclipse.recommenders.testing.rcp.jdt,
+ org.eclipse.recommenders.testing.rcp.completion

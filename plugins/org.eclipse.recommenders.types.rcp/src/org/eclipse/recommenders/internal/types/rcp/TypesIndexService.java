@@ -36,7 +36,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-public class TypesIndexService implements IElementChangedListener, IStartup {
+public class TypesIndexService implements ITypesIndexService, IElementChangedListener, IStartup {
 
     private final Map<IJavaProject, ProjectTypesIndex> _indexes = Maps.newHashMap();
 
@@ -154,17 +154,17 @@ public class TypesIndexService implements IElementChangedListener, IStartup {
         return indexDir;
     }
 
-    public void close(IJavaProject project) {
-    }
-
+    @Override
     public ImmutableSet<String> subtypes(IType expected, String prefix) {
         return findOrCreateIndex(expected.getJavaProject()).subtypes(expected, prefix);
     }
 
+    @Override
     public ImmutableSet<String> subtypes(ITypeName expected, String prefix, IJavaProject project) {
         return findOrCreateIndex(project).subtypes(expected, prefix);
     }
 
+    @Override
     public ImmutableSet<String> subtypes(String type, String prefix, IJavaProject project) {
         return findOrCreateIndex(project).subtypes(type, prefix);
     }
