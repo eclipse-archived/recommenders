@@ -15,6 +15,8 @@ import static org.eclipse.jface.viewers.StyledString.COUNTER_STYLER;
 
 import org.eclipse.jface.viewers.StyledString;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class SimpleProposalProcessor extends ProposalProcessor {
 
     private final int increment;
@@ -39,6 +41,16 @@ public class SimpleProposalProcessor extends ProposalProcessor {
         if (!isEmpty(addon)) {
             displayString.append(" - " + addon, COUNTER_STYLER); //$NON-NLS-1$
         }
+    }
+
+    @VisibleForTesting
+    public int getIncrement() {
+        return increment;
+    }
+
+    @VisibleForTesting
+    public String getAddon() {
+        return addon;
     }
 
     @Override

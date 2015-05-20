@@ -39,7 +39,6 @@ import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalP
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
-import org.eclipse.recommenders.completion.rcp.utils.ProposalUtils;
 import org.eclipse.recommenders.internal.constructors.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.models.rcp.PrefetchModelArchiveJob;
 import org.eclipse.recommenders.models.UniqueTypeName;
@@ -59,10 +58,12 @@ import com.google.common.math.DoubleMath;
 public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
     private final ImmutableSet<Class<? extends ASTNode>> supportedCompletionRequests = ImmutableSet
-            .<Class<? extends ASTNode>>of(CompletionOnSingleTypeReference.class, CompletionOnQualifiedTypeReference.class);
+            .<Class<? extends ASTNode>>of(CompletionOnSingleTypeReference.class,
+                    CompletionOnQualifiedTypeReference.class);
 
     private final IProjectCoordinateProvider pcProvider;
     private final IConstructorModelProvider modelProvider;
+    private final IMethodNameProvider methodNameProvider;
     private final ConstructorsRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
 
@@ -70,9 +71,11 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
     @Inject
     public ConstructorCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IConstructorModelProvider modelProvider, ConstructorsRcpPreferences prefs, SharedImages images) {
+            IConstructorModelProvider modelProvider, IMethodNameProvider methodNameProvider,
+            ConstructorsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = requireNonNull(pcProvider);
         this.modelProvider = requireNonNull(modelProvider);
+        this.methodNameProvider = requireNonNull(methodNameProvider);
         this.prefs = requireNonNull(prefs);
         this.overlayProcessor = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     }
@@ -120,7 +123,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
                 if (coreProposal.getKind() != CompletionProposal.CONSTRUCTOR_INVOCATION) {
                     continue;
                 }
-                IMethodName methodName = ProposalUtils.toMethodName(coreProposal, env).orNull();
+                IMethodName methodName = methodNameProvider.toMethodName(coreProposal, env).orNull();
                 if (methodName == null) {
                     continue;
                 }
@@ -194,14 +197,17 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
             proposal.setTag(RECOMMENDERS_SCORE, relevance * 100);
         }
 
-        String label = ""; //$NON-NLS-1$
+        String label = null;
         if (prefs.decorateProposalText) {
             String format = relevance < 0.01d ? Messages.PROPOSAL_LABEL_PROMILLE : Messages.PROPOSAL_LABEL_PERCENTAGE;
             label = format(format, relevance);
         }
 
         ProposalProcessorManager manager = proposal.getProposalProcessorManager();
-        manager.addProcessor(new SimpleProposalProcessor(boost, label));
+
+        if (boost != 0 || label != null) {
+            manager.addProcessor(new SimpleProposalProcessor(boost, label));
+        }
 
         if (prefs.decorateProposalIcon) {
             manager.addProcessor(overlayProcessor);

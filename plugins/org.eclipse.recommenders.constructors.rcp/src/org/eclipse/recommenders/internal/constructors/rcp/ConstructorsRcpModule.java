@@ -24,6 +24,7 @@ public class ConstructorsRcpModule extends AbstractModule {
 
     protected void configure() {
         bind(IConstructorModelProvider.class).to(EclipseConstructorModelProvider.class).in(Scopes.SINGLETON);
+        bind(IMethodNameProvider.class).to(MethodNameProvider.class).in(Scopes.SINGLETON);
     };
 
     @Provides
