@@ -47,6 +47,17 @@
 		<module>org.eclipse.recommenders.utils</module>
 	</modules>
 
+	<dependencies>
+		<dependency>
+			<!-- This dependency is only visible to Sonar (not Tycho) and provides annotations not part of the javax.annotation bundle from Orbit. -->
+			<!-- See <http://dev.eclipse.org/mhonarc/lists/cbi-dev/msg01424.html>. -->
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>2.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
