@@ -45,7 +45,7 @@ public final class Messages extends NLS {
     public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE;
     public static String DIALOG_MESSAGE_NOT_ABSOLUTE_URI;
     public static String DIALOG_MESSAGE_UNSUPPORTED_PROTOCOL;
-    public static String DIALOG_MESSAGE_FILE_A_BUG;
+    public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE_SUGGESTIONS;
 
     public static String SEARCH_PLACEHOLDER_FILTER_TEXT;
 
