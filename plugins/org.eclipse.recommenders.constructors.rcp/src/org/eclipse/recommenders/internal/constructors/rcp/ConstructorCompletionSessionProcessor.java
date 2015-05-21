@@ -39,6 +39,8 @@ import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalP
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
+import org.eclipse.recommenders.constructors.ConstructorModel;
+import org.eclipse.recommenders.constructors.IConstructorModelProvider;
 import org.eclipse.recommenders.internal.constructors.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.models.rcp.PrefetchModelArchiveJob;
 import org.eclipse.recommenders.models.UniqueTypeName;

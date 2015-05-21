@@ -20,6 +20,7 @@
 		<module>org.eclipse.recommenders.calls.tests</module>
 		<module>org.eclipse.recommenders.calls.rcp.tests</module>
 		<module>org.eclipse.recommenders.completion.rcp.tests</module>
+		<module>org.eclipse.recommenders.constructors.tests</module>
 		<module>org.eclipse.recommenders.constructors.rcp.tests</module>
 		<module>org.eclipse.recommenders.coordinates.tests</module>
 		<module>org.eclipse.recommenders.coordinates.rcp.tests</module>

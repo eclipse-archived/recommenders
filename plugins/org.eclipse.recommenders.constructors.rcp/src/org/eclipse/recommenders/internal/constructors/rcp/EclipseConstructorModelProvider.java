@@ -17,6 +17,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.recommenders.constructors.ConstructorModel;
+import org.eclipse.recommenders.constructors.ConstructorModelProvider;
+import org.eclipse.recommenders.constructors.IConstructorModelProvider;
 import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;

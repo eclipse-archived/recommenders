@@ -35,6 +35,8 @@ import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalP
 import org.eclipse.recommenders.completion.rcp.processable.ProcessableJavaCompletionProposal;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalTag;
+import org.eclipse.recommenders.constructors.ConstructorModel;
+import org.eclipse.recommenders.constructors.IConstructorModelProvider;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;

@@ -8,7 +8,7 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.constructors.rcp;
+package org.eclipse.recommenders.constructors;
 
 import static org.eclipse.recommenders.utils.Constants.*;
 
@@ -24,8 +24,8 @@ import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
-public class ConstructorModelProvider extends PoolingModelProvider<UniqueTypeName, ConstructorModel>
-        implements IConstructorModelProvider {
+public class ConstructorModelProvider extends PoolingModelProvider<UniqueTypeName, ConstructorModel> implements
+        IConstructorModelProvider {
 
     public ConstructorModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index,
             Map<String, IInputStreamTransformer> transformers) {

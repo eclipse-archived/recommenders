@@ -8,7 +8,7 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.constructors.rcp;
+package org.eclipse.recommenders.constructors;
 
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;

@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.recommenders.constructors.IConstructorModelProvider;
 import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;

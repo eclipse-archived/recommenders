@@ -22,6 +22,7 @@
 		<module>org.eclipse.recommenders.calls.rcp</module>
 		<module>org.eclipse.recommenders.chain.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp</module>
+		<module>org.eclipse.recommenders.constructors</module>
 		<module>org.eclipse.recommenders.constructors.rcp</module>
 		<module>org.eclipse.recommenders.coordinates</module>
 		<module>org.eclipse.recommenders.coordinates.rcp</module>
