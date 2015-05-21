@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.ui.PreferenceConstants;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Sets;

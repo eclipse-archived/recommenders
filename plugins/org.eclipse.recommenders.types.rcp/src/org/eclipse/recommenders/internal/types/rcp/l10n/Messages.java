@@ -8,15 +8,24 @@
  * Contributors:
  *    Simon Laffoy - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.types.rcp;
+package org.eclipse.recommenders.internal.types.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.types.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.types.rcp.l10n.messages"; //$NON-NLS-1$
+
+    public static String LOG_ERROR_ACCESSING_SEARCHINDEX_FAILED;
+
+    public static String LOG_INFO_REINDEXING_REQUIRED;
+
+    public static String JOB_NAME_INDEXING;
+
+    public static String MONITOR_NAME_INDEXING;
 
     public static String PROPOSAL_LABEL_ENABLE_TYPES_COMPLETION;
+
     public static String PROPOSAL_TOOLTIP_ENABLE_TYPES_COMPLETION;
 
     static {

@@ -13,7 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -41,7 +41,7 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
         implements IProcessableProposal {
 
     private static final Field F_SUPER_TYPE = Reflections
-            .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull();
+            .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
     private Map<IProposalTag, Object> tags = Maps.newHashMap();
     private ProposalProcessorManager mgr;
     private CompletionProposal coreProposal;

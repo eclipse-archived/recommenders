@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.apache.commons.lang3.StringUtils.startsWithAny;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_UNEXPECTED_PROPOSAL_KIND;
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_UNEXPECTED_PROPOSAL_KIND;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;

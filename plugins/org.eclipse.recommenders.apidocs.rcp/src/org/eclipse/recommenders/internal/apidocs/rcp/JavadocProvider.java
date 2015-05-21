@@ -72,7 +72,7 @@ public final class JavadocProvider extends ApidocProvider {
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=459519">Bug 459519</a>
      */
     private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = getDeclaredMethodWithAlternativeSignatures(
-            JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE },
+            JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE }, //$NON-NLS-1$
             new Class[] { IJavaElement.class, Boolean.TYPE }).orNull();
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
@@ -192,14 +192,14 @@ public final class JavadocProvider extends ApidocProvider {
 
     private String findJavadoc(final IMember element) throws CoreException {
         if (JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT == null) {
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         try {
             String html = (String) JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT.invoke(null, element, true);
             return extractJavadoc(html);
         } catch (Exception e) {
-            return "";
+            return ""; //$NON-NLS-1$
         }
     }
 

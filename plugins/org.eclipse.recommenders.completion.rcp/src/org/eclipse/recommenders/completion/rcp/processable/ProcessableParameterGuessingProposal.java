@@ -56,7 +56,7 @@ import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.ProposalPosition;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
@@ -98,11 +98,11 @@ public class ProcessableParameterGuessingProposal extends JavaMethodCompletionPr
 
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435597
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull();
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull();
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull(); //$NON-NLS-1$
     private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections
-            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull();
+            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull(); //$NON-NLS-1$
 
     @Override
     protected LazyJavaCompletionProposal createRequiredTypeCompletionProposal(CompletionProposal completionProposal,

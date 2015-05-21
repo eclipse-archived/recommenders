@@ -20,7 +20,7 @@ import org.eclipse.recommenders.utils.Reflections;
 @SuppressWarnings("restriction")
 public final class Asts {
 
-    private static final Field SHARED_AST_LEVEL = Reflections.getDeclaredField(ASTProvider.class, "SHARED_AST_LEVEL")
+    private static final Field SHARED_AST_LEVEL = Reflections.getDeclaredField(ASTProvider.class, "SHARED_AST_LEVEL") //$NON-NLS-1$
             .orNull();
 
     private Asts() {

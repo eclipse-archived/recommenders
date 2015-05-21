@@ -21,6 +21,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.JavaElementsFinder;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -82,18 +84,16 @@ public class ProjectTypesIndex extends AbstractIdleService {
 
     private static final int TICKS = 80000;
 
-    private static final String F_PACAKGE_FRAGEMENT_ROOT_TYPE = "pfrType";
+    private static final String F_PACAKGE_FRAGEMENT_ROOT_TYPE = "pfrType"; //$NON-NLS-1$
 
-    private static final String F_NAME = "name";
-    private static final String F_SIMPLE_NAME = "simpleName";
-    private static final String F_LAST_MODIFIED = "lastModified";
-    private static final String F_LOCATION = "location";
-    // private static final String F_EXTENDS = "extends";
-    // private static final String F_IMPLEMENTS = "implements";
-    private static final String F_INSTANCEOF = "instanceof";
+    private static final String F_NAME = "name"; //$NON-NLS-1$
+    private static final String F_SIMPLE_NAME = "simpleName"; //$NON-NLS-1$
+    private static final String F_LAST_MODIFIED = "lastModified"; //$NON-NLS-1$
+    private static final String F_LOCATION = "location"; //$NON-NLS-1$
+    private static final String F_INSTANCEOF = "instanceof"; //$NON-NLS-1$
 
-    private static final String V_JAVA_LANG_OBJECT = "java.lang.Object";
-    private static final String V_ARCHIVE = "archive";
+    private static final String V_JAVA_LANG_OBJECT = "java.lang.Object"; //$NON-NLS-1$
+    private static final String V_ARCHIVE = "archive"; //$NON-NLS-1$
 
     private IJavaProject project;
     private File indexDir;
@@ -134,16 +134,16 @@ public class ProjectTypesIndex extends AbstractIdleService {
                 File location = JavaElementsFinder.findLocation(root).orNull();
                 if (indexedRoots.remove(location) == null) {
                     // this root was unknown:
-                    sb.append("  [+] ").append(location).append("\n");
+                    sb.append("  [+] ").append(location).append('\n');
                 } else if (!isCurrent(root)) {
                     // this root's timestamp is different to what we indexed before:
-                    sb.append("  [*] ").append(location).append("\n");
+                    sb.append("  [*] ").append(location).append('\n');
                 }
             }
             if (!indexedRoots.isEmpty()) {
                 // there is a root that we did not index before:
                 for (File file : indexedRoots.keySet()) {
-                    sb.append("  [-] ").append(file.getAbsolutePath()).append("\n");
+                    sb.append("  [-] ").append(file.getAbsolutePath()).append('\n');
                 }
 
             }
@@ -247,7 +247,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         BooleanQuery query = new BooleanQuery();
         query.add(new TermQuery(new Term(F_INSTANCEOF, type)), Occur.MUST);
         if (isNotBlank(prefix)) {
-            query.add(new WildcardQuery(new Term(F_SIMPLE_NAME, prefix + "*")), Occur.MUST);
+            query.add(new WildcardQuery(new Term(F_SIMPLE_NAME, prefix + '*')), Occur.MUST);
         }
         try {
             TopDocs search = searcher.search(query, Integer.MAX_VALUE);
@@ -315,11 +315,11 @@ public class ProjectTypesIndex extends AbstractIdleService {
         }
         final JobFuture res = new JobFuture();
         active = res;
-        Job job = new Job(String.format("Indexing type hierarchy of '%s'", project.getElementName())) {
+        Job job = new Job(MessageFormat.format(Messages.JOB_NAME_INDEXING, project.getElementName())) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                SubMonitor progress = SubMonitor.convert(monitor, "Indexing " + project.getElementName(), TICKS);
+                SubMonitor progress = SubMonitor.convert(monitor, Messages.MONITOR_NAME_INDEXING + project.getElementName(), TICKS);
                 Thread thread = Thread.currentThread();
                 int priority = thread.getPriority();
                 try {
@@ -332,7 +332,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
                     res.setResult(Status.CANCEL_STATUS);
                 } catch (Exception e) {
                     res.setException(e);
-                    res.setResult(new Status(IStatus.ERROR, "org.eclipse.recommenders.types.rcp", e.getMessage(), e));
+                    res.setResult(new Status(IStatus.ERROR, "org.eclipse.recommenders.types.rcp", e.getMessage(), e)); //$NON-NLS-1$
                 } finally {
                     thread.setPriority(priority);
                     monitor.done();
@@ -397,7 +397,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
     }
 
     public void refresh(IType type) {
-        ImmutableSet<String> subtypes = subtypes(type, "");
+        ImmutableSet<String> subtypes = subtypes(type, ""); //$NON-NLS-1$
         removeSubtypes(type);
         indexType(type);
         for (String subtypeName : subtypes) {
@@ -439,7 +439,7 @@ public class ProjectTypesIndex extends AbstractIdleService {
         }
         BooleanQuery delete = new BooleanQuery();
         delete.add(new TermQuery(termLocation(location)), Occur.MUST);
-        delete.add(new TermQuery(new Term(F_NAME, fragment.getElementName() + "*")), Occur.MUST);
+        delete.add(new TermQuery(new Term(F_NAME, fragment.getElementName() + "*")), Occur.MUST); //$NON-NLS-1$
         writer.deleteDocuments(delete);
     }
 

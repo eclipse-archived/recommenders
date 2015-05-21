@@ -9,7 +9,7 @@ package org.eclipse.recommenders.internal.rcp.news;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.rcp.Messages.*;
+import static org.eclipse.recommenders.internal.rcp.Messages.NEWS_LOADING_MESSAGE;
 import static org.eclipse.recommenders.utils.Urls.*;
 
 import java.io.IOException;
@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.recommenders.internal.rcp.LogMessages;
+import org.eclipse.recommenders.internal.rcp.Messages;
 import org.eclipse.recommenders.net.Proxies;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.Logs;
@@ -105,7 +106,7 @@ public class CheckForProjectNewsJob extends Job {
         }
 
         Pair<String, URL> latest = entries.get(0);
-        String link = format(NEWS_NOTIFY_MESSAGE, latest.getFirst(), latest.getSecond());
+        String link = format(Messages.NEWS_NOTIFY_MESSAGE, latest.getFirst(), latest.getSecond());
         return link;
     }
 

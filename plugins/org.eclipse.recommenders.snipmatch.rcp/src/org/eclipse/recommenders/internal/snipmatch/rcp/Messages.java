@@ -19,8 +19,6 @@ public final class Messages extends NLS {
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
     public static String COMPLETION_ENGINE_REPOSITORY_MATCHES;
 
-    public static String CONFIGURATION_DISPLAY_STRING;
-
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_MESSAGE;
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_TITLE;
     public static String CONFIRM_DIALOG_DELETE_REPOSITORY_TOGGLE_MESSAGE;
@@ -31,20 +29,16 @@ public final class Messages extends NLS {
 
     public static String PROPOSAL_LABEL_IDENTIFYING_PROJECT_DEPENDENCIES;
 
-    public static String DIALOG_MESSAGE_CHANGE_CONFIGURATION_NAME;
-    public static String DIALOG_MESSAGE_ENTER_NEW_KEYWORD;
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
     public static String DIALOG_MESSAGE_NO_MESSAGE_EXCEPTION;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_LOCATION;
-    public static String DIALOG_MESSAGE_NO_REPOSITORY_AVAILABLE;
     public static String DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE;
     public static String DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE;
     public static String DIALOG_MESSAGE_BRANCH_CHECKOUT_FAILURE_LINK;
     public static String DIALOG_MESSAGE_NO_FORMAT_BRANCH_FAILURE;
-    public static String DIALOG_MESSAGE_ENTER_NEW_DEPENDENCY;
     public static String DIALOG_MESSAGE_SELECT_DEPENDENCY;
     public static String DIALOG_MESSAGE_NO_GIT_CHANGES_IN_SELECTION;
     public static String DIALOG_MESSAGE_GIT_PUSH_SUCCESSFUL;
@@ -54,11 +48,8 @@ public final class Messages extends NLS {
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
     public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
-    public static String DIALOG_TITLE_CHANGE_CONFIGURATION_NAME;
-    public static String DIALOG_TITLE_ENTER_NEW_KEYWORD;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID;
-    public static String DIALOG_TITLE_ERROR_WHILE_STORING_SNIPPET;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
     public static String DIALOG_TITLE_INVALID_SNIPPET_LOCATION;
     public static String DIALOG_TITLE_SAVE_SNIPPET;
@@ -66,16 +57,12 @@ public final class Messages extends NLS {
     public static String DIALOG_TITLE_SELECT_DEPENDENCY;
     public static String DIALOG_TITLE_SELECTION_NOT_SHAREABLE;
     public static String DIALOG_TITLE_GIT_PUSH_SUCCESSFUL;
-    public static String DIALOG_TITLE_GIT_PUSH_FAILED;
-
-    public static String DIALOG_VALIDATOR_DEPENDENCY_ALREADY_ADDED;
 
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
 
     public static String EDITOR_BUTTON_ADD_DEPENDENCY;
     public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
-    public static String EDITOR_BUTTON_ADD_KEYWORDS;
     public static String EDITOR_BUTTON_ADD_TAGS;
     public static String EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM;
     public static String EDITOR_BUTTON_REMOVE_TAGS;
@@ -205,9 +192,6 @@ public final class Messages extends NLS {
     public static String WIZARD_TYPE_SELECTION_NAME;
     public static String WIZARD_TYPE_SELECTION_TITLE;
     public static String WIZARD_TYPE_SELECTION_WINDOW_TITLE;
-
-    public static String GROUP_FETCH_SETTINGS;
-    public static String GROUP_PUSH_SETTINGS;
 
     public static String TABLE_CELL_SUFFIX_SNIPPETS;
     public static String TABLE_COLUMN_TITLE_SNIPPETS;

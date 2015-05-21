@@ -8,13 +8,13 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp;
+package org.eclipse.recommenders.internal.completion.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.completion.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.completion.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PROPOSAL_LABEL_DISCOVER_EXTENSIONS;
     public static String PROPOSAL_LABEL_ENABLED_COMPLETION;

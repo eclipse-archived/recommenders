@@ -8,13 +8,13 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.jdt;
+package org.eclipse.recommenders.internal.jdt.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.jdt.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.jdt.l10n.messages"; //$NON-NLS-1$
 
     public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
     public static String LOG_ERROR_CANNOT_FETCH_JAVA_PROJECTS;

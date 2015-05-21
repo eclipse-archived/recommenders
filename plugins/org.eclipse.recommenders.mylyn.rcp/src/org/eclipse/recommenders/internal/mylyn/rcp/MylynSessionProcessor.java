@@ -23,6 +23,7 @@ import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
+import org.eclipse.recommenders.internal.mylyn.rcp.l10n.Messages;
 
 @SuppressWarnings("restriction")
 public class MylynSessionProcessor extends SessionProcessor {

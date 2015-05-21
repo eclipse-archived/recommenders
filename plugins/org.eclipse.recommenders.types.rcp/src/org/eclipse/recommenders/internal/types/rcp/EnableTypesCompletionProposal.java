@@ -30,6 +30,7 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescr
 import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposal;
 import org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInformationControl;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
+import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.utils.names.ITypeName;

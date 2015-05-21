@@ -33,7 +33,7 @@ import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;

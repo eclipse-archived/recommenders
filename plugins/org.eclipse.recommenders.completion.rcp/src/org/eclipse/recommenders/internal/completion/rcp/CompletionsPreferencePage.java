@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
 import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Checks;

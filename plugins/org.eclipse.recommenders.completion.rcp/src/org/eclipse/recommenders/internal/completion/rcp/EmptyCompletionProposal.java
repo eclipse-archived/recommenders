@@ -17,6 +17,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
 // leave a bit space for other, maybe more important proposals
 // don't do anything. In particular do not call the super implementation.
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 
 @SuppressWarnings("restriction")
 public class EmptyCompletionProposal extends AbstractJavaCompletionProposal {

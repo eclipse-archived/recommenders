@@ -51,11 +51,11 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
 
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435597
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull();
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull();
+            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull(); //$NON-NLS-1$
     private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections
-            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull();
+            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull(); //$NON-NLS-1$
 
     @Override
     protected LazyJavaCompletionProposal createRequiredTypeCompletionProposal(CompletionProposal completionProposal,

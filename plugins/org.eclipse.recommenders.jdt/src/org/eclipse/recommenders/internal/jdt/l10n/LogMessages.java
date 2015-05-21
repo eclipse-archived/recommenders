@@ -8,7 +8,7 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.jdt;
+package org.eclipse.recommenders.internal.jdt.l10n;
 
 import static org.eclipse.core.runtime.IStatus.ERROR;
 

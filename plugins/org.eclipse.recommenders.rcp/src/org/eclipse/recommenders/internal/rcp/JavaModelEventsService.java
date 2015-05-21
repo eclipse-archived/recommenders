@@ -60,7 +60,7 @@ public class JavaModelEventsService implements IElementChangedListener {
     }
 
     private void simulateProjectOpenEvents() {
-        new SimulateOpenJavaProjectsJob(Messages.JOB_INITIALIZE_PROJECTS).schedule();
+        new SimulateOpenJavaProjectsJob(Messages.JOB_NAME_INITIALIZING_PROJECTS).schedule();
     }
 
     @Override

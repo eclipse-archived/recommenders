@@ -12,7 +12,7 @@ package org.eclipse.recommenders.jdt.templates;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;

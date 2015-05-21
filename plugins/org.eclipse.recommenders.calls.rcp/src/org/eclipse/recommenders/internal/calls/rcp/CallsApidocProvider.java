@@ -227,7 +227,7 @@ public final class CallsApidocProvider extends ApidocProvider {
                 double relevance = rec.getRelevance();
                 String format = relevance < 0.01d ? Messages.TABLE_CELL_SUFFIX_PROMILLE
                         : Messages.TABLE_CELL_SUFFIX_PERCENTAGE;
-                createLabel(container, " - " + format(format, relevance), false);
+                createLabel(container, " - " + format(format, relevance), false); //$NON-NLS-1$
             }
 
             new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -266,7 +266,7 @@ public final class CallsApidocProvider extends ApidocProvider {
 
             for (final IMethodName observedCall : calls) {
                 createLabel(container, Messages.TABLE_CELL_RELATION_OBSERVED, true, false, SWT.COLOR_DARK_GRAY, false);
-                createLabel(container, Messages.TABLE_CELL_RELATION_CALL + " ", false, false, SWT.COLOR_DARK_GRAY,
+                createLabel(container, Messages.TABLE_CELL_RELATION_CALL + ' ', false, false, SWT.COLOR_DARK_GRAY,
                         false);
                 ApidocsViewUtils.createMethodLink(container, observedCall, jdtResolver, workspaceBus);
                 createLabel(container, "", true, false, SWT.COLOR_DARK_GRAY, false); //$NON-NLS-1$

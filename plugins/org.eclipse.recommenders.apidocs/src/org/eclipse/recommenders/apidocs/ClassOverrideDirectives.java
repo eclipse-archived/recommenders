@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.apidocs;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -46,10 +47,10 @@ public final class ClassOverrideDirectives {
     }
 
     public void validate() {
-        Checks.ensureIsTrue("ClassOverrideDirectives".equals(providerId));
-        Checks.ensureIsNotNull(type);
+        Checks.ensureIsTrue("ClassOverrideDirectives".equals(providerId)); //$NON-NLS-1$
+        Objects.requireNonNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
-        Checks.ensureIsFalse(overrides.isEmpty(), "empty overrides not allowed.");
+        Checks.ensureIsFalse(overrides.isEmpty(), "empty overrides not allowed."); //$NON-NLS-1$
     }
 
     public ITypeName getType() {

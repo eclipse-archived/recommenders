@@ -16,7 +16,7 @@ import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.eclipse.jdt.core.IJavaElement.*;
 import static org.eclipse.jdt.core.IPackageFragmentRoot.*;
 import static org.eclipse.jdt.core.compiler.CharOperation.charToString;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
+import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.names.VmTypeName.OBJECT;
 
@@ -38,7 +38,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.core.JavaModelManager;
-import org.eclipse.recommenders.internal.jdt.LogMessages;
+import org.eclipse.recommenders.internal.jdt.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.ITypeName;

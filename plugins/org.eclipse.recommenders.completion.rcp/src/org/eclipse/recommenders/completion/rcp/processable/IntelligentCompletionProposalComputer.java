@@ -14,7 +14,7 @@ import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ACTIV
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory.create;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_SESSION_PROCESSOR_FAILED;
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_SESSION_PROCESSOR_FAILED;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 

@@ -34,7 +34,7 @@ public class NetworkCommunicationTestJob extends Job {
     private static final String P2_HTTP_REQUEST_URL = REQUEST_URL_PREFIX + "/p2"; //$NON-NLS-1$
 
     public NetworkCommunicationTestJob() {
-        super(Messages.JOB_NETWORK_COMMUNCIATION_TEST);
+        super(Messages.JOB_NAME_NETWORK_COMMUNCIATION_TEST);
         setSystem(true);
         setPriority(Job.DECORATE);
     }

@@ -19,8 +19,6 @@ public final class Messages extends NLS {
     public static String PREFPAGE_DESCRIPTION_EMPTY;
     public static String PREFPAGE_LINKS_DESCRIPTION;
 
-    public static String JOB_INITIALIZE_PROJECTS;
-
     public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;
     public static String LOG_ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK;
     public static String LOG_ERROR_PREFERENCES_NOT_SAVED;
@@ -52,9 +50,10 @@ public final class Messages extends NLS {
     public static String LABEL_NOTIFICATION_NAME;
 
     public static String JOB_NAME_CLOSE;
+    public static String JOB_NAME_INITIALIZING_PROJECTS;
     public static String JOB_NAME_FADE;
+    public static String JOB_NAME_NETWORK_COMMUNCIATION_TEST;
     public static String JOB_NAME_SELECTION_LISTENER_REGISTRATION;
-    public static String JOB_NETWORK_COMMUNCIATION_TEST;
 
     public static String LOG_ERROR_ON_APACHE_HEAD_REQUEST;
     public static String LOG_ERROR_ON_P2_HEAD_REQUEST;

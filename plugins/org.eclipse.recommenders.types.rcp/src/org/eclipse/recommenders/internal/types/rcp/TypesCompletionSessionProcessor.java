@@ -86,8 +86,7 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
     private void handleProposal(IProcessableProposal proposal, char[] signature) {
         // parse the type name and remove Generics from the name
         String name = new String(signature, 1, signature.length - 2);
-        name = substringBefore(name, "<");
-
+        name = substringBefore(name, "<"); //$NON-NLS-1$
         if (subtypes.contains(name)) {
             proposal.setTag(RECOMMENDERS_SCORE, BOOST);
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
@@ -95,5 +94,4 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
             mgr.addProcessor(overlayDecorator);
         }
     }
-
 }

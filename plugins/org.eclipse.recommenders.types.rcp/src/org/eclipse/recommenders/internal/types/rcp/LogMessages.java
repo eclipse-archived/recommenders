@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.types.rcp;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.eclipse.recommenders.utils.Logs.ILogMessage;
@@ -23,10 +24,10 @@ public final class LogMessages extends DefaultLogMessage {
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final ILogMessage ERROR_ACCESSING_SEARCHINDEX_FAILED = new LogMessages(IStatus.ERROR,
-            "An Error occured while accessing search index");
+            Messages.LOG_ERROR_ACCESSING_SEARCHINDEX_FAILED);
 
     public static final ILogMessage INFO_REINDEXING_REQUIRED = new LogMessages(IStatus.INFO,
-            "Full project indexing required:\n{0}");
+            Messages.LOG_INFO_REINDEXING_REQUIRED);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

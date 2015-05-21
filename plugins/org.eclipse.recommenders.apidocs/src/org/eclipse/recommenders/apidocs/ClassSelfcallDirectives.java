@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.apidocs;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -49,10 +50,10 @@ public final class ClassSelfcallDirectives {
     }
 
     public void validate() {
-        Checks.ensureIsTrue("ClassSelfcallDirectives".equals(providerId));
-        Checks.ensureIsNotNull(type);
+        Checks.ensureIsTrue("ClassSelfcallDirectives".equals(providerId)); //$NON-NLS-1$
+        Objects.requireNonNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
-        Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed");
+        Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed"); //$NON-NLS-1$
     }
 
     @Override

@@ -13,7 +13,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.eclipse.jdt.core.CompletionProposal.*;
-import static org.eclipse.recommenders.internal.completion.rcp.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -46,7 +46,7 @@ import com.google.common.collect.Maps;
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private static final Field F_PROPOSALS = Reflections
-            .getDeclaredField(CompletionProposalCollector.class, "fJavaProposals").orNull();
+            .getDeclaredField(CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
     private Logger log = LoggerFactory.getLogger(getClass());
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
     private JavaContentAssistInvocationContext jdtuiContext;

@@ -90,7 +90,7 @@
 								<feature id="org.eclipse.aether.transport.http.feature" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
-							<labelSuffix>&#xA0;(Sources)</labelSuffix>
+-                                                       <labelSuffix>&#xA0;incl. Sources</labelSuffix>
 						</configuration>
 					</execution>
 				</executions>

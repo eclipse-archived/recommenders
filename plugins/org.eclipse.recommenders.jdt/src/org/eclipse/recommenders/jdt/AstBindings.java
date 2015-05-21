@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.jdt;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.internal.jdt.LogMessages.*;
+import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.List;

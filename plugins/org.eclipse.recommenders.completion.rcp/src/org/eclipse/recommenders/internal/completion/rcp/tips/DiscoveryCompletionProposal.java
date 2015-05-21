@@ -20,7 +20,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposal;
 import org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInformationControl;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.Dialogs;

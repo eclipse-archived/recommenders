@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp;
+package org.eclipse.recommenders.internal.completion.rcp.l10n;
 
 import static org.eclipse.core.runtime.IStatus.*;
 

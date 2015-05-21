@@ -150,7 +150,7 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
     private File computeIndexDir(IJavaProject project) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File location = Platform.getStateLocation(bundle).toFile();
-        File indexDir = new File(location, "indexes/" + project.getElementName().replaceAll("\\W", "_"));
+        File indexDir = new File(location, "indexes/" + project.getElementName().replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return indexDir;
     }
 

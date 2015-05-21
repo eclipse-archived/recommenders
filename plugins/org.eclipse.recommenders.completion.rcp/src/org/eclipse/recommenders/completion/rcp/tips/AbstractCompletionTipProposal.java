@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
-import org.eclipse.recommenders.internal.completion.rcp.Messages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
