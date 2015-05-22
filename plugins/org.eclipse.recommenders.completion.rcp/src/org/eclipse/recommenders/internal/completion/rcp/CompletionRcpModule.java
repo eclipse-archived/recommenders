@@ -36,10 +36,12 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.Visibl
 import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.VisibleMethodsContextFunction;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 
 @SuppressWarnings({ "rawtypes" })
@@ -49,7 +51,6 @@ public class CompletionRcpModule extends AbstractModule {
     protected void configure() {
         MapBinder<CompletionContextKey, ICompletionContextFunction> functions = MapBinder.newMapBinder(binder(),
                 CompletionContextKey.class, ICompletionContextFunction.class);
-
         functions.addBinding(COMPLETION_PREFIX).to(CompletionPrefixContextFunction.class);
         functions.addBinding(ENCLOSING_AST_METHOD).to(EnclosingAstMethodContextFunction.class);
         functions.addBinding(ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
@@ -71,6 +72,7 @@ public class CompletionRcpModule extends AbstractModule {
         functions.addBinding(SESSION_ID).to(SessionIdFunction.class);
         functions.addBinding(IMPORTED_PACKAGES).to(ImportedPackagesFunction.class);
 
+        bind(IProposalNameProvider.class).to(ProposalNameProvider.class).in(Scopes.SINGLETON);
     }
 
     @Provides

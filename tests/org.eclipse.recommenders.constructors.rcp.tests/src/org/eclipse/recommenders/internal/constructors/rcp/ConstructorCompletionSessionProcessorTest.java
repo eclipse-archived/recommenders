@@ -26,9 +26,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnArgumentName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
@@ -80,7 +79,7 @@ public class ConstructorCompletionSessionProcessorTest {
 
     private IProjectCoordinateProvider pcProvider;
     private IConstructorModelProvider modelProvider;
-    private IMethodNameProvider methodNameProvider;
+    private IProposalNameProvider methodNameProvider;
     private IRecommendersCompletionContext context;
 
     @Before
@@ -269,19 +268,17 @@ public class ConstructorCompletionSessionProcessorTest {
 
     private void setUpCompletionScenario(Class<? extends ASTNode> completionType, @Nullable IType expectedType,
             Map<IJavaCompletionProposal, CompletionProposal> proposals) {
-        LookupEnvironment lookupEnvironment = mock(LookupEnvironment.class);
         context = mock(IRecommendersCompletionContext.class);
-        when(context.get(CompletionContextKey.LOOKUP_ENVIRONMENT)).thenReturn(Optional.of(lookupEnvironment));
         Optional<ASTNode> completionNode = completionType == null ? Optional.<ASTNode>absent()
                 : Optional.<ASTNode>of(mock(completionType));
         when(context.getCompletionNode()).thenReturn(completionNode);
         when(context.getExpectedType()).thenReturn(Optional.fromNullable(expectedType));
         when(context.getProposals()).thenReturn(proposals);
 
-        methodNameProvider = mock(IMethodNameProvider.class);
-        when(methodNameProvider.toMethodName(objectInitCoreProposal, lookupEnvironment))
+        methodNameProvider = mock(IProposalNameProvider.class);
+        when(methodNameProvider.toMethodName(objectInitCoreProposal))
                 .thenReturn(Optional.of(OBJECT_INIT));
-        when(methodNameProvider.toMethodName(stringInitCoreProposal, lookupEnvironment))
+        when(methodNameProvider.toMethodName(stringInitCoreProposal))
                 .thenReturn(Optional.of(STRING_INIT));
     }
 

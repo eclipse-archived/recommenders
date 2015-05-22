@@ -13,30 +13,20 @@
 package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.base.Objects.firstNonNull;
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
-import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.*;
-import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
-import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
-import org.eclipse.recommenders.rcp.utils.CompilerBindings;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
@@ -52,6 +42,7 @@ public final class ProposalUtils {
     private static final IMethodName OBJECT_CLONE = VmMethodName.get("Ljava/lang/Object.clone()Ljava/lang/Object;"); //$NON-NLS-1$
 
     private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
+    private static final char[] JAVA_LANG_OBJECT = "Ljava.lang.Object;".toCharArray(); //$NON-NLS-1$
 
     /**
      * Workaround needed to handle proposals with generic signatures properly.
@@ -62,51 +53,71 @@ public final class ProposalUtils {
             "originalSignature") //$NON-NLS-1$
                     .orNull();
 
-    /**
-     * @see <a href="https://www.eclipse.org/forums/index.php/m/1408138/">Forum discussion of the lookup strategy
-     *      employed by this method</a>
-     */
-    public static Optional<IMethodName> toMethodName(CompletionProposal proposal, LookupEnvironment env) {
+    public static Optional<IMethodName> toMethodName(CompletionProposal proposal) {
+
         Preconditions.checkArgument(isKindSupported(proposal));
 
         if (isArrayCloneMethod(proposal)) {
             return Optional.of(OBJECT_CLONE);
         }
 
-        ReferenceBinding declaringType = getDeclaringType(proposal, env).orNull();
-        if (declaringType == null) {
-            log(ERROR_COULD_NOT_DETERMINE_DECLARING_TYPE, toLogString(proposal));
-            return absent();
+        StringBuilder builder = new StringBuilder();
+        char[] erasedDeclaringType = CharOperation
+                .replaceOnCopy(Signature.getTypeErasure(proposal.getDeclarationSignature()), '.', '/');
+        builder.append(erasedDeclaringType, 0, erasedDeclaringType.length - 1);
+        builder.append('.');
+        builder.append(proposal.isConstructor() ? INIT : proposal.getName());
+        builder.append('(');
+        char[] signature = getSignature(proposal);
+        char[][] typeParameters = Signature.getTypeParameters(proposal.getDeclarationSignature());
+        char[][] parameterTypes = Signature.getParameterTypes(signature);
+        for (char[] parameterType : parameterTypes) {
+            appendType(builder, parameterType, typeParameters);
         }
+        builder.append(')');
+        appendType(builder, Signature.getReturnType(signature), typeParameters);
 
-        char[] methodName = proposal.isConstructor() ? INIT : proposal.getName();
-        MethodBinding[] overloads;
+        String methodName = builder.toString();
         try {
-            overloads = declaringType.getMethods(methodName);
-        } catch (AbortCompilation e) {
-            // We don't pass along the exception since that may contain private information which might not be
-            // anonymized.
-            log(ERROR_COMPILATION_FAILURE_PREVENTS_PROPOSAL_MATCHING, toLogString(proposal));
+            return Optional.<IMethodName>of(VmMethodName.get(methodName));
+        } catch (Exception e) {
+            log(LogMessages.ERROR_SYNTATICALLY_INCORRECT_METHOD_NAME, e, methodName, toLogString(proposal));
             return absent();
         }
+    }
 
-        char[] proposalSignature = getSignature(proposal);
-        char[] strippedProposalSignature = stripTypeParameters(proposalSignature);
+    private static void appendType(StringBuilder builder, char[] type, char[][] typeParameters) {
+        switch (Signature.getTypeSignatureKind(type)) {
+        case Signature.TYPE_VARIABLE_SIGNATURE:
+            char[] typeVariableName = CharOperation.subarray(type, 1, type.length - 1);
+            char[] resolvedTypeVariable = resolveTypeVariable(typeVariableName, typeParameters);
+            builder.append(CharOperation.replaceOnCopy(resolvedTypeVariable, '.', '/'));
+            break;
+        case Signature.ARRAY_TYPE_SIGNATURE:
+            int dimensions = Signature.getArrayCount(type);
+            builder.append(type, 0, dimensions);
+            appendType(builder, Signature.getElementType(type), typeParameters);
+            break;
+        default:
+            char[] erasedParameterType = Signature.getTypeErasure(type);
+            builder.append(CharOperation.replaceOnCopy(erasedParameterType, '.', '/'));
+            break;
+        }
+    }
 
-        for (MethodBinding overload : overloads) {
-            char[] signature = CompletionEngine.getSignature(overload);
-
-            if (CharOperation.equals(proposalSignature, signature)
-                    || CharOperation.equals(strippedProposalSignature, signature)) {
-                Optional<IMethodName> result = CompilerBindings.toMethodName(overload);
-                if (!result.isPresent()) {
-                    log(ERROR_COULD_NOT_CONVERT_METHOD_BINDING_TO_METHOD_NAME, overload, signature);
+    private static char[] resolveTypeVariable(char[] typeVariableName, char[][] typeParameters) {
+        for (char[] typeParameter : typeParameters) {
+            if (CharOperation.equals(typeVariableName, Signature.getTypeVariable(typeParameter))) {
+                char[][] typeParameterBounds = Signature.getTypeParameterBounds(typeParameter);
+                if (typeParameterBounds.length > 0) {
+                    return typeParameterBounds[0];
+                } else {
+                    return JAVA_LANG_OBJECT;
                 }
-                return result;
             }
         }
-
-        return absent();
+        // No match found. Assume Object.
+        return JAVA_LANG_OBJECT;
     }
 
     private static String toLogString(CompletionProposal proposal) {
@@ -164,49 +175,14 @@ public final class ProposalUtils {
         return true;
     }
 
-    private static Optional<ReferenceBinding> getDeclaringType(CompletionProposal proposal, LookupEnvironment env) {
-        char[] declarationSignature = proposal.getDeclarationSignature();
-        if (declarationSignature[0] != 'L') {
-            // Should not happen. The declaring type is always a reference type.
-            return absent();
-        }
-
-        int endIndex = CharOperation.indexOf('<', declarationSignature, 1);
-        if (endIndex < 0) {
-            endIndex = CharOperation.indexOf(';', declarationSignature, 1);
-        }
-        char[][] compoundName = CharOperation.splitOn('.', declarationSignature, 1, endIndex);
-
-        return lookup(env, compoundName);
-    }
-
-    /**
-     * @see <a href="https://www.eclipse.org/forums/index.php/m/1410672/">Forum discussion as to why the
-     *      <code>ProblemReferenceBinding</code> handling is necessary</a>
-     */
-    private static Optional<ReferenceBinding> lookup(LookupEnvironment env, char[][] compoundName) {
-        try {
-            ReferenceBinding result = env.getType(compoundName);
-            if (result instanceof ProblemReferenceBinding) {
-                result = cast(((ProblemReferenceBinding) result).closestMatch());
-            }
-            return fromNullable(result);
-        } catch (Exception e) {
-            // We don't pass along the exception since that may contain private information which might not be
-            // anonymized.
-            log(ERROR_FAILED_TO_LOOK_UP_COMPOUND_NAME, Arrays.toString(CharOperation.toStrings(compoundName)));
-            return absent();
-        }
-    }
-
     private static char[] getSignature(CompletionProposal proposal) {
         char[] signature = null;
-        try {
-            if (canUseReflection(proposal)) {
+        if (canUseReflection(proposal)) {
+            try {
                 signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                log(LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
             }
-        } catch (Exception e) {
-            log(LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
         }
         return signature != null ? signature : proposal.getSignature();
     }
@@ -214,32 +190,5 @@ public final class ProposalUtils {
     private static boolean canUseReflection(CompletionProposal proposal) {
         return proposal instanceof InternalCompletionProposal && ORIGINAL_SIGNATURE != null
                 && ORIGINAL_SIGNATURE.isAccessible();
-    }
-
-    private static char[] stripTypeParameters(char[] proposalSignature) {
-        StringBuilder sb = new StringBuilder();
-
-        // Copy optional type parameters
-        sb.append(proposalSignature, 0, ArrayUtils.indexOf(proposalSignature, Signature.C_PARAM_START));
-
-        sb.append(Signature.C_PARAM_START);
-        char[][] parameterTypes = Signature.getParameterTypes(proposalSignature);
-        for (char[] parameterType : parameterTypes) {
-            sb.append(Signature.getTypeErasure(parameterType));
-        }
-        sb.append(Signature.C_PARAM_END);
-
-        char[] returnType = Signature.getReturnType(proposalSignature);
-        sb.append(Signature.getTypeErasure(returnType));
-
-        char[][] exceptionTypes = Signature.getThrownExceptionTypes(proposalSignature);
-        if (exceptionTypes.length > 0) {
-            sb.append(Signature.C_EXCEPTION_START);
-            for (char[] exceptionType : exceptionTypes) {
-                sb.append(exceptionType);
-            }
-        }
-
-        return sb.toString().toCharArray();
     }
 }

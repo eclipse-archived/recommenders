@@ -18,10 +18,8 @@ import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.ENCLOSING_METHOD_FIRST_DECLARATION;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunctions.*;
-import static org.eclipse.recommenders.internal.calls.rcp.LogMessages.*;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
-import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Recommendations.top;
 import static org.eclipse.recommenders.utils.Result.*;
 
@@ -39,18 +37,17 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
-import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
-import org.eclipse.recommenders.completion.rcp.utils.ProposalUtils;
+import org.eclipse.recommenders.internal.calls.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.models.rcp.PrefetchModelArchiveJob;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -77,10 +74,11 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private final IProjectCoordinateProvider pcProvider;
     private final ICallModelProvider modelProvider;
+    private final IProposalNameProvider methodNameProvider;
     private final CallsRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
+
     private IRecommendersCompletionContext ctx;
-    private LookupEnvironment env;
     private Iterable<Recommendation<IMethodName>> recommendations;
     private ICallModel model;
 
@@ -88,11 +86,13 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private Map<Recommendation<IMethodName>, Integer> recommendationsIndex;
 
+
     @Inject
     public CallCompletionSessionProcessor(IProjectCoordinateProvider pcProvider, ICallModelProvider modelProvider,
-            CallsRcpPreferences prefs, SharedImages images) {
+            IProposalNameProvider methodNameProvider, CallsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
+        this.methodNameProvider = methodNameProvider;
         this.prefs = prefs;
         this.overlayProcessor = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
     }
@@ -100,12 +100,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     @Override
     public boolean startSession(final IRecommendersCompletionContext context) {
         ctx = context;
-
-        env = ctx.get(CompletionContextKey.LOOKUP_ENVIRONMENT).orNull();
-        if (env == null) {
-            log(WARNING_MISSING_LOOKUP_ENVIRONMENT);
-            return false;
-        }
 
         recommendations = Lists.newLinkedList();
 
@@ -206,9 +200,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         case CompletionProposal.METHOD_REF:
         case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
         case CompletionProposal.METHOD_NAME_REFERENCE:
-            IMethodName proposedMethod = ProposalUtils.toMethodName(coreProposal, env).orNull();
+            IMethodName proposedMethod = methodNameProvider.toMethodName(coreProposal).orNull();
             if (proposedMethod == null) {
-                log(ERROR_PROPOSAL_MATCHING_FAILED, coreProposal);
                 return;
             }
 

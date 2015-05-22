@@ -29,10 +29,9 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedTypeReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.viewers.IDecoration;
-import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
@@ -65,7 +64,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
     private final IProjectCoordinateProvider pcProvider;
     private final IConstructorModelProvider modelProvider;
-    private final IMethodNameProvider methodNameProvider;
+    private final IProposalNameProvider methodNameProvider;
     private final ConstructorsRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
 
@@ -73,7 +72,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
     @Inject
     public ConstructorCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IConstructorModelProvider modelProvider, IMethodNameProvider methodNameProvider,
+            IConstructorModelProvider modelProvider, IProposalNameProvider methodNameProvider,
             ConstructorsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = requireNonNull(pcProvider);
         this.modelProvider = requireNonNull(modelProvider);
@@ -85,11 +84,6 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
     @Override
     public boolean startSession(final IRecommendersCompletionContext context) {
         if (!isCompletionRequestSupported(context)) {
-            return false;
-        }
-
-        LookupEnvironment env = context.get(CompletionContextKey.LOOKUP_ENVIRONMENT).orNull();
-        if (env == null) {
             return false;
         }
 
@@ -125,7 +119,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
                 if (coreProposal.getKind() != CompletionProposal.CONSTRUCTOR_INVOCATION) {
                     continue;
                 }
-                IMethodName methodName = methodNameProvider.toMethodName(coreProposal, env).orNull();
+                IMethodName methodName = methodNameProvider.toMethodName(coreProposal).orNull();
                 if (methodName == null) {
                     continue;
                 }

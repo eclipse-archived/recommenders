@@ -39,6 +39,7 @@ import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils;
+import org.eclipse.recommenders.internal.calls.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;

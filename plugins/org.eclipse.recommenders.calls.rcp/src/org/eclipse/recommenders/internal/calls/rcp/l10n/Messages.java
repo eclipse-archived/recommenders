@@ -8,13 +8,13 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.calls.rcp;
+package org.eclipse.recommenders.internal.calls.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.calls.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.calls.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PROPOSAL_LABEL_USED;
     public static String PROPOSAL_LABEL_PERCENTAGE;
@@ -42,10 +42,7 @@ public final class Messages extends NLS {
     public static String TABLE_CELL_SUFFIX_PERCENTAGE;
     public static String TABLE_CELL_SUFFIX_PROMILLE;
 
-    public static String LOG_ERROR_PROPOSAL_MATCHING_FAILED;
     public static String LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED;
-
-    public static String LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT;
 
     static {
         // initialize resource bundle

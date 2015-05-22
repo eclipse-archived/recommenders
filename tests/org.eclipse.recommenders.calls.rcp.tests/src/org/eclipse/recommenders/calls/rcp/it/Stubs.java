@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.recommenders.calls.rcp.it;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.coordinates.ProjectCoordinate.UNKNOWN;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
@@ -27,6 +27,7 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescr
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor;
 import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
+import org.eclipse.recommenders.internal.completion.rcp.ProposalNameProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -172,10 +173,11 @@ public class Stubs {
         ICallModelProvider mp = mock(ICallModelProvider.class);
         when(mp.acquireModel((UniqueTypeName) anyObject())).thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, mp,
-                new CallsRcpPreferences(), new SharedImages());
+                new ProposalNameProvider(), new CallsRcpPreferences(), new SharedImages());
 
         CompletionRcpPreferences preferences = mock(CompletionRcpPreferences.class);
-        SessionProcessorDescriptor sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "", sut);
+        SessionProcessorDescriptor sessionProcessor = new SessionProcessorDescriptor("", "", "", null, 0, true, "",
+                sut);
         when(preferences.getEnabledSessionProcessors()).thenReturn(ImmutableSet.of(sessionProcessor));
         return new MockedIntelligentCompletionProposalComputer(sut, preferences);
     }

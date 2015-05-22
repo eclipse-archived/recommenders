@@ -8,15 +8,14 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.constructors.rcp;
+package org.eclipse.recommenders.completion.rcp;
 
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.base.Optional;
 
-public interface IMethodNameProvider {
+public interface IProposalNameProvider {
 
-    Optional<IMethodName> toMethodName(CompletionProposal coreProposal, LookupEnvironment env);
+    Optional<IMethodName> toMethodName(CompletionProposal coreProposal);
 }
