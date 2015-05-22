@@ -78,13 +78,12 @@
 		<sonar.jacoco.reportPath>../../target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
 
-	<!-- See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=458748>. -->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>eclipse-cbi-releases</id>
 			<url>https://repo.eclipse.org/content/groups/cbi/</url>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
@@ -307,7 +306,7 @@
 				<plugin>
 					<groupId>org.eclipse.cbi.maven.plugins</groupId>
 					<artifactId>eclipse-jarsigner-plugin</artifactId>
-					<version>1.1.2-SNAPSHOT</version>
+					<version>1.1.2</version>
 				</plugin>
 				<!-- Other plugins -->
 				<plugin>
