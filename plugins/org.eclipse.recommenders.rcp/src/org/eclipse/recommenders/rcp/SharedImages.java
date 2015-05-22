@@ -121,7 +121,7 @@ public final class SharedImages implements IDisposable {
         OBJ_FAVORITE_STAR(obj16("favorite_star.png")), //$NON-NLS-1$
         OBJ_HOMEPAGE(obj16("homepage.png")), //$NON-NLS-1$
         OBJ_HOURGLASS(obj16("hourglass.png")), //$NON-NLS-1$
-        OBJ_LIGHTBULB(obj16("lightbulb.gif")), //$NON-NLS-1$
+        OBJ_LIGHTBULB(obj16("lightbulb.png")), //$NON-NLS-1$
         OBJ_NEWSLETTER(obj16("newsletter.png")), //$NON-NLS-1$
         OBJ_JAR(obj16("jar.gif")), //$NON-NLS-1$
         OBJ_JAVA_PROJECT(obj16("project.gif")), //$NON-NLS-1$

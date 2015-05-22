@@ -5,7 +5,7 @@
 		<processor id="org.eclipse.recommenders.calls.rcp.sessionprocessors.call"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor"
 			preferencePage="org.eclipse.recommenders.calls.rcp.preferencePages.calls"
-			icon="icons/view16/bullet_green.png"
+			icon="icons/view16/sessionprocessor_calls.png"
 			name="%sessionprocessors.call.name"
 			description="%sessionprocessors.call.description"/>
 	</extension>
@@ -21,7 +21,7 @@
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
 		id="org.eclipse.recommenders.calls.rcp.proposalCategory.templates"
 		name="%proposalCategory.templates.name">
-		<proposalCategory icon="icons/view16/templates-orange.png"/>
+		<proposalCategory icon="icons/view16/contentassist_templates.png"/>
 	</extension>
 	<extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
 		id="org.eclipse.recommenders.calls.rcp.javaCompletionProposalComputer.templates">

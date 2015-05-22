@@ -5,7 +5,7 @@
 		<processor id="org.eclipse.recommenders.constructors.rcp.sessionprocessors.constructorCompletion"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.constructors.rcp.ConstructorCompletionSessionProcessor"
 			preferencePage="org.eclipse.recommenders.constructors.rcp.preferencePages.constructors"
-			icon="icons/view16/sessionprocessor.png"
+			icon="icons/view16/sessionprocessor_constructors.png"
 			name="%sessionprocessors.constructorCompletion.name"
 			description="%sessionprocessors.constructorCompletion.description"/>
 	</extension>
