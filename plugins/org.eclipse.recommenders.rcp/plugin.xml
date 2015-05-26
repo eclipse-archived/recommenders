@@ -47,7 +47,7 @@
 		<linkContribution
 			commandId="org.eclipse.recommenders.rcp.commands.extensionDiscovery"
 			label="%linkContribution.extensionDiscovery.label"
-			icon="icons/obj16/lightbulb.gif"
+			icon="icons/obj16/lightbulb.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="40"/>
 		<linkContribution
