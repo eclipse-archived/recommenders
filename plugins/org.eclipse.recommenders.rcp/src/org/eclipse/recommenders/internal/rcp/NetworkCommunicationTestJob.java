@@ -10,13 +10,18 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import static java.net.URLEncoder.encode;
+import static java.text.MessageFormat.format;
+import static org.apache.commons.lang3.CharEncoding.UTF_8;
 import static org.eclipse.recommenders.utils.Urls.*;
 
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
+import org.eclipse.core.internal.net.ProxySelector;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -29,9 +34,10 @@ import org.eclipse.recommenders.utils.Logs;
 @SuppressWarnings("restriction")
 public class NetworkCommunicationTestJob extends Job {
 
-    private static final String REQUEST_URL_PREFIX = "http://download.eclipse.org/stats/recommenders/network-communication-test"; //$NON-NLS-1$
-    private static final String APACHE_HTTP_REQUEST_URL = REQUEST_URL_PREFIX + "/apache"; //$NON-NLS-1$
-    private static final String P2_HTTP_REQUEST_URL = REQUEST_URL_PREFIX + "/p2"; //$NON-NLS-1$
+    private static final String REQUEST_URL = "http://download.eclipse.org/stats/recommenders/network-communication-test/{0}/java-{1}/{2}-{3}/{4}/"; //$NON-NLS-1$
+    private static final String APACHE_HTTP_REQUEST_PART = "apache"; //$NON-NLS-1$
+    private static final String P2_HTTP_REQUEST_PART = "p2"; //$NON-NLS-1$
+    private static final String UNKNOWN = "unknown"; //$NON-NLS-1$
 
     public NetworkCommunicationTestJob() {
         super(Messages.JOB_NAME_NETWORK_COMMUNCIATION_TEST);
@@ -43,8 +49,17 @@ public class NetworkCommunicationTestJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         SubMonitor progress = SubMonitor.convert(monitor, Messages.TASK_NETWORK_COMMUNICATION_TEST, 2);
 
-        doApacheHeadRequest(toUri(toUrl(APACHE_HTTP_REQUEST_URL)), progress.newChild(1));
-        doP2HeadRequest(toUri(toUrl(P2_HTTP_REQUEST_URL)), progress.newChild(1));
+        String javaVersion = getUrlSafeProperty("java.version"); //$NON-NLS-1$
+        String operatingSystem = getUrlSafeProperty("os.name"); //$NON-NLS-1$
+        String operatingSystemVersion = getUrlSafeProperty("os.version"); //$NON-NLS-1$
+        String proxyProvider = ProxySelector.getDefaultProvider();
+
+        doApacheHeadRequest(
+                toUri(toUrl(format(REQUEST_URL, APACHE_HTTP_REQUEST_PART, javaVersion, operatingSystem,
+                        operatingSystemVersion, proxyProvider))), progress.newChild(1));
+        doP2HeadRequest(
+                toUri(toUrl(format(REQUEST_URL, P2_HTTP_REQUEST_PART, javaVersion, operatingSystem,
+                        operatingSystemVersion, proxyProvider))), progress.newChild(1));
 
         return Status.OK_STATUS;
     }
@@ -52,8 +67,8 @@ public class NetworkCommunicationTestJob extends Job {
     private void doApacheHeadRequest(URI uri, SubMonitor progress) {
         try {
             Executor executor = Executor.newInstance();
-            Request request = Request.Head(uri);
-            Proxies.proxy(executor, uri).execute(request);
+            Request request = Proxies.proxiedRequest(Request.Head(uri), uri);
+            Proxies.proxyAuthentication(executor, uri).execute(request);
         } catch (Exception e) {
             Logs.log(LogMessages.ERROR_ON_APACHE_HEAD_REQUEST, e, uri);
         }
@@ -68,6 +83,14 @@ public class NetworkCommunicationTestJob extends Job {
             // Expected exception.
         } catch (Exception e) {
             Logs.log(LogMessages.ERROR_ON_P2_HEAD_REQUEST, e, uri);
+        }
+    }
+
+    private static String getUrlSafeProperty(String key) {
+        try {
+            return encode(System.getProperty(key, UNKNOWN), UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            return UNKNOWN;
         }
     }
 }

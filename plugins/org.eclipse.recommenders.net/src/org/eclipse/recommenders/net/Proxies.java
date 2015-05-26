@@ -14,6 +14,7 @@ import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -21,6 +22,7 @@ import java.net.UnknownHostException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
 
@@ -91,19 +93,30 @@ public final class Proxies {
         return contains(userName, DOUBLEBACKSLASH) ? of(substringAfterLast(userName, DOUBLEBACKSLASH)) : of(userName);
     }
 
-    public static Executor proxy(Executor executor, URI target) {
+    public static Request proxiedRequest(Request request, URI target) {
         IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
-        if (isEmpty(proxies)) {
-            executor.clearAuth();
-        } else {
+        if (!isEmpty(proxies)) {
             IProxyData proxy = proxies[0];
-            HttpHost host = new HttpHost(proxy.getHost(), proxy.getPort());
+            HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
+            return request.viaProxy(proxyHost);
+        } else {
+            return request;
+        }
+    }
+
+    public static Executor proxyAuthentication(Executor executor, URI target) throws IOException {
+        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
+        if (!isEmpty(proxies)) {
+            IProxyData proxy = proxies[0];
+            HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
             if (proxy.getUserId() != null) {
                 String userId = getUserName(proxy.getUserId()).orNull();
                 String pass = proxy.getPassword();
                 String workstation = getWorkstation().orNull();
                 String domain = getUserDomain(proxy.getUserId()).orNull();
-                executor.auth(host, userId, pass, workstation, domain);
+                return executor.auth(proxyHost, userId, pass, workstation, domain);
+            } else {
+                return executor;
             }
         }
         return executor;
