@@ -16,13 +16,9 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
-import com.google.common.base.Joiner;
-
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String REPOSITORY_URL_LIST = Joiner.on('\t').join(
-            "http://download.eclipse.org/recommenders/models/mars/", //$NON-NLS-1$
-            "http://download.eclipse.org/recommenders/models/mars-ctor/"); //$NON-NLS-1$
+    public static final String REPOSITORY_URL_LIST = "http://download.eclipse.org/recommenders/models/mars/"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
