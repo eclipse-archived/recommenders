@@ -5,7 +5,7 @@
 		<processor id="org.eclipse.recommenders.subwords.rcp.sessionprocessors.subwords"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor"
 			preferencePage="org.eclipse.recommenders.subwords.rcp.preferencePages.subwords"
-			icon="icons/obj16/Aa.png"
+			icon="icons/view16/sessionprocessor_subwords.png"
 			name="%sessionprocessors.subwords.name"
 			description="%sessionprocessors.subwords.description"
 			enabledByDefault="true">

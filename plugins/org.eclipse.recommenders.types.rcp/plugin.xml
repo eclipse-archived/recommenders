@@ -5,7 +5,7 @@
 		<processor id="org.eclipse.recommenders.types.rcp.sessionprocessors.types"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.types.rcp.TypesCompletionSessionProcessor"
 			enabledByDefault="false"
-			icon="icons/view16/bullet_yellow.png"
+			icon="icons/view16/sessionprocessor_types.png"
 			name="%sessionprocessors.types.name"
 			description="%sessionprocessors.types.description"/>
 	</extension>
