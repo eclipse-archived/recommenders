@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp;
 import static java.net.URLEncoder.encode;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
+import static org.eclipse.recommenders.net.Proxies.*;
 import static org.eclipse.recommenders.utils.Urls.*;
 
 import java.io.FileNotFoundException;
@@ -28,7 +29,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.equinox.internal.p2.transport.ecf.RepositoryTransport;
-import org.eclipse.recommenders.net.Proxies;
 import org.eclipse.recommenders.utils.Logs;
 
 @SuppressWarnings("restriction")
@@ -67,8 +67,8 @@ public class NetworkCommunicationTestJob extends Job {
     private void doApacheHeadRequest(URI uri, SubMonitor progress) {
         try {
             Executor executor = Executor.newInstance();
-            Request request = Proxies.proxiedRequest(Request.Head(uri), uri);
-            Proxies.proxyAuthentication(executor, uri).execute(request);
+            Request request = Request.Head(uri).viaProxy(getProxyHost(uri).orNull());
+            proxyAuthentication(executor, uri).execute(request);
         } catch (Exception e) {
             Logs.log(LogMessages.ERROR_ON_APACHE_HEAD_REQUEST, e, uri);
         }

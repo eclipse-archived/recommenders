@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.fluent.Executor;
-import org.apache.http.client.fluent.Request;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
 
@@ -93,21 +92,17 @@ public final class Proxies {
         return contains(userName, DOUBLEBACKSLASH) ? of(substringAfterLast(userName, DOUBLEBACKSLASH)) : of(userName);
     }
 
-    public static Request proxiedRequest(Request request, URI target) {
-        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
-        if (!isEmpty(proxies)) {
-            IProxyData proxy = proxies[0];
-            HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
-            return request.viaProxy(proxyHost);
-        } else {
-            return request;
+    public static Optional<HttpHost> getProxyHost(URI target) {
+        IProxyData proxy = getProxyData(target).orNull();
+        if (proxy == null) {
+            return Optional.absent();
         }
+        return Optional.of(new HttpHost(proxy.getHost(), proxy.getPort()));
     }
 
     public static Executor proxyAuthentication(Executor executor, URI target) throws IOException {
-        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
-        if (!isEmpty(proxies)) {
-            IProxyData proxy = proxies[0];
+        IProxyData proxy = getProxyData(target).orNull();
+        if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
             if (proxy.getUserId() != null) {
                 String userId = getUserName(proxy.getUserId()).orNull();
@@ -120,5 +115,13 @@ public final class Proxies {
             }
         }
         return executor;
+    }
+
+    private static Optional<IProxyData> getProxyData(URI target) {
+        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
+        if (isEmpty(proxies)) {
+            return Optional.absent();
+        }
+        return Optional.of(proxies[0]);
     }
 }

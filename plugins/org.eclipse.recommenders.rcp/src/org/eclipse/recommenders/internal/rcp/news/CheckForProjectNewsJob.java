@@ -10,6 +10,7 @@ package org.eclipse.recommenders.internal.rcp.news;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.rcp.Constants.*;
 import static org.eclipse.recommenders.internal.rcp.Messages.NEWS_LOADING_MESSAGE;
+import static org.eclipse.recommenders.net.Proxies.*;
 import static org.eclipse.recommenders.utils.Urls.*;
 
 import java.io.IOException;
@@ -33,7 +34,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.recommenders.internal.rcp.LogMessages;
 import org.eclipse.recommenders.internal.rcp.Messages;
-import org.eclipse.recommenders.net.Proxies;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
@@ -134,8 +134,8 @@ public class CheckForProjectNewsJob extends Job {
 
     private Optional<String> getRSSFeed() throws IOException {
         Executor executor = Executor.newInstance();
-        Request request = Proxies.proxiedRequest(Request.Get(feed), feed);
-        Response response = Proxies.proxyAuthentication(executor, feed).execute(request);
+        Request request = Request.Get(feed).viaProxy(getProxyHost(feed).orNull());
+        Response response = proxyAuthentication(executor, feed).execute(request);
         HttpResponse httpResponse = response.returnResponse();
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
