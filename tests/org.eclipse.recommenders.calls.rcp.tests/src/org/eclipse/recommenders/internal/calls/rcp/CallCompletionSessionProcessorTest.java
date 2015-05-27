@@ -19,8 +19,10 @@ import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.completion.rcp.ProposalNameProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -52,6 +54,7 @@ public class CallCompletionSessionProcessorTest {
 
     private IProjectCoordinateProvider pcProvider;
     private ICallModelProvider modelProvider;
+    private IProposalNameProvider proposalNameProvider = new ProposalNameProvider();
     private IRecommendersCompletionContext context;
 
     @Test
@@ -60,7 +63,7 @@ public class CallCompletionSessionProcessorTest {
                 NO_RECOMMENDATIONS);
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -73,8 +76,8 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(newRecommendation(OBJECT_EQUALS, 0.5)));
 
         CallsRcpPreferences pref = createDefaultPreferences();
-        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider, pref,
-                new SharedImages());
+        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
+                proposalNameProvider, pref, new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -87,8 +90,8 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(newRecommendation(OBJECT_HASH_CODE, 0.5)));
 
         CallsRcpPreferences pref = createPreferencesWithMinimalProposalProbability(100);
-        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider, pref,
-                new SharedImages());
+        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
+                proposalNameProvider, pref, new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -101,7 +104,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(OBJECT_HASH_CODE), "", NO_RECOMMENDATIONS);
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -114,7 +117,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(newRecommendation(OBJECT_HASH_CODE, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -123,11 +126,11 @@ public class CallCompletionSessionProcessorTest {
 
     @Test
     public void testUnsupportedCompletionRequest() {
-        setUp(CompletionOnJavadocMessageSend.class, new UniqueTypeName(JRE_1_6_0, OBJECT), OBJECT_TYPE,
-                NO_OBSERVATIONS, ANY_TYPE_SIGNATURE, ImmutableList.of(newRecommendation(OBJECT_HASH_CODE, 0.5)));
+        setUp(CompletionOnJavadocMessageSend.class, new UniqueTypeName(JRE_1_6_0, OBJECT), OBJECT_TYPE, NO_OBSERVATIONS,
+                ANY_TYPE_SIGNATURE, ImmutableList.of(newRecommendation(OBJECT_HASH_CODE, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -140,7 +143,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(OBJECT_HASH_CODE), "", ImmutableList.of(newRecommendation(OBJECT_EQUALS, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -153,7 +156,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(newRecommendation(OBJECT_EQUALS, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -166,7 +169,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(OBJECT_HASH_CODE), "", null);
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -179,7 +182,7 @@ public class CallCompletionSessionProcessorTest {
                 ANY_TYPE_SIGNATURE, ImmutableList.of(newRecommendation(OBJECT_HASH_CODE, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -192,7 +195,7 @@ public class CallCompletionSessionProcessorTest {
                 ImmutableList.of(newRecommendation(OBJECT_VOID, 0.5)));
 
         CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, modelProvider,
-                createDefaultPreferences(), new SharedImages());
+                proposalNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -220,8 +223,8 @@ public class CallCompletionSessionProcessorTest {
         LookupEnvironment lookupEnvironment = mock(LookupEnvironment.class);
         context = mock(IRecommendersCompletionContext.class);
         when(context.get(CompletionContextKey.LOOKUP_ENVIRONMENT)).thenReturn(Optional.of(lookupEnvironment));
-        Optional<ASTNode> completionNode = completionType == null ? Optional.<ASTNode>absent() : Optional
-                .<ASTNode>of(mock(completionType));
+        Optional<ASTNode> completionNode = completionType == null ? Optional.<ASTNode>absent()
+                : Optional.<ASTNode>of(mock(completionType));
         when(context.getCompletionNode()).thenReturn(completionNode);
         when(context.getExpectedTypeSignature()).thenReturn(
                 expectedTypeSignature == null ? Optional.<String>absent() : Optional.<String>of(expectedTypeSignature));

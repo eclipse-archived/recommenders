@@ -8,9 +8,9 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.calls.rcp;
+package org.eclipse.recommenders.internal.calls.rcp.l10n;
 
-import static org.eclipse.core.runtime.IStatus.*;
+import static org.eclipse.core.runtime.IStatus.ERROR;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -23,13 +23,8 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages ERROR_PROPOSAL_MATCHING_FAILED = new LogMessages(ERROR,
-            Messages.LOG_ERROR_PROPOSAL_MATCHING_FAILED);
     public static final ILogMessage ERROR_RECEIVER_TYPE_LOOKUP_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED);
-
-    public static final LogMessages WARNING_MISSING_LOOKUP_ENVIRONMENT = new LogMessages(WARNING,
-            Messages.LOG_WARNING_MISSING_LOOKUP_ENVIRONMENT);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

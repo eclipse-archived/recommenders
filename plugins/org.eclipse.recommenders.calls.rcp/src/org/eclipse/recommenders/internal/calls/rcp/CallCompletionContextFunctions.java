@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.RECEIVER_NAME;
-import static org.eclipse.recommenders.internal.calls.rcp.LogMessages.ERROR_RECEIVER_TYPE_LOOKUP_FAILED;
+import static org.eclipse.recommenders.internal.calls.rcp.l10n.LogMessages.ERROR_RECEIVER_TYPE_LOOKUP_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.List;
