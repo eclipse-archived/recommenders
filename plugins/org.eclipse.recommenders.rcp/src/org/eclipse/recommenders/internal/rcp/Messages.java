@@ -55,6 +55,7 @@ public final class Messages extends NLS {
     public static String JOB_NAME_NETWORK_COMMUNCIATION_TEST;
     public static String JOB_NAME_SELECTION_LISTENER_REGISTRATION;
 
+    public static String LOG_ERROR_ON_PROXY_AUTHENTICATION_TEST;
     public static String LOG_ERROR_ON_APACHE_HEAD_REQUEST;
     public static String LOG_ERROR_ON_P2_HEAD_REQUEST;
 
