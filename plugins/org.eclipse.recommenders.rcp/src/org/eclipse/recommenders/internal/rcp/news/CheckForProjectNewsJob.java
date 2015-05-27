@@ -134,8 +134,8 @@ public class CheckForProjectNewsJob extends Job {
 
     private Optional<String> getRSSFeed() throws IOException {
         Executor executor = Executor.newInstance();
-        Request request = Request.Get(feed);
-        Response response = Proxies.proxy(executor, feed).execute(request);
+        Request request = Proxies.proxiedRequest(Request.Get(feed), feed);
+        Response response = Proxies.proxyAuthentication(executor, feed).execute(request);
         HttpResponse httpResponse = response.returnResponse();
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
