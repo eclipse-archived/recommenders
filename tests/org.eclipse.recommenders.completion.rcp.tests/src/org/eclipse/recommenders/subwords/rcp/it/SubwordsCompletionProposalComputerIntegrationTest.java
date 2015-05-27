@@ -56,6 +56,12 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         }
     };
 
+    private static final SubwordsRcpPreferences PREFIX_LENGTH_2 = new SubwordsRcpPreferences() {
+        {
+            minPrefixLengthForTypes = 2;
+        }
+    };
+
     private final JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
 
     private final CharSequence code;
@@ -118,6 +124,10 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         scenarios.add(scenario("Camel case match", method("ArrayList arrayList; aL$"), COMPREHENSIVE,
                 MIN_CAMELCASE_MATCH_RELEVANCE, MAX_CAMELCASE_MATCH_RELEVANCE, "arrayList"));
 
+        scenarios.add(scenario("Exact match of anonymous inner type",
+                classbody("Maps", "public void method() { new Map$ }"), PREFIX_LENGTH_2, MIN_SUBWORDS_MATCH_RELEVANCE,
+                MAX_PREFIX_MATCH_RELEVANCE, "Map(", "Maps("));
+
         return scenarios;
     }
 
@@ -131,6 +141,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         warmup(code, preferences);
 
         List<IJavaCompletionProposal> proposals = exercise(code, preferences);
+        int lastRelevance = Integer.MAX_VALUE;
         for (String expectedProposal : expectedProposals) {
             boolean found = false;
             for (IJavaCompletionProposal proposal : proposals) {
@@ -140,6 +151,12 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
                 found = true;
 
                 int relevance = proposal.getRelevance();
+                if (relevance > lastRelevance) {
+                    fail(String
+                            .format("Encountered proposal %s with a relevance %d. Expected a relevance lower than the previous expected proposal's relevance of %d.",
+                                    expectedProposal, relevance, lastRelevance));
+                }
+                lastRelevance = relevance;
                 if (relevance >= minRelevance && relevance <= maxRelevance) {
                     break;
                 }
@@ -176,11 +193,10 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         SessionProcessor baseRelevanceSessionProcessor = new BaseRelevanceSessionProcessor();
 
         CompletionRcpPreferences prefs = Mockito.mock(CompletionRcpPreferences.class);
-        Mockito.when(prefs.getEnabledSessionProcessors())
-                .thenReturn(ImmutableSet.of(
-                        new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
-                                baseRelevanceSessionProcessor),
-                        new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "", processor)));
+        Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
+                ImmutableSet.of(new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
+                        baseRelevanceSessionProcessor), new SessionProcessorDescriptor("subwords", "name", "desc",
+                        null, 0, true, "", processor)));
 
         IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
         sut.sessionStarted();
