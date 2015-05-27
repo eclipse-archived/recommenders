@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 
 public class BranchInputValidator implements IInputValidator {
 

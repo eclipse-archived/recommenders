@@ -14,8 +14,8 @@ import static org.eclipse.recommenders.internal.rcp.Constants.NEWS_ENABLED;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.internal.rcp.Messages;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.swt.SWT;

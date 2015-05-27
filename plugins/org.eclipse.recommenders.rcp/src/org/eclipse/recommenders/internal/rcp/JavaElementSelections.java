@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.*;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeRoot;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;

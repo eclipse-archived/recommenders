@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
+import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NewsNotificationPopup;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NoNewsNotificationPopup;

@@ -5,7 +5,7 @@
  *
  * Contributors: Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.news.rcp;
+package org.eclipse.recommenders.internal.news.rcp.l10n;
 
 import static org.eclipse.core.runtime.IStatus.ERROR;
 

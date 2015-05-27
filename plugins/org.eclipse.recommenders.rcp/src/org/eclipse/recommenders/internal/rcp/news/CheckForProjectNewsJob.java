@@ -9,7 +9,7 @@ package org.eclipse.recommenders.internal.rcp.news;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.rcp.Messages.NEWS_LOADING_MESSAGE;
+import static org.eclipse.recommenders.internal.rcp.l10n.Messages.NEWS_LOADING_MESSAGE;
 import static org.eclipse.recommenders.net.Proxies.*;
 import static org.eclipse.recommenders.utils.Urls.*;
 
@@ -32,8 +32,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.recommenders.internal.rcp.LogMessages;
-import org.eclipse.recommenders.internal.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;

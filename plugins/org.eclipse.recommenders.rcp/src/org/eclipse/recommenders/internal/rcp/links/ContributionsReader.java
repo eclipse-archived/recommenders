@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.links;
 
-import static org.eclipse.recommenders.internal.rcp.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
 
 import java.util.Collections;
 import java.util.List;

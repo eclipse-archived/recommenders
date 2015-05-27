@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.snipmatch.model.DefaultSnippetRepositoryConfigurationProvider;
 import org.eclipse.recommenders.snipmatch.model.SnipmatchModelPackage;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;

@@ -2,7 +2,7 @@ package org.eclipse.recommenders.internal.rcp.news;
 
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.internal.rcp.Constants.*;
-import static org.eclipse.recommenders.internal.rcp.Messages.NEWS_NOTIFY_MESSAGE;
+import static org.eclipse.recommenders.internal.rcp.l10n.Messages.NEWS_NOTIFY_MESSAGE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.*;

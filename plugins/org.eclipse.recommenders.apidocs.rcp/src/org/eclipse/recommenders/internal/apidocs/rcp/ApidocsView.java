@@ -43,6 +43,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.PartListener2Adapter;
 import org.eclipse.recommenders.rcp.utils.Selections;

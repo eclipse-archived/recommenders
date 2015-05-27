@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Codetrails GmbH.
+ * Copyright (c) 2014 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,10 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.types.rcp;
+package org.eclipse.recommenders.internal.subwords.rcp.l10n;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
+import static org.eclipse.core.runtime.IStatus.ERROR;
+
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
 import org.eclipse.recommenders.utils.Logs.ILogMessage;
@@ -23,11 +23,12 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final ILogMessage ERROR_ACCESSING_SEARCHINDEX_FAILED = new LogMessages(IStatus.ERROR,
-            Messages.LOG_ERROR_ACCESSING_SEARCHINDEX_FAILED);
-
-    public static final ILogMessage INFO_REINDEXING_REQUIRED = new LogMessages(IStatus.INFO,
-            Messages.LOG_INFO_REINDEXING_REQUIRED);
+    public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
+            Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
+    public static final LogMessages ERROR_UNEXPECTED_FALL_THROUGH = new LogMessages(ERROR,
+            Messages.LOG_ERROR_UNEXPECTED_FALLTHROUGH);
+    public static final ILogMessage ERROR_COMPLETION_CONTEXT_NOT_COLLECTED = new LogMessages(ERROR,
+            Messages.LOG_ERROR_COMPLETION_CONTEXT_NOT_COLLECTED);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

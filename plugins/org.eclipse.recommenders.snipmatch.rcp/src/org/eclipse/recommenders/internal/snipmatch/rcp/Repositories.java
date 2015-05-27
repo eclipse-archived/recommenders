@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SERVICE_NOT_RUNNING;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages.ERROR_SERVICE_NOT_RUNNING;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.Closeable;

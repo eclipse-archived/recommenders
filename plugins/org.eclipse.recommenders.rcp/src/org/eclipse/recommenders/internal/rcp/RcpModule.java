@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp;
 import static com.google.inject.Scopes.SINGLETON;
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.AstBindings;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.IRcpService;

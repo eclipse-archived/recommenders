@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.rcp.links;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;

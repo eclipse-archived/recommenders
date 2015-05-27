@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.IOException;
@@ -23,6 +23,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

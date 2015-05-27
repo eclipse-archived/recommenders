@@ -19,8 +19,8 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchTemplateContextType;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 
 @SuppressWarnings("restriction")
 public final class SnippetSourceValidator {

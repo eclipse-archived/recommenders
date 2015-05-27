@@ -8,13 +8,13 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.subwords.rcp;
+package org.eclipse.recommenders.internal.subwords.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.subwords.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.subwords.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PREFPAGE_TITLE_SUBWORDS;
     public static String PREFPAGE_DESCRIPTION_SUBWORDS_PREFIX_LENGTH;

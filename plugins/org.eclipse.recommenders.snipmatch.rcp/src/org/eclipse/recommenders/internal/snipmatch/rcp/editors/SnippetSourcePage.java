@@ -23,7 +23,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.snipmatch.rcp.Messages;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.snipmatch.ISnippet;

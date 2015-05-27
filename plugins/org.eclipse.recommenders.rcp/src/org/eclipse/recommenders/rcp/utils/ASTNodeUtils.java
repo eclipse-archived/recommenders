@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.utils;
 
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.repeat;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_RESOLVE_METHOD;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.FAILED_TO_RESOLVE_METHOD;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Throws.*;

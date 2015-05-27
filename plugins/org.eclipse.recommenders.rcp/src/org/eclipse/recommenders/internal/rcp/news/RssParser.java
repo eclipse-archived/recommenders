@@ -23,7 +23,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.eclipse.recommenders.internal.rcp.LogMessages;
+import org.eclipse.recommenders.internal.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Pair;

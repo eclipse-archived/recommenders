@@ -14,7 +14,7 @@ import static com.google.common.base.Optional.*;
 import static com.google.common.collect.Iterators.*;
 import static java.net.NetworkInterface.getNetworkInterfaces;
 import static org.eclipse.recommenders.internal.rcp.Constants.PREF_UUID;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_GENERATE_UUID;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.FAILED_TO_GENERATE_UUID;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.net.NetworkInterface;

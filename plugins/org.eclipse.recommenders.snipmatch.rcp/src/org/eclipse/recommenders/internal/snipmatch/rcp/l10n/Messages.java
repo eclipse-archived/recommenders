@@ -8,13 +8,13 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.snipmatch.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String COMPLETION_ENGINE_NO_SNIPPETS_FOUND;
     public static String COMPLETION_ENGINE_REPOSITORY_MATCHES;
@@ -145,11 +145,8 @@ public final class Messages extends NLS {
     public static String PREFPAGE_BUTTON_NEW;
     public static String PREFPAGE_BUTTON_REMOVE;
     public static String PREFPAGE_DESCRIPTION;
-    public static String PREFPAGE_ERROR_INVALID_REPO_URL;
-    public static String PREFPAGE_ERROR_INVALID_BRANCH_PREFIX_FORMAT;
     public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
     public static String PREFPAGE_EDITOR_EXTENSIONS_LINK;
-    public static String PREFPAGE_EDITOR_EXTENSIONS_ENABLE_NOTIFICATION;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;
     public static String WARNING_REPOSITION_CURSOR;

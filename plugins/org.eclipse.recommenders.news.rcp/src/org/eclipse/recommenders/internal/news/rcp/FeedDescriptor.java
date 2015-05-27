@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 

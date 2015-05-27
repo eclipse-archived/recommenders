@@ -37,6 +37,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.equinox.internal.p2.transport.ecf.RepositoryTransport;
+import org.eclipse.recommenders.internal.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.Lists;

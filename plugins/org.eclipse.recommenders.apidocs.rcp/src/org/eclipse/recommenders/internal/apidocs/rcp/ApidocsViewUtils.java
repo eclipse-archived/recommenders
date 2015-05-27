@@ -28,6 +28,7 @@ import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.utils.Bags;

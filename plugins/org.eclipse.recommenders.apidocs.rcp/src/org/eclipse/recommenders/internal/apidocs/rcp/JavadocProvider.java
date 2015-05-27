@@ -13,7 +13,7 @@
  */
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
-import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.resolveSelectionLocationFromJavaElement;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethodWithAlternativeSignatures;
@@ -45,6 +45,7 @@ import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;

@@ -8,13 +8,13 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.apidocs.rcp;
+package org.eclipse.recommenders.internal.apidocs.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.apidocs.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.apidocs.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PROVIDER_INTRO_IMPLEMENTOR_SELFCALL_STATISTIC;
     public static String PROVIDER_INTRO_JAVADOC_NOT_FOUND;

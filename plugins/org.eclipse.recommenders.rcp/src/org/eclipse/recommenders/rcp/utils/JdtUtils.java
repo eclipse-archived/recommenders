@@ -13,7 +13,7 @@ package org.eclipse.recommenders.rcp.utils;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.*;
 import static org.eclipse.jdt.ui.SharedASTProvider.*;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.FAILED_TO_RESOLVE_TYPE_PARAMETER;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.FAILED_TO_RESOLVE_TYPE_PARAMETER;
 import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.*;
 
@@ -59,7 +59,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
-import org.eclipse.recommenders.internal.rcp.LogMessages;
+import org.eclipse.recommenders.internal.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.ITypeName;

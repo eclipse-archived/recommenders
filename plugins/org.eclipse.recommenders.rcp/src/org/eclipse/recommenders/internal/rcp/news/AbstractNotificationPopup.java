@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.window.Window;
-import org.eclipse.recommenders.internal.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.rcp.news.SwtUtil.FadeJob;
 import org.eclipse.recommenders.internal.rcp.news.SwtUtil.IFadeListener;
 import org.eclipse.swt.SWT;

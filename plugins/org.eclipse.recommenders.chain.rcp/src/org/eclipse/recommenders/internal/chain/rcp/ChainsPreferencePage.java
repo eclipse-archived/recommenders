@@ -22,6 +22,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.ListEditor;
+import org.eclipse.recommenders.internal.chain.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

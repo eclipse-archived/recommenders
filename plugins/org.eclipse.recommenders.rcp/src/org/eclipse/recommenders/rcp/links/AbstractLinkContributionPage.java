@@ -15,7 +15,7 @@ import java.util.List;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.recommenders.internal.rcp.Messages;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.rcp.links.ContributionLink;
 import org.eclipse.recommenders.internal.rcp.links.ContributionsReader;
 import org.eclipse.swt.SWT;

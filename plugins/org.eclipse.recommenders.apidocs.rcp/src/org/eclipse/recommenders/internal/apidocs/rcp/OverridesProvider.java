@@ -44,6 +44,7 @@ import org.eclipse.recommenders.apidocs.OverrideDirectivesModelProvider;
 import org.eclipse.recommenders.apidocs.OverridePatternsModelProvider;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.IInputStreamTransformer;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;

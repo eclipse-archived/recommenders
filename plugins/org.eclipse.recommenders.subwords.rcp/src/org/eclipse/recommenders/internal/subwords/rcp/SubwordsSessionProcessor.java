@@ -16,7 +16,7 @@ import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
-import static org.eclipse.recommenders.internal.subwords.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.subwords.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
@@ -50,6 +50,7 @@ import org.eclipse.recommenders.completion.rcp.processable.NoProposalCollectingC
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
+import org.eclipse.recommenders.internal.subwords.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;

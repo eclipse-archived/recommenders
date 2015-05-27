@@ -8,13 +8,13 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.l10n;
 
 import org.eclipse.osgi.util.NLS;
 
 public final class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.rcp.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PREFPAGE_DESCRIPTION_EMPTY;
     public static String PREFPAGE_LINKS_DESCRIPTION;

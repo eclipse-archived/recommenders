@@ -14,7 +14,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.LogMessages.ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages.ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
@@ -31,6 +31,7 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.graphics.Image;

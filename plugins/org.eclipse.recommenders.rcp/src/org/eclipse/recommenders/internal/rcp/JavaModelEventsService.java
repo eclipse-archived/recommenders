@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.recommenders.internal.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaModelEvents.CompilationUnitAdded;
 import org.eclipse.recommenders.rcp.JavaModelEvents.CompilationUnitChanged;
 import org.eclipse.recommenders.rcp.JavaModelEvents.CompilationUnitRemoved;

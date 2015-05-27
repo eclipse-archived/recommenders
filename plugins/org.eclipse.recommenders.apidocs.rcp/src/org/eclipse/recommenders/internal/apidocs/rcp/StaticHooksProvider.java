@@ -14,7 +14,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.ui.JavaElementLabels.*;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
-import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.FAILED_TO_DETERMINE_STATIC_MEMBERS;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.FAILED_TO_DETERMINE_STATIC_MEMBERS;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -38,6 +38,7 @@ import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.IOUtils;

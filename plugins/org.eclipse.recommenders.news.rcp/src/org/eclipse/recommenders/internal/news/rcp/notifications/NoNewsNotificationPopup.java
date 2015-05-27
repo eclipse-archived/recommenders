@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.news.rcp.notifications;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.internal.news.rcp.Messages;
+import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;

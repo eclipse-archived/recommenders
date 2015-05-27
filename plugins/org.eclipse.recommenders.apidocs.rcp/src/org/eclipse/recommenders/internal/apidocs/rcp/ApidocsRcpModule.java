@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.FAILED_TO_INSTANTIATE_PROVIDER;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.FAILED_TO_INSTANTIATE_PROVIDER;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.annotation.Retention;

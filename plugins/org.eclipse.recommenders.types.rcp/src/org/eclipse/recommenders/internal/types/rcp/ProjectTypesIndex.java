@@ -15,7 +15,7 @@ import static java.lang.Long.parseLong;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
-import static org.eclipse.recommenders.internal.types.rcp.LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED;
+import static org.eclipse.recommenders.internal.types.rcp.l10n.LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED;
 import static org.eclipse.recommenders.jdt.JavaElementsFinder.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -62,6 +62,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.recommenders.internal.types.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.JavaElementsFinder;
 import org.eclipse.recommenders.utils.Logs;

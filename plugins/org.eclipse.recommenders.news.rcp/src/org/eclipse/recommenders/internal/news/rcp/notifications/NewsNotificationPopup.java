@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.Messages;
+import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Shells;

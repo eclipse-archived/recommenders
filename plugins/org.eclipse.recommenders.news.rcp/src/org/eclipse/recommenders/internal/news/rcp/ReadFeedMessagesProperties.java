@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Logs;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;

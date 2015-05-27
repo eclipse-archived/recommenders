@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static java.lang.Integer.parseInt;
-import static org.eclipse.recommenders.internal.apidocs.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.ArrayList;

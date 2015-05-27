@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp;
 
 import static com.google.common.base.Optional.*;
-import static org.eclipse.recommenders.internal.rcp.LogMessages.*;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
