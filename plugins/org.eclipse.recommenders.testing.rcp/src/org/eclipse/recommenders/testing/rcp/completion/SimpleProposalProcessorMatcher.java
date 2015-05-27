@@ -43,12 +43,6 @@ public class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimplePropos
             return false;
         }
 
-        // if (label == null) {
-        // return true;
-        // }
-        // if (label != processor.getAddon()) {
-        // return false;
-        // }
         if (label == null) {
             return label == processor.getAddon();
         }

@@ -5,15 +5,22 @@ Bundle-Version: 2.2.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
  org.eclipse.jdt.core,
+ org.eclipse.jdt.launching,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
  org.eclipse.recommenders.completion.rcp,
+ org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.testing,
+ org.eclipse.recommenders.utils,
  org.eclipse.ui,
  org.hamcrest,
+ org.junit,
  org.mockito
-Import-Package: org.apache.commons.lang3;version="[3.1.0,4.0.0)"
-Export-Package: org.eclipse.recommenders.testing.rcp.jdt,
- org.eclipse.recommenders.testing.rcp.completion
+Import-Package: com.google.common.collect;version="[15.0.0,16.0.0)",
+ org.apache.commons.lang3;version="[3.1.0,4.0.0)"
+Export-Package: org.eclipse.recommenders.testing.rcp.completion,
+ org.eclipse.recommenders.testing.rcp.completion.rules,
+ org.eclipse.recommenders.testing.rcp.jdt

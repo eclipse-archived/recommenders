@@ -1,7 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.utils;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
-import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.names.VmMethodName.get;
 import static org.hamcrest.CoreMatchers.*;
@@ -13,8 +12,11 @@ import java.util.LinkedList;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryProject;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -98,28 +100,29 @@ public class ProposalUtilsTest {
 
         scenarios.add(scenario(classbody("Example", "void method(Collection<Number> c) { this.method$ }"),
                 METHOD_COLLECTION));
-        scenarios
-                .add(scenario(classbody("Example", "void method(Collection<?> c) { this.method$ }"), METHOD_COLLECTION));
+        scenarios.add(
+                scenario(classbody("Example", "void method(Collection<?> c) { this.method$ }"), METHOD_COLLECTION));
         scenarios.add(scenario(classbody("Example", "void method(Collection<? extends Number> c) { this.method$ }"),
                 METHOD_COLLECTION));
         scenarios.add(scenario(classbody("Example", "void method(Collection<? super Number> c) { this.method$ }"),
                 METHOD_COLLECTION));
 
         scenarios.add(scenario(classbody("Example<T>", "void method(T t) { this.method$ }"), METHOD_OBJECT));
-        scenarios.add(scenario(classbody("Example<O extends Object>", "void method(O o) { this.method$ }"),
-                METHOD_OBJECT));
+        scenarios.add(
+                scenario(classbody("Example<O extends Object>", "void method(O o) { this.method$ }"), METHOD_OBJECT));
         scenarios.add(ignoredScenario(classbody("Example<N extends Number>", "void method(N n) { this.method$ }"),
                 METHOD_NUMBER));
-        scenarios
-                .add(ignoredScenario(classbody("Example<N extends Number & Comparable>", "void method(N n) { this.method$ }"),
-                        METHOD_NUMBER));
+        scenarios.add(ignoredScenario(
+                classbody("Example<N extends Number & Comparable>", "void method(N n) { this.method$ }"),
+                METHOD_NUMBER));
 
-        scenarios.add(scenario(classbody("Example<L extends List<String>>", "void method(L l) { l.set$ }"),
-                SET_INT_STRING));
+        scenarios.add(
+                scenario(classbody("Example<L extends List<String>>", "void method(L l) { l.set$ }"), SET_INT_STRING));
 
         String auxiliaryDefinition = "class Auxiliary<L extends List<String>> { <N extends L> void method(N n) { } }";
-        scenarios.add(ignoredScenario(classbody("Example", "void method(Auxiliary a) { a.method$ }") + auxiliaryDefinition,
-                get("LAuxiliary.method(Ljava/util/List;)V")));
+        scenarios.add(
+                ignoredScenario(classbody("Example", "void method(Auxiliary a) { a.method$ }") + auxiliaryDefinition,
+                        get("LAuxiliary.method(Ljava/util/List;)V")));
 
         scenarios.add(scenario(classbody("Example<T>", "void method(T[] t) { this.method$ }"), METHOD_OBJECTS));
         scenarios.add(scenario(classbody("Example<O extends Object>", "void method(O[] o) { this.method$ }"),
@@ -129,8 +132,8 @@ public class ProposalUtilsTest {
                 METHOD_COLLECTION));
 
         scenarios.add(scenario(classbody("Example", "<T> void method(T t) { this.method$ }"), METHOD_OBJECT));
-        scenarios.add(scenario(classbody("Example", "<O extends Object> void method(O o) { this.method$ }"),
-                METHOD_OBJECT));
+        scenarios.add(
+                scenario(classbody("Example", "<O extends Object> void method(O o) { this.method$ }"), METHOD_OBJECT));
         scenarios.add(ignoredScenario(classbody("Example", "<N extends Number> void method(N n) { this.method$ }"),
                 METHOD_NUMBER));
         scenarios.add(ignoredScenario(
@@ -161,8 +164,8 @@ public class ProposalUtilsTest {
         scenarios.add(scenario(classbody("Example<T>", "Example(T t) { this($) }"), INIT_OBJECT));
         scenarios.add(scenario(classbody("Example<T extends Object>", "Example(T t) { this($) }"), INIT_OBJECT));
         scenarios.add(ignoredScenario(classbody("Example<N extends Number>", "Example(N n) { this($) }"), INIT_NUMBER));
-        scenarios.add(scenario(classbody("Example<N>", "Example(Collection<? extends N> c) { this($) }"),
-                INIT_COLLECTION));
+        scenarios.add(
+                scenario(classbody("Example<N>", "Example(Collection<? extends N> c) { this($) }"), INIT_COLLECTION));
 
         // Using nested classes to speed up JDT's constructor completion; this avoids timeouts.
         scenarios.add(scenario(classbody("Example", "static class Nested { Nested() { new Example.Nested$ } }"),
@@ -236,11 +239,16 @@ public class ProposalUtilsTest {
         return new Object[] { true, compilationUnit, expectedMethod };
     }
 
+    @ClassRule
+    public static TemporaryWorkspace ws = new TemporaryWorkspace();
+
     @Test
     public void test() throws Exception {
         assumeThat(ignore, is(equalTo(false)));
 
-        IRecommendersCompletionContext context = createRecommendersCompletionContext(code);
+        TemporaryProject projectWithSources = ws.createProject();
+        IRecommendersCompletionContext context = projectWithSources.createFile(code).triggerContentAssist();
+
         Collection<CompletionProposal> proposals = context.getProposals().values();
         IMethodName actualMethod = ProposalUtils.toMethodName(getOnlyElement(proposals)).get();
 

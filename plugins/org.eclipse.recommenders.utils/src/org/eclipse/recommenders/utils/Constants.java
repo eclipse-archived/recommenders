@@ -51,6 +51,10 @@ public final class Constants {
     public static final String EXT_JBIF = "jbif";
     /** {@value} */
     public static final String EXT_DATA = "data";
+    /** {@value} */
+    public static final String EXT_JAVA = "java";
+    /** {@value} */
+    public static final String EXT_CLASS = "class";
 
     /** {@value} */
     public static final String DOT_POM = '.' + EXT_POM;
@@ -64,6 +68,10 @@ public final class Constants {
     public static final String DOT_JBIF = '.' + EXT_JBIF;
     /** {@value} */
     public static final String DOT_DATA = '.' + EXT_DATA;
+    /** {@value} */
+    public static final String DOT_JAVA = '.' + EXT_JAVA;
+    /** {@value} */
+    public static final String DOT_CLASS = '.' + EXT_CLASS;
 
     /** {@value} */
     public static final String CLASS_CALL_MODELS = "call";
