@@ -124,9 +124,9 @@
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- This location points to the latest integration Orbit build. -->
+<!-- This location points to the R-build for Mars. -->
 <!-- Once Mars SR2 is released this needs to be set to the then-current R-build from http://archive.eclipse.org/tools/orbit/downloads/. -->
-<repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-I"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
