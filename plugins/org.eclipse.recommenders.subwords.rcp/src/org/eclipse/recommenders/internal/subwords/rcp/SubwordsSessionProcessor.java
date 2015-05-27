@@ -255,6 +255,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                         .append(" javadoc").toString(); //$NON-NLS-1$
                 break;
             }
+            case CompletionProposal.JAVADOC_PARAM_REF:
             case CompletionProposal.JAVADOC_BLOCK_TAG:
             case CompletionProposal.JAVADOC_INLINE_TAG: {
                 completionIdentifier = javaProposal.getDisplayString();
