@@ -201,7 +201,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Override
     public Optional<ModelCoordinate> suggest(final ProjectCoordinate pc, final String modelType) {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return absent();
         }
         Pair<ProjectCoordinate, String> key = Pair.newPair(pc, modelType);
@@ -233,7 +233,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Override
     public ImmutableSet<ModelCoordinate> suggestCandidates(ProjectCoordinate pc, String modelType) {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return ImmutableSet.of();
         }
         Set<ModelCoordinate> candidates = Sets.newHashSet();
@@ -248,7 +248,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Override
     public ImmutableSet<ModelCoordinate> getKnownModels(String modelType) {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return ImmutableSet.of();
         }
         Set<ModelCoordinate> models = Sets.newHashSet();
@@ -263,7 +263,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId) {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return absent();
         }
         for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
@@ -280,7 +280,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Override
     public Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint) {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return absent();
         }
         for (Pair<File, IModelIndex> delegate : openDelegates.values()) {
@@ -298,7 +298,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     public void onEvent(ModelRepositoryOpenedEvent e) throws Exception {
         if (!isRunning()) {
             // Log this to see whether my expectations are correct
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
         }
         startUp();
     }
@@ -315,7 +315,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     public void onEvent(ModelRepositoryClosedEvent e) throws Exception {
         if (!isRunning()) {
             // Log this to see whether my expectations are correct
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
         }
         // XXX: this is closing the repo but not setting the service state to stopped.
         shutDown();
@@ -324,7 +324,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     @Subscribe
     public void onEvent(ModelArchiveDownloadedEvent e) throws IOException {
         if (!isRunning()) {
-            log(ERROR_SERVICE_NOT_RUNNING);
+            log(INFO_SERVICE_NOT_RUNNING);
             return;
         }
         if (isIndex(e.model)) {

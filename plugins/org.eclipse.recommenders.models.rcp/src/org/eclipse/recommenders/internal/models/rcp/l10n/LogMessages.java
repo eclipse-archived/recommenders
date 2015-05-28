@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp.l10n;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -30,7 +30,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED);
     public static final LogMessages ERROR_SAVE_PREFERENCES_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SAVE_PREFERENCES_FAILED);
-    public static final ILogMessage ERROR_SERVICE_NOT_RUNNING = new LogMessages(ERROR,
+
+    public static final ILogMessage INFO_SERVICE_NOT_RUNNING = new LogMessages(INFO,
             Messages.LOG_ERROR_SERVICE_NOT_RUNNING);
 
     private LogMessages(int severity, String message)

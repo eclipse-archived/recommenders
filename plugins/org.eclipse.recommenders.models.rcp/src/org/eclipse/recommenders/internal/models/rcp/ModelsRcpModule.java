@@ -32,7 +32,6 @@ import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.advisors.ModelIndexBundleSymbolicNameAdvisor;
-import org.eclipse.recommenders.models.advisors.ModelIndexFingerprintAdvisor;
 import org.eclipse.recommenders.models.advisors.SharedManualMappingsAdvisor;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.utils.Logs;
@@ -105,11 +104,6 @@ public class ModelsRcpModule extends AbstractModule {
     }
 
     @Provides
-    public ModelIndexFingerprintAdvisor provideModelIndexFingerprintAdvisor(IModelIndex index) {
-        return new ModelIndexFingerprintAdvisor(index);
-    }
-
-    @Provides
     public SharedManualMappingsAdvisor provideWorkspaceMappingsAdvisor(IModelRepository repository) {
         return new SharedManualMappingsAdvisor(repository);
     }
@@ -126,8 +120,8 @@ public class ModelsRcpModule extends AbstractModule {
     @Named(MODEL_CLASSIFIER)
     public ImmutableSet<String> provideModelClassifiers() {
 
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                .getConfigurationElementsFor(EXT_ID_MODEL_CLASSIFIER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXT_ID_MODEL_CLASSIFIER);
 
         Builder<String> builder = ImmutableSet.builder();
         for (IConfigurationElement element : elements) {
@@ -141,8 +135,8 @@ public class ModelsRcpModule extends AbstractModule {
     @Provides
     @Singleton
     public Map<String, IInputStreamTransformer> provideTransformers() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                .getConfigurationElementsFor(EXT_ID_TRANSFORMERS_CLASSIFIER);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXT_ID_TRANSFORMERS_CLASSIFIER);
         ImmutableMap.Builder<String, IInputStreamTransformer> builder = ImmutableMap.builder();
         for (IConfigurationElement element : elements) {
             try {
