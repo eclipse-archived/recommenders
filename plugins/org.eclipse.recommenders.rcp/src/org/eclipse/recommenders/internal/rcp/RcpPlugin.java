@@ -30,7 +30,6 @@ public class RcpPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         plugin = this;
         super.start(context);
-        new NetworkCommunicationTestJob().schedule(TimeUnit.HOURS.toMillis(2));
         new CheckForProjectNewsJob(getPreferences()).schedule(TimeUnit.HOURS.toMillis(2));
     }
 
