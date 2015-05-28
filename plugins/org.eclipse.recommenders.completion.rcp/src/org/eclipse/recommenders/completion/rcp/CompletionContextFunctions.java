@@ -71,6 +71,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.jdt.internal.core.JavaElement;
+import org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
@@ -212,8 +213,7 @@ public final class CompletionContextFunctions {
     public static class ExpectedTypeNamesContextFunction implements ICompletionContextFunction<Set<ITypeName>> {
 
         @Override
-        public Set<ITypeName> compute(IRecommendersCompletionContext context,
-                CompletionContextKey<Set<ITypeName>> key) {
+        public Set<ITypeName> compute(IRecommendersCompletionContext context, CompletionContextKey<Set<ITypeName>> key) {
             ASTNode completion = context.getCompletionNode().orNull();
             InternalCompletionContext core = context.get(INTERNAL_COMPLETIONCONTEXT, null);
 
@@ -386,6 +386,8 @@ public final class CompletionContextFunctions {
 
     public static class InternalCompletionContextFunction implements ICompletionContextFunction<Object> {
 
+        private final HTMLTagCompletionProposalComputer htmlTagProposalComputer = new HTMLTagCompletionProposalComputer();
+
         @Override
         public Object compute(IRecommendersCompletionContext context, CompletionContextKey<Object> key) {
             JavaContentAssistInvocationContext coreContext = context.getJavaContext();
@@ -404,6 +406,7 @@ public final class CompletionContextFunctions {
             InternalCompletionContext internal = collector.getCoreContext();
             context.set(INTERNAL_COMPLETIONCONTEXT, internal);
             Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
+            proposals.putAll(HtmlTagProposals.computeHtmlTagProposals(htmlTagProposalComputer, coreContext));
             context.set(JAVA_PROPOSALS, proposals);
 
             if (INTERNAL_COMPLETIONCONTEXT.equals(key)) {

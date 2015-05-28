@@ -42,6 +42,9 @@ public class CompletionContextsTest {
         scenarios.add(new String[] { "@deprecated", "@deprecated" });
         scenarios.add(new String[] { "{@value}", "{@value}" });
 
+        scenarios.add(new String[] { "<blockquote>", "blockquote" });
+        scenarios.add(new String[] { "</blockquote>", "blockquote" });
+
         scenarios.add(new String[] { "Override Ljava.lang.Override;", "Override" });
 
         return scenarios;
