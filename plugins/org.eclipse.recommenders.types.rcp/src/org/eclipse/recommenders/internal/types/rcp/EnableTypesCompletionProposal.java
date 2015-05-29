@@ -46,10 +46,9 @@ public class EnableTypesCompletionProposal extends AbstractCompletionTipProposal
 
     private static final String URL_ABOUT_ENABLE = X_SESSION_PROCESSOR + SWITCH_ON + SESSION_PROCESSOR_ID;
     private static final String URL_HTTP_MANUAL = "https://www.eclipse.org/recommenders/manual/#completion-engines"; //$NON-NLS-1$
-    private static final String URL_HTTP_SUBTYPES_FEEDBACK_BUG = "https://bugs.eclipse.org/bugs/show_bug.cgi?id=466297"; //$NON-NLS-1$
 
     private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLE_TYPES_COMPLETION,
-            URL_ABOUT_ENABLE, URL_HTTP_MANUAL, URL_HTTP_SUBTYPES_FEEDBACK_BUG);
+            URL_ABOUT_ENABLE, URL_HTTP_MANUAL);
 
     // this proposal should appear below the enable code completion proposal
     private static final int ENABLE_TYPE_COMPLETION_RELEVANCE = ENABLE_CODE_COMPLETION_RELEVANCE - RELEVANCE_STEP_SIZE;
