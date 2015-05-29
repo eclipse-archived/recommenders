@@ -24,9 +24,11 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.collect.Lists;
 
-@SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
 public class ProposalUtilsTest {
+
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     private static final IMethodName METHOD_VOID = VmMethodName.get("LExample.method()V");
     private static final IMethodName METHOD_OBJECT = VmMethodName.get("LExample.method(Ljava/lang/Object;)V");
@@ -239,14 +241,11 @@ public class ProposalUtilsTest {
         return new Object[] { true, compilationUnit, expectedMethod };
     }
 
-    @ClassRule
-    public static TemporaryWorkspace ws = new TemporaryWorkspace();
-
     @Test
     public void test() throws Exception {
         assumeThat(ignore, is(equalTo(false)));
 
-        TemporaryProject projectWithSources = ws.createProject();
+        TemporaryProject projectWithSources = WORKSPACE.createProject();
         IRecommendersCompletionContext context = projectWithSources.createFile(code).triggerContentAssist();
 
         Collection<CompletionProposal> proposals = context.getProposals().values();

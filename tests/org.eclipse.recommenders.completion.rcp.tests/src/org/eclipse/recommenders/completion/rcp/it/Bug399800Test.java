@@ -1,6 +1,5 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
-import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.classbody;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -11,6 +10,8 @@ import java.util.LinkedList;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,8 +25,10 @@ import com.google.common.collect.Lists;
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=399800">Bug 399800</a>
  */
 @RunWith(Parameterized.class)
-@SuppressWarnings({ "restriction" })
 public class Bug399800Test {
+
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     private final String fieldDeclaration;
 
@@ -63,7 +66,7 @@ public class Bug399800Test {
     public void testEnclosingType() throws CoreException {
         CharSequence code = classbody("TestClass", fieldDeclaration);
 
-        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
+        IRecommendersCompletionContext sut = WORKSPACE.createProject().createFile(code).triggerContentAssist();
         IType enclosingType = sut.getEnclosingType().get();
 
         assertThat(enclosingType.getElementName(), is(equalTo("TestClass")));

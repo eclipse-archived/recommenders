@@ -1,6 +1,5 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
-import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.classDeclaration;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -10,6 +9,8 @@ import java.util.LinkedList;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,8 +25,10 @@ import com.google.common.collect.Lists;
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=404751">Bug 404751</a>
  */
 @RunWith(Parameterized.class)
-@SuppressWarnings({ "restriction" })
 public class Bug404751Test {
+
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     private final String expectedType;
     private final String typeParameters;
@@ -76,7 +79,7 @@ public class Bug404751Test {
         String consumerMethod = "static void consume() { new TestClass" + typeArguments + "().produce().$; }";
         CharSequence code = classDeclaration("class TestClass" + typeParameters, producerMethod + consumerMethod);
 
-        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
+        IRecommendersCompletionContext sut = WORKSPACE.createProject().createFile(code).triggerContentAssist();
         IType receiverType = sut.getReceiverType().get();
 
         assertThat(receiverType.getElementName(), is(equalTo(expectedType)));
@@ -88,7 +91,7 @@ public class Bug404751Test {
         String consumerMethod = "static void consume() { TestClass." + typeArguments + "produce().$; }";
         CharSequence code = classDeclaration("class TestClass", producerMethod + consumerMethod);
 
-        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
+        IRecommendersCompletionContext sut = WORKSPACE.createProject().createFile(code).triggerContentAssist();
         IType receiverType = sut.getReceiverType().get();
 
         assertThat(receiverType.getElementName(), is(equalTo(expectedType)));

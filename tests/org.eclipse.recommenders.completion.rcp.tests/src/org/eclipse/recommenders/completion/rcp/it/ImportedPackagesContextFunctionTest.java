@@ -28,6 +28,9 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class ImportedPackagesContextFunctionTest {
 
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
+
     private static final IPackageName JAVA_UTIL = VmPackageName.get("java/util");
 
     private final String importDeclaration;
@@ -53,9 +56,6 @@ public class ImportedPackagesContextFunctionTest {
     private static Object[] scenario(String importDeclaration, IPackageName expectedPackage) {
         return new Object[] { importDeclaration, expectedPackage };
     }
-
-    @ClassRule
-    public static TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     @Test
     public void test() throws Exception {

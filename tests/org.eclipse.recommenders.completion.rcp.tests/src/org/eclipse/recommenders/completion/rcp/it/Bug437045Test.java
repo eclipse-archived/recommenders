@@ -1,7 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.eclipse.jdt.ui.PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS;
-import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -13,9 +12,11 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.testing.CodeBuilder;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,9 +31,11 @@ import com.google.common.collect.Lists;
  *
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=437045">Bug 437045</a>
  */
-@SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
 public class Bug437045Test {
+
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     private final String expected;
     private final String preference;
@@ -79,7 +82,7 @@ public class Bug437045Test {
     public void testReceiverTypeOfInstanceMethod() throws Exception {
         CharSequence code = CodeBuilder.method("$");
 
-        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
+        IRecommendersCompletionContext sut = WORKSPACE.createProject().createFile(code).triggerContentAssist();
         Set<IJavaCompletionProposal> proposals = sut.getProposals().keySet();
 
         assertThat(proposals, hasItem(hasDisplayString(startsWith(expected))));

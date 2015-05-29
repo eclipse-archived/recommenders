@@ -1,6 +1,5 @@
 package org.eclipse.recommenders.completion.rcp.it;
 
-import static org.eclipse.recommenders.completion.rcp.it.TestUtils.createRecommendersCompletionContext;
 import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.names.VmTypeName.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -11,9 +10,11 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.hamcrest.CoreMatchers;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -23,6 +24,9 @@ import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class ExpectedTypeNamesContextFunctionTest {
+
+    @ClassRule
+    public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
     private static final ITypeName OBJECT_ARRAY = VmTypeName.get("[Ljava/lang/Object");
     private static final ITypeName STRING = VmTypeName.get("Ljava/lang/String");
@@ -79,16 +83,13 @@ public class ExpectedTypeNamesContextFunctionTest {
         return scenarios;
     }
 
-    <T extends Number> void m(T t) {
-    }
-
     private static Object[] scenario(CharSequence code, ITypeName... expectedTypes) {
         return new Object[] { code, expectedTypes };
     }
 
     @Test
     public void test() throws Exception {
-        IRecommendersCompletionContext sut = createRecommendersCompletionContext(code);
+        IRecommendersCompletionContext sut = WORKSPACE.createProject().createFile(code).triggerContentAssist();
 
         Set<ITypeName> result = sut.getExpectedTypeNames();
 
