@@ -17,6 +17,7 @@ public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.types.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String LOG_ERROR_ACCESSING_SEARCHINDEX_FAILED;
+    public static String LOG_ERROR_CLOSING_PROJECT_TYPES_INDEXES;
 
     public static String LOG_INFO_REINDEXING_REQUIRED;
 

@@ -24,6 +24,8 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage ERROR_ACCESSING_SEARCHINDEX_FAILED = new LogMessages(IStatus.ERROR,
             Messages.LOG_ERROR_ACCESSING_SEARCHINDEX_FAILED);
+    public static final ILogMessage ERROR_CLOSING_PROJECT_TYPES_INDEXES = new LogMessages(IStatus.ERROR,
+            Messages.LOG_ERROR_CLOSING_PROJECT_TYPES_INDEXES);
 
     public static final ILogMessage INFO_REINDEXING_REQUIRED = new LogMessages(IStatus.INFO,
             Messages.LOG_INFO_REINDEXING_REQUIRED);

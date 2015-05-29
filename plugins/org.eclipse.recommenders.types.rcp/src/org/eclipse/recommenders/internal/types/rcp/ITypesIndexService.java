@@ -10,17 +10,13 @@
  */
 package org.eclipse.recommenders.internal.types.rcp;
 
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.recommenders.utils.names.ITypeName;
+import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface ITypesIndexService {
 
-    ImmutableSet<String> subtypes(IType expected, String prefix);
+    Set<String> subtypes(ITypeName expected, String prefix, IJavaProject project);
 
-    ImmutableSet<String> subtypes(ITypeName expected, String prefix, IJavaProject project);
-
-    ImmutableSet<String> subtypes(String type, String prefix, IJavaProject project);
 }
