@@ -46,8 +46,8 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages AN_ERROR_OCCURRED = new LogMessages(ERROR, Messages.LOG_ERROR_AN_ERROR_OCCURRED);
     public static final LogMessages LOG_ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND);
-    public static final LogMessages LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT);
+    public static final LogMessages LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE);
 
     public static final ILogMessage WARNING_EXCEPTION_PARSING_NEWS_FEED = new LogMessages(WARNING,
             Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED);

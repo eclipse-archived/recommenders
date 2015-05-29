@@ -10,13 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.links;
 
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.swt.graphics.Image;
@@ -26,6 +27,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 
 public final class ContributionsReader {
 
@@ -40,7 +42,7 @@ public final class ContributionsReader {
     private static final String LABEL_ATTRIBUTE = "label"; //$NON-NLS-1$
     private static final String COMMAND_ID_ATTRIBUTE = "commandId"; //$NON-NLS-1$
     private static final String PRIORITY_ATTRIBUTE = "priority"; //$NON-NLS-1$
-    private static final String ICON_ELEMENT = "icon"; //$NON-NLS-1$
+    private static final String ICON_ATTRIBUTE = "icon"; //$NON-NLS-1$
 
     public static List<ContributionLink> readContributionLinks(String preferencePageId) {
         final IConfigurationElement[] configurationElements = Platform.getExtensionRegistry()
@@ -65,30 +67,50 @@ public final class ContributionsReader {
                     continue;
                 }
                 final String labelAttribute = configurationElement.getAttribute(LABEL_ATTRIBUTE);
-                final String commandIdAttribute = configurationElement.getAttribute(COMMAND_ID_ATTRIBUTE);
-                final String priorityAttribute = configurationElement.getAttribute(PRIORITY_ATTRIBUTE);
-                final String iconAttribute = configurationElement.getAttribute(ICON_ELEMENT);
-
-                try {
-                    Image image = null;
-                    if (iconAttribute != null) {
-                        image = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, iconAttribute).createImage();
-                    }
-
-                    if (isValidAttribute(labelAttribute) && isValidAttribute(commandIdAttribute)) {
-                        int priority = priorityAttribute == null ? Integer.MAX_VALUE : Integer
-                                .parseInt(priorityAttribute);
-                        links.add(new ContributionLink(labelAttribute, commandIdAttribute, priority, image));
-                    } else {
-                        Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT, CONTRIBUTION_ELEMENT);
-                    }
-                } catch (Exception e) {
-                    Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT, CONTRIBUTION_ELEMENT);
+                if (!isValidAttribute(labelAttribute)) {
+                    Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, LABEL_ATTRIBUTE, labelAttribute);
+                    continue;
                 }
+
+                final String commandIdAttribute = configurationElement.getAttribute(COMMAND_ID_ATTRIBUTE);
+                if (!isValidAttribute(commandIdAttribute)) {
+                    Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, COMMAND_ID_ATTRIBUTE, commandIdAttribute);
+                    continue;
+                }
+
+                final String priorityAttribute = configurationElement.getAttribute(PRIORITY_ATTRIBUTE);
+                final Integer priority;
+                if (priorityAttribute != null) {
+                    priority = Ints.tryParse(priorityAttribute);
+                    if (priority == null) {
+                        Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, PRIORITY_ATTRIBUTE, priorityAttribute);
+                        continue;
+                    }
+                } else {
+                    priority = Integer.MAX_VALUE;
+                }
+
+                final String iconAttribute = configurationElement.getAttribute(ICON_ATTRIBUTE);
+                final Image image;
+                if (iconAttribute != null) {
+                    ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId,
+                            iconAttribute);
+                    if (imageDescriptor != null) {
+                        image = imageDescriptor.createImage();
+                    } else {
+                        Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, ICON_ATTRIBUTE, iconAttribute);
+                        continue;
+                    }
+                } else {
+                    image = null;
+                }
+
+                links.add(new ContributionLink(labelAttribute, commandIdAttribute, priority, image));
             }
         }
         Collections.sort(links);
         return ImmutableList.copyOf(links);
+
     }
 
     private static boolean isValidAttribute(String attribute) {

@@ -29,7 +29,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
     public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
     public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
-    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ELEMENT;
+    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
     public static String LOG_ERROR_AN_ERROR_OCCURRED;
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED;
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED_ITEM;

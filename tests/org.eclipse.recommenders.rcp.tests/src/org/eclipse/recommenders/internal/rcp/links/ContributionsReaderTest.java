@@ -75,10 +75,10 @@ public class ContributionsReaderTest {
 
     @Test
     public void testNoExtensionsFoundForPreferencePageId() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10",
+                        ICON_ELEMENT, DEFAULT_LINK_ICON));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.other",
                 extension);
@@ -88,10 +88,10 @@ public class ContributionsReaderTest {
 
     @Test
     public void testFieldsArePopulatedFromExtension() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10",
+                        ICON_ELEMENT, DEFAULT_LINK_ICON));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 extension);
@@ -104,10 +104,23 @@ public class ContributionsReaderTest {
     }
 
     @Test
+    public void testContributionLinkWithoutCommand() {
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", PRIORITY_ATTRIBUTE, "10", ICON_ELEMENT, DEFAULT_LINK_ICON));
+
+        List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
+                extension);
+
+        assertThat(links.size(), is(equalTo(0)));
+    }
+
+    @Test
     public void testContributionLinkWithoutIcon() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10"));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE,
+                        "10"));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 extension);
@@ -121,10 +134,10 @@ public class ContributionsReaderTest {
 
     @Test
     public void testContributionLinkWithMissingIcon() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10", ICON_ELEMENT,
-                "invalid"));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "10",
+                        ICON_ELEMENT, "invalid"));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 extension);
@@ -134,10 +147,10 @@ public class ContributionsReaderTest {
 
     @Test
     public void testContributionLinkWithoutPriorityFallsBackToDefault() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", ICON_ELEMENT,
+                        DEFAULT_LINK_ICON));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 extension);
@@ -151,10 +164,10 @@ public class ContributionsReaderTest {
 
     @Test
     public void testContributionReaderWithInvalidPriority() {
-        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>some label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE, "invalid", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement extension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>some label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.id", PRIORITY_ATTRIBUTE,
+                        "invalid", ICON_ELEMENT, DEFAULT_LINK_ICON));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 extension);
@@ -164,18 +177,18 @@ public class ContributionsReaderTest {
 
     @Test
     public void testContributionReaderPreservesValidExtensions() {
-        IConfigurationElement firstExtension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>first label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.first", PRIORITY_ATTRIBUTE, "10", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement firstExtension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>first label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.first", PRIORITY_ATTRIBUTE,
+                        "10", ICON_ELEMENT, DEFAULT_LINK_ICON));
 
-        IConfigurationElement invalidExtension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id"));
+        IConfigurationElement invalidExtension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id"));
 
-        IConfigurationElement thirdExtension = mockConfigElement(CONTRIBUTION_ELEMENT, ImmutableMap.of(
-                PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE, "<a>third label</a>",
-                COMMAND_ID_ATTRIBUTE, "org.example.commands.third", PRIORITY_ATTRIBUTE, "20", ICON_ELEMENT,
-                DEFAULT_LINK_ICON));
+        IConfigurationElement thirdExtension = mockConfigElement(CONTRIBUTION_ELEMENT,
+                ImmutableMap.of(PREF_PAGE_ID_ATTRIBUTE, "org.example.preferencePages.id", LABEL_ATTRIBUTE,
+                        "<a>third label</a>", COMMAND_ID_ATTRIBUTE, "org.example.commands.third", PRIORITY_ATTRIBUTE,
+                        "20", ICON_ELEMENT, DEFAULT_LINK_ICON));
 
         List<ContributionLink> links = ContributionsReader.readContributionLinks("org.example.preferencePages.id",
                 firstExtension, invalidExtension, thirdExtension);
