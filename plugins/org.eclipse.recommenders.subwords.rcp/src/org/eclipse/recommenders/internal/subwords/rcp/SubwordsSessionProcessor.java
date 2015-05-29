@@ -37,14 +37,19 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.RelevanceConstants;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposalComputer;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer;
+import org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.CompletionContexts;
+import org.eclipse.recommenders.completion.rcp.HtmlTagProposals;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.NoProposalCollectingCompletionRequestor;
@@ -82,6 +87,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private static final Field CU_COMPUTED = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class,
             "fCUComputed").orNull(); //$NON-NLS-1$
 
+    private final HTMLTagCompletionProposalComputer htmlTagProposalComputer = new HTMLTagCompletionProposalComputer();
     private final SubwordsRcpPreferences prefs;
     private int minPrefixLengthForTypes;
 
@@ -133,6 +139,14 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 testAndInsertNewProposals(recContext, baseProposals, sortkeys, newProposals);
             }
 
+            if (jdtContext instanceof JavadocContentAssistInvocationContext) {
+                ITextViewer viewer = jdtContext.getViewer();
+                IEditorPart editor = lookupEditor(cu);
+                JavadocContentAssistInvocationContext newJdtContext = new JavadocContentAssistInvocationContext(viewer,
+                        offset - length, editor, 0);
+                testAndInsertNewProposals(recContext, baseProposals, sortkeys,
+                        HtmlTagProposals.computeHtmlTagProposals(htmlTagProposalComputer, newJdtContext));
+            }
         } catch (Exception e) {
             Logs.log(LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
         }
@@ -351,7 +365,9 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                     relevanceBoost += 16 * RelevanceConstants.R_EXACT_NAME;
                 }
 
-                if (StringUtils.startsWith(matchingArea, prefix)) {
+                // We only apply case matching to genuine Java proposals, i.e., proposals link HTML tags are ranked
+                // together with the case in-sensitive matches.
+                if (StringUtils.startsWith(matchingArea, prefix) && isFromJavaCompletionProposalComputer(proposal)) {
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_PREFIX_MATCH, true);
                     // Don't adjust relevance.
@@ -359,7 +375,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_PREFIX_MATCH, true);
                     relevanceBoost = IGNORE_CASE_RANGE_START + relevanceBoost;
-                } else if (CharOperation.camelCaseMatch(prefix.toCharArray(), matchingArea.toCharArray())) {
+                } else if (CharOperation.camelCaseMatch(prefix.toCharArray(), matchingArea.toCharArray())
+                        && isFromJavaCompletionProposalComputer(proposal)) {
                     proposal.setTag(IS_PREFIX_MATCH, false);
                     proposal.setTag(IS_CAMEL_CASE_MATCH, true);
                     relevanceBoost = CAMEL_CASE_RANGE_START + relevanceBoost;
@@ -371,6 +388,15 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 }
 
                 return relevanceBoost;
+            }
+
+            /**
+             * Some {@link IProcessableProposal}s are not produced by the {@link JavaCompletionProposalComputer}, but by
+             * some other {@link IJavaCompletionProposalComputer}, e.g., the {@link HTMLTagCompletionProposalComputer}.
+             * These proposals do not have a core proposal.
+             */
+            private boolean isFromJavaCompletionProposalComputer(final IProcessableProposal proposal) {
+                return proposal.getCoreProposal().isPresent();
             }
         });
     }

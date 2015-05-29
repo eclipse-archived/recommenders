@@ -41,7 +41,7 @@ public class ProcessableJavaCompletionProposal extends JavaCompletionProposal im
 
     public ProcessableJavaCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context) throws JavaModelException {
-        super(uiProposal.getReplacementString(), coreProposal.getReplaceStart(), uiProposal.getReplacementLength(),
+        super(uiProposal.getReplacementString(), uiProposal.getReplacementOffset(), uiProposal.getReplacementLength(),
                 uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context);
         this.coreProposal = coreProposal;
     }
