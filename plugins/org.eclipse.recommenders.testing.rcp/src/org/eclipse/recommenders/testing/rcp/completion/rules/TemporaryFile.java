@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
@@ -51,6 +53,10 @@ public class TemporaryFile {
         Pair<ICompilationUnit, Set<Integer>> struct = createFileAndParseWithMarkers(code);
         this.cu = struct.getFirst();
         this.markers = struct.getSecond();
+    }
+
+    public CompilationUnit getAst() {
+        return SharedASTProvider.getAST(cu, SharedASTProvider.WAIT_YES, null);
     }
 
     public IRecommendersCompletionContext triggerContentAssist() throws JavaModelException {
