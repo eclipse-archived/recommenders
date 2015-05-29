@@ -17,9 +17,11 @@ import static com.google.common.base.Optional.absent;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
 import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
-import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
+import static org.eclipse.recommenders.utils.Reflections.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
@@ -53,18 +55,44 @@ public final class ProposalUtils {
             "originalSignature") //$NON-NLS-1$
                     .orNull();
 
-    public static Optional<IMethodName> toMethodName(CompletionProposal proposal) {
+    private static final Method GET_DECLARATION_TYPE_NAME = getDeclaredMethod(InternalCompletionProposal.class,
+            "getDeclarationTypeName") //$NON-NLS-1$
+                    .orNull();
+    private static final Method GET_DECLARATION_PACKAGE_NAME = getDeclaredMethod(InternalCompletionProposal.class,
+            "getDeclarationPackageName") //$NON-NLS-1$
+                    .orNull();
 
+    public static Optional<IMethodName> toMethodName(CompletionProposal proposal) {
         Preconditions.checkArgument(isKindSupported(proposal));
 
         if (isArrayCloneMethod(proposal)) {
             return Optional.of(OBJECT_CLONE);
         }
 
+        if (GET_DECLARATION_TYPE_NAME == null || GET_DECLARATION_PACKAGE_NAME == null) {
+            return absent();
+        }
+
+        final char[] declarationPackageName;
+        final char[] declarationTypeName;
+        try {
+            declarationPackageName = (char[]) GET_DECLARATION_PACKAGE_NAME.invoke(proposal);
+            declarationTypeName = (char[]) GET_DECLARATION_TYPE_NAME.invoke(proposal);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return absent();
+        }
+
+        if (declarationTypeName == null) {
+            return absent();
+        }
+
         StringBuilder builder = new StringBuilder();
-        char[] erasedDeclaringType = CharOperation
-                .replaceOnCopy(Signature.getTypeErasure(proposal.getDeclarationSignature()), '.', '/');
-        builder.append(erasedDeclaringType, 0, erasedDeclaringType.length - 1);
+        builder.append('L');
+        if (declarationPackageName != null && declarationPackageName.length > 0) {
+            builder.append(CharOperation.replaceOnCopy(declarationPackageName, '.', '/'));
+            builder.append('/');
+        }
+        builder.append(CharOperation.replaceOnCopy(declarationTypeName, '.', '$'));
         builder.append('.');
         builder.append(proposal.isConstructor() ? INIT : proposal.getName());
         builder.append('(');
