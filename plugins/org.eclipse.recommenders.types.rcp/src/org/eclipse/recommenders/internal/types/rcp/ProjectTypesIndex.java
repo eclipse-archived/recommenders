@@ -338,6 +338,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             ImmutableList<IType> types = findTypes(root);
             for (IType type : types) {
                 if (progress.isCanceled()) {
+                    setRebuildAfterNextAccess(true);
                     throw new OperationCanceledException();
                 }
                 indexType(type);
