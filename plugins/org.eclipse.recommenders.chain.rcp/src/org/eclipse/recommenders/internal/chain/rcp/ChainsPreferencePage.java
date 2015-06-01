@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.jdt.ui.IJavaElementSearchConstants;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -67,6 +68,8 @@ public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEdit
         addText(Messages.PREFPAGE_FOOTER_IGNORED_TYPES_WARNING);
         addField(new BooleanFieldEditor(PREF_ENABLE_QUICK_ASSIST_CHAINS, Messages.FIELD_ENABLE_QUICK_ASSIST_CHAINS,
                 getFieldEditorParent()));
+
+        Dialog.applyDialogFont(getControl());
     }
 
     private void addField(final String name, final String labeltext, final int min, final int max) {

@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -82,6 +83,8 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
                 getFieldEditorParent()));
         addField(new ContentAssistEnablementEditor(Constants.RECOMMENDERS_ALL_CATEGORY_ID, "enablement", //$NON-NLS-1$
                 getFieldEditorParent()));
+
+        Dialog.applyDialogFont(getControl());
     }
 
     private final class SessionProcessorEditor extends FieldEditor {

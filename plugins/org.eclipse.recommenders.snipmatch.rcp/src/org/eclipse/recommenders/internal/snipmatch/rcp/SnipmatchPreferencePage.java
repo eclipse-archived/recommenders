@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -91,6 +92,9 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         ConfigurationEditor configurationEditor = new ConfigurationEditor("", //$NON-NLS-1$
                 Messages.PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY, getFieldEditorParent());
         addField(configurationEditor);
+
+        Dialog.applyDialogFont(getControl());
+
         dirty = false;
     }
 
