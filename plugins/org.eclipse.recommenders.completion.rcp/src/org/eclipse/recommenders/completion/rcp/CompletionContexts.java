@@ -15,6 +15,8 @@ import static com.google.common.base.Throwables.propagate;
 import static java.lang.Character.isJavaIdentifierPart;
 import static org.eclipse.recommenders.utils.Checks.*;
 
+import java.util.Collections;
+
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
@@ -22,8 +24,6 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
-import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.ui.text.java.IInvocationContext;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -51,6 +51,10 @@ public final class CompletionContexts {
      * add(Object o) --> add
      * ArrayList(Collection c) --> ArrayList
      * org.eclipse.other --> org.eclipse.other
+     * {@link} --> {@link}
+     * {@link Example} --> Example
+     * {@link Example#method()} --> method
+     * {@value Collections#EMPTY_LIST} --> EMPTY_LIST
      * &lt;blockquote&gt; --> blockquote
      * &lt;/blockquote&gt; --> blockquote
      * </pre>
@@ -58,6 +62,7 @@ public final class CompletionContexts {
      */
     public static String getPrefixMatchingArea(String displayString) {
         displayString = stripHtmlTagDelimiters(displayString);
+        displayString = stripValueOrLinkDelimiters(displayString);
 
         int end = displayString.length();
         for (int i = 0; i < displayString.length(); i++) {
@@ -71,7 +76,7 @@ public final class CompletionContexts {
     }
 
     private static String stripHtmlTagDelimiters(String string) {
-        if (string.startsWith("<") && string.endsWith(">")) {
+        if (string.startsWith("<") && string.endsWith(">")) { //$NON-NLS-1$ //$NON-NLS-2$
             boolean isClosingTag = string.charAt(1) == '/';
             return string.substring(isClosingTag ? 2 : 1, string.length() - 1);
         } else {
@@ -79,21 +84,22 @@ public final class CompletionContexts {
         }
     }
 
-    private static boolean isJavaIdentifierLike(char c) {
-        return isJavaIdentifierPart(c) || c == '@' || c == '{' || c == '}';
+    private static String stripValueOrLinkDelimiters(String string) {
+        if (string.startsWith("{@value ") && string.endsWith("}")) { //$NON-NLS-1$ //$NON-NLS-2$
+            int lastIndexOfHash = string.lastIndexOf('#');
+            int start = lastIndexOfHash < 0 ? "{@value ".length() : lastIndexOfHash; //$NON-NLS-1$
+            return string.substring(start + 1, string.length() - 1);
+        } else if (string.startsWith("{@link ") && string.endsWith("}")) { //$NON-NLS-1$ //$NON-NLS-2$
+            int lastIndexOfHash = string.lastIndexOf('#');
+            int start = lastIndexOfHash < 0 ? "{@link ".length() : lastIndexOfHash + 1; //$NON-NLS-1$
+            return string.substring(start, string.length() - 1);
+        } else {
+            return string;
+        }
     }
 
-    public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$
-    public static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory"; //$NON-NLS-1$
-
-    public static boolean isMylynInstalled() {
-        CompletionProposalComputerRegistry reg = CompletionProposalComputerRegistry.getDefault();
-        for (CompletionProposalCategory cat : reg.getProposalCategories()) {
-            if (cat.getId().equals(MYLYN_ALL_CATEGORY)) {
-                return true;
-            }
-        }
-        return false;
+    private static boolean isJavaIdentifierLike(char c) {
+        return isJavaIdentifierPart(c) || c == '#' || c == '@' || c == '{' || c == '}';
     }
 
     /**
@@ -150,6 +156,7 @@ public final class CompletionContexts {
             JavaEditor editor = cast(EditorUtility.isOpenInEditor(cu));
             ISourceViewer viewer = editor.getViewer();
             return new JavaContentAssistInvocationContext(viewer, offset, editor) {
+
                 @Override
                 public CompletionContext getCoreContext() {
                     return internalContext;

@@ -40,7 +40,12 @@ public class CompletionContextsTest {
         scenarios.add(new String[] { "org.eclipse.package", "org.eclipse.package" });
 
         scenarios.add(new String[] { "@deprecated", "@deprecated" });
+        scenarios.add(new String[] { "{@link}", "{@link}" });
         scenarios.add(new String[] { "{@value}", "{@value}" });
+        scenarios.add(new String[] { "{@link Collections}", "Collections" });
+        scenarios.add(new String[] { "{@link Collections#emptyList()}", "emptyList" });
+        scenarios.add(new String[] { "{@link Collections#EMPTY_LIST}", "EMPTY_LIST" });
+        scenarios.add(new String[] { "{@value Collections#EMPTY_LIST}", "EMPTY_LIST" });
 
         scenarios.add(new String[] { "<blockquote>", "blockquote" });
         scenarios.add(new String[] { "</blockquote>", "blockquote" });
