@@ -22,6 +22,9 @@ public final class Constants {
     public static final String EXT_POINT_COMPLETION_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$
 
     public static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$
+    public static final String JDT_NON_TYPE_CATEGORY = "org.eclipse.jdt.ui.javaNoTypeProposalCategory"; //$NON-NLS-1$
+    public static final String JDT_TYPE_CATEGORY = "org.eclipse.jdt.ui.javaTypeProposalCategory"; //$NON-NLS-1$
+
     public static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory"; //$NON-NLS-1$
     public static final String RECOMMENDERS_ALL_CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.proposalCategory.intelligent"; //$NON-NLS-1$
     public static final String COMPLETION_PREFERENCE_PAGE_ID = "org.eclipse.recommenders.completion.rcp.preferencePages.completions"; //$NON-NLS-1$
