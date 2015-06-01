@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static com.google.common.collect.ComparisonChain.start;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.util.Comparator;
@@ -36,16 +35,20 @@ public final class Recommendations {
     private static final Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {
 
         @Override
-        public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
-            return start().compare(o1.getRelevance(), o2.getRelevance()).compare(o1.toString(), o2.toString()).result();
+        public int compare(final Recommendation<?> lhs, final Recommendation<?> rhs) {
+            int compareRelevance = Double.compare(lhs.getRelevance(), rhs.getRelevance());
+            if (compareRelevance != 0) {
+                return compareRelevance;
+            }
+            return lhs.getProposal().toString().compareTo(rhs.getProposal().toString());
         }
     };
 
     private static final Comparator<Recommendation<?>> C_BY_NAME = new Comparator<Recommendation<?>>() {
 
         @Override
-        public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
-            return start().compare(o1.getProposal().toString(), o2.getProposal().toString()).result();
+        public int compare(final Recommendation<?> lhs, final Recommendation<?> rhs) {
+            return lhs.getProposal().toString().compareTo(rhs.getProposal().toString());
         }
     };
 
