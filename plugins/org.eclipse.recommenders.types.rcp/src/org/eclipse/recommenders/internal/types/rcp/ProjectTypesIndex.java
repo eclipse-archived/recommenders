@@ -90,8 +90,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private static final String V_JAVA_LANG_OBJECT = "java.lang.Object"; //$NON-NLS-1$
     private static final String V_ARCHIVE = "archive"; //$NON-NLS-1$
 
-    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(new Term(
-            F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
+    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(
+            new Term(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
 
     private final IJavaProject project;
     private final File indexDir;
@@ -305,7 +305,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 SubMonitor progress = SubMonitor.convert(monitor,
-                        Messages.MONITOR_NAME_INDEXING + project.getElementName(), TICKS);
+                        MessageFormat.format(Messages.MONITOR_NAME_INDEXING, project.getElementName()), TICKS);
                 Thread thread = Thread.currentThread();
                 int priority = thread.getPriority();
                 try {
