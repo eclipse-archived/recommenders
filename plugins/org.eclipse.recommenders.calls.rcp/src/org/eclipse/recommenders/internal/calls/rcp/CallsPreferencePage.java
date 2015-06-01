@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 import static org.eclipse.recommenders.internal.calls.rcp.Constants.*;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
@@ -43,5 +44,7 @@ public class CallsPreferencePage extends FieldEditorPreferencePage implements IW
                 getFieldEditorParent()));
         addField(new BooleanFieldEditor(PREF_HIGHLIGHT_USED_PROPOSALS, Messages.FIELD_LABEL_HIGHLIGHT_USED_PROPOSALS,
                 getFieldEditorParent()));
+
+        Dialog.applyDialogFont(getControl());
     }
 }

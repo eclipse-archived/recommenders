@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.overrides.rcp;
 import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
@@ -41,5 +42,7 @@ public class OverridesPreferencePage extends FieldEditorPreferencePage implement
                 getFieldEditorParent()));
         addField(new BooleanFieldEditor(PREF_DECORATE_PROPOSAL_TEXT, Messages.FIELD_LABEL_DECORATE_PROPOSAL_TEXT,
                 getFieldEditorParent()));
+
+        Dialog.applyDialogFont(getControl());
     }
 }

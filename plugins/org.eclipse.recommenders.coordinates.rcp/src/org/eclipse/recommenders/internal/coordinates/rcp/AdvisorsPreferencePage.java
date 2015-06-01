@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import java.util.List;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -58,6 +59,8 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
     protected void createFieldEditors() {
         addField(new AdvisorEditor(Constants.PREF_SORTED_ADVISOR_LIST, Messages.FIELD_LABEL_ADVISORS,
                 getFieldEditorParent()));
+
+        Dialog.applyDialogFont(getControl());
     }
 
     private static final class AdvisorEditor extends FieldEditor {
