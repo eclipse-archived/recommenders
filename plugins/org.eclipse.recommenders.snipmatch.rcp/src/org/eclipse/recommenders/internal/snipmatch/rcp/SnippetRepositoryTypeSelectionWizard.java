@@ -15,9 +15,11 @@ import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -32,12 +34,12 @@ import org.eclipse.swt.widgets.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetRepositoryWizard {
+public class SnippetRepositoryTypeSelectionWizard extends Wizard implements ISnippetRepositoryWizard {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnippetRepositoryTypeSelectionWizard.class);
 
     private java.util.List<WizardDescriptor> availableWizards;
-    private AbstractSnippetRepositoryWizard selectedWizard;
+    private ISnippetRepositoryWizard selectedWizard;
     private SnippetRepositoryConfiguration configurationToEdit;
     private SnippetRepositoryTypeSelectionWizardPage page;
 
@@ -80,7 +82,7 @@ public class SnippetRepositoryTypeSelectionWizard extends AbstractSnippetReposit
     }
 
     public void updateSelectedWizard(IWizard wizard) {
-        AbstractSnippetRepositoryWizard cast = Checks.cast(wizard);
+        ISnippetRepositoryWizard cast = Checks.cast(wizard);
         if (wizard != null) {
             for (IWizardPage page : wizard.getPages()) {
                 addPage(page);

@@ -10,16 +10,14 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -87,7 +85,7 @@ public class WizardDescriptorsTest {
     }
 
     private static WizardDescriptor createMock(final SnippetRepositoryConfiguration applicableConfiguration) {
-        AbstractSnippetRepositoryWizard wizard = mock(AbstractSnippetRepositoryWizard.class);
+        ISnippetRepositoryWizard wizard = mock(ISnippetRepositoryWizard.class);
         when(wizard.isApplicable(Mockito.<SnippetRepositoryConfiguration>anyObject())).thenAnswer(
                 new Answer<Boolean>() {
 

@@ -75,6 +75,7 @@ import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryClosedEvent;
@@ -527,7 +528,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 WizardDescriptors.loadAvailableWizards(), oldConfiguration);
         if (!suitableWizardDescriptors.isEmpty()) {
 
-            AbstractSnippetRepositoryWizard wizard;
+            ISnippetRepositoryWizard wizard;
             if (suitableWizardDescriptors.size() == 1) {
                 wizard = Iterables.getOnlyElement(suitableWizardDescriptors).getWizard();
                 wizard.setConfiguration(oldConfiguration);

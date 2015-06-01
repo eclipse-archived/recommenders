@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.recommenders.snipmatch.rcp" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.recommenders.snipmatch.rcp" id="configurationwizards" name="Configuration wizards"/>
+         <meta.schema plugin="org.eclipse.recommenders.snipmatch.rcp" id="configurationWizards" name="Configuration wizards"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -18,23 +18,26 @@
       </annotation>
       <complexType>
          <choice minOccurs="1" maxOccurs="unbounded">
-            <element ref="configurationwizard"/>
+            <element ref="configurationWizard"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
+                  
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -44,11 +47,12 @@
       </complexType>
    </element>
 
-   <element name="configurationwizard">
+   <element name="configurationWizard">
       <complexType>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
+                  
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -58,45 +62,19 @@
          <attribute name="wizard" type="string" use="required">
             <annotation>
                <documentation>
+                  
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.recommenders.internal.snipmatch.rcp.SnippetRepositoryWizard:"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard"/>
                </appInfo>
             </annotation>
          </attribute>
       </complexType>
    </element>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="since"/>
-      </appInfo>
-      <documentation>
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="examples"/>
-      </appInfo>
-      <documentation>
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiinfo"/>
-      </appInfo>
-      <documentation>
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-      </documentation>
-   </annotation>
+
 
 </schema>

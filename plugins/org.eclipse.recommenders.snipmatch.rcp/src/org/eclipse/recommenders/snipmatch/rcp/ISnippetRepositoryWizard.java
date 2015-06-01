@@ -8,17 +8,16 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.snipmatch.rcp;
 
-import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 
-public abstract class AbstractSnippetRepositoryWizard extends Wizard {
+public interface ISnippetRepositoryWizard extends IWizard {
 
-    public abstract SnippetRepositoryConfiguration getConfiguration();
+    SnippetRepositoryConfiguration getConfiguration();
 
-    public abstract boolean isApplicable(SnippetRepositoryConfiguration configuration);
+    boolean isApplicable(SnippetRepositoryConfiguration configuration);
 
-    public abstract void setConfiguration(SnippetRepositoryConfiguration configuration);
-
+    void setConfiguration(SnippetRepositoryConfiguration configuration);
 }

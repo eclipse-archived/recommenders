@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-	<extension-point id="configurationwizards" name="Configuration wizards" schema="schema/configurationwizards.exsd"/>
+	<extension-point id="configurationWizards" name="Configuration wizards" schema="schema/configurationWizards.exsd"/>
 	<extension-point id="pageFactories" name="Snippet Editor Page Factory" schema="schema/pageFactories.exsd"/>
 	<extension-point id="registeredEmfPackages" name="Snippet Repository Emf Package Registration" schema="schema/registeredEmfPackages.exsd"/>
 	<extension-point id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration" schema="schema/defaultGitSnippetRepositoryConfigurations.exsd"/>
@@ -120,11 +120,11 @@
 			url="http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.snipmatch.snippets.git">
 		</defaultGitSnippetRepositoryConfiguration>
 	</extension>
-	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationwizards">
-		<configurationwizard
-			name="%wizards.git-based-repo.name"
+	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationWizards">
+		<configurationWizard
+			name="%configurationWizards.gitBasedRepository.name"
 			wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
-		</configurationwizard>
+		</configurationWizard>
 	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.registeredEmfPackages">
 		<registeredEmfPackages

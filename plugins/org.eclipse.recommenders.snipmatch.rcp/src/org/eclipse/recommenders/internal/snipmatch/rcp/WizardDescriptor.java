@@ -10,12 +10,14 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
+
 public class WizardDescriptor {
 
     private String name;
-    private AbstractSnippetRepositoryWizard wizard;
+    private ISnippetRepositoryWizard wizard;
 
-    public WizardDescriptor(String name, AbstractSnippetRepositoryWizard wizard) {
+    public WizardDescriptor(String name, ISnippetRepositoryWizard wizard) {
         this.name = name;
         this.wizard = wizard;
     }
@@ -24,8 +26,7 @@ public class WizardDescriptor {
         return name;
     }
 
-    public AbstractSnippetRepositoryWizard getWizard() {
+    public ISnippetRepositoryWizard getWizard() {
         return wizard;
     }
-
 }

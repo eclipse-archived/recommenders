@@ -21,10 +21,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Checks;
@@ -40,7 +42,7 @@ import org.eclipse.swt.widgets.Text;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
-public class GitBasedRepositoryConfigurationWizard extends AbstractSnippetRepositoryWizard {
+public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISnippetRepositoryWizard {
 
     private static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("file", "git", "http", "https", "ssh"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 

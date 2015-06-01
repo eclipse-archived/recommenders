@@ -227,5 +227,4 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             }
         }
     }
-
 }

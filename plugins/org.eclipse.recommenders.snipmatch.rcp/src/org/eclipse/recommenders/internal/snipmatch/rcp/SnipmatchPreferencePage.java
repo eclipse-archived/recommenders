@@ -39,6 +39,7 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepos
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -256,8 +257,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
                     WizardDescriptors.loadAvailableWizards(), oldConfiguration);
             if (!suitableWizardDescriptors.isEmpty()) {
-
-                AbstractSnippetRepositoryWizard wizard;
+                ISnippetRepositoryWizard wizard;
                 if (suitableWizardDescriptors.size() == 1) {
                     wizard = Iterables.getOnlyElement(suitableWizardDescriptors).getWizard();
                     wizard.setConfiguration(oldConfiguration);

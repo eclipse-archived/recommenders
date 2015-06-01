@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
+import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public final class WizardDescriptors {
 
     private static final String CONFIGURATION_WIZARD_NAME = "name"; //$NON-NLS-1$
     private static final String CONFIGURATION_WIZARD = "wizard"; //$NON-NLS-1$
-    private static final String EXT_ID_CONFIGURATION_WIZARDS = "org.eclipse.recommenders.snipmatch.rcp.configurationwizards"; //$NON-NLS-1$
+    private static final String EXT_ID_CONFIGURATION_WIZARDS = "org.eclipse.recommenders.snipmatch.rcp.configurationWizards"; //$NON-NLS-1$
 
     private WizardDescriptors() {
         // Not meant to be instantiated
@@ -42,9 +43,7 @@ public final class WizardDescriptors {
                     .getConfigurationElementsFor(EXT_ID_CONFIGURATION_WIZARDS);
 
             for (IConfigurationElement configurationElement : elements) {
-
-                AbstractSnippetRepositoryWizard wizard;
-                wizard = Checks.cast(configurationElement.createExecutableExtension(CONFIGURATION_WIZARD));
+                ISnippetRepositoryWizard wizard = Checks.cast(configurationElement.createExecutableExtension(CONFIGURATION_WIZARD));
                 String name = configurationElement.getAttribute(CONFIGURATION_WIZARD_NAME);
 
                 wizardDescriptors.add(new WizardDescriptor(name, wizard));
