@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -26,8 +27,8 @@ import com.google.common.cache.LoadingCache;
 
 public class IndexProvider implements IIndexProvider {
 
-    private final LoadingCache<IJavaProject, IProjectTypesIndex> cache = CacheBuilder.newBuilder().build(
-            new ProjectTypesIndexCacheLoader());
+    private final LoadingCache<IJavaProject, IProjectTypesIndex> cache = CacheBuilder.newBuilder()
+            .build(new ProjectTypesIndexCacheLoader());
 
     @Override
     public Optional<IProjectTypesIndex> findIndex(IJavaProject project) {
@@ -46,14 +47,16 @@ public class IndexProvider implements IIndexProvider {
         }
     }
 
-    private static final class ProjectTypesIndexCacheLoader extends CacheLoader<IJavaProject, IProjectTypesIndex> {
+    @VisibleForTesting
+    static final class ProjectTypesIndexCacheLoader extends CacheLoader<IJavaProject, IProjectTypesIndex> {
 
         @Override
         public IProjectTypesIndex load(IJavaProject project) throws Exception {
             return new ProjectTypesIndex(project, computeIndexDir(project));
         }
 
-        private static File computeIndexDir(IJavaProject project) {
+        @VisibleForTesting
+        static File computeIndexDir(IJavaProject project) {
             Bundle bundle = FrameworkUtil.getBundle(IndexProvider.class);
             File location = Platform.getStateLocation(bundle).toFile();
             String mangledProjectName = project.getElementName().replaceAll("\\W", "_"); //$NON-NLS-1$ //$NON-NLS-2$
