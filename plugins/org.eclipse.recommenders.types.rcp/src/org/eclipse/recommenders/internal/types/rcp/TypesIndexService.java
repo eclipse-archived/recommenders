@@ -7,44 +7,41 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Johannes Dorn - Refactoring
  */
 package org.eclipse.recommenders.internal.types.rcp;
 
 import static org.eclipse.jdt.core.IJavaElement.*;
 import static org.eclipse.jdt.core.IJavaElementDelta.*;
 
-import java.io.File;
-import java.util.Map;
+import java.io.IOException;
+import java.util.Set;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import javax.inject.Inject;
+
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.recommenders.internal.types.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
+public class TypesIndexService implements ITypesIndexService, IElementChangedListener {
 
-public class TypesIndexService implements ITypesIndexService, IElementChangedListener, IStartup {
+    private final IIndexProvider indexProvider;
 
-    private final Map<IJavaProject, ProjectTypesIndex> _indexes = Maps.newHashMap();
-
-    @Override
-    public void earlyStartup() {
+    @Inject
+    public TypesIndexService(IIndexProvider indexProvider) {
+        this.indexProvider = indexProvider;
         JavaCore.addElementChangedListener(this, ElementChangedEvent.POST_CHANGE);
         PlatformUI.getWorkbench().addWorkbenchListener(new ShutdownListener());
-    }
+    };
 
     @Override
     public void elementChanged(ElementChangedEvent event) {
@@ -69,104 +66,61 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
         }
 
         switch (delta.getKind()) {
-
         case IJavaElementDelta.ADDED:
-            switch (element.getElementType()) {
-            case COMPILATION_UNIT:
-                // indexCompilationUnit((ICompilationUnit) element);
-                break;
-            case PACKAGE_FRAGMENT:
-                break;
-            case PACKAGE_FRAGMENT_ROOT:
-                rebuildIndex(project);
-                break;
-            case JAVA_PROJECT:
-                rebuildIndex(project);
-                break;
-            }
+            processElementAdded(element, project);
             break;
         case CHANGED:
-            switch (element.getElementType()) {
-            case COMPILATION_UNIT:
-                // removeCompilationUnit((ICompilationUnit) element);
-                // indexCompilationUnit((ICompilationUnit) element);
-                // commit(project);
-                break;
-            case PACKAGE_FRAGMENT_ROOT:
-                boolean reordered = (delta.getFlags() & IJavaElementDelta.F_REORDER) != 0;
-                boolean removed = (delta.getFlags() & IJavaElementDelta.F_REMOVED_FROM_CLASSPATH) != 0;
-                boolean content = (delta.getFlags() & IJavaElementDelta.F_ARCHIVE_CONTENT_CHANGED) != 0;
-                if (reordered)
-                    return;
-                if (removed || content)
-                    rebuildIndex(project);
-                break;
-            case PACKAGE_FRAGMENT:
-                break;
-            case JAVA_PROJECT:
-                break;
-            }
+            processElementChanged(delta, element, project);
             break;
         case REMOVED:
-            switch (element.getElementType()) {
-            case COMPILATION_UNIT:
-                // removeCompilationUnit((ICompilationUnit) element);
-                break;
-            case PACKAGE_FRAGMENT_ROOT:
-                rebuildIndex(project);
-                break;
-            case PACKAGE_FRAGMENT:
-            case JAVA_PROJECT:
-                break;
-            }
+            processElementRemoved(element, project);
             break;
         }
-    }
-
-    private void rebuildIndex(IJavaProject project) {
-        ProjectTypesIndex index = _indexes.get(project);
-        if (index == null) {
-            return;
-        }
-        if (index.needsRebuild()) {
-            index.setRebuildAfterNextAccess(true);
-        }
-    }
-
-    private synchronized ProjectTypesIndex findOrCreateIndex(IJavaProject project) {
-        ProjectTypesIndex index = _indexes.get(project);
-        if (index == null) {
-            index = new ProjectTypesIndex(project, computeIndexDir(project));
-            _indexes.put(project, index);
-            index.startAsync();
-        }
-        return index;
     }
 
     private boolean isChildAffectedByChange(IJavaElementDelta delta) {
         return (delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0;
     }
 
-    private File computeIndexDir(IJavaProject project) {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File location = Platform.getStateLocation(bundle).toFile();
-        File indexDir = new File(location, "indexes/" + project.getElementName().replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        return indexDir;
+    private void processElementAdded(IJavaElement element, IJavaProject project) {
+        switch (element.getElementType()) {
+        case JAVA_PROJECT:
+        case PACKAGE_FRAGMENT_ROOT:
+            rebuildIndex(project);
+            break;
+        }
+    }
+
+    private void processElementChanged(IJavaElementDelta delta, IJavaElement element, IJavaProject project) {
+        if (PACKAGE_FRAGMENT_ROOT == element.getElementType()) {
+            boolean removed = (delta.getFlags() & IJavaElementDelta.F_REMOVED_FROM_CLASSPATH) != 0;
+            boolean content = (delta.getFlags() & IJavaElementDelta.F_ARCHIVE_CONTENT_CHANGED) != 0;
+            if (removed || content) {
+                rebuildIndex(project);
+            }
+        }
+    }
+
+    private void processElementRemoved(IJavaElement element, IJavaProject project) {
+        switch (element.getElementType()) {
+        case PACKAGE_FRAGMENT_ROOT:
+            rebuildIndex(project);
+            break;
+        }
+    }
+
+    private void rebuildIndex(IJavaProject project) {
+        IProjectTypesIndex index = indexProvider.findIndex(project).orNull();
+        if (index == null) {
+            return;
+        }
+        index.suggestRebuild();
     }
 
     @Override
-    public ImmutableSet<String> subtypes(IType expected, String prefix) {
-        return findOrCreateIndex(expected.getJavaProject()).subtypes(expected, prefix);
-    }
-
-    @Override
-    public ImmutableSet<String> subtypes(ITypeName expected, String prefix, IJavaProject project) {
-        return findOrCreateIndex(project).subtypes(expected, prefix);
-    }
-
-    @Override
-    public ImmutableSet<String> subtypes(String type, String prefix, IJavaProject project) {
-        return findOrCreateIndex(project).subtypes(type, prefix);
+    public Set<String> subtypes(ITypeName expected, String prefix, IJavaProject project) {
+        IProjectTypesIndex index = indexProvider.findOrCreateIndex(project);
+        return index.subtypes(expected, prefix);
     }
 
     private final class ShutdownListener implements IWorkbenchListener {
@@ -177,24 +131,11 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
 
         @Override
         public void postShutdown(IWorkbench workbench) {
-            for (ProjectTypesIndex index : _indexes.values()) {
-                index.stopAsync();
+            try {
+                indexProvider.close();
+            } catch (IOException e) {
+                Logs.log(LogMessages.ERROR_CLOSING_PROJECT_TYPES_INDEXES, e);
             }
-        }
-    }
-
-    public static class MutexRule implements ISchedulingRule {
-
-        public static final MutexRule INSTANCE = new MutexRule();
-
-        @Override
-        public boolean isConflicting(ISchedulingRule rule) {
-            return rule == this;
-        }
-
-        @Override
-        public boolean contains(ISchedulingRule rule) {
-            return rule == this;
         }
     }
 }

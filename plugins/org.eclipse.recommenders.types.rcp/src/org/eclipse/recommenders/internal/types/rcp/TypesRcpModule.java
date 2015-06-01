@@ -18,5 +18,6 @@ public class TypesRcpModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ITypesIndexService.class).to(TypesIndexService.class).in(Scopes.SINGLETON);
+        bind(IIndexProvider.class).to(IndexProvider.class).in(Scopes.SINGLETON);
     }
 }

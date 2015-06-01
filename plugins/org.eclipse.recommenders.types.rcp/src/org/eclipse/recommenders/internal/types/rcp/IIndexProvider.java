@@ -6,17 +6,20 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Simon Laffoy - initial API and implementation.
+ *    Johannes Dorn - initial API and implementation.
  */
 package org.eclipse.recommenders.internal.types.rcp;
 
-public final class Constants {
+import java.io.Closeable;
 
-    private Constants() {
-        // Not meant to be instantiated
-    }
+import org.eclipse.jdt.core.IJavaProject;
 
-    public static final String SESSION_PROCESSOR_ID = "org.eclipse.recommenders.types.rcp.sessionprocessors.types"; //$NON-NLS-1$
+import com.google.common.base.Optional;
 
-    public static final String INDEX_DIR = "indexes"; //$NON-NLS-1$
+public interface IIndexProvider extends Closeable {
+
+    Optional<IProjectTypesIndex> findIndex(IJavaProject project);
+
+    IProjectTypesIndex findOrCreateIndex(IJavaProject project);
+
 }
