@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
@@ -33,6 +34,7 @@ import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.recommenders.internal.completion.rcp.Constants;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Point;
 import org.slf4j.Logger;
@@ -77,23 +79,19 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
      * {@code collector}.
      */
     private void configureInterestedProposalTypes() {
-        collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
-        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
-        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
-        collector.setIgnored(FIELD_REF, false);
-        collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, false);
-        collector.setIgnored(KEYWORD, false);
-        collector.setIgnored(LABEL_REF, false);
-        collector.setIgnored(LOCAL_VARIABLE_REF, false);
-        collector.setIgnored(METHOD_DECLARATION, false);
-        collector.setIgnored(METHOD_NAME_REFERENCE, false);
-        collector.setIgnored(METHOD_REF, false);
-        collector.setIgnored(CONSTRUCTOR_INVOCATION, false);
-        collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, false);
-        collector.setIgnored(PACKAGE_REF, false);
-        collector.setIgnored(POTENTIAL_METHOD_DECLARATION, false);
-        collector.setIgnored(VARIABLE_DECLARATION, false);
-        collector.setIgnored(TYPE_REF, false);
+        String[] excludes = PreferenceConstants.getExcludedCompletionProposalCategories();
+        if (doesJdtProposeTypesOnly(excludes)) {
+            setIgnoreNonTypes(true);
+        } else {
+            setIgnoreNonTypes(false);
+        }
+
+        if (doesJdtProposeNonTypesOnly(excludes)) {
+            setIgnoreTypes(true);
+        } else {
+            setIgnoreTypes(false);
+        }
+
         collector.setIgnored(JAVADOC_BLOCK_TAG, false);
         collector.setIgnored(JAVADOC_FIELD_REF, false);
         collector.setIgnored(JAVADOC_INLINE_TAG, false);
@@ -115,6 +113,41 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
         collector.setFavoriteReferences(getFavoriteStaticMembers());
         collector.setRequireExtendedContext(true);
+    }
+
+    private boolean doesJdtProposeTypesOnly(String[] excludes) {
+        return !ArrayUtils.contains(excludes, Constants.JDT_TYPE_CATEGORY)
+                && ArrayUtils.contains(excludes, Constants.JDT_ALL_CATEGORY)
+                && ArrayUtils.contains(excludes, Constants.JDT_NON_TYPE_CATEGORY);
+    }
+
+    private boolean doesJdtProposeNonTypesOnly(String[] excludes) {
+        return !ArrayUtils.contains(excludes, Constants.JDT_NON_TYPE_CATEGORY)
+                && ArrayUtils.contains(excludes, Constants.JDT_ALL_CATEGORY)
+                && ArrayUtils.contains(excludes, Constants.JDT_TYPE_CATEGORY);
+    }
+
+    private void setIgnoreNonTypes(boolean ignored) {
+        collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, ignored);
+        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, ignored);
+        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, ignored);
+        collector.setIgnored(FIELD_REF, ignored);
+        collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, ignored);
+        collector.setIgnored(KEYWORD, ignored);
+        collector.setIgnored(LABEL_REF, ignored);
+        collector.setIgnored(LOCAL_VARIABLE_REF, ignored);
+        collector.setIgnored(METHOD_DECLARATION, ignored);
+        collector.setIgnored(METHOD_NAME_REFERENCE, ignored);
+        collector.setIgnored(METHOD_REF, ignored);
+        collector.setIgnored(CONSTRUCTOR_INVOCATION, ignored);
+        collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, ignored);
+        collector.setIgnored(PACKAGE_REF, ignored);
+        collector.setIgnored(POTENTIAL_METHOD_DECLARATION, ignored);
+        collector.setIgnored(VARIABLE_DECLARATION, ignored);
+    }
+
+    private void setIgnoreTypes(boolean ignored) {
+        collector.setIgnored(TYPE_REF, ignored);
     }
 
     @Override
