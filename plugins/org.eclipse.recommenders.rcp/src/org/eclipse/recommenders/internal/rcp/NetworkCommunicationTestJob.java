@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import static java.lang.System.lineSeparator;
 import static java.net.URLEncoder.encode;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
@@ -20,12 +21,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -52,6 +55,7 @@ public class NetworkCommunicationTestJob extends Job {
     private static final String P2_HTTP_REQUEST_PART = "p2"; //$NON-NLS-1$
     private static final String UNKNOWN = "unknown"; //$NON-NLS-1$
     private static final String NO_PROXY_AUTHENTICATION = "none"; //$NON-NLS-1$
+    private static final String BUGZILLA_URL = "https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders"; //$NON-NLS-1$
 
     public NetworkCommunicationTestJob() {
         super(Messages.JOB_NAME_NETWORK_COMMUNCIATION_TEST);
@@ -115,12 +119,26 @@ public class NetworkCommunicationTestJob extends Job {
     }
 
     private void doApacheHeadRequest(URI uri, SubMonitor progress) {
+        Executor executor = Executor.newInstance();
+        Request request = Request.Head(uri).viaProxy(getProxyHost(uri).orNull());
         try {
-            Executor executor = Executor.newInstance();
-            Request request = Request.Head(uri).viaProxy(getProxyHost(uri).orNull());
-            proxyAuthentication(executor, uri).execute(request);
+            Response response = proxyAuthentication(executor, uri).execute(request);
+            HttpResponse httpResponse = response.returnResponse();
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_NOT_FOUND || statusCode != HttpStatus.SC_OK) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(lineSeparator());
+                sb.append("Communication URL: ").append(uri).append(lineSeparator()); //$NON-NLS-1$
+                sb.append("Response Code: ").append(statusCode).append(" - ")
+                        .append(httpResponse.getStatusLine().getReasonPhrase()).append(lineSeparator()); //$NON-NLS-1$ //$NON-NLS-2$
+                sb.append("Response Headers:").append(lineSeparator()); //$NON-NLS-1$ 
+                for (Header header : httpResponse.getAllHeaders()) {
+                    sb.append(header.getName()).append(": ").append(header.getValue()).append(lineSeparator()); //$NON-NLS-1$ 
+                }
+                Logs.log(LogMessages.ERROR_ON_APACHE_HEAD_REQUEST, BUGZILLA_URL, sb);
+            }
         } catch (Exception e) {
-            Logs.log(LogMessages.ERROR_ON_APACHE_HEAD_REQUEST, e, uri);
+            Logs.log(LogMessages.ERROR_ON_APACHE_HEAD_REQUEST, e, BUGZILLA_URL, uri);
         }
         progress.done();
     }
