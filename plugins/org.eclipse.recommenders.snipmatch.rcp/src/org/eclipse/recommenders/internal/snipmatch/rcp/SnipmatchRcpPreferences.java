@@ -31,7 +31,7 @@ import com.google.common.eventbus.EventBus;
 @SuppressWarnings("restriction")
 public class SnipmatchRcpPreferences {
 
-    private static final String SEPARATOR = ";"; //$NON-NLS-1
+    private static final String SEPARATOR = ";"; //$NON-NLS-1$
     private final EventBus bus;
     private Set<String> disabledRepositories = Sets.newHashSet();
 
@@ -43,7 +43,7 @@ public class SnipmatchRcpPreferences {
     @Inject
     public void setDisabledRepositoryConfigurations(
             @Preference(Constants.PREF_DISABLED_REPOSITORY_CONFIGURATIONS) String newDisabledRepositoryConfiguration)
-            throws Exception {
+                    throws Exception {
         if (newDisabledRepositoryConfiguration == null) {
             return;
         }

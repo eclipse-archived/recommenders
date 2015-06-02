@@ -56,6 +56,6 @@ public class TriggerModelDownloadForModelCoordinatesAction extends Action {
         for (ModelCoordinate mc : mcs) {
             jobs.add(new DownloadModelArchiveJob(repo, mc, false, bus));
         }
-        Jobs.sequential(format(Messages.JOB_DOWNLOADING_MODELS, jobs.size()), jobs);
+        Jobs.sequential(format(Messages.JOB_NAME_DOWNLOADING_MODELS, jobs.size()), jobs);
     }
 }

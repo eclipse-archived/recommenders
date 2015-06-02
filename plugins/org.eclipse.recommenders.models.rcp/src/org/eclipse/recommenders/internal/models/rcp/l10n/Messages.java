@@ -58,15 +58,17 @@ public final class Messages extends NLS {
     public static String TABLE_CELL_TOOLTIP_AVAILABLE_REMOTELY;
     public static String TABLE_CELL_TOOLTIP_UNAVAILABLE;
 
-    public static String JOB_DELETING_MODEL_CACHE;
-    public static String JOB_DOWNLOADING_MODELS;
-    public static String JOB_DOWNLOAD_TRANSFERRED_SIZE;
-    public static String JOB_DOWNLOAD_TRANSFERRED_TOTAL_SIZE;
-    public static String JOB_REFRESHING_DEPENDENCY_OVERVIEW_VIEW;
-    public static String JOB_REFRESHING_MODEL_REPOSITORIES_VIEW;
-    public static String JOB_RESOLVING_MODEL;
+    public static String JOB_NAME_DELETING_MODEL_CACHE;
+    public static String JOB_NAME_DOWNLOADING_MODELS;
+    public static String JOB_NAME_PREFETCHING_MODEL_ARCHIVE;
+    public static String JOB_NAME_REFRESHING_DEPENDENCY_OVERVIEW_VIEW;
+    public static String JOB_NAME_REFRESHING_MODEL_REPOSITORIES_VIEW;
+    public static String JOB_NAME_RESOLVING_MODEL;
 
-    public static String TASK_RESOLVING_MODEL;
+    public static String MONITOR_NAME_DOWNLOAD_TRANSFERRED_SIZE;
+    public static String MONITOR_NAME_DOWNLOAD_TRANSFERRED_TOTAL_SIZE;
+    public static String MONITOR_NAME_RESOLVING_COORDINATES;
+    public static String MONITOR_NAME_RESOLVING_MODEL;
 
     public static String LOG_ERROR_CLOSING_MODEL_INDEX_SERVICE;
     public static String LOG_ERROR_BIND_FILE_NAME;

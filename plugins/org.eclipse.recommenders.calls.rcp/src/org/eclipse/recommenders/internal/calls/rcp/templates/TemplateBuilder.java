@@ -47,19 +47,19 @@ public class TemplateBuilder {
     }
 
     public Optional<String> appendCall(IMethodName method, String receiver, String... argNames) {
-        Checks.ensureIsFalse(method.isInit(), "Method must not be a constructor");
+        Checks.ensureIsFalse(method.isInit(), "Method must not be a constructor"); //$NON-NLS-1$
         String returnId = null;
         if (!method.isVoid()) {
             ITypeName type = method.getReturnType();
             String defId = suggestId(method);
-            newType(defId + "Type", type).ws();
+            newType(defId + "Type", type).ws(); //$NON-NLS-1$
             newName(defId, type).ws().eq().ws();
-            returnId = "${" + defId + "}";
+            returnId = "${" + defId + "}"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         if (!isEmpty(receiver)) {
             append(receiver).dot();
         }
-        append(method.getName()).append("(").appendParameters(method, argNames).append(")").sc();
+        append(method.getName()).append("(").appendParameters(method, argNames).append(")").sc(); //$NON-NLS-1$ //$NON-NLS-2$
         return Optional.fromNullable(returnId);
     }
 
@@ -67,9 +67,9 @@ public class TemplateBuilder {
      * appends ${id:type(someValue,otherValue,nextValue)}
      */
     public TemplateBuilder appendCommand(String id, String commandId, Iterable<String> values) {
-        builder.append("${").append(id).append(":").append(commandId).append("(");
+        builder.append("${").append(id).append(":").append(commandId).append("("); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         Joiner.on(',').appendTo(builder, values);
-        builder.append(")}");
+        builder.append(")}"); //$NON-NLS-1$
         return this;
     }
 
@@ -84,7 +84,7 @@ public class TemplateBuilder {
      * appends ${id:type(someValue)}
      */
     public TemplateBuilder appendCommand(String id, String commandId, String value) {
-        builder.append("${").append(id).append(":").append(commandId).append("(").append(value).append(")}");
+        builder.append("${").append(id).append(":").append(commandId).append("(").append(value).append(")}"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         return this;
     }
 
@@ -102,13 +102,13 @@ public class TemplateBuilder {
         Checks.ensureIsTrue(ctor.isInit());
         ITypeName type = ctor.getDeclaringType();
         String receiverId = suggestId(ctor);
-        String receiverTypeId = receiverId + "Type";
+        String receiverTypeId = receiverId + "Type"; //$NON-NLS-1$
 
         newType(receiverTypeId, type).ws().newName(receiverId, type).ws().eq().ws().new_().ws().ref(receiverTypeId)
-                .append("(");
+                .append("("); //$NON-NLS-1$
         appendParameters(ctor, argNames);
-        append(")").sc();
-        return "${" + receiverId + "}";
+        append(")").sc(); //$NON-NLS-1$
+        return "${" + receiverId + "}"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void appendParameter(ITypeName type, String id) {
@@ -117,10 +117,10 @@ public class TemplateBuilder {
         } else if (OBJECT.equals(type)) {
             ref(suggestId(id));
         } else if (type == VmTypeName.BOOLEAN) {
-            link(suggestId(id), "false", "true");
+            link(suggestId(id), "false", "true"); //$NON-NLS-1$ //$NON-NLS-2$
         } else if (type == VmTypeName.INT || type == VmTypeName.DOUBLE || type == VmTypeName.FLOAT
                 || type == VmTypeName.LONG || type == VmTypeName.SHORT) {
-            link(suggestId(id), "0");
+            link(suggestId(id), "0"); //$NON-NLS-1$
         } else {
             var(suggestId(id), type);
         }
@@ -150,42 +150,42 @@ public class TemplateBuilder {
      * </pre>
      */
     public TemplateBuilder argType(String id, String variable, int n) {
-        return appendCommand(id, "argType", variable, String.valueOf(n));
+        return appendCommand(id, "argType", variable, String.valueOf(n)); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a proposal for an array visible in the current scope.
      */
     public TemplateBuilder array() {
-        return append("${array}");
+        return append("${array}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a name for a new local variable for an element of the ${array} variable match.
      */
     public TemplateBuilder arrayElement() {
-        return append("${array_element}");
+        return append("${array_element}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the element type of the ${array} variable match.
      */
     public TemplateBuilder arrayType() {
-        return append("${array_type}");
+        return append("${array_type}"); //$NON-NLS-1$
     }
 
     /**
      * Appends a comma (',') to the code.
      */
     public TemplateBuilder c() {
-        return append(",");
+        return append(","); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a proposal for a collection visible in the current scope.
      */
     public TemplateBuilder collection() {
-        return append("${collection}");
+        return append("${collection}"); //$NON-NLS-1$
     }
 
     /**
@@ -193,28 +193,28 @@ public class TemplateBuilder {
      * another place than to the end of the template on leaving template edit mode.
      */
     public TemplateBuilder cursor() {
-        return append("${cursor}");
+        return append("${cursor}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the current date.
      */
     public TemplateBuilder date() {
-        return append("${date}");
+        return append("${date}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the dollar symbol $. Alternatively, two dollars can be used: $$.
      */
     public TemplateBuilder dollar() {
-        return append("${dollar}");
+        return append("${dollar}"); //$NON-NLS-1$
     }
 
     /**
      * Appends a dot ('.') to the code.
      */
     public TemplateBuilder dot() {
-        return append(".");
+        return append("."); //$NON-NLS-1$
     }
 
     /**
@@ -226,14 +226,14 @@ public class TemplateBuilder {
      * ${iterable_type} is a shortcut for ${iterable_type:elemType(iterable)}.
      */
     public TemplateBuilder elemType(String id, String variable) {
-        return appendCommand(id, "elemType", variable);
+        return appendCommand(id, "elemType", variable); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the name of the enclosing method.
      */
     public TemplateBuilder enclosingMethod() {
-        return append("${enclosing_method}");
+        return append("${enclosing_method}"); //$NON-NLS-1$
     }
 
     /**
@@ -241,14 +241,14 @@ public class TemplateBuilder {
      * generating log statements for many methods.
      */
     public TemplateBuilder EnclosingMethodArguments() {
-        return append("${enclosing_method_arguments}");
+        return append("${enclosing_method_arguments}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the name of the enclosing package.
      */
     public TemplateBuilder enclosingPackage() {
-        return append("${enclosing_package}");
+        return append("${enclosing_package}"); //$NON-NLS-1$
     }
 
     // /**
@@ -271,28 +271,28 @@ public class TemplateBuilder {
      * Evaluates to the name of the enclosing project.
      */
     public TemplateBuilder enclosingProject() {
-        return append("${enclosing_project}");
+        return append("${enclosing_project}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the name of the enclosing type.
      */
     public TemplateBuilder enclosingType() {
-        return append("${enclosing_type}");
+        return append("${enclosing_type}"); //$NON-NLS-1$
     }
 
     /**
      * Appends the equal sign ('=') to the code.
      */
     public TemplateBuilder eq() {
-        return append("=");
+        return append("="); //$NON-NLS-1$
     }
 
     /**
      * Exception variable name in catch blocks.
      */
     public TemplateBuilder exceptionVariableName() {
-        return append("${exception_variable_name}");
+        return append("${exception_variable_name}"); //$NON-NLS-1$
     }
 
     /**
@@ -306,14 +306,14 @@ public class TemplateBuilder {
      * </pre>
      */
     public TemplateBuilder field(String id, ITypeName... types) {
-        return appendCommand(id, "field", types);
+        return appendCommand(id, "field", types); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the name of the file.
      */
     public TemplateBuilder file() {
-        return append("${file}");
+        return append("${file}"); //$NON-NLS-1$
     }
 
     /**
@@ -327,63 +327,63 @@ public class TemplateBuilder {
      * </pre>
      */
     public TemplateBuilder imports(ITypeName... types) {
-        return imports("", types);
+        return imports("", types); //$NON-NLS-1$
     }
 
     /**
      * Adds an import statement with the given types into the template.
      */
     public TemplateBuilder imports(String id, ITypeName... types) {
-        return appendCommand(id, "import", types);
+        return appendCommand(id, "import", types); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a proposal for an undeclared array index.
      */
     public TemplateBuilder index() {
-        return append("${index}");
+        return append("${index}"); //$NON-NLS-1$
     }
 
     /**
      * Returns true when the given string starts with ${ and ends with }.
      */
     public boolean isVariable(String arg) {
-        return arg.startsWith("${") && arg.endsWith("}");
+        return arg.startsWith("${") && arg.endsWith("}"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
      * Evaluates to a proposal for an iterable or array visible in the current scope.
      */
     public TemplateBuilder iterable() {
-        return append("${iterable}");
+        return append("${iterable}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a name for a new local variable for an element of the ${iterable} variable match.
      */
     public TemplateBuilder iterableElement() {
-        return append("${iterable_element}");
+        return append("${iterable_element}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the element type of the ${iterable} variable match.
      */
     public TemplateBuilder iterableType() {
-        return append("${iterable_type}");
+        return append("${iterable_type}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to an unused name for a new local variable of type java.util.Iterator.
      */
     public TemplateBuilder iterator() {
-        return append("${iterator}");
+        return append("${iterator}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to content of all currently selected lines.
      */
     public TemplateBuilder lineSelection() {
-        return append("${line_selection}");
+        return append("${line_selection}"); //$NON-NLS-1$
     }
 
     /**
@@ -398,7 +398,7 @@ public class TemplateBuilder {
      * 
      */
     public TemplateBuilder link(String id, String... proposals) {
-        return appendCommand(id, "link", proposals);
+        return appendCommand(id, "link", proposals); //$NON-NLS-1$
     }
 
     /**
@@ -410,14 +410,14 @@ public class TemplateBuilder {
      * ${iterable:localVar(java.lang.Iterable)}, but also matches arrays.
      */
     public TemplateBuilder localVar(String id, ITypeName... types) {
-        return appendCommand(id, "localVar", types);
+        return appendCommand(id, "localVar", types); //$NON-NLS-1$
     }
 
     /**
      * Inserts the new keyword into the snippet.
      */
     public TemplateBuilder new_() {
-        return append("new");
+        return append("new"); //$NON-NLS-1$
     }
 
     /**
@@ -431,14 +431,14 @@ public class TemplateBuilder {
      * ${iterable_element} is a shortcut for ${iterable_element:newName(iterable)}.<br>
      */
     public TemplateBuilder newName(String id, ITypeName reference) {
-        return appendCommand(id, "newName", reference);
+        return appendCommand(id, "newName", reference); //$NON-NLS-1$
     }
 
     /**
      *  
      */
     public TemplateBuilder newType(String id, ITypeName type) {
-        return appendCommand(id, "newType", toLiteral(type));
+        return appendCommand(id, "newType", toLiteral(type)); //$NON-NLS-1$
     }
 
     /**
@@ -452,14 +452,14 @@ public class TemplateBuilder {
      * Evaluates to the name primary type of the current compilation unit.
      */
     public TemplateBuilder primaryTypeName() {
-        return append("${primary_type_name}");
+        return append("${primary_type_name}"); //$NON-NLS-1$
     }
 
     /**
      * Inserts a simple reference to a variable (i.e., ${<referencedVariable>})into the template.
      */
     public TemplateBuilder ref(String referencedVariable) {
-        builder.append("${").append(referencedVariable).append("}");
+        builder.append("${").append(referencedVariable).append("}"); //$NON-NLS-1$ //$NON-NLS-2$
         return this;
     }
 
@@ -467,14 +467,14 @@ public class TemplateBuilder {
      * Evaluates to the return type of the enclosing method.
      */
     public TemplateBuilder returnType() {
-        return append("${return_type}");
+        return append("${return_type}"); //$NON-NLS-1$
     }
 
     /**
      * Appends a semicolon to the template;
      */
     public TemplateBuilder sc() {
-        return append(";");
+        return append(";"); //$NON-NLS-1$
     }
 
     /**
@@ -488,10 +488,10 @@ public class TemplateBuilder {
         } else {
             String name = method.getName();
             // we have methods like List.get(23). Handle that:
-            int start = name.startsWith("get") && !name.equals("get") ? 3 : 0;
+            int start = name.startsWith("get") && !name.equals("get") ? 3 : 0; //$NON-NLS-1$ //$NON-NLS-2$
             varName = StringUtils.substring(name, start);
         }
-        varName = varName.replaceAll("\\W", "").toLowerCase();
+        varName = varName.replaceAll("\\W", "").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
         return suggestId(varName);
     }
 
@@ -501,7 +501,7 @@ public class TemplateBuilder {
      * Note, this method is not side-effect free. Every call internally increases the counter for the passed id.
      */
     public String suggestId(String varName) {
-        String suffix = usedVariables.add(varName, 1) == 0 ? "" : "" + (usedVariables.count(varName) - 1);
+        String suffix = usedVariables.add(varName, 1) == 0 ? "" : "" + (usedVariables.count(varName) - 1); //$NON-NLS-1$ //$NON-NLS-2$
         return varName + suffix;
     }
 
@@ -509,14 +509,14 @@ public class TemplateBuilder {
      * Evaluates to the current time.
      */
     public TemplateBuilder time() {
-        return append("${time}");
+        return append("${time}"); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to a proposal for the currently specified default task tag.
      */
     public TemplateBuilder todo() {
-        return append("${todo}");
+        return append("${todo}"); //$NON-NLS-1$
     }
 
     /**
@@ -546,7 +546,7 @@ public class TemplateBuilder {
      * Evaluates to the user name.
      */
     public TemplateBuilder user() {
-        return append("${user}");
+        return append("${user}"); //$NON-NLS-1$
     }
 
     /**
@@ -560,28 +560,28 @@ public class TemplateBuilder {
      * </pre>
      */
     public TemplateBuilder var(String id, ITypeName... types) {
-        return appendCommand(id, "var", types);
+        return appendCommand(id, "var", types); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the content of the current text selection.
      */
     public TemplateBuilder wordSelection() {
-        return append("${word_selection}");
+        return append("${word_selection}"); //$NON-NLS-1$
     }
 
     /**
      * Appends a whitespace to the template.
      */
     public TemplateBuilder ws() {
-        return append(" ");
+        return append(" "); //$NON-NLS-1$
     }
 
     /**
      * Evaluates to the current year.
      */
     public TemplateBuilder year() {
-        return append("${year}");
+        return append("${year}"); //$NON-NLS-1$
     }
 
     private static class ToTemplateTypeNames implements Function<ITypeName, String> {
@@ -589,7 +589,7 @@ public class TemplateBuilder {
         public String apply(ITypeName t) {
             String res = Names.vm2srcQualifiedType(t);
             if (t.isArrayType()) {
-                res = "'" + res + "'";
+                res = "'" + res + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             return res;
         }

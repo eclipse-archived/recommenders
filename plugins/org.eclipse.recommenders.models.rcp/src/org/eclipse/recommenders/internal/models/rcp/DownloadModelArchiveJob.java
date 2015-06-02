@@ -60,7 +60,7 @@ public class DownloadModelArchiveJob extends Job {
 
     public DownloadModelArchiveJob(IModelRepository repository, ModelCoordinate mc, boolean forceDownload,
             EventBus bus) {
-        super(MessageFormat.format(Messages.JOB_RESOLVING_MODEL, mc));
+        super(MessageFormat.format(Messages.JOB_NAME_RESOLVING_MODEL, mc));
         this.repository = repository;
         this.mc = mc;
         this.forceDownload = forceDownload;
@@ -70,7 +70,7 @@ public class DownloadModelArchiveJob extends Job {
     @Override
     protected IStatus run(final IProgressMonitor monitor) {
         try {
-            String message = MessageFormat.format(Messages.TASK_RESOLVING_MODEL, mc);
+            String message = MessageFormat.format(Messages.MONITOR_NAME_RESOLVING_MODEL, mc);
             MultipleDownloadCallback downloadCallback = new MultipleDownloadCallback(monitor, message, TOTAL_WORK_UNITS,
                     MAXIMUM_NUMBER_OF_DOWNLOADS_PER_JOB);
             File result = repository.resolve(mc, forceDownload, downloadCallback).orNull();

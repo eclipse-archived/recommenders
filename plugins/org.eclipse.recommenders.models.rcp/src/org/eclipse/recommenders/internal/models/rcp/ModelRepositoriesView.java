@@ -349,7 +349,7 @@ public class ModelRepositoriesView extends ViewPart {
     }
 
     private void refreshData() {
-        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
+        new UIJob(Messages.JOB_NAME_REFRESHING_MODEL_REPOSITORIES_VIEW) {
             {
                 schedule();
             }
@@ -587,7 +587,7 @@ public class ModelRepositoriesView extends ViewPart {
             initializeFilter = false;
             return;
         }
-        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
+        new UIJob(Messages.JOB_NAME_REFRESHING_MODEL_REPOSITORIES_VIEW) {
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -643,7 +643,7 @@ public class ModelRepositoriesView extends ViewPart {
 
     @Subscribe
     public void onModelArchiveDownloaded(final ModelArchiveDownloadedEvent e) {
-        new UIJob(Messages.JOB_REFRESHING_MODEL_REPOSITORIES_VIEW) {
+        new UIJob(Messages.JOB_NAME_REFRESHING_MODEL_REPOSITORIES_VIEW) {
 
             @Override
             public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -699,7 +699,7 @@ public class ModelRepositoriesView extends ViewPart {
     }
 
     private void deleteCacheAndRefresh() {
-        new Job(Messages.JOB_DELETING_MODEL_CACHE) {
+        new Job(Messages.JOB_NAME_DELETING_MODEL_CACHE) {
             {
                 schedule();
             }

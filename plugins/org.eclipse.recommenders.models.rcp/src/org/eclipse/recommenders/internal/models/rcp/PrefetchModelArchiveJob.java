@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -27,7 +28,7 @@ public class PrefetchModelArchiveJob<M> extends Job {
 
     public PrefetchModelArchiveJob(IType type, IProjectCoordinateProvider pcProvider,
             IModelProvider<UniqueTypeName, M> modelProvider) {
-        super("Prefetching Model Archive");
+        super(Messages.JOB_NAME_PREFETCHING_MODEL_ARCHIVE);
         this.receiverType = type;
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
@@ -36,7 +37,7 @@ public class PrefetchModelArchiveJob<M> extends Job {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        monitor.beginTask("Resolving coordinates", IProgressMonitor.UNKNOWN);
+        monitor.beginTask(Messages.MONITOR_NAME_RESOLVING_COORDINATES, IProgressMonitor.UNKNOWN);
         try {
             UniqueTypeName name = pcProvider.toUniqueName(receiverType).orNull();
             M model = modelProvider.acquireModel(name).orNull();

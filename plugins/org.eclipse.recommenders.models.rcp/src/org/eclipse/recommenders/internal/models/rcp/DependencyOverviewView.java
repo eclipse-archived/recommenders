@@ -152,7 +152,7 @@ public class DependencyOverviewView extends ViewPart {
     }
 
     private void refreshData() {
-        new UIJob(Messages.JOB_REFRESHING_DEPENDENCY_OVERVIEW_VIEW) {
+        new UIJob(Messages.JOB_NAME_REFRESHING_DEPENDENCY_OVERVIEW_VIEW) {
             {
                 schedule();
             }
