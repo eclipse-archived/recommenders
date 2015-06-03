@@ -16,7 +16,7 @@ public final class Constants {
         // Not meant to be instantiated
     }
 
-    public static final String SESSION_PROCESSOR_ID = "org.eclipse.recommenders.types.rcp.sessionprocessors.types"; //$NON-NLS-1$
+    public static final String BUNDLE_ID = "org.eclipse.recommenders.types.rcp"; //$NON-NLS-1$
 
-    public static final String INDEX_DIR = "indexes"; //$NON-NLS-1$
+    public static final String SESSION_PROCESSOR_ID = "org.eclipse.recommenders.types.rcp.sessionprocessors.types"; //$NON-NLS-1$
 }

@@ -106,6 +106,9 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
         case PACKAGE_FRAGMENT_ROOT:
             rebuildIndex(project);
             break;
+        case JAVA_PROJECT:
+            removeProjectIndex(project);
+            break;
         }
     }
 
@@ -115,6 +118,10 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
             return;
         }
         index.suggestRebuild();
+    }
+
+    private void removeProjectIndex(IJavaProject project) {
+        indexProvider.deleteIndex(project);
     }
 
     @Override

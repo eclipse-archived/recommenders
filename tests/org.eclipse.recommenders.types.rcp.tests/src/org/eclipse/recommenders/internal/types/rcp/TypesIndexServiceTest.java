@@ -164,6 +164,20 @@ public class TypesIndexServiceTest {
         verifyZeroInteractions(index);
     }
 
+    @Test
+    public void testEventForProjectRemoved() {
+        IJavaProject project = mockProject();
+        IJavaElementDelta removedProjectDelta = mockElementDelta(project, IJavaElementDelta.REMOVED, 0);
+
+        ElementChangedEvent projectRemovedEvent = mockElementChangedEvent(removedProjectDelta);
+        IIndexProvider provider = mock(IIndexProvider.class);
+
+        TypesIndexService sut = new TypesIndexService(provider);
+        sut.elementChanged(projectRemovedEvent);
+
+        verify(provider).deleteIndex(project);
+    }
+
     public IProjectTypesIndex mockProspectiveIndex(IJavaProject newJavaProject, IIndexProvider provider,
             String... subtypes) {
         IProjectTypesIndex index = mock(IProjectTypesIndex.class);

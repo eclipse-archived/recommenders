@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.types.rcp;
 
 import static com.google.common.base.Objects.equal;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
@@ -212,6 +213,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     @Override
     protected void shutDown() throws Exception {
+        cancelRebuild();
         IOUtils.close(reader, writer, directory);
     }
 
@@ -295,9 +297,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private void rebuild() {
-        if (!(activeRebuild == null || activeRebuild.isDone() || activeRebuild.isCancelled())) {
-            activeRebuild.cancel(true);
-        }
+        cancelRebuild();
         final JobFuture res = new JobFuture();
         activeRebuild = res;
         Job job = new Job(MessageFormat.format(Messages.JOB_NAME_INDEXING, project.getElementName())) {
@@ -318,7 +318,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                     res.setResult(Status.CANCEL_STATUS);
                 } catch (Exception e) {
                     res.setException(e);
-                    res.setResult(new Status(IStatus.ERROR, "org.eclipse.recommenders.types.rcp", e.getMessage(), e)); //$NON-NLS-1$
+                    res.setResult(new Status(IStatus.ERROR, Constants.BUNDLE_ID, e.getMessage(), e));
                 } finally {
                     thread.setPriority(priority);
                     monitor.done();
@@ -341,8 +341,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                     setRebuildAfterNextAccess(true);
                     throw new OperationCanceledException();
                 }
-                indexType(type);
-                progress.worked(1);
+                indexType(type, progress.newChild(1));
             }
             File location = JavaElementsFinder.findLocation(root).orNull();
             if (location != null) {
@@ -351,6 +350,12 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             commit();
         }
         progress.done();
+    }
+
+    private void cancelRebuild() {
+        if (!(activeRebuild == null || activeRebuild.isDone() || activeRebuild.isCancelled())) {
+            activeRebuild.cancel(true);
+        }
     }
 
     private void registerArchivePackageFragmentRoot(File location) {
@@ -373,7 +378,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         }
     }
 
-    private void indexType(IType type) {
+    private void indexType(IType type, IProgressMonitor monitor) {
         Document doc = new Document();
         {
             // name:
@@ -406,14 +411,18 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                 log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
             }
         }
-        addDocument(doc);
+        addDocument(doc, monitor);
     }
 
-    private void addDocument(Document doc) {
+    private void addDocument(Document doc, IProgressMonitor monitor) {
         try {
-            writer.addDocument(doc);
+            if (!monitor.isCanceled()) {
+                writer.addDocument(doc);
+            }
         } catch (Exception e) {
             log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+        } finally {
+            monitor.done();
         }
     }
 
@@ -433,6 +442,13 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     private boolean isRebuildAfterNextAccess() {
         return rebuildAfterNextAccess;
+    }
+
+    @Override
+    public void delete() {
+        stopAsync();
+        awaitTerminated();
+        deleteQuietly(indexDir);
     }
 
     private static final class ArchiveFragmentRootsOnlyPredicate implements Predicate<IPackageFragmentRoot> {

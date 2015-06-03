@@ -27,6 +27,9 @@ import com.google.common.cache.LoadingCache;
 
 public class IndexProvider implements IIndexProvider {
 
+    @VisibleForTesting
+    static final String INDEX_DIR = "indexes"; //$NON-NLS-1$
+
     private final LoadingCache<IJavaProject, IProjectTypesIndex> cache = CacheBuilder.newBuilder()
             .build(new ProjectTypesIndexCacheLoader());
 
@@ -38,6 +41,16 @@ public class IndexProvider implements IIndexProvider {
     @Override
     public IProjectTypesIndex findOrCreateIndex(IJavaProject project) {
         return cache.getUnchecked(project);
+    }
+
+    @Override
+    public void deleteIndex(IJavaProject project) {
+        IProjectTypesIndex index = findIndex(project).orNull();
+        if (index == null) {
+            return;
+        }
+        index.delete();
+        cache.invalidate(project);
     }
 
     @Override
@@ -60,7 +73,7 @@ public class IndexProvider implements IIndexProvider {
             Bundle bundle = FrameworkUtil.getBundle(IndexProvider.class);
             File location = Platform.getStateLocation(bundle).toFile();
             String mangledProjectName = project.getElementName().replaceAll("\\W", "_"); //$NON-NLS-1$ //$NON-NLS-2$
-            File indexDir = new File(new File(location, Constants.INDEX_DIR), mangledProjectName);
+            File indexDir = new File(new File(location, INDEX_DIR), mangledProjectName);
             return indexDir;
         }
 
