@@ -43,7 +43,7 @@ public class IndexProviderTest {
         sb.append(".metadata").append(separatorChar).append(".plugins").append(separatorChar);
         Bundle bundle = FrameworkUtil.getBundle(IndexProvider.class);
         sb.append(bundle.getSymbolicName()).append(separatorChar);
-        sb.append(Constants.INDEX_DIR).append(separatorChar);
+        sb.append(IndexProvider.INDEX_DIR).append(separatorChar);
         sb.append(mangledName);
         return sb.toString();
     }

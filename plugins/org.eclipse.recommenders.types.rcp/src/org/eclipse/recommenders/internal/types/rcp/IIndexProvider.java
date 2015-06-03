@@ -22,4 +22,6 @@ public interface IIndexProvider extends Closeable {
 
     IProjectTypesIndex findOrCreateIndex(IJavaProject project);
 
+    void deleteIndex(IJavaProject project);
+
 }

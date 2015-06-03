@@ -22,4 +22,6 @@ public interface IProjectTypesIndex extends Closeable {
 
     void suggestRebuild();
 
+    void delete();
+
 }
