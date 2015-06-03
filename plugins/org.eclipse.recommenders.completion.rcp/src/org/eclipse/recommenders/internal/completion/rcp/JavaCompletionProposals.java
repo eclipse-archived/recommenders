@@ -39,28 +39,28 @@ public class JavaCompletionProposals {
 
     public static JavaCompletionProposal newLocalVariableRefProposal(AccessibleCompletionProposal localRef) {
         ensureEquals(localRef.getKind(), CompletionProposal.LOCAL_VARIABLE_REF,
-                "proposal kind isn't LOCAL_VARIABLE_REF");
+                "Proposal kind is not a reference to a local variable."); //$NON-NLS-1$
         String replacementString = valueOf(localRef.getCompletion());
         int replacementOffset = localRef.getReplaceStart();
         int replacementLength = localRef.getReplaceEnd() - localRef.getReplaceStart();
-        StyledString displayString = new StyledString(valueOf(localRef.getName())).append(
-                " : " + valueOf(localRef.getTypeName()), StyledString.QUALIFIER_STYLER);
+        StyledString displayString = new StyledString(valueOf(localRef.getName()))
+                .append(" : " + valueOf(localRef.getTypeName()), StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
         Image image = JavaPluginImages.get(IMG_OBJS_LOCAL_VARIABLE);
         int relevance = localRef.getRelevance();
-        return new JavaCompletionProposal(replacementString, replacementOffset, replacementLength, image,
-                displayString, relevance);
+        return new JavaCompletionProposal(replacementString, replacementOffset, replacementLength, image, displayString,
+                relevance);
     }
 
     public static JavaCompletionProposal newFieldRef(AccessibleCompletionProposal fieldRef) {
-        ensureEquals(fieldRef.getKind(), CompletionProposal.FIELD_REF, "proposal kind isn't FIELD_REF");
+        ensureEquals(fieldRef.getKind(), CompletionProposal.FIELD_REF, "Proposal kind is not a reference to a field."); //$NON-NLS-1$
         String replacementString = valueOf(fieldRef.getCompletion());
         int replacementStart = fieldRef.getReplaceStart();
         int replacementLength = fieldRef.getReplaceEnd() - replacementStart;
 
         String fieldName = valueOf(fieldRef.getName());
         String typeName = valueOf(fieldRef.getTypeName());
-        StyledString displayString = new StyledString(fieldName)
-        .append(" : " + typeName, StyledString.QUALIFIER_STYLER);
+        StyledString displayString = new StyledString(fieldName).append(" : " + typeName, //$NON-NLS-1$
+                StyledString.QUALIFIER_STYLER);
         Image image = JavaElementImageProvider.getFieldImageDescriptor(false, fieldRef.getFlags()).createImage();
 
         JavaCompletionProposal p = new JavaCompletionProposal(replacementString, replacementStart, replacementLength,

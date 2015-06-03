@@ -77,7 +77,7 @@ public class ModelsRcpModule extends AbstractModule {
 
     private void createAndBindPerUserNamedFile(String fileName, String name) {
         File userHome = SystemUtils.getUserHome();
-        File dotEclipse = new File(userHome, ".eclipse");
+        File dotEclipse = new File(userHome, ".eclipse"); //$NON-NLS-1$
         File stateLocation = new File(dotEclipse, Constants.BUNDLE_ID);
         createAndBindNamedFile(fileName, name, stateLocation);
     }

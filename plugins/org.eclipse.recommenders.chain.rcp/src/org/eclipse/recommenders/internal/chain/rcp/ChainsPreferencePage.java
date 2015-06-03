@@ -34,15 +34,15 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 
 import com.google.common.base.Joiner;
 
-public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEditorPreferencePage implements
-        IWorkbenchPreferencePage {
+public class ChainsPreferencePage extends org.eclipse.jface.preference.FieldEditorPreferencePage
+        implements IWorkbenchPreferencePage {
 
     public static final String PREF_MAX_CHAINS = "recommenders.chain.max_chains"; //$NON-NLS-1$
     public static final String PREF_MIN_CHAIN_LENGTH = "recommenders.chain.min_chain_length"; //$NON-NLS-1$
     public static final String PREF_MAX_CHAIN_LENGTH = "recommenders.chain.max_chain_length"; //$NON-NLS-1$
     public static final String PREF_TIMEOUT = "recommenders.chain.timeout"; //$NON-NLS-1$
     public static final String PREF_IGNORED_TYPES = "recommenders.chain.ignore_types"; //$NON-NLS-1$
-    public static final String PREF_ENABLE_QUICK_ASSIST_CHAINS = "recommenders.chain.enable_quick_assist_chains"; //$NON-NLS-1
+    public static final String PREF_ENABLE_QUICK_ASSIST_CHAINS = "recommenders.chain.enable_quick_assist_chains"; //$NON-NLS-1$
 
     public static final char IGNORE_TYPES_SEPARATOR = '|';
 

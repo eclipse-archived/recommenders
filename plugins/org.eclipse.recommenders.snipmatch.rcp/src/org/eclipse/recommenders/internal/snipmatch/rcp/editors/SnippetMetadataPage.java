@@ -647,7 +647,7 @@ public class SnippetMetadataPage extends FormPage {
                     ProjectCoordinate pc = cast(source);
                     return getStringForDependency(pc);
                 }
-                return "";
+                return ""; //$NON-NLS-1$
             }
 
             @Override

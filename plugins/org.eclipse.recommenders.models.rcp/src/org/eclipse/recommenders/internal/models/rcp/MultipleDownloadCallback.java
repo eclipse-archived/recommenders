@@ -84,12 +84,12 @@ public class MultipleDownloadCallback extends DownloadCallback {
     }
 
     private String createProgressMessage(long transferred) {
-        return MessageFormat.format(Messages.JOB_DOWNLOAD_TRANSFERRED_SIZE,
+        return MessageFormat.format(Messages.MONITOR_NAME_DOWNLOAD_TRANSFERRED_SIZE,
                 FileUtils.byteCountToDisplaySize(transferred));
     }
 
     private String createProgressMessage(long transferred, long total) {
-        return MessageFormat.format(Messages.JOB_DOWNLOAD_TRANSFERRED_TOTAL_SIZE,
+        return MessageFormat.format(Messages.MONITOR_NAME_DOWNLOAD_TRANSFERRED_TOTAL_SIZE,
                 FileUtils.byteCountToDisplaySize(transferred), FileUtils.byteCountToDisplaySize(total));
     }
 

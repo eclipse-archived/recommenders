@@ -593,9 +593,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
             String snippetDescription = snippet.getDescription();
             String line = ""; //$NON-NLS-1$
             if (StringUtils.isEmptyOrNull(snippetDescription)) {
-                line = " * " + snippet.getName();
+                line = " * " + snippet.getName(); //$NON-NLS-1$
             } else {
-                line = " * " + snippet.getName() + " - " + snippet.getDescription();
+                line = " * " + snippet.getName() + " - " + snippet.getDescription(); //$NON-NLS-1$ //$NON-NLS-2$
             }
             sb.append(abbreviate(line, COMMIT_MESSAGE_LINE_LENGTH));
             sb.append(LINE_SEPARATOR);

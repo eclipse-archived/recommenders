@@ -880,7 +880,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
             public void run() {
                 Job.getJobManager().cancel(SearchJob.SEARCH_JOB_FAMILY);
                 Job.getJobManager().cancel(RefreshTableJob.REFRESH_TABLE_JOB_FAMILY);
-                final String query = txtSearch.isDisposed() ? "" : txtSearch.getText();
+                final String query = txtSearch.isDisposed() ? "" : txtSearch.getText(); //$NON-NLS-1$
                 Job searchSnippetsJob = new SearchJob(Messages.JOB_NAME_SEARCHING_SNIPPET_REPOSITORIES, query);
                 Job refreshTableJob = new RefreshTableJob(Messages.JOB_NAME_REFRESHING_SNIPPETS_VIEW);
                 Jobs.sequential(Messages.JOB_GROUP_UPDATING_SNIPPETS_VIEW, searchSnippetsJob, refreshTableJob);
