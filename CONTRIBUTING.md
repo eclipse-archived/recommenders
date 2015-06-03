@@ -143,6 +143,13 @@ Thereafter, switch to the next (SNAPSHOT) version:
 - `git checkout HEAD^ -- '*'`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${NEXT_VERSION}-SNAPSHOT`
 
+The version numbers of the required `org.eclipse.recommenders.*` bundles will now have to be updated in the `META-INF/MANIFEST.MF` files of each project.
+To do this perform the following three steps:
+
+- `export SECOND_NEXT_VERSION=x.y.(z+2)`
+- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${RELEASE_VERSION},${NEXT_VERSION}\([)\"]*\)/\1${NEXT_VERSION},${SECOND_NEXT_VERSION}\2/"`
+- `find plugins -type f -iname "*.bak" | xargs rm`
+
 Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
 
 - `git commit -a -m "[releng] ${NEXT_VERSION}-SNAPSHOT"`
