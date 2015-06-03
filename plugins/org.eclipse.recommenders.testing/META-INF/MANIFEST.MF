@@ -20,5 +20,11 @@ Require-Bundle: org.eclipse.core.resources,
 Import-Package: org.apache.commons.lang3;version="[3.1.0,4.0.0)",
  org.apache.commons.lang3.builder;version="[3.1.0,4.0.0)"
 Export-Package: org.eclipse.recommenders.testing,
- org.eclipse.recommenders.testing.jayes,
- org.eclipse.recommenders.testing.jdt
+ org.eclipse.recommenders.testing.jayes;uses:="org.eclipse.recommenders.jayes",
+ org.eclipse.recommenders.testing.jdt;
+  uses:="org.eclipse.core.runtime,
+   org.eclipse.jdt.core,
+   org.eclipse.jdt.core.dom,
+   org.eclipse.recommenders.utils,
+   org.eclipse.jdt.internal.codeassist,
+   org.eclipse.core.resources"
