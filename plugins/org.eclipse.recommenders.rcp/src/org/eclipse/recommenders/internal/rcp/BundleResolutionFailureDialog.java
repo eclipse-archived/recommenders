@@ -124,7 +124,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             try {
                 ((ScopedPreferenceStore) getPrefStore()).save();
             } catch (IOException e) {
-                log(PREFERENCES_NOT_SAVED, e);
+                log(ERROR_PREFERENCES_NOT_SAVED, e);
             }
         }
         if (buttonId == IDialogConstants.INTERNAL_ID) {
@@ -153,7 +153,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
     private String buildCommandLine() {
         String property = System.getProperty(PROP_VM);
         if (property == null) {
-            log(RESTART_ECLIPSE_NOT_POSSIBLE);
+            log(ERROR_DIALOG_RESTART_NOT_POSSIBLE);
             return null;
         }
 

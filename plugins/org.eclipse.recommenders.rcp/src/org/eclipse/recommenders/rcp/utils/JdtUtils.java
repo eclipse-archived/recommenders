@@ -13,7 +13,7 @@ package org.eclipse.recommenders.rcp.utils;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.*;
 import static org.eclipse.jdt.ui.SharedASTProvider.*;
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.FAILED_TO_RESOLVE_TYPE_PARAMETER;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
 import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.*;
 
@@ -229,7 +229,7 @@ public final class JdtUtils {
                 }
             }
         } catch (final Exception e) {
-            Logs.log(FAILED_TO_RESOLVE_TYPE_PARAMETER, t.getElementName(), e);
+            Logs.log(ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER, t.getElementName(), e);
         }
         return fromNullable(type);
     }
@@ -526,7 +526,7 @@ public final class JdtUtils {
     }
 
     public static void log(final Exception e) {
-        Logs.log(LogMessages.AN_ERROR_OCCURRED, e);
+        Logs.log(LogMessages.ERROR_AN_ERROR_OCCURRED, e);
     }
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {
@@ -559,9 +559,10 @@ public final class JdtUtils {
         if (isPrimitiveTypeSignature(typeSignature)) {
             return of(Names.vm2srcTypeName(typeSignature));
         }
+        IType type = null;
         try {
             typeSignature = typeSignature.replace('/', '.');
-            final IType type = findClosestTypeOrThis(parent);
+            type = findClosestTypeOrThis(parent);
             if (type == null) {
                 throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent); //$NON-NLS-1$
             }
@@ -570,10 +571,11 @@ public final class JdtUtils {
                 // return fall-back. This happens for instance when giving <T>
                 // or QT; respectively.
                 return of("java.lang.Object"); //$NON-NLS-1$
+            } else {
+                return of(resolvedTypeSignature);
             }
-            return of(resolvedTypeSignature);
-        } catch (final Exception e) {
-            log(e);
+        } catch (Exception e) {
+            Logs.log(LogMessages.ERROR_FAILED_TO_RESOLVE_UNQUALIFIED_TYPE_NAME, e, typeSignature, type);
             return absent();
         }
     }

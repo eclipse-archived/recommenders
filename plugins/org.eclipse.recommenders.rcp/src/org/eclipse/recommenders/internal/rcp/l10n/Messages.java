@@ -20,17 +20,20 @@ public final class Messages extends NLS {
     public static String PREFPAGE_LINKS_DESCRIPTION;
 
     public static String LOG_ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY;
-    public static String LOG_ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK;
-    public static String LOG_ERROR_PREFERENCES_NOT_SAVED;
-    public static String LOG_ERROR_FAILED_TO_RESOLVE_SELECTION;
-    public static String LOG_ERROR_EXCEPTION_WHILE_CHECKING_OFFSETS;
-    public static String LOG_ERROR_ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER;
-    public static String LOG_ERROR_FAILED_TO_RESOLVE_METHOD;
-    public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
-    public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
-    public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
-    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
     public static String LOG_ERROR_AN_ERROR_OCCURRED;
+    public static String LOG_ERROR_ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER;
+    public static String LOG_ERROR_DIALOG_RESTART_NOT_POSSIBLE;
+    public static String LOG_ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK;
+    public static String LOG_ERROR_EXCEPTION_WHILE_CHECKING_OFFSETS;
+    public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
+    public static String LOG_ERROR_FAILED_TO_GENERATE_UUID;
+    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_METHOD;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_SELECTION;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_UNQUALIFIED_TYPE_NAME;
+    public static String LOG_ERROR_PREFERENCES_NOT_SAVED;
+
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED;
     public static String LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED_ITEM;
 
@@ -41,7 +44,6 @@ public final class Messages extends NLS {
     public static String DIALOG_MESSAGE_BUNDLE_RESOLUTION_FILE_A_BUG;
     public static String DIALOG_BUTTON_RESTART;
     public static String DIALOG_LABEL_BUNDLE_LIST;
-    public static String DIALOG_RESTART_NOT_POSSIBLE;
 
     public static String NEWS_NOTIFY_MESSAGE;
     public static String NEWS_LOADING_MESSAGE;

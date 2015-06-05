@@ -161,7 +161,7 @@ public final class JavaElementSelections {
             // actually, these can happen when using snipmatch's in-editor completion.
             // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
             if (!isInvalidSelection(root, offset)) {
-                log(FAILED_TO_RESOLVE_SELECTION, root.getHandleIdentifier(), offset, e);
+                log(ERROR_FAILED_TO_RESOLVE_SELECTION, root.getHandleIdentifier(), offset, e);
             }
             return absent();
         }
@@ -181,7 +181,7 @@ public final class JavaElementSelections {
             ISourceRange range = root.getSourceRange();
             return range == null || offset < 0 || offset > range.getLength();
         } catch (Exception e) {
-            log(EXCEPTION_WHILE_CHECKING_OFFSETS, e);
+            log(ERROR_EXCEPTION_WHILE_CHECKING_OFFSETS, e);
             return false;
         }
     }

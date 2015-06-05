@@ -110,7 +110,7 @@ public class JavaElementResolver {
         if (recType.isArrayType()) {
             // TODO see https://bugs.eclipse.org/bugs/show_bug.cgi?id=339806
             // should throw an exception? or return an Array type?
-            log(ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER, recType);
+            log(ERROR_ARRAY_TYPE_IN_JAVA_ELEMENT_RESOLVER, recType);
             return absent();
         }
 
@@ -259,7 +259,7 @@ public class JavaElementResolver {
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                log(FAILED_TO_RESOLVE_METHOD, jdtMethod, e.getMessage(), e);
+                log(ERROR_FAILED_TO_RESOLVE_METHOD, jdtMethod, e.getMessage(), e);
                 return absent();
             }
         }
@@ -307,7 +307,7 @@ public class JavaElementResolver {
             }
             return absent();
         } catch (final Exception e) {
-            log(FAILED_TO_RESOLVE_METHOD, recMethod, e.getMessage(), e);
+            log(ERROR_FAILED_TO_RESOLVE_METHOD, recMethod, e.getMessage(), e);
             return absent();
         }
     }

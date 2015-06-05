@@ -201,7 +201,7 @@ public class RcpModule extends AbstractModule implements Module {
                 task.get(2, TimeUnit.SECONDS);
             }
         } catch (final Exception e) {
-            log(ACTIVE_PAGE_FINDER_TOO_EARLY, e);
+            log(ERROR_ACTIVE_PAGE_FINDER_TOO_EARLY, e);
         }
         return finder;
     }
@@ -306,7 +306,7 @@ public class RcpModule extends AbstractModule implements Module {
                         m.setAccessible(true);
                         m.invoke(i);
                     } catch (Exception e) {
-                        Logs.log(EXCEPTION_OCCURRED_IN_SERVICE_HOOK, e, m);
+                        Logs.log(ERROR_EXCEPTION_OCCURRED_IN_SERVICE_HOOK, e, m);
                     }
                 }
 

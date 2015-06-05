@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.utils;
 
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.repeat;
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.FAILED_TO_RESOLVE_METHOD;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.ERROR_FAILED_TO_RESOLVE_METHOD;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Throws.*;
@@ -230,7 +230,7 @@ public final class ASTNodeUtils {
             final ASTNode node = NodeFinder.perform(cu, nameRange);
             return getClosestParent(node, MethodDeclaration.class);
         } catch (final JavaModelException e) {
-            log(FAILED_TO_RESOLVE_METHOD, method, cu, e);
+            log(ERROR_FAILED_TO_RESOLVE_METHOD, method, cu, e);
             return absent();
         }
     }

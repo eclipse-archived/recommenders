@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.links;
 
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
+import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
 
 import java.util.Collections;
 import java.util.List;
@@ -68,13 +68,13 @@ public final class ContributionsReader {
                 }
                 final String labelAttribute = configurationElement.getAttribute(LABEL_ATTRIBUTE);
                 if (!isValidAttribute(labelAttribute)) {
-                    Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, LABEL_ATTRIBUTE, labelAttribute);
+                    Logs.log(ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, LABEL_ATTRIBUTE, labelAttribute);
                     continue;
                 }
 
                 final String commandIdAttribute = configurationElement.getAttribute(COMMAND_ID_ATTRIBUTE);
                 if (!isValidAttribute(commandIdAttribute)) {
-                    Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, COMMAND_ID_ATTRIBUTE, commandIdAttribute);
+                    Logs.log(ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, COMMAND_ID_ATTRIBUTE, commandIdAttribute);
                     continue;
                 }
 
@@ -83,7 +83,7 @@ public final class ContributionsReader {
                 if (priorityAttribute != null) {
                     priority = Ints.tryParse(priorityAttribute);
                     if (priority == null) {
-                        Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, PRIORITY_ATTRIBUTE, priorityAttribute);
+                        Logs.log(ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, PRIORITY_ATTRIBUTE, priorityAttribute);
                         continue;
                     }
                 } else {
@@ -98,7 +98,7 @@ public final class ContributionsReader {
                     if (imageDescriptor != null) {
                         image = imageDescriptor.createImage();
                     } else {
-                        Logs.log(LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, ICON_ATTRIBUTE, iconAttribute);
+                        Logs.log(ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE, ICON_ATTRIBUTE, iconAttribute);
                         continue;
                     }
                 } else {
