@@ -54,6 +54,12 @@ public class TemporaryProject {
         createProject();
     }
 
+    public TemporaryProject withDependencyOn(TemporaryProject dependency) throws JavaModelException {
+        addToClasspath(JavaCore.newProjectEntry(dependency.getProject().getFullPath()));
+
+        return this;
+    }
+
     public TemporaryProject withDependencyOnClassesOf(TemporaryProject dependency) throws JavaModelException {
         IFolder classFileFolder = dependency.getProjectClassFileDirectory();
 
