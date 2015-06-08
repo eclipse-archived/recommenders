@@ -153,7 +153,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
                     });
 
             List<Recommendation<CompletionProposal>> topRecommendations = Recommendations.top(recommendations,
-                    prefs.maxNumberOfProposals, prefs.minProposalProbability / 100.0);
+                    prefs.maxNumberOfProposals, prefs.minProposalPercentage / 100.0);
             if (topRecommendations.isEmpty()) {
                 return false;
             }

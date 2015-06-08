@@ -213,7 +213,7 @@ public class CallCompletionSessionProcessorTest {
     private CallsRcpPreferences createPreferences(int minProposalProbability, int maxNumberOfProposals) {
         CallsRcpPreferences pref = new CallsRcpPreferences();
         pref.maxNumberOfProposals = maxNumberOfProposals;
-        pref.minProposalProbability = minProposalProbability;
+        pref.minProposalPercentage = minProposalProbability;
         return pref;
     }
 

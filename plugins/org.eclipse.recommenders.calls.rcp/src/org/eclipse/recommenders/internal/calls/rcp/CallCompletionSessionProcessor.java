@@ -165,7 +165,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         }
 
         recommendations = top(recommendations, prefs.maxNumberOfProposals,
-                max(prefs.minProposalProbability, 0.01) / 100);
+                max(prefs.minProposalPercentage, 0.01) / 100);
         calculateProposalRelevanceBoostMap();
 
         return !isEmpty(recommendations) || !observedCalls.isEmpty();

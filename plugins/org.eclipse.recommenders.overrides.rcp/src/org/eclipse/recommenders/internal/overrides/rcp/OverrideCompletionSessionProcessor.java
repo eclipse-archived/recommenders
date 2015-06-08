@@ -138,7 +138,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
             }
         }
         recommendations = Recommendations.top(model.recommendOverrides(), prefs.maxNumberOfProposals,
-                prefs.minProposalProbability / 100d);
+                prefs.minProposalPercentage / 100d);
     }
 
     @Override

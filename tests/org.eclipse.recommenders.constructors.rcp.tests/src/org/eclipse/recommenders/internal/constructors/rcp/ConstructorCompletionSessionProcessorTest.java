@@ -302,7 +302,7 @@ public class ConstructorCompletionSessionProcessorTest {
             boolean changeProposalRelevance, boolean decorateProposalText, boolean decorateProposalIcon) {
         ConstructorsRcpPreferences pref = new ConstructorsRcpPreferences();
         pref.maxNumberOfProposals = maxNumberOfProposals;
-        pref.minProposalProbability = minProposalProbability;
+        pref.minProposalPercentage = minProposalProbability;
         pref.changeProposalRelevance = changeProposalRelevance;
         pref.decorateProposalText = decorateProposalText;
         pref.decorateProposalIcon = decorateProposalIcon;

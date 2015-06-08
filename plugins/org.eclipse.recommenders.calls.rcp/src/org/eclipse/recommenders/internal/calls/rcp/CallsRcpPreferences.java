@@ -20,9 +20,12 @@ import org.eclipse.e4.core.di.extensions.Preference;
 @SuppressWarnings("restriction")
 public class CallsRcpPreferences {
 
+    /**
+     * The minimum percentage (in the range [0, 100]) that a proposal needs to have before displaying it in the UI.
+     */
     @Inject
-    @Preference(PREF_MIN_PROPOSAL_PROBABILITY)
-    public int minProposalProbability;
+    @Preference(PREF_MIN_PROPOSAL_PERCENTAGE)
+    public int minProposalPercentage;
 
     @Inject
     @Preference(PREF_MAX_NUMBER_OF_PROPOSALS)

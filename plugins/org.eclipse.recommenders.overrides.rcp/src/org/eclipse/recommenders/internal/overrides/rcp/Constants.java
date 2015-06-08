@@ -22,9 +22,9 @@ public final class Constants {
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.overrides.rcp"; //$NON-NLS-1$
 
     /**
-     * minimum probability a proposal needs to have before displaying it in the UI.
+     * The minimum percentage (in the range [0, 100]) that a proposal needs to have before displaying it in the UI.
      */
-    public static final String PREF_MIN_PROPOSAL_PROBABILITY = "min_proposal_probability"; //$NON-NLS-1$
+    public static final String PREF_MIN_PROPOSAL_PERCENTAGE = "min_proposal_percentage"; //$NON-NLS-1$
 
     /**
      * The maximal number of proposals recommended by the recommender.

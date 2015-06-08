@@ -34,7 +34,7 @@ public class OverridesPreferencePage extends FieldEditorPreferencePage implement
     protected void createFieldEditors() {
         addField(new IntegerFieldEditor(PREF_MAX_NUMBER_OF_PROPOSALS, Messages.FIELD_LABEL_MAX_NUMBER_OF_PROPOSALS,
                 getFieldEditorParent(), 3));
-        addField(new IntegerFieldEditor(PREF_MIN_PROPOSAL_PROBABILITY, Messages.FIELD_LABEL_MIN_PROPOSAL_PROBABILITY,
+        addField(new IntegerFieldEditor(PREF_MIN_PROPOSAL_PERCENTAGE, Messages.FIELD_LABEL_MIN_PROPOSAL_PERCENTAGE,
                 getFieldEditorParent(), 3));
         addField(new BooleanFieldEditor(PREF_DECORATE_PROPOSAL_ICON, Messages.FIELD_LABEL_DECORATE_PROPOSAL_ICON,
                 getFieldEditorParent()));
