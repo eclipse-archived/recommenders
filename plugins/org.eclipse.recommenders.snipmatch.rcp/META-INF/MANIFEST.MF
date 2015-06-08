@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.snipmatch.rcp;singleton:=true
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.2.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -26,15 +26,15 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.jface.databinding,
  org.eclipse.jface.text,
  org.eclipse.jgit,
- org.eclipse.recommenders.coordinates;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.coordinates.rcp;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.injection;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.jdt;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.models;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.models.rcp;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.rcp;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.snipmatch;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.utils;bundle-version="[2.2.0,2.2.1)",
+ org.eclipse.recommenders.coordinates;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.coordinates.rcp;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.injection;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.jdt;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.models;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.models.rcp;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.snipmatch;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.utils;bundle-version="[2.2.1,2.2.2)",
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.forms,

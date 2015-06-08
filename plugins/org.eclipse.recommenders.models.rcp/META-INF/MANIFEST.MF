@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.models.rcp;singleton:=true
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.2.1.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -16,12 +16,12 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.jdt.core,
  org.eclipse.jface.databinding,
- org.eclipse.recommenders.coordinates;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.coordinates.rcp;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.injection;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.models;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.rcp;bundle-version="[2.2.0,2.2.1)",
- org.eclipse.recommenders.utils;bundle-version="[2.2.0,2.2.1)",
+ org.eclipse.recommenders.coordinates;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.coordinates.rcp;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.injection;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.models;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.utils;bundle-version="[2.2.1,2.2.2)",
  org.eclipse.ui,
  org.eclipse.ui.ide
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
