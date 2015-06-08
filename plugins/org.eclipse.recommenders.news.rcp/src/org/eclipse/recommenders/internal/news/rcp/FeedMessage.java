@@ -19,6 +19,7 @@ public class FeedMessage implements IFeedMessage {
     private final String description;
     private final String title;
     private final URL url;
+    private boolean read = false;
 
     public FeedMessage(String id, Date date, String description, String title, URL url) {
         super();
@@ -56,18 +57,23 @@ public class FeedMessage implements IFeedMessage {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         FeedMessage rhs = (FeedMessage) obj;
         if (id == null) {
-            if (rhs.id != null)
+            if (rhs.id != null) {
                 return false;
-        } else if (!id.equals(rhs.id))
+            }
+        } else if (!id.equals(rhs.id)) {
             return false;
+        }
         return true;
     }
 
@@ -75,7 +81,18 @@ public class FeedMessage implements IFeedMessage {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (id == null ? 0 : id.hashCode());
         return result;
+    }
+
+    @Override
+    public boolean isRead() {
+        return read;
+    }
+
+    @Override
+    public void markAsRead() {
+        read = true;
+
     }
 }

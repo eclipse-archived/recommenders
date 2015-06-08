@@ -11,8 +11,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
-import org.eclipse.recommenders.news.rcp.IRssService;
+import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.ui.IWorkbench;
 
 import com.google.common.eventbus.EventBus;
@@ -36,9 +35,8 @@ public class NewsRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    IRssService provideRssService(NewsRcpPreferences preferences, EventBus eventBus,
-            NotificationEnvironment environment, JobProvider provider) {
-        return new RssService(preferences, eventBus, environment, provider);
+    INewsService provideRssService(NewsRcpPreferences preferences, EventBus eventBus, JobFacade provider) {
+        return new NewsService(preferences, eventBus, provider);
     }
 
 }

@@ -25,7 +25,7 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.recommenders.news.rcp.IRssService;
+import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -37,12 +37,12 @@ import com.google.common.collect.Lists;
 
 public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    private final IRssService service;
+    private final INewsService service;
     private BooleanFieldEditor enabledEditor;
     private FeedEditor feedEditor;
 
     @Inject
-    public NewsFeedPreferencePage(IRssService service) {
+    public NewsFeedPreferencePage(INewsService service) {
         super(GRID);
         this.service = service;
     }
@@ -77,15 +77,17 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
             // News has been activated
             service.start();
         }
-        for (FeedDescriptor oldFeed : oldFeedValue) {
-            FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
-            if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
-                service.start(newFeed);
-            }
-            if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
-                service.removeFeed(newFeed);
-            }
-        }
+
+        // TODO make sure preference change takes effect immediately
+        // for (FeedDescriptor oldFeed : oldFeedValue) {
+        // FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
+        // if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
+        // service.start(newFeed);
+        // }
+        // if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
+        // service.removeFeed(newFeed);
+        // }
+        // }
         return result;
     }
 

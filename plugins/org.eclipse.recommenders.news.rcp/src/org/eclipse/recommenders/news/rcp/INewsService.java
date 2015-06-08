@@ -11,14 +11,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
+import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 
-public interface IRssService {
+public interface INewsService {
 
     Map<FeedDescriptor, List<IFeedMessage>> getMessages(int countPerFeed);
 
     void start();
 
-    void start(FeedDescriptor feed);
-
     void removeFeed(FeedDescriptor feed);
+
+    void handleMessageRead(FeedMessageReadEvent event);
+
+    boolean shouldPoll(FeedDescriptor feed);
+
+    void jobDone(IPollFeedJob job);
+
 }

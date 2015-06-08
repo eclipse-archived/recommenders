@@ -9,16 +9,16 @@ package org.eclipse.recommenders.internal.news.rcp;
 
 import javax.inject.Inject;
 
-import org.eclipse.recommenders.news.rcp.IRssService;
+import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.ui.IStartup;
 
 public class Startup implements IStartup {
 
-    private final IRssService service;
+    private final INewsService service;
     private final NewsRcpPreferences preferences;
 
     @Inject
-    public Startup(IRssService service, NewsRcpPreferences preferences) {
+    public Startup(INewsService service, NewsRcpPreferences preferences) {
         this.service = service;
         this.preferences = preferences;
 

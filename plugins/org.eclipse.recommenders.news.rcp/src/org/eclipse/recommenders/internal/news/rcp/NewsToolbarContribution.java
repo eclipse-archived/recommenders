@@ -20,7 +20,7 @@ import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NewsNotificationPopup;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NoNewsNotificationPopup;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
-import org.eclipse.recommenders.news.rcp.IRssService;
+import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -33,14 +33,14 @@ import com.google.common.eventbus.Subscribe;
 
 public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
 
-    private final IRssService service;
+    private final INewsService service;
     private final SharedImages images;
     private final EventBus eventBus;
 
     private UpdatingNewsAction updatingNewsAction;
 
     @Inject
-    public NewsToolbarContribution(IRssService service, SharedImages images, EventBus eventBus) {
+    public NewsToolbarContribution(INewsService service, SharedImages images, EventBus eventBus) {
         this.service = service;
         this.images = images;
         this.eventBus = eventBus;
