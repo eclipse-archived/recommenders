@@ -43,19 +43,14 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_FAILED_TO_GENERATE_UUID);
     public static final LogMessages ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_RESOLVE_TYPE_PARAMETER);
-    public static final LogMessages ERROR_AN_ERROR_OCCURRED = new LogMessages(ERROR, Messages.LOG_ERROR_AN_ERROR_OCCURRED);
+    public static final LogMessages ERROR_AN_ERROR_OCCURRED = new LogMessages(ERROR,
+            Messages.LOG_ERROR_AN_ERROR_OCCURRED);
     public static final LogMessages ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND);
     public static final LogMessages ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE);
     public static final LogMessages ERROR_FAILED_TO_RESOLVE_UNQUALIFIED_TYPE_NAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_RESOLVE_UNQUALIFIED_TYPE_NAME);
-    public static final ILogMessage ERROR_ON_PROXY_AUTHENTICATION_TEST = new LogMessages(ERROR,
-            Messages.LOG_ERROR_ON_PROXY_AUTHENTICATION_TEST);
-    public static final ILogMessage ERROR_ON_APACHE_HEAD_REQUEST = new LogMessages(ERROR,
-            Messages.LOG_ERROR_ON_APACHE_HEAD_REQUEST);
-    public static final ILogMessage ERROR_ON_P2_HEAD_REQUEST = new LogMessages(ERROR,
-            Messages.LOG_ERROR_ON_P2_HEAD_REQUEST);
 
     public static final ILogMessage WARNING_EXCEPTION_PARSING_NEWS_FEED = new LogMessages(WARNING,
             Messages.LOG_WARNING_ERROR_WHILE_PARSING_NEWS_FEED);
