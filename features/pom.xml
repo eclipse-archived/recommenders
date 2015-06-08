@@ -29,21 +29,6 @@
 	</modules>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-packaging-plugin</artifactId>
-					<configuration>
-						<archive>
-							<!-- Workaround to Bug 411443: Avoids extremely long filenames in META-INF/maven. -->
-							<!-- See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=411443>. -->
-							<addMavenDescriptor>false</addMavenDescriptor>
-						</archive>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
