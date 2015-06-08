@@ -7,6 +7,8 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import java.util.concurrent.TimeUnit;
+
 public final class Constants {
 
     private Constants() {
@@ -17,5 +19,7 @@ public final class Constants {
     public static final String PREF_FEED_LIST_SORTED = "feed.list.sorted"; //$NON-NLS-1$
     public static final String PREF_NEWS_ENABLED = "newsEnabled"; //$NON-NLS-1$
     public static final String JOB_FAMILY = "newsFeedJob"; //$NON-NLS-1$
+    public static final String PREF_POLLING_INTERVAL = "pollingInterval"; //$NON-NLS-1$
+    public static final Long DEFAULT_POLLING_INTERVAL = TimeUnit.HOURS.toMinutes(3);
 
 }

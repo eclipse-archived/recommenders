@@ -10,10 +10,7 @@ package org.eclipse.recommenders.news.rcp;
 import java.util.Collection;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.NewsService;
 
 public interface IJobFacade {
-    boolean jobExists(IPollFeedJob job);
-
-    void schedule(Collection<FeedDescriptor> feeds, NewsService service);
+    void schedule(Collection<FeedDescriptor> feeds, INewsService service);
 }

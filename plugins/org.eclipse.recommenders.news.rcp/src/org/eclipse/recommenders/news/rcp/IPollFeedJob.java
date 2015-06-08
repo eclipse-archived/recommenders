@@ -7,7 +7,7 @@
  */
 package org.eclipse.recommenders.news.rcp;
 
-import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +17,6 @@ public interface IPollFeedJob {
 
     Map<FeedDescriptor, List<IFeedMessage>> getMessages();
 
-    void setFeeds(Collection<FeedDescriptor> feeds);
+    Map<FeedDescriptor, Date> getPollDates();
 
 }

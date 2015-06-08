@@ -19,7 +19,6 @@ public class FeedMessage implements IFeedMessage {
     private final String description;
     private final String title;
     private final URL url;
-    private boolean read = false;
 
     public FeedMessage(String id, Date date, String description, String title, URL url) {
         super();
@@ -83,16 +82,5 @@ public class FeedMessage implements IFeedMessage {
         int result = 1;
         result = prime * result + (id == null ? 0 : id.hashCode());
         return result;
-    }
-
-    @Override
-    public boolean isRead() {
-        return read;
-    }
-
-    @Override
-    public void markAsRead() {
-        read = true;
-
     }
 }

@@ -18,7 +18,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-@SuppressWarnings("restriction")
 public class NewsRcpModule extends AbstractModule {
 
     @Override
@@ -35,8 +34,9 @@ public class NewsRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    INewsService provideRssService(NewsRcpPreferences preferences, EventBus eventBus, JobFacade provider) {
-        return new NewsService(preferences, eventBus, provider);
+    INewsService provideNewsService(NewsRcpPreferences preferences, EventBus eventBus, JobFacade provider,
+            NewsFeedProperties properties) {
+        return new NewsService(preferences, eventBus, provider, properties);
     }
 
 }

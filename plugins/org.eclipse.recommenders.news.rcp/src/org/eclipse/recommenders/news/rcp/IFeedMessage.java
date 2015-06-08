@@ -21,8 +21,4 @@ public interface IFeedMessage {
     String getTitle();
 
     URL getUrl();
-
-    boolean isRead();
-
-    void markAsRead();
 }

@@ -29,14 +29,23 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     @Preference(Constants.PREF_FEED_LIST_SORTED)
     private String feeds;
 
+    @Inject
+    @Preference(Constants.PREF_POLLING_INTERVAL)
+    private Long pollingInterval;
+
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Long getPollingInterval() {
+        return pollingInterval;
     }
 
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(Constants.PLUGIN_ID);
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
+        s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.store(FeedDescriptors.getRegisteredFeeds()));
     }
 
