@@ -11,6 +11,8 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.io.File.separator;
 import static java.util.Arrays.asList;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,14 +25,17 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Nonnull;
 import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.recommenders.utils.Zips;
 
 import com.google.common.collect.Sets;
 
@@ -38,6 +43,7 @@ public class TemporaryProject {
 
     static final String BIN_FOLDER_NAME = "bin";
     static final String SRC_FOLDER_NAME = "src";
+    static final String JAR_FOLDER_NAME = "jar";
 
     private final Set<TemporaryFile> temporaryFiles = Sets.newHashSet();
     private final IWorkspace workspace;
@@ -52,45 +58,6 @@ public class TemporaryProject {
         this.project = workspace.getRoot().getProject(name);
 
         createProject();
-    }
-
-    public TemporaryProject withDependencyOn(TemporaryProject dependency) throws JavaModelException {
-        addToClasspath(JavaCore.newProjectEntry(dependency.getProject().getFullPath()));
-
-        return this;
-    }
-
-    public TemporaryProject withDependencyOnClassesOf(TemporaryProject dependency) throws JavaModelException {
-        IFolder classFileFolder = dependency.getProjectClassFileDirectory();
-
-        addToClasspath(JavaCore.newLibraryEntry(classFileFolder.getFullPath(), null, null));
-
-        return this;
-    }
-
-    public TemporaryFile createFile(CharSequence code) throws CoreException {
-        TemporaryFile tempFile = new TemporaryFile(this, code);
-        temporaryFiles.add(tempFile);
-        return tempFile;
-    }
-
-    private IFolder getProjectClassFileDirectory() {
-        return project.getFolder(BIN_FOLDER_NAME);
-    }
-
-    void refreshAndBuildProject() throws CoreException {
-        project.refreshLocal(IResource.DEPTH_INFINITE, null);
-        project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-    }
-
-    private void addToClasspath(@Nonnull final IClasspathEntry classpathEntry) throws JavaModelException {
-        final Set<IClasspathEntry> entries = newHashSet();
-
-        entries.addAll(asList(javaProject.getRawClasspath()));
-        entries.add(classpathEntry);
-
-        IClasspathEntry[] classpaths = entries.toArray(new IClasspathEntry[entries.size()]);
-        javaProject.setRawClasspath(classpaths, null);
     }
 
     private void createProject() {
@@ -159,6 +126,54 @@ public class TemporaryProject {
         javaProject = JavaCore.create(project);
     }
 
+    public TemporaryProject withDependencyOn(TemporaryProject dependency) throws JavaModelException {
+        addToClasspath(JavaCore.newProjectEntry(dependency.getProject().getFullPath()));
+        return this;
+    }
+
+    public TemporaryProject withDependencyOnClassesOf(TemporaryProject dependency) throws JavaModelException {
+        IFolder classFileFolder = dependency.getProjectClassFileDirectory();
+        addToClasspath(JavaCore.newLibraryEntry(classFileFolder.getFullPath(), null, null));
+        return this;
+    }
+
+    public TemporaryProject withDependencyOnJarOf(TemporaryProject dependency) throws IOException, JavaModelException {
+        addToClasspath(JavaCore.newLibraryEntry(dependency.createJar(), null, null));
+        return this;
+    }
+
+    public TemporaryFile createFile(CharSequence code) throws CoreException {
+        TemporaryFile tempFile = new TemporaryFile(this, code);
+        temporaryFiles.add(tempFile);
+        return tempFile;
+    }
+
+    private void addToClasspath(@Nonnull final IClasspathEntry classpathEntry) throws JavaModelException {
+        final Set<IClasspathEntry> entries = newHashSet();
+
+        entries.addAll(asList(javaProject.getRawClasspath()));
+        entries.add(classpathEntry);
+
+        IClasspathEntry[] classpaths = entries.toArray(new IClasspathEntry[entries.size()]);
+        javaProject.setRawClasspath(classpaths, null);
+    }
+
+    private IFolder getProjectClassFileDirectory() {
+        return project.getFolder(BIN_FOLDER_NAME);
+    }
+
+    private Path createJar() throws IOException {
+        String jarPath = this.getAbsolutePathString() + separator + this.getName() + Constants.DOT_JAR;
+        File jar = new File(jarPath);
+
+        String pathToClassDirectory = this.getAbsolutePathString() + separator + BIN_FOLDER_NAME;
+        File classFileDirectory = new File(pathToClassDirectory);
+
+        Zips.zip(classFileDirectory, jar);
+
+        return new Path(jarPath);
+    }
+
     String getName() {
         return name;
     }
@@ -169,5 +184,18 @@ public class TemporaryProject {
 
     IJavaProject getJavaProject() {
         return javaProject;
+    }
+
+    String getAbsolutePathString() {
+        return project.getLocation().toString();
+    }
+
+    String getWorkspaceRelativePathString() {
+        return project.getFullPath().toString();
+    }
+
+    void refreshAndBuildProject() throws CoreException {
+        project.refreshLocal(IResource.DEPTH_INFINITE, null);
+        project.build(IncrementalProjectBuilder.FULL_BUILD, null);
     }
 }

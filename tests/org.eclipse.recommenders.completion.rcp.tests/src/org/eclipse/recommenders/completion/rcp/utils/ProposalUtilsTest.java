@@ -52,10 +52,6 @@ public class ProposalUtilsTest {
     private static final IMethodName INNER_INIT_EXAMPLE = VmMethodName.get("LExample$Inner.<init>(LExample;)V");
     private static final IMethodName INNER_INIT_EXAMPLE_OBJECT = VmMethodName
             .get("LExample$Inner.<init>(LExample;Ljava/lang/Object;)V");
-    private static final IMethodName INNER_INIT_EXAMPLE_NUMBER = VmMethodName
-            .get("LExample$Inner.<init>(LExample;Ljava/lang/Number;)V");
-    private static final IMethodName INNER_INIT_EXAMPLE_COLLECTION = VmMethodName
-            .get("LExample$Inner.<init>(LExample;Ljava/util/Collection;)V");
 
     private static final IMethodName COMPARE_TO_BOOLEAN = VmMethodName
             .get("Ljava/lang/Boolean.compareTo(Ljava/lang/Boolean;)I");
