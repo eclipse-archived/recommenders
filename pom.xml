@@ -66,7 +66,7 @@
 	<properties>
 		<recommendersVersion>2.2.0-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
-		<tychoVersion>0.22.0</tychoVersion>
+		<tychoVersion>0.23.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>luna</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
