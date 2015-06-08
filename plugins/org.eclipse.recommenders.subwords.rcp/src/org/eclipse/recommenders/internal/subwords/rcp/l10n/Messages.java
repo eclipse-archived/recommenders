@@ -21,9 +21,6 @@ public final class Messages extends NLS {
     public static String PREFPAGE_LABEL_PREFIX_LENGTH;
     public static String PREFPAGE_TOOLTIP_PREFIX_LENGTH;
 
-    public static String PROPOSAL_LABEL_SUBWORDS_COMPLETION_WELCOME;
-    public static String PROPOSAL_TOOLTIP_SUBWORDS_COMPLETION_WELCOME;
-
     public static String LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION;
     public static String LOG_ERROR_UNEXPECTED_FALLTHROUGH;
     public static String LOG_ERROR_COMPLETION_CONTEXT_NOT_COLLECTED;

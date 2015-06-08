@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -53,6 +54,8 @@ public class EnableTypesCompletionProposal extends AbstractCompletionTipProposal
     // this proposal should appear below the enable code completion proposal
     private static final int ENABLE_TYPE_COMPLETION_RELEVANCE = ENABLE_CODE_COMPLETION_RELEVANCE - RELEVANCE_STEP_SIZE;
 
+    private static final int TIME_DELAY_IN_MINUTES = 15;
+
     private final CompletionRcpPreferences preferences;
 
     @Inject
@@ -64,10 +67,15 @@ public class EnableTypesCompletionProposal extends AbstractCompletionTipProposal
         StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLE_TYPES_COMPLETION, DECORATIONS_STYLER);
         setStyledDisplayString(text);
         setSortString(text.getString());
+        suppressProposal(TIME_DELAY_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     @Override
     public boolean isApplicable(IRecommendersCompletionContext context) {
+        if (!super.isApplicable(context)) {
+            return false;
+        }
+
         SessionProcessorDescriptor descriptor = preferences.getSessionProcessorDescriptor(SESSION_PROCESSOR_ID);
         if (descriptor == null) {
             return false;

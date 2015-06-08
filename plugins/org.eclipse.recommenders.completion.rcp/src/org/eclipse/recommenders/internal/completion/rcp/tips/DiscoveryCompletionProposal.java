@@ -12,12 +12,13 @@ package org.eclipse.recommenders.internal.completion.rcp.tips;
 
 import static org.eclipse.jface.viewers.StyledString.DECORATIONS_STYLER;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposal;
 import org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInformationControl;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
@@ -32,6 +33,8 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
     private static final String DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/completion/directory.xml"; //$NON-NLS-1$
 
+    private static final int TIME_DELAY_IN_MINUTES = 30;
+
     @Inject
     public DiscoveryCompletionProposal(SharedImages images) {
         Image image = images.getImage(Images.OBJ_LIGHTBULB);
@@ -39,11 +42,7 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
         StyledString text = new StyledString(Messages.PROPOSAL_LABEL_DISCOVER_EXTENSIONS, DECORATIONS_STYLER);
         setStyledDisplayString(text);
         setSortString(text.getString());
-    }
-
-    @Override
-    public boolean isApplicable(IRecommendersCompletionContext context) {
-        return true;
+        suppressProposal(TIME_DELAY_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     @Override

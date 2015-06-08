@@ -7,23 +7,31 @@
  */
 package org.eclipse.recommenders.completion.rcp.tips;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
-public abstract class AbstractCompletionTipProposal extends AbstractJavaCompletionProposal implements
-        ICompletionTipProposal {
+public abstract class AbstractCompletionTipProposal extends AbstractJavaCompletionProposal
+        implements ICompletionTipProposal {
 
     private static final Object DUMMY_INFO = new Object();
 
-    // Place this proposal at the bottom of the list.
-    // Use -10001 as Integer.MIN_VALUE does not work (possibly due to underflow) and other proposals (e.g., Subwords
-    // matches) can have a relevance of -10000.
+    /**
+     * Place this proposal at the bottom of the list.
+     * 
+     * We have to use -10001 as Integer.MIN_VALUE does not work (possibly due to underflow) and other proposals (e.g.,
+     * Subwords matches) can have a relevance of -10000.
+     */
     private static final int RELEVANCE = -10001;
+
+    private long suppressProposalDeadlineMillis = 0;
 
     public AbstractCompletionTipProposal() {
         setRelevance(RELEVANCE);
@@ -42,6 +50,11 @@ public abstract class AbstractCompletionTipProposal extends AbstractJavaCompleti
     }
 
     @Override
+    public boolean isApplicable(IRecommendersCompletionContext context) {
+        return !isProposalSuppressed();
+    }
+
+    @Override
     public IInformationControlCreator getInformationControlCreator() {
         return new IInformationControlCreator() {
 
@@ -54,4 +67,12 @@ public abstract class AbstractCompletionTipProposal extends AbstractJavaCompleti
     }
 
     protected abstract IInformationControl createInformationControl(Shell parent, String statusLineText);
+
+    protected void suppressProposal(long suppressionTimespan, TimeUnit timeUnit) {
+        suppressProposalDeadlineMillis = System.currentTimeMillis() + timeUnit.toMillis(suppressionTimespan);
+    }
+
+    protected boolean isProposalSuppressed() {
+        return System.currentTimeMillis() <= suppressProposalDeadlineMillis;
+    }
 }

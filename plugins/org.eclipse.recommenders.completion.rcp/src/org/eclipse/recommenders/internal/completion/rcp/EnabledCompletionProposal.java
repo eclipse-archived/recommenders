@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 
 import static org.eclipse.jdt.internal.ui.JavaPlugin.getActiveWorkbenchShell;
 import static org.eclipse.jface.viewers.StyledString.DECORATIONS_STYLER;
-import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
+import static org.eclipse.recommenders.internal.completion.rcp.Constants.COMPLETION_PREFERENCE_PAGE_ID;
 import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLabelToPreferencePage;
 import static org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn;
 
@@ -26,8 +26,6 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
-import org.eclipse.recommenders.completion.rcp.EnableContentAssistCategoryJob;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
@@ -45,12 +43,12 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
     private static final Object DUMMY_INFO = new Object();
 
     private static final String ABOUT_PREFERENCES = "about:preferences"; //$NON-NLS-1$
-    private static final String ABOUT_DISABLE = "about:disable"; //$NON-NLS-1$
-    private static final String HTTP_HOMEPAGE = "http://www.eclipse.org/recommenders/"; //$NON-NLS-1$
+    private static final String HTTP_HOMEPAGE = "https://www.eclipse.org/recommenders/"; //$NON-NLS-1$
+    private static final String HTTP_MANUAL = "https://www.eclipse.org/recommenders/manual/#completion-engines"; //$NON-NLS-1$
     private static final String PAGE_NAME = createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
 
     private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLED_COMPLETION, PAGE_NAME,
-            ABOUT_PREFERENCES, ABOUT_DISABLE, HTTP_HOMEPAGE);
+            ABOUT_PREFERENCES, HTTP_HOMEPAGE, HTTP_MANUAL);
 
     // leave a bit space for other, maybe more important proposals
     public static final int RELEVANCE_STEP_SIZE = 10000;
@@ -117,13 +115,11 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     dispose();
-                    if (ABOUT_DISABLE.equals(e.text)) {
-                        new DisableContentAssistCategoryJob(RECOMMENDERS_ALL_CATEGORY_ID).schedule();
-                        new EnableContentAssistCategoryJob(MYLYN_ALL_CATEGORY).schedule();
-                        new EnableContentAssistCategoryJob(JDT_ALL_CATEGORY).schedule();
-                    } else if (ABOUT_PREFERENCES.equals(e.text)) {
+                    if (ABOUT_PREFERENCES.equals(e.text)) {
                         openPreferencePage();
                     } else if (HTTP_HOMEPAGE.equals(e.text)) {
+                        BrowserUtils.openInExternalBrowser(e.text);
+                    } else if (HTTP_MANUAL.equals(e.text)) {
                         BrowserUtils.openInExternalBrowser(e.text);
                     }
                 }
