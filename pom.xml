@@ -5,7 +5,7 @@
 
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
-	<version>2.2.0-SNAPSHOT</version>
+	<version>2.2.0</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -64,11 +64,11 @@
 	</distributionManagement>
 
 	<properties>
-		<recommendersVersion>2.2.0-SNAPSHOT</recommendersVersion>
+		<recommendersVersion>2.2.0</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
 		<tychoVersion>0.23.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
-		<simrel>luna</simrel>
+		<simrel>mars</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -536,7 +536,7 @@
 				<property>
 					<name>simrel</name>
 					<!-- This needs to mirror the value of ${env.MAINTENANCE_SIMREL}. -->
-					<value>luna</value>
+					<value>mars</value>
 				</property>
 			</activation>
 			<build>
