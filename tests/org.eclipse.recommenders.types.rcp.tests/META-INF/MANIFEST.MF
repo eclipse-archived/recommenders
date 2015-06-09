@@ -6,7 +6,8 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Fragment-Host: org.eclipse.recommenders.types.rcp
-Require-Bundle: org.eclipse.recommenders.testing.rcp,
+Require-Bundle: org.eclipse.recommenders.testing,
+ org.eclipse.recommenders.testing.rcp,
  org.hamcrest,
  org.junit,
  org.mockito

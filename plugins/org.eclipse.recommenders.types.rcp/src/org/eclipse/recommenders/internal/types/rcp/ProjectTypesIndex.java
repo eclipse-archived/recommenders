@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.types.rcp;
 
 import static com.google.common.base.Objects.equal;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
@@ -91,8 +91,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private static final String V_JAVA_LANG_OBJECT = "java.lang.Object"; //$NON-NLS-1$
     private static final String V_ARCHIVE = "archive"; //$NON-NLS-1$
 
-    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(
-            new Term(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
+    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(new Term(
+            F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
 
     private final IJavaProject project;
     private final File indexDir;
@@ -106,15 +106,18 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private JobFuture activeRebuild = null;
     private boolean rebuildAfterNextAccess;
 
+    private final File onlyIndexedJar;
+
     public ProjectTypesIndex(IJavaProject project, File indexDir) {
-        this(project, indexDir, true);
+        this(project, indexDir, null);
     }
 
     @VisibleForTesting
-    ProjectTypesIndex(IJavaProject project, File indexDir, boolean startService) {
+    ProjectTypesIndex(IJavaProject project, File indexDir, File onlyIndexedJar) {
         this.project = project;
         this.indexDir = indexDir;
-        if (startService) {
+        this.onlyIndexedJar = onlyIndexedJar;
+        if (onlyIndexedJar == null) {
             startAsync();
         }
     }
@@ -138,7 +141,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         writer.commit();
     }
 
-    private boolean needsRebuild() {
+    @VisibleForTesting
+    boolean needsRebuild() {
         List<IPackageFragmentRoot> roots = findArchivePackageFragmentRoots();
         StringBuilder sb = new StringBuilder();
         try {
@@ -172,9 +176,17 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private List<IPackageFragmentRoot> findArchivePackageFragmentRoots() {
-        Iterable<IPackageFragmentRoot> filter = Iterables.filter(JavaElementsFinder.findPackageFragmentRoots(project),
-                new ArchiveFragmentRootsOnlyPredicate());
-        return Ordering.usingToString().sortedCopy(filter);
+        Iterable<IPackageFragmentRoot> filtered = Iterables.filter(
+                JavaElementsFinder.findPackageFragmentRoots(project), new ArchiveFragmentRootsOnlyPredicate());
+        Iterable<IPackageFragmentRoot> result;
+        result = Iterables.filter(filtered, new Predicate<IPackageFragmentRoot>() {
+
+            @Override
+            public boolean apply(IPackageFragmentRoot input) {
+                return onlyIndexedJar == null || input.getPath().toFile().equals(onlyIndexedJar);
+            }
+        });
+        return Ordering.usingToString().sortedCopy(result);
     }
 
     private Set<File> getIndexedRoots() throws IOException {
@@ -219,8 +231,11 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     @Override
     public ImmutableSet<String> subtypes(ITypeName expected, String prefix) {
+        if (!isRunning()) {
+            return ImmutableSet.of();
+        }
         try {
-            return subtypes(Names.vm2srcQualifiedType(expected), prefix);
+            return subtypes(expected, prefix);
         } catch (Exception e) {
             // temporary workaround for
             // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464925
@@ -229,11 +244,14 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         }
     }
 
-    private ImmutableSet<String> subtypes(String type, String prefix) {
-        ImmutableSet.Builder<String> b = ImmutableSet.builder();
-        if (!isRunning() || isBlank(type)) {
-            return b.build();
+    @VisibleForTesting
+    protected ImmutableSet<String> doSubtypes(ITypeName expected, String prefix) {
+        if (expected == null) {
+            return ImmutableSet.of();
         }
+        String type = Names.vm2srcQualifiedType(expected);
+
+        ImmutableSet.Builder<String> b = ImmutableSet.builder();
 
         IndexSearcher searcher = getSearcher();
         BooleanQuery query = new BooleanQuery();
@@ -331,7 +349,9 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         job.schedule(2000);
     }
 
-    private synchronized void rebuild(SubMonitor progress) {
+    @VisibleForTesting
+    synchronized void rebuild(IProgressMonitor monitor) {
+        SubMonitor progress = SubMonitor.convert(monitor);
         List<IPackageFragmentRoot> roots = findArchivePackageFragmentRoots();
         for (IPackageFragmentRoot root : roots) {
             progress.subTask(root.getElementName());

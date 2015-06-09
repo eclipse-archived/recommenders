@@ -163,15 +163,17 @@ public class TemporaryProject {
     }
 
     private Path createJar() throws IOException {
-        String jarPath = this.getAbsolutePathString() + separator + this.getName() + Constants.DOT_JAR;
-        File jar = new File(jarPath);
-
+        String jarPath = getJarPath();
         String pathToClassDirectory = this.getAbsolutePathString() + separator + BIN_FOLDER_NAME;
         File classFileDirectory = new File(pathToClassDirectory);
 
-        Zips.zip(classFileDirectory, jar);
+        Zips.zip(classFileDirectory, new File(jarPath));
 
         return new Path(jarPath);
+    }
+
+    public String getJarPath() {
+        return this.getAbsolutePathString() + separator + this.getName() + Constants.DOT_JAR;
     }
 
     String getName() {
@@ -182,7 +184,7 @@ public class TemporaryProject {
         return project;
     }
 
-    IJavaProject getJavaProject() {
+    public IJavaProject getJavaProject() {
         return javaProject;
     }
 
