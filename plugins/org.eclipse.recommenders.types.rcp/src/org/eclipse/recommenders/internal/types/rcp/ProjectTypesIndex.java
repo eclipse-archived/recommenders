@@ -235,7 +235,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             return ImmutableSet.of();
         }
         try {
-            return subtypes(expected, prefix);
+            return doSubtypes(expected, prefix);
         } catch (Exception e) {
             // temporary workaround for
             // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464925
