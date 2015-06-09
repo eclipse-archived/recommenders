@@ -37,6 +37,7 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.RelevanceConstants;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposalComputer;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer;
@@ -350,7 +351,14 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 final int highlightAdjustment;
                 CompletionProposal coreProposal = proposal.getCoreProposal().orNull();
                 if (coreProposal == null) {
-                    highlightAdjustment = 0;
+                    // HTML tag proposals are non-lazy(!) JavaCompletionProposals that don't have a core proposal.
+                    if (proposal instanceof JavaCompletionProposal && displayString.toString().startsWith("</")) { //$NON-NLS-1$
+                        highlightAdjustment = 2;
+                    } else if (proposal instanceof JavaCompletionProposal && displayString.toString().startsWith("<")) { //$NON-NLS-1$
+                        highlightAdjustment = 1;
+                    } else {
+                        highlightAdjustment = 0;
+                    }
                 } else {
                     switch (coreProposal.getKind()) {
                     case CompletionProposal.JAVADOC_FIELD_REF:
