@@ -12,6 +12,8 @@ import java.util.Date;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 
+import com.google.common.base.Objects;
+
 public class FeedMessage implements IFeedMessage {
 
     private final String id;
@@ -65,22 +67,12 @@ public class FeedMessage implements IFeedMessage {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        FeedMessage rhs = (FeedMessage) obj;
-        if (id == null) {
-            if (rhs.id != null) {
-                return false;
-            }
-        } else if (!id.equals(rhs.id)) {
-            return false;
-        }
-        return true;
+        FeedMessage that = (FeedMessage) obj;
+        return Objects.equal(this.getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (id == null ? 0 : id.hashCode());
-        return result;
+        return Objects.hashCode(id);
     }
 }

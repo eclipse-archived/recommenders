@@ -47,6 +47,7 @@ public class NewsServiceTest {
     private EventBus bus;
     private IJobFacade jobFacade;
     private INewsFeedProperties properties;
+    private PollFeedJob job;
 
     @Before
     public void setUp() {
@@ -54,14 +55,13 @@ public class NewsServiceTest {
         bus = mock(EventBus.class);
         jobFacade = mock(JobFacade.class);
         properties = mock(NewsFeedProperties.class);
+        job = mock(PollFeedJob.class);
     }
 
     @Test
     public void testStartEnabledFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+        mockPreferences(true, ImmutableList.of(feed));
         Set<FeedDescriptor> feeds = ImmutableSet.of(feed);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.start();
@@ -71,9 +71,7 @@ public class NewsServiceTest {
     @Test
     public void testNotStartDisabledFeed() {
         FeedDescriptor feed = disabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+        mockPreferences(true, ImmutableList.of(feed));
         Set<FeedDescriptor> feeds = ImmutableSet.of(feed);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.start();
@@ -83,8 +81,7 @@ public class NewsServiceTest {
     @Test
     public void testNotStartDisabledPreferences() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(false);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
+        mockPreferences(false, ImmutableList.of(feed));
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.start();
         verifyZeroInteractions(jobFacade);
@@ -93,16 +90,9 @@ public class NewsServiceTest {
     @Test
     public void testGetMessagesIfMoreThanCountPerFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
-        PollFeedJob job = mock(PollFeedJob.class);
+        mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
-        List<IFeedMessage> messages = Lists.newArrayList();
-        for (int i = 0; i < MORE_THAN_COUNT_PER_FEED; i++) {
-            messages.add(new FeedMessage("id" + i, new Date(), "rndm", "rndm", Urls.toUrl("https://www.eclipse.org/")));
-        }
-        groupedMessages.put(feed, messages);
+        groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.jobDone(job);
@@ -114,16 +104,9 @@ public class NewsServiceTest {
     @Test
     public void testGetMessagesIfLessThanCountPerFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
-        PollFeedJob job = mock(PollFeedJob.class);
+        mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
-        List<IFeedMessage> messages = Lists.newArrayList();
-        for (int i = 0; i < LESS_THAN_COUNT_PER_FEED; i++) {
-            messages.add(new FeedMessage("id" + i, new Date(), "rndm", "rndm", Urls.toUrl("https://www.eclipse.org/")));
-        }
-        groupedMessages.put(feed, messages);
+        groupedMessages.put(feed, mockFeedMessages(LESS_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.jobDone(job);
@@ -135,10 +118,7 @@ public class NewsServiceTest {
     @Test
     public void testGetMessagesIfNoFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
-        PollFeedJob job = mock(PollFeedJob.class);
+        mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
         when(job.getMessages()).thenReturn(groupedMessages);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
@@ -151,17 +131,10 @@ public class NewsServiceTest {
     public void testGetMessagesIfMoreThanOneFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         FeedDescriptor secondFeed = enabled(SECOND_ELEMENT);
-        when(preferences.isEnabled()).thenReturn(true);
-        when(preferences.getFeedDescriptors()).thenReturn(ImmutableList.of(feed));
-        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
-        PollFeedJob job = mock(PollFeedJob.class);
+        mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
-        List<IFeedMessage> messages = Lists.newArrayList();
-        for (int i = 0; i < MORE_THAN_COUNT_PER_FEED; i++) {
-            messages.add(new FeedMessage("id" + i, new Date(), "rndm", "rndm", Urls.toUrl("https://www.eclipse.org/")));
-        }
-        groupedMessages.put(feed, messages);
-        groupedMessages.put(secondFeed, messages);
+        groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
+        groupedMessages.put(secondFeed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
         NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
         sut.jobDone(job);
@@ -171,4 +144,17 @@ public class NewsServiceTest {
         assertThat(sutMessages.get(feed), hasSize(COUNT_PER_FEED));
     }
 
+    private void mockPreferences(boolean enabled, ImmutableList feeds) {
+        when(preferences.isEnabled()).thenReturn(enabled);
+        when(preferences.getFeedDescriptors()).thenReturn(feeds);
+        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+    }
+
+    private List<IFeedMessage> mockFeedMessages(int count) {
+        List<IFeedMessage> messages = Lists.newArrayList();
+        for (int i = 0; i < count; i++) {
+            messages.add(new FeedMessage("id" + i, new Date(), "rndm", "rndm", Urls.toUrl("https://www.eclipse.org/")));
+        }
+        return messages;
+    }
 }
