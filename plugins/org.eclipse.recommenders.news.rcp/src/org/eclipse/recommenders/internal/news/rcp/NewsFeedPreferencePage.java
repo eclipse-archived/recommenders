@@ -54,12 +54,12 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
                 getFieldEditorParent());
         addField(enabledEditor);
-        pollingIntervalEditor = new IntegerFieldEditor(Constants.PREF_POLLING_INTERVAL,
-                Messages.FIELD_LABEL_POLLING_INTERVAL, getFieldEditorParent(), 4);
-        addField(pollingIntervalEditor);
         feedEditor = new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS,
                 getFieldEditorParent());
         addField(feedEditor);
+        pollingIntervalEditor = new IntegerFieldEditor(Constants.PREF_POLLING_INTERVAL,
+                Messages.FIELD_LABEL_POLLING_INTERVAL, getFieldEditorParent(), 4);
+        addField(pollingIntervalEditor);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
             GridDataFactory.swtDefaults().span(numColumns, 1).applyTo(control);
 
             tableViewer = getTableControl(parent);
-            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns, 1).grab(true, false)
                     .applyTo(tableViewer.getTable());
             buttonBox = getButtonControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonBox);
