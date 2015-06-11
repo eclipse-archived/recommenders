@@ -41,6 +41,7 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.spi.log.NullLoggerFactory;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.transfer.TransferListener;
@@ -90,6 +91,7 @@ public class ModelRepository implements IModelRepository {
     private static RepositorySystem createRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 
+        locator.setService(org.eclipse.aether.spi.log.LoggerFactory.class, NullLoggerFactory.class);
         locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
         locator.addService(TransporterFactory.class, FileTransporterFactory.class);
         locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
