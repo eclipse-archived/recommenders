@@ -51,15 +51,16 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     protected void createFieldEditors() {
-        enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED,
+        enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED, 0,
                 getFieldEditorParent());
-        addField(enabledEditor);
-        feedEditor = new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS,
-                getFieldEditorParent());
-        addField(feedEditor);
         pollingIntervalEditor = new IntegerFieldEditor(Constants.PREF_POLLING_INTERVAL,
                 Messages.FIELD_LABEL_POLLING_INTERVAL, getFieldEditorParent(), 4);
+        feedEditor = new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS,
+                getFieldEditorParent());
         addField(pollingIntervalEditor);
+        addField(enabledEditor);
+        addField(feedEditor);
+
     }
 
     @Override
