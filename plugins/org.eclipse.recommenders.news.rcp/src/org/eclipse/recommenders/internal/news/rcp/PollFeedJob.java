@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,6 +28,7 @@ import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
 import org.eclipse.mylyn.internal.commons.notifications.feed.FeedEntry;
 import org.eclipse.mylyn.internal.commons.notifications.feed.FeedReader;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
 import org.eclipse.recommenders.utils.Logs;
@@ -41,17 +43,14 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class PollFeedJob extends Job implements IPollFeedJob {
-    private final String jobId;
     private final NotificationEnvironment environment;
     private final Map<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
     private final Set<FeedDescriptor> feeds = Sets.newHashSet();
     private final Map<FeedDescriptor, Date> pollDates = Maps.newHashMap();
 
-    public PollFeedJob(String jobId, Collection<FeedDescriptor> feeds) {
-        super(jobId);
-        Preconditions.checkNotNull(jobId);
+    public PollFeedJob(Collection<FeedDescriptor> feeds) {
+        super(Messages.POLL_FEED_JOB_NAME);
         Preconditions.checkNotNull(feeds);
-        this.jobId = jobId;
         this.environment = new NotificationEnvironment();
         this.feeds.addAll(feeds);
         setSystem(true);
@@ -64,6 +63,9 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         URL url = null;
         try {
             for (FeedDescriptor feed : feeds) {
+                if (monitor.isCanceled()) {
+                    return Status.CANCEL_STATUS;
+                }
                 HttpURLConnection connection = (HttpURLConnection) feed.getUrl().openConnection();
                 url = connection.getURL();
                 connection.connect();
@@ -80,17 +82,7 @@ public class PollFeedJob extends Job implements IPollFeedJob {
 
     @Override
     public boolean belongsTo(Object job) {
-        if (job == null) {
-            return false;
-        }
-        if (!(job instanceof PollFeedJob)) {
-            return false;
-        }
-        PollFeedJob rhs = (PollFeedJob) job;
-        if (!jobId.equals(rhs.getJobId())) {
-            return false;
-        }
-        return true;
+        return Objects.equals(Constants.POLL_FEED_JOB_FAMILY, job);
     }
 
     private List<? extends IFeedMessage> readMessages(InputStream in, IProgressMonitor monitor, String eventId)
@@ -117,13 +109,9 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         return pollDates;
     }
 
-    public String getJobId() {
-        return jobId;
-    }
-
     private void updateGroupedMessages(HttpURLConnection connection, IProgressMonitor monitor, FeedDescriptor feed) {
         try {
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK && monitor.isCanceled()) {
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK || monitor.isCanceled()) {
                 return;
             }
             try (InputStream in = new BufferedInputStream(connection.getInputStream())) {

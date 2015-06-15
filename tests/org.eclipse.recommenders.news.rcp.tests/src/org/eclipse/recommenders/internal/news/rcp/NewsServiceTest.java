@@ -7,12 +7,13 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
-import static org.eclipse.recommenders.internal.news.rcp.TestUtils.*;
+import static org.eclipse.recommenders.internal.news.rcp.TestUtils.enabled;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,27 +64,21 @@ public class NewsServiceTest {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
         Set<FeedDescriptor> feeds = ImmutableSet.of(feed);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
-        sut.start();
-        verify(jobFacade, times(1)).schedule(feeds, sut);
-    }
 
-    @Test
-    public void testNotStartDisabledFeed() {
-        FeedDescriptor feed = disabled(FIRST_ELEMENT);
-        mockPreferences(true, ImmutableList.of(feed));
-        Set<FeedDescriptor> feeds = ImmutableSet.of(feed);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.start();
-        verify(jobFacade, never()).schedule(feeds, sut);
+
+        verify(jobFacade, times(1)).schedulePollFeeds(sut, feeds);
     }
 
     @Test
     public void testNotStartDisabledPreferences() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(false, ImmutableList.of(feed));
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.start();
+
         verifyZeroInteractions(jobFacade);
     }
 
@@ -94,9 +89,11 @@ public class NewsServiceTest {
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.jobDone(job);
         Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+
         assertThat(sutMessages, hasKey(feed));
         assertThat(sutMessages.get(feed), hasSize(COUNT_PER_FEED));
     }
@@ -108,9 +105,11 @@ public class NewsServiceTest {
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(LESS_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.jobDone(job);
         Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+
         assertThat(sutMessages, hasKey(feed));
         assertThat(sutMessages.get(feed), hasSize(LESS_THAN_COUNT_PER_FEED));
     }
@@ -121,8 +120,10 @@ public class NewsServiceTest {
         mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
         when(job.getMessages()).thenReturn(groupedMessages);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.jobDone(job);
+
         assertNotNull(sut.getMessages(COUNT_PER_FEED));
         assertThat(sut.getMessages(COUNT_PER_FEED).isEmpty(), is(true));
     }
@@ -136,12 +137,56 @@ public class NewsServiceTest {
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         groupedMessages.put(secondFeed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
-        NewsService sut = new NewsService(preferences, bus, jobFacade, properties);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
         sut.jobDone(job);
         Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+
         assertThat(sutMessages.keySet(), containsInAnyOrder(feed, secondFeed));
         assertThat(sutMessages.size(), is(2));
         assertThat(sutMessages.get(feed), hasSize(COUNT_PER_FEED));
+    }
+
+    @Test
+    public void testShouldntPollFeedWithDateAfter() {
+        FeedDescriptor feed = enabled(FIRST_ELEMENT);
+        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+        when(properties.getPollDates()).thenReturn(mockPollDates(FIRST_ELEMENT, 1000));
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
+
+        assertThat(sut.shouldPoll(feed, false), is(false));
+    }
+
+    @Test
+    public void testPollFeedWithDateBefore() {
+        FeedDescriptor feed = enabled(FIRST_ELEMENT);
+        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+        when(properties.getPollDates()).thenReturn(mockPollDates(FIRST_ELEMENT, -1000));
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
+
+        assertThat(sut.shouldPoll(feed, false), is(true));
+    }
+
+    @Test
+    public void testShouldPollOverridenFeedWithDateAfter() {
+        FeedDescriptor feed = enabled(FIRST_ELEMENT);
+        when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
+        when(properties.getPollDates()).thenReturn(mockPollDates(FIRST_ELEMENT, 1000));
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade);
+
+        assertThat(sut.shouldPoll(feed, true), is(true));
+    }
+
+    private Map<String, Date> mockPollDates(String id, int change) {
+        Map<String, Date> doc = Maps.newConcurrentMap();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, change);
+        Date date = calendar.getTime();
+        doc.put(id, date);
+        return doc;
     }
 
     private void mockPreferences(boolean enabled, ImmutableList feeds) {
