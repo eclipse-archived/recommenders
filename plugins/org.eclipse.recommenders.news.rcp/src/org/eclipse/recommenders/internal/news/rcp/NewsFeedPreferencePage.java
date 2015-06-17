@@ -73,27 +73,37 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
     @Override
     public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
-        boolean oldValue = store.getBoolean(Constants.PREF_NEWS_ENABLED);
-        boolean newValue = enabledEditor.getBooleanValue();
+        boolean oldEnabled = store.getBoolean(Constants.PREF_NEWS_ENABLED);
+        boolean newEnabled = enabledEditor.getBooleanValue();
         List<FeedDescriptor> oldFeedValue = FeedDescriptors.load(store.getString(Constants.PREF_FEED_LIST_SORTED),
                 feedEditor.getValue());
         List<FeedDescriptor> newFeedValue = feedEditor.getValue();
         boolean result = super.performOk();
-        if (!oldValue && newValue) {
+        boolean forceStart = false;
+        boolean forceStop = false;
+        if (!oldEnabled && newEnabled) {
             // News has been activated
-            service.start();
+            forceStart = true;
+        } else if (oldEnabled && !newEnabled) {
+            forceStop = true;
         }
 
-        // TODO make sure preference change takes effect immediately
-        // for (FeedDescriptor oldFeed : oldFeedValue) {
-        // FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
-        // if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
-        // service.start(newFeed);
-        // }
-        // if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
-        // service.removeFeed(newFeed);
-        // }
-        // }
+        for (FeedDescriptor oldFeed : oldFeedValue) {
+            FeedDescriptor newFeed = newFeedValue.get(newFeedValue.indexOf(oldFeed));
+            if (!oldFeed.isEnabled() && newFeed.isEnabled()) {
+                forceStart = true;
+            }
+            if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
+                service.removeFeed(newFeed);
+            }
+        }
+
+        if (forceStart) {
+            service.start();
+        }
+        if (forceStop) {
+            service.forceStop();
+        }
         return result;
     }
 

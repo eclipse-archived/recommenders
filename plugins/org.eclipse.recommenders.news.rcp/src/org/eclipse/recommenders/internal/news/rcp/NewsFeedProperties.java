@@ -28,6 +28,7 @@ import org.eclipse.recommenders.utils.Logs;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
@@ -38,6 +39,18 @@ public class NewsFeedProperties implements INewsFeedProperties {
     private static final String FILENAME_POLL_DATES = "poll-dates.properties"; //$NON-NLS-1$
     private static final String VALUE_READ = "read"; //$NON-NLS-1$
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
+    private final File readMessagesFile;
+    private final File pollDatesFile;
+
+    public NewsFeedProperties() {
+        this(getFile(FILENAME_READ_MESSAGES), getFile(FILENAME_POLL_DATES));
+    }
+
+    @VisibleForTesting
+    protected NewsFeedProperties(File readMessagesFile, File pollDatesFile) {
+        this.readMessagesFile = readMessagesFile;
+        this.pollDatesFile = pollDatesFile;
+    }
 
     @Override
     public void writeReadIds(Set<String> readIds) {
@@ -49,7 +62,7 @@ public class NewsFeedProperties implements INewsFeedProperties {
             properties.put(id, VALUE_READ);
         }
 
-        try (FileOutputStream stream = new FileOutputStream(getFile(FILENAME_READ_MESSAGES))) {
+        try (FileOutputStream stream = new FileOutputStream(readMessagesFile)) {
             properties.store(stream, "");
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, e, FILENAME_READ_MESSAGES);
@@ -58,13 +71,12 @@ public class NewsFeedProperties implements INewsFeedProperties {
 
     @Override
     public Set<String> getReadIds() {
-        File statusFile = getFile(FILENAME_READ_MESSAGES);
-        if (!statusFile.exists()) {
+        if (!readMessagesFile.exists()) {
             return Sets.newConcurrentHashSet();
         }
         Properties properties = new Properties();
 
-        try (InputStream stream = Files.asByteSource(statusFile).openStream()) {
+        try (InputStream stream = Files.asByteSource(readMessagesFile).openStream()) {
 
             properties.load(stream);
             return Sets.newConcurrentHashSet(properties.stringPropertyNames());
@@ -74,22 +86,20 @@ public class NewsFeedProperties implements INewsFeedProperties {
         }
     }
 
-    private static File getFile(String name) {
+    static File getFile(String name) {
         Bundle bundle = FrameworkUtil.getBundle(NewsFeedProperties.class);
         File stateLocation = Platform.getStateLocation(bundle).toFile();
         return new File(stateLocation, name);
-
     }
 
     @Override
     public Map<String, Date> getPollDates() {
         Map<String, Date> result = Maps.newConcurrentMap();
-        File statusFile = getFile(FILENAME_POLL_DATES);
-        if (!statusFile.exists()) {
+        if (!pollDatesFile.exists()) {
             return result;
         }
         Properties properties = new Properties();
-        try (InputStream stream = Files.asByteSource(statusFile).openStream()) {
+        try (InputStream stream = Files.asByteSource(pollDatesFile).openStream()) {
             properties.load(stream);
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 result.put(entry.getKey().toString(), dateFormat.parse((String) entry.getValue()));
@@ -111,12 +121,11 @@ public class NewsFeedProperties implements INewsFeedProperties {
             return;
         }
         Properties properties = new Properties();
-        File statusFile = getFile(FILENAME_POLL_DATES);
-        if (statusFile.exists()) {
-            try (InputStream stream = Files.asByteSource(statusFile).openStream()) {
+        if (pollDatesFile.exists()) {
+            try (InputStream stream = Files.asByteSource(pollDatesFile).openStream()) {
                 properties.load(stream);
             } catch (IOException e) {
-                Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, FILENAME_READ_MESSAGES);
+                Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, FILENAME_POLL_DATES);
             }
         }
         List<String> propertyNames = (List<String>) Collections.list(properties.propertyNames());
@@ -127,7 +136,7 @@ public class NewsFeedProperties implements INewsFeedProperties {
                 properties.setProperty(entry.getKey().getId(), dateFormat.format(entry.getValue()));
             }
         }
-        try (FileOutputStream stream = new FileOutputStream(getFile(FILENAME_POLL_DATES))) {
+        try (FileOutputStream stream = new FileOutputStream(pollDatesFile)) {
             properties.store(stream, "");
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, FILENAME_POLL_DATES, e);

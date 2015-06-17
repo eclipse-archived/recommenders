@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.recommenders.news.rcp.IJobFacade;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.ui.IWorkbench;
 
@@ -34,9 +35,15 @@ public class NewsRcpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    INewsService provideNewsService(NewsRcpPreferences preferences, EventBus eventBus, JobFacade provider,
-            NewsFeedProperties properties) {
-        return new NewsService(preferences, eventBus, provider, properties);
+    INewsService provideNewsService(NewsRcpPreferences preferences, EventBus eventBus, NewsFeedProperties properties,
+            IJobFacade jobFacade) {
+        return new NewsService(preferences, eventBus, properties, jobFacade);
+    }
+
+    @Provides
+    @Singleton
+    IJobFacade provideJobFacade() {
+        return new JobFacade();
     }
 
 }
