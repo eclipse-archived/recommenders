@@ -17,11 +17,10 @@ import static com.google.common.base.Optional.absent;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
 import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
 import static org.eclipse.recommenders.utils.Logs.log;
-import static org.eclipse.recommenders.utils.Reflections.*;
+import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
@@ -55,13 +54,6 @@ public final class ProposalUtils {
             "originalSignature") //$NON-NLS-1$
                     .orNull();
 
-    private static final Method GET_DECLARATION_TYPE_NAME = getDeclaredMethod(InternalCompletionProposal.class,
-            "getDeclarationTypeName") //$NON-NLS-1$
-                    .orNull();
-    private static final Method GET_DECLARATION_PACKAGE_NAME = getDeclaredMethod(InternalCompletionProposal.class,
-            "getDeclarationPackageName") //$NON-NLS-1$
-                    .orNull();
-
     public static Optional<IMethodName> toMethodName(CompletionProposal proposal) {
         Preconditions.checkArgument(isKindSupported(proposal));
 
@@ -69,40 +61,33 @@ public final class ProposalUtils {
             return Optional.of(OBJECT_CLONE);
         }
 
-        if (GET_DECLARATION_TYPE_NAME == null || GET_DECLARATION_PACKAGE_NAME == null) {
-            return absent();
-        }
-
-        final char[] declarationPackageName;
-        final char[] declarationTypeName;
-        try {
-            declarationPackageName = (char[]) GET_DECLARATION_PACKAGE_NAME.invoke(proposal);
-            declarationTypeName = (char[]) GET_DECLARATION_TYPE_NAME.invoke(proposal);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            return absent();
-        }
-
-        if (declarationTypeName == null) {
-            return absent();
-        }
-
         StringBuilder builder = new StringBuilder();
-        builder.append('L');
-        if (declarationPackageName != null && declarationPackageName.length > 0) {
-            builder.append(CharOperation.replaceOnCopy(declarationPackageName, '.', '/'));
-            builder.append('/');
-        }
-        builder.append(CharOperation.replaceOnCopy(declarationTypeName, '.', '$'));
+
+        // Declaring type
+        char[] declarationSignature = proposal.getDeclarationSignature();
+        char[] binaryTypeSignature = getBinaryTypeSignatureCopy(declarationSignature);
+        char[] erasedBinaryTypeSignature = Signature.getTypeErasure(binaryTypeSignature);
+        CharOperation.replace(erasedBinaryTypeSignature, '.', '/');
+        builder.append(erasedBinaryTypeSignature, 0, erasedBinaryTypeSignature.length - 1);
+
         builder.append('.');
+
+        // Method nane
         builder.append(proposal.isConstructor() ? INIT : proposal.getName());
+
         builder.append('(');
+
+        // Parameter types
         char[] signature = getSignature(proposal);
-        char[][] typeParameters = Signature.getTypeParameters(proposal.getDeclarationSignature());
+        char[][] typeParameters = Signature.getTypeParameters(declarationSignature);
         char[][] parameterTypes = Signature.getParameterTypes(signature);
         for (char[] parameterType : parameterTypes) {
             appendType(builder, parameterType, typeParameters);
         }
+
         builder.append(')');
+
+        // Return type
         appendType(builder, Signature.getReturnType(signature), typeParameters);
 
         String methodName = builder.toString();
@@ -112,6 +97,36 @@ public final class ProposalUtils {
             log(LogMessages.ERROR_SYNTATICALLY_INCORRECT_METHOD_NAME, e, methodName, toLogString(proposal));
             return absent();
         }
+    }
+
+    /**
+     * Ensures that the separator of inner and outer types is always a dollar sign.
+     * 
+     * <p>
+     * This is necessary, as JDT uses a dot rather than dollar sign to separate inner and outer type <em>if</em> the
+     * outer type is parameterized.
+     * </p>
+     * 
+     * <p>
+     * Examples:
+     * </p>
+     * 
+     * <ul>
+     * <li><code>org.example.Outer$Inner&lt:java.lang.String&gt;</code> ->
+     * <code>org.example.Outer$Inner&lt:java.lang.String&gt;</code></li>
+     * <li><code>org.example.Outer&lt:java.lang.String&gt;.Inner</code> ->
+     * <code>org.example.Outer&lt:java.lang.String&gt;$Inner</code></li>
+     * <ul>
+     */
+    private static char[] getBinaryTypeSignatureCopy(char[] parameterizedTypeSignature) {
+        char[] binaryTypeSignature = Arrays.copyOf(parameterizedTypeSignature, parameterizedTypeSignature.length);
+        int nextDot = -1;
+        while ((nextDot = CharOperation.indexOf(Signature.C_DOT, binaryTypeSignature, nextDot + 1)) > 0) {
+            if (binaryTypeSignature[nextDot - 1] == Signature.C_GENERIC_END) {
+                binaryTypeSignature[nextDot] = Signature.C_DOLLAR;
+            }
+        }
+        return binaryTypeSignature;
     }
 
     private static void appendType(StringBuilder builder, char[] type, char[][] typeParameters) {
