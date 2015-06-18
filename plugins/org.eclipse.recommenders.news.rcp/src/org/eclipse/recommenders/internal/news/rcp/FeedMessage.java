@@ -22,6 +22,8 @@ public class FeedMessage implements IFeedMessage {
     private final String title;
     private final URL url;
 
+    private boolean read;
+
     public FeedMessage(String id, Date date, String description, String title, URL url) {
         super();
         this.id = id;
@@ -74,5 +76,15 @@ public class FeedMessage implements IFeedMessage {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public boolean isRead() {
+        return read;
+    }
+
+    @Override
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

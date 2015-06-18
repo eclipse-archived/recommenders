@@ -48,7 +48,8 @@ public class NewsFeedPropertiesTest {
     public void setUp() throws IOException {
         File readMessagesFile = tmp.newFile("read-messages.properties");
         File pollDatesFile = tmp.newFile("poll-dates.properties");
-        sut = new NewsFeedProperties(readMessagesFile, pollDatesFile);
+        File feedDatesFile = tmp.newFile("feed-dates.properties");
+        sut = new NewsFeedProperties(readMessagesFile, pollDatesFile, feedDatesFile);
     }
 
     @Test
@@ -100,8 +101,8 @@ public class NewsFeedPropertiesTest {
         FeedDescriptor feed = enabled(testId);
         writePollDates.put(feed, date);
 
-        sut.writePollDates(writePollDates);
-        Map<String, Date> readPollDates = sut.getPollDates();
+        sut.writeDates(writePollDates, Constants.FILENAME_POLL_DATES);
+        Map<String, Date> readPollDates = sut.getDates(Constants.FILENAME_POLL_DATES);
 
         assertThat(readPollDates.keySet().contains(feed.getId()), is(true));
         assertThat(readPollDates.values().contains(date), is(true));
@@ -116,8 +117,8 @@ public class NewsFeedPropertiesTest {
         writePollDates.put(feed, date);
         writePollDates.put(secondFeed, date);
 
-        sut.writePollDates(writePollDates);
-        Map<String, Date> readPollDates = sut.getPollDates();
+        sut.writeDates(writePollDates, Constants.FILENAME_POLL_DATES);
+        Map<String, Date> readPollDates = sut.getDates(Constants.FILENAME_POLL_DATES);
 
         assertThat(readPollDates.keySet(), containsInAnyOrder(testId, testIdTwo));
         assertThat(readPollDates.values(), containsInAnyOrder(date, date));
@@ -128,8 +129,8 @@ public class NewsFeedPropertiesTest {
     public void testWriteEmptyMap() {
         Map<FeedDescriptor, Date> writePollDates = Maps.newHashMap();
 
-        sut.writePollDates(writePollDates);
-        Map<String, Date> readPollDates = sut.getPollDates();
+        sut.writeDates(writePollDates, Constants.FILENAME_POLL_DATES);
+        Map<String, Date> readPollDates = sut.getDates(Constants.FILENAME_POLL_DATES);
 
         assertTrue(readPollDates.isEmpty());
     }
@@ -138,8 +139,8 @@ public class NewsFeedPropertiesTest {
     public void testWriteNullMap() {
         Map<FeedDescriptor, Date> writePollDates = null;
 
-        sut.writePollDates(writePollDates);
-        Map<String, Date> readPollDates = sut.getPollDates();
+        sut.writeDates(writePollDates, Constants.FILENAME_POLL_DATES);
+        Map<String, Date> readPollDates = sut.getDates(Constants.FILENAME_POLL_DATES);
 
         assertTrue(readPollDates.isEmpty());
     }

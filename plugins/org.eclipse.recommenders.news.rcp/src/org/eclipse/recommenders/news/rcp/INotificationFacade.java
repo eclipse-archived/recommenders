@@ -7,19 +7,15 @@
  */
 package org.eclipse.recommenders.news.rcp;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 
-public interface INewsFeedProperties {
+import com.google.common.eventbus.EventBus;
 
-    Set<String> getReadIds();
+public interface INotificationFacade {
 
-    void writeReadIds(Set<String> readIds);
+    void displayNotification(Map<FeedDescriptor, List<IFeedMessage>> messages, EventBus bus);
 
-    Map<String, Date> getDates(String filename);
-
-    void writeDates(Map<FeedDescriptor, Date> map, String filename);
 }

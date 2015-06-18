@@ -36,20 +36,22 @@ import com.google.common.io.Files;
 public class NewsFeedProperties implements INewsFeedProperties {
 
     private static final String FILENAME_READ_MESSAGES = "read-messages.properties"; //$NON-NLS-1$
-    private static final String FILENAME_POLL_DATES = "poll-dates.properties"; //$NON-NLS-1$
     private static final String VALUE_READ = "read"; //$NON-NLS-1$
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
     private final File readMessagesFile;
     private final File pollDatesFile;
+    private final File feedDatesFile;
 
     public NewsFeedProperties() {
-        this(getFile(FILENAME_READ_MESSAGES), getFile(FILENAME_POLL_DATES));
+        this(getFile(FILENAME_READ_MESSAGES), getFile(Constants.FILENAME_POLL_DATES),
+                getFile(Constants.FILENAME_FEED_DATES));
     }
 
     @VisibleForTesting
-    protected NewsFeedProperties(File readMessagesFile, File pollDatesFile) {
+    protected NewsFeedProperties(File readMessagesFile, File pollDatesFile, File feedDatesFile) {
         this.readMessagesFile = readMessagesFile;
         this.pollDatesFile = pollDatesFile;
+        this.feedDatesFile = feedDatesFile;
     }
 
     @Override
@@ -86,27 +88,33 @@ public class NewsFeedProperties implements INewsFeedProperties {
         }
     }
 
-    static File getFile(String name) {
+    private static File getFile(String name) {
         Bundle bundle = FrameworkUtil.getBundle(NewsFeedProperties.class);
         File stateLocation = Platform.getStateLocation(bundle).toFile();
         return new File(stateLocation, name);
     }
 
     @Override
-    public Map<String, Date> getPollDates() {
+    public Map<String, Date> getDates(String filename) {
         Map<String, Date> result = Maps.newConcurrentMap();
-        if (!pollDatesFile.exists()) {
+        File file = null;
+        if (filename.equals(Constants.FILENAME_FEED_DATES)) {
+            file = feedDatesFile;
+        } else {
+            file = pollDatesFile;
+        }
+        if (!file.exists()) {
             return result;
         }
         Properties properties = new Properties();
-        try (InputStream stream = Files.asByteSource(pollDatesFile).openStream()) {
+        try (InputStream stream = Files.asByteSource(file).openStream()) {
             properties.load(stream);
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 result.put(entry.getKey().toString(), dateFormat.parse((String) entry.getValue()));
             }
             return result;
         } catch (IOException | ParseException e) {
-            Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, FILENAME_POLL_DATES);
+            Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, filename);
             return result;
         }
     }
@@ -116,16 +124,22 @@ public class NewsFeedProperties implements INewsFeedProperties {
     /**
      * Stores last feed poll date, however it doesn't overwrite it, just add new entries.
      */
-    public void writePollDates(Map<FeedDescriptor, Date> map) {
+    public void writeDates(Map<FeedDescriptor, Date> map, String filename) {
         if (map == null) {
             return;
         }
         Properties properties = new Properties();
-        if (pollDatesFile.exists()) {
-            try (InputStream stream = Files.asByteSource(pollDatesFile).openStream()) {
+        File file = null;
+        if (filename.equals(Constants.FILENAME_FEED_DATES)) {
+            file = feedDatesFile;
+        } else {
+            file = pollDatesFile;
+        }
+        if (file.exists()) {
+            try (InputStream stream = Files.asByteSource(file).openStream()) {
                 properties.load(stream);
             } catch (IOException e) {
-                Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, FILENAME_POLL_DATES);
+                Logs.log(LogMessages.ERROR_READING_PROPERTIES, e, filename);
             }
         }
         List<String> propertyNames = (List<String>) Collections.list(properties.propertyNames());
@@ -136,10 +150,10 @@ public class NewsFeedProperties implements INewsFeedProperties {
                 properties.setProperty(entry.getKey().getId(), dateFormat.format(entry.getValue()));
             }
         }
-        try (FileOutputStream stream = new FileOutputStream(pollDatesFile)) {
+        try (FileOutputStream stream = new FileOutputStream(file)) {
             properties.store(stream, "");
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, FILENAME_POLL_DATES, e);
+            Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, filename, e);
         }
     }
 }

@@ -19,6 +19,7 @@ public final class Messages extends NLS {
     public static String PREFPAGE_DESCRIPTION;
     public static String FIELD_LABEL_FEEDS;
     public static String FIELD_LABEL_NEWS_ENABLED;
+    public static String FIELD_LABEL_NOTIFICATION_ENABLED;
     public static String FIELD_LABEL_POLLING_INTERVAL;
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
@@ -26,11 +27,14 @@ public final class Messages extends NLS {
     public static String JOB_NAME_CLOSE;
     public static String JOB_NAME_FADE;
     public static String LABEL_NOTIFICATION_NAME;
-    public static String LABEL_NO_NEW_MESSAGS;
+    public static String LABEL_NO_NEW_MESSAGES;
+    public static String LABEL_MARK_AS_READ;
     public static String TOOLTIP_NO_NEW_MESSAGES;
     public static String TOOLTIP_NEW_MESSAGES;
+    public static String HINT_MORE_MESSAGES;
 
     public static String NOTIFICATION_TITLE;
+    public static String UNREAD_MESSAGE_PREFIX;
 
     public static String LOG_ERROR_READING_PROPERTIES;
     public static String LOG_ERROR_WRITING_PROPERTIES;

@@ -64,7 +64,10 @@ public class FeedDescriptor {
 
     public Image getIcon() {
         String iconPath = config.getAttribute("icon"); //$NON-NLS-1$
-        return AbstractUIPlugin.imageDescriptorFromPlugin(Constants.PLUGIN_ID, iconPath).createImage();
+        if (iconPath != null) {
+            return AbstractUIPlugin.imageDescriptorFromPlugin(Constants.PLUGIN_ID, iconPath).createImage();
+        }
+        return null;
     }
 
     @Override

@@ -26,6 +26,10 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     private boolean enabled;
 
     @Inject
+    @Preference(Constants.PREF_NOTIFICATION_ENABLED)
+    private boolean notificationEnabled;
+
+    @Inject
     @Preference(Constants.PREF_FEED_LIST_SORTED)
     private String feeds;
 
@@ -37,6 +41,10 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         return enabled;
     }
 
+    public boolean isNotificationEnabled() {
+        return notificationEnabled;
+    }
+
     public Long getPollingInterval() {
         return pollingInterval;
     }
@@ -45,6 +53,7 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(Constants.PLUGIN_ID);
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
+        s.putBoolean(Constants.PREF_NOTIFICATION_ENABLED, false);
         s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.store(FeedDescriptors.getRegisteredFeeds()));
     }

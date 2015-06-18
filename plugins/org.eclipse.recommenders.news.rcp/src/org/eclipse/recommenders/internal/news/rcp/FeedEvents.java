@@ -7,9 +7,6 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
-import java.util.Date;
-import java.util.Map;
-
 public class FeedEvents {
 
     public static NewFeedItemsEvent createNewFeedItemsEvent() {
@@ -20,8 +17,12 @@ public class FeedEvents {
         return new FeedMessageReadEvent(id);
     }
 
-    public static FeedJobDoneEvent createFeedJobDoneEvent(Map<FeedDescriptor, Date> pollDates) {
-        return new FeedJobDoneEvent(pollDates);
+    public static FeedReadEvent createFeedReadEvent(FeedDescriptor feed) {
+        return new FeedReadEvent(feed);
+    }
+
+    public static AllReadEvent createAllReadEvent() {
+        return new AllReadEvent();
     }
 
     public static class NewFeedItemsEvent {
@@ -39,16 +40,20 @@ public class FeedEvents {
         }
     }
 
-    public static class FeedJobDoneEvent {
-        private final Map<FeedDescriptor, Date> pollDates;
+    public static class FeedReadEvent {
+        private final FeedDescriptor feed;
 
-        public FeedJobDoneEvent(Map<FeedDescriptor, Date> pollDates) {
-            this.pollDates = pollDates;
+        public FeedReadEvent(FeedDescriptor feed) {
+            this.feed = feed;
         }
 
-        public Map<FeedDescriptor, Date> getPollDates() {
-            return pollDates;
+        public FeedDescriptor getFeed() {
+            return feed;
         }
+    }
+
+    public static class AllReadEvent {
+
     }
 
 }
