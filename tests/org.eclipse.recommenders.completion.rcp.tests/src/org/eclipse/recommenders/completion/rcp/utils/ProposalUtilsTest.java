@@ -37,6 +37,8 @@ public class ProposalUtilsTest {
             .get("Ljava/util/List.set(ILjava/lang/Object;)Ljava/lang/Object;");
 
     private static final IMethodName NESTED_METHOD_VOID = VmMethodName.get("LExample$Nested.method()V");
+    private static final IMethodName INNER_METHOD_VOID = VmMethodName.get("LExample$Inner.method()V");
+    private static final IMethodName ANONYMOUS_METHOD_VOID = VmMethodName.get("LScenario$1.method()V");
 
     private static final IMethodName METHOD_INTS = VmMethodName.get("LExample.method([I)V");
     private static final IMethodName METHOD_OBJECTS = VmMethodName.get("LExample.method([Ljava/lang/Object;)V");
@@ -72,8 +74,8 @@ public class ProposalUtilsTest {
     private final CharSequence completionScenarioCode;
     private final IMethodName expectedMethod;
 
-    public ProposalUtilsTest(boolean ignore, String description, CharSequence targetTypeCode, CharSequence completionScenarioCode,
-            IMethodName expectedMethod) {
+    public ProposalUtilsTest(boolean ignore, String description, CharSequence targetTypeCode,
+            CharSequence completionScenarioCode, IMethodName expectedMethod) {
         this.ignore = ignore;
         this.targetTypeCode = targetTypeCode;
         this.completionScenarioCode = completionScenarioCode;
@@ -136,27 +138,36 @@ public class ProposalUtilsTest {
                 NESTED_METHOD_VOID));
 
         scenarios.add(scenario("Method of inner class",
-                classbody("Example", "public class Nested { public void method() {} }"),
-                method("new Example().new Nested().method$"),
-                NESTED_METHOD_VOID));
+                classbody("Example", "public class Inner { public void method() {} }"),
+                method("new Example().new Inner().method$"),
+                INNER_METHOD_VOID));
         scenarios.add(scenario("Method of parameterized inner class",
-                classbody("Example", "public class Nested<T> { public void method() {} }"),
-                method("new Example().new Nested<String>().method$"),
-                NESTED_METHOD_VOID));
+                classbody("Example", "public class Inner<T> { public void method() {} }"),
+                method("new Example().new Inner<String>().method$"),
+                INNER_METHOD_VOID));
         scenarios.add(scenario("Method of inner class within raw outer class",
-                classbody("Example<T>", "public class Nested { public void method() {} }"),
-                method("new Example().new Nested().method$"),
-                NESTED_METHOD_VOID));
+                classbody("Example<T>", "public class Inner { public void method() {} }"),
+                method("new Example().new Inner().method$"),
+                INNER_METHOD_VOID));
         scenarios.add(scenario("Method of inner class within parameterized outer class",
-                classbody("Example<T>", "public class Nested { public void method() {} }"),
-                method("new Example<String>().new Nested().method$"),
-                NESTED_METHOD_VOID));
+                classbody("Example<T>", "public class Inner { public void method() {} }"),
+                method("new Example<String>().new Inner().method$"),
+                INNER_METHOD_VOID));
+
+        scenarios.add(ignoredScenario("Method of anonymous class",
+                classbody("Example", "public void method() {}"),
+                method("Scenario", "new Example() { public void method() { this.method$ } };"),
+                ANONYMOUS_METHOD_VOID));
+        scenarios.add(ignoredScenario("Method of parameterized anonymous class",
+                classbody("Example<T>", "public void method() {}"),
+                method("Scenario", "new Example<String>() { public void method() { this.method$ } };"),
+                ANONYMOUS_METHOD_VOID));
 
         scenarios.add(scenario("Generic method with parameter of raw class",
                 classbody("Example<T>", "public void method(T t) {}"),
                 method("new Example().method$"),
                 METHOD_OBJECT));
-        scenarios.add(scenario("Method with parameter of parameterized class",
+        scenarios.add(scenario("Generic method with parameter of parameterized class",
                 classbody("Example<T>", "public void method(T t) {}"),
                 method("new Example<Number>().method$"),
                 METHOD_OBJECT));
@@ -176,6 +187,15 @@ public class ProposalUtilsTest {
                 classbody("Example<N extends Number & Comparable>", "public void method(N n) {}"),
                 method("new Example().method$"),
                 METHOD_NUMBER));
+
+        scenarios.add(scenario("Generic method throwing exception parameterized on class",
+                classbody("Example<T extends Throwable>", "public void method() throws T {}"),
+                method("new Example().method$"),
+                METHOD_VOID));
+        scenarios.add(scenario("Generic method throwing exception parameterized on method",
+                classbody("Example", "public <T extends Throwable> void method() throws T {}"),
+                method("new Example().method$"),
+                METHOD_VOID));
 
         scenarios.add(scenario("Method Call On Unspecified Bounded Class Parameter With Nested Parameterization",
                 classbody("Example<L extends List<String>>", "public L l;"),
@@ -324,15 +344,6 @@ public class ProposalUtilsTest {
                 classbody("SubExample extends Example", "compareTo$"),
                 COMPARE_TO_OBJECT));
 
-        scenarios.add(scenario("Method Throws Bounded Parameter of Class",
-                classbody("Example<T extends Throwable>", "public void method() throws T {}"),
-                method("new Example().method$"),
-                METHOD_VOID));
-        scenarios.add(scenario("Method Throws Bounded Parameter Of Method",
-                classbody("Example", "public <T extends Throwable> void method() throws T {}"),
-                method("new Example().method$"),
-                METHOD_VOID));
-
         scenarios.add(scenario("Overridden Method Of Object Class",
                 classbody("Example", "public int hashCode() { return 0; }"),
                 method(" new Example().hashcode$"),
@@ -380,8 +391,8 @@ public class ProposalUtilsTest {
         return scenarios;
     }
 
-    private static Object[] scenario(String description, CharSequence targetTypeCode, CharSequence completionScenarioCode,
-            IMethodName expectedMethod) {
+    private static Object[] scenario(String description, CharSequence targetTypeCode,
+            CharSequence completionScenarioCode, IMethodName expectedMethod) {
         return new Object[] { false, description, targetTypeCode, completionScenarioCode, expectedMethod };
     }
 
@@ -396,8 +407,6 @@ public class ProposalUtilsTest {
 
     @Test
     public void testSourceBindings() throws Exception {
-        assumeThat(ignore, is(equalTo(false)));
-
         TemporaryProject dependency = WORKSPACE.createProject();
         dependency.createFile(targetTypeCode);
 
@@ -408,6 +417,9 @@ public class ProposalUtilsTest {
         Collection<CompletionProposal> proposals = context.getProposals().values();
         IMethodName actualMethod = ProposalUtils.toMethodName(getOnlyElement(proposals)).get();
 
+        // Exercise the SUT even if the assumption fails; this helps catch bugs when the above throws exceptions (which
+        // it should not).
+        assumeThat(ignore, is(equalTo(false)));
         assertThat(actualMethod, is(equalTo(expectedMethod)));
     }
 
