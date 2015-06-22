@@ -24,7 +24,9 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.fluent.Executor;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
@@ -93,7 +95,12 @@ public final class Proxies {
     }
 
     public static Optional<HttpHost> getProxyHost(URI target) {
-        IProxyData proxy = getProxyData(target).orNull();
+        return getProxyHost(ProxyManager.getProxyManager(), target);
+    }
+
+    @VisibleForTesting
+    static Optional<HttpHost> getProxyHost(IProxyService proxyService, URI target) {
+        IProxyData proxy = getProxyData(proxyService, target).orNull();
         if (proxy == null) {
             return Optional.absent();
         }
@@ -101,24 +108,38 @@ public final class Proxies {
     }
 
     public static Executor proxyAuthentication(Executor executor, URI target) throws IOException {
-        IProxyData proxy = getProxyData(target).orNull();
-        if (proxy != null) {
-            HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
-            if (proxy.getUserId() != null) {
-                String userId = getUserName(proxy.getUserId()).orNull();
-                String pass = proxy.getPassword();
-                String workstation = getWorkstation().orNull();
-                String domain = getUserDomain(proxy.getUserId()).orNull();
-                return executor.auth(proxyHost, userId, pass, workstation, domain);
-            } else {
-                return executor;
-            }
-        }
-        return executor;
+        return proxyAuthentication(ProxyManager.getProxyManager(), executor, target);
     }
 
-    private static Optional<IProxyData> getProxyData(URI target) {
-        IProxyData[] proxies = ProxyManager.getProxyManager().select(target);
+    @VisibleForTesting
+    static Executor proxyAuthentication(IProxyService proxyService, Executor executor, URI target) throws IOException {
+        IProxyData proxy = getProxyData(proxyService, target).orNull();
+
+        if (proxy == null) {
+            return executor;
+        }
+
+        String userId = proxy.getUserId();
+        if (userId == null) {
+            return executor;
+        }
+
+        String userName = getUserName(userId).orNull();
+        String pass = proxy.getPassword();
+        String workstation = getWorkstation().orNull();
+        String domain = getUserDomain(userId).orNull();
+
+        HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
+
+        return executor.auth(proxyHost, userName, pass, workstation, domain);
+    }
+
+    private static Optional<IProxyData> getProxyData(IProxyService service, URI target) {
+        if (target == null || service == null) {
+            return absent();
+        }
+
+        IProxyData[] proxies = service.select(target);
         if (isEmpty(proxies)) {
             return Optional.absent();
         }

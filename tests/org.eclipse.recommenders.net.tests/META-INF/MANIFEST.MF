@@ -6,4 +6,6 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Fragment-Host: org.eclipse.recommenders.net
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.junit
+Require-Bundle: org.hamcrest,
+ org.junit,
+ org.mockito
