@@ -45,7 +45,7 @@ public class Utils {
                 result.put(entry.getKey(), list);
             }
         }
-        return result;
+        return sortByDate(result);
     }
 
     public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, List<IFeedMessage>> entry) {

@@ -221,6 +221,7 @@ public class NewsServiceTest {
         return doc;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void mockPreferences(boolean enabled, ImmutableList feeds) {
         when(preferences.isEnabled()).thenReturn(enabled);
         when(preferences.getFeedDescriptors()).thenReturn(feeds);
