@@ -19,7 +19,6 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.menus.NewsMenuListener;
-import org.eclipse.recommenders.internal.news.rcp.menus.NoNewsMenuListener;
 import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INewsService;
@@ -40,14 +39,12 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
     private UpdatingNewsAction updatingNewsAction;
     private MenuManager menuManager;
-    private NoNewsMenuListener noNewsMenuListener;
     private NewsMenuListener newsMenuListener;
 
     @Inject
     public NewsToolbarContribution(INewsService service, SharedImages images, EventBus eventBus) {
         this.service = service;
         eventBus.register(this);
-        noNewsMenuListener = new NoNewsMenuListener();
         newsMenuListener = new NewsMenuListener(eventBus);
     }
 
@@ -93,12 +90,16 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             setImageDescriptor(CommonImages.RSS_INACTIVE);
             setToolTipText(Messages.TOOLTIP_NO_NEW_MESSAGES);
             clearMenu();
-            menuManager.addMenuListener(noNewsMenuListener);
+            messages = service.getMessages(Constants.COUNT_PER_FEED);
+            if (!messages.isEmpty() && !Utils.containsUnreadMessages(messages)) {
+                clearMenu();
+                setNewsMenu(messages);
+            }
         }
 
         private void setAvailableNews() {
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (messages.isEmpty()) {
+            if (messages.isEmpty() || !Utils.containsUnreadMessages(messages)) {
                 return;
             }
             setImageDescriptor(CommonImages.RSS_ACTIVE);
@@ -110,7 +111,6 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
         private void clearMenu() {
             menuManager.setRemoveAllWhenShown(true);
-            menuManager.removeMenuListener(noNewsMenuListener);
             menuManager.removeMenuListener(newsMenuListener);
         }
 
