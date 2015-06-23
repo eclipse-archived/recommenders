@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtilsTest {
+public class MessageUtilsSortByDateTest {
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
 
     @Test
@@ -43,7 +43,7 @@ public class UtilsTest {
         iFeedMessages.add(messageB);
         messages.put(feed, iFeedMessages);
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = Utils.sortByDate(messages);
+        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
 
         assertEquals(messageB.getDate(), sut.get(feed).get(0).getDate());
     }
@@ -64,7 +64,7 @@ public class UtilsTest {
         iFeedMessages.add(messageB);
         messages.put(feed, iFeedMessages);
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = Utils.sortByDate(messages);
+        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
 
         assertEquals(messageC.getDate(), sut.get(feed).get(2).getDate());
         assertEquals(messageA.getDate(), sut.get(feed).get(0).getDate());
@@ -74,14 +74,14 @@ public class UtilsTest {
     public void testSortByDateEmptyMap() {
         HashMap<FeedDescriptor, List<IFeedMessage>> messages = Maps.newHashMap();
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = Utils.sortByDate(messages);
+        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
 
         assertTrue(sut.isEmpty());
     }
 
     @Test
     public void testSortByDateNullMap() {
-        Map<FeedDescriptor, List<IFeedMessage>> sut = Utils.sortByDate(null);
+        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(null);
 
         assertTrue(sut.isEmpty());
     }

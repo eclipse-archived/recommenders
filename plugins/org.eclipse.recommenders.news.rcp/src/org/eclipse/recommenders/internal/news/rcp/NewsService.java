@@ -229,7 +229,7 @@ public class NewsService implements INewsService {
 
     @Override
     public void displayNotification() {
-        Map<FeedDescriptor, List<IFeedMessage>> messages = Utils
+        Map<FeedDescriptor, List<IFeedMessage>> messages = MessageUtils
                 .getLatestMessages(getMessages(Constants.COUNT_PER_FEED));
         if (preferences.isNotificationEnabled() && !messages.isEmpty()) {
             notificationFacade.displayNotification(messages, bus);

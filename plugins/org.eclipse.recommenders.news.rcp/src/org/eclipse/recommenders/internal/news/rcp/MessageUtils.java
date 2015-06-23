@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class Utils {
+public class MessageUtils {
 
     public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
         if (map == null) {
@@ -76,7 +76,9 @@ public class Utils {
     }
 
     public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, List<IFeedMessage>> messages) {
-        Preconditions.checkNotNull(messages);
+        if (messages == null) {
+            return Collections.emptyList();
+        }
         List<IFeedMessage> result = Lists.newArrayList();
         for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
             result.addAll(entry.getValue());

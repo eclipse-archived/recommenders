@@ -99,7 +99,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             setNoAvailableNews();
             messages = service.getMessages(Constants.COUNT_PER_FEED);
             menuManager.getMenu().setVisible(true);
-            if (!messages.isEmpty() && Utils.containsUnreadMessages(messages)) {
+            if (!messages.isEmpty() && MessageUtils.containsUnreadMessages(messages)) {
                 setAvailableNews();
             }
         }
@@ -109,7 +109,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             setToolTipText(Messages.TOOLTIP_NO_NEW_MESSAGES);
             clearMenu();
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (!messages.isEmpty() && !Utils.containsUnreadMessages(messages)) {
+            if (!messages.isEmpty() && !MessageUtils.containsUnreadMessages(messages)) {
                 clearMenu();
                 setNewsMenu(messages);
             }
@@ -117,12 +117,12 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
         private void setAvailableNews() {
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (messages.isEmpty() || !Utils.containsUnreadMessages(messages)) {
+            if (messages.isEmpty() || !MessageUtils.containsUnreadMessages(messages)) {
                 return;
             }
             setImageDescriptor(CommonImages.RSS_ACTIVE);
             setToolTipText(MessageFormat.format(Messages.TOOLTIP_NEW_MESSAGES,
-                    Utils.getUnreadMessagesNumber(Utils.mergeMessages(messages))));
+                    MessageUtils.getUnreadMessagesNumber(MessageUtils.mergeMessages(messages))));
             clearMenu();
             setNewsMenu(messages);
         }
@@ -139,7 +139,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
         public void checkForNews() {
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (messages.isEmpty() || !Utils.containsUnreadMessages(messages)) {
+            if (messages.isEmpty() || !MessageUtils.containsUnreadMessages(messages)) {
                 setNoAvailableNews();
             }
         }

@@ -20,7 +20,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.Utils;
+import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
@@ -55,7 +55,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     protected void createContentArea(Composite composite) {
         super.createContentArea(composite);
         composite.setLayout(new GridLayout(1, true));
-        Map<FeedDescriptor, List<IFeedMessage>> sortedMap = Utils.sortByDate(messages);
+        Map<FeedDescriptor, List<IFeedMessage>> sortedMap = MessageUtils.sortByDate(messages);
 
         processNotificationData(composite, sortedMap);
 

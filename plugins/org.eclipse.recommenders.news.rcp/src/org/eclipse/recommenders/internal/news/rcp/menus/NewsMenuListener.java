@@ -20,7 +20,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.Utils;
+import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
@@ -45,7 +45,7 @@ public class NewsMenuListener implements IMenuListener {
         for (Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
             String menuName = entry.getKey().getName();
             if (containsUnreadMessages(entry.getValue())) {
-                menuName = menuName.concat(" (" + Utils.getUnreadMessagesNumber(entry.getValue()) + ")");
+                menuName = menuName.concat(" (" + MessageUtils.getUnreadMessagesNumber(entry.getValue()) + ")");
             }
             MenuManager menu = new MenuManager(menuName, entry.getKey().getId());
             if (entry.getKey().getIcon() != null) {

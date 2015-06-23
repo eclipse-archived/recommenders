@@ -199,7 +199,7 @@ public class NewsServiceTest {
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
 
-        verify(notificationFacade).displayNotification(Utils.sortByDate(groupedMessages), bus);
+        verify(notificationFacade).displayNotification(MessageUtils.sortByDate(groupedMessages), bus);
     }
 
     @Test
