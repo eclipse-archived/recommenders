@@ -13,6 +13,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +47,8 @@ public class NewsServiceTest {
     private static final int LESS_THAN_COUNT_PER_FEED = 2;
     private static final Long POLLING_INTERVAL = 1L;
     private static final int COUNT_PER_FEED = 3;
+    private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
     private NewsRcpPreferences preferences;
     private EventBus bus;
     private IJobFacade jobFacade;
@@ -85,7 +90,7 @@ public class NewsServiceTest {
     }
 
     @Test
-    public void testGetMessagesIfMoreThanCountPerFeed() {
+    public void testGetMessagesIfMoreThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
@@ -101,7 +106,7 @@ public class NewsServiceTest {
     }
 
     @Test
-    public void testGetMessagesIfLessThanCountPerFeed() {
+    public void testGetMessagesIfLessThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
@@ -131,7 +136,7 @@ public class NewsServiceTest {
     }
 
     @Test
-    public void testGetMessagesIfMoreThanOneFeed() {
+    public void testGetMessagesIfMoreThanOneFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         FeedDescriptor secondFeed = enabled(SECOND_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
@@ -183,7 +188,7 @@ public class NewsServiceTest {
     }
 
     @Test
-    public void testShouldDisplayNotification() {
+    public void testShouldDisplayNotification() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
         when(preferences.isNotificationEnabled()).thenReturn(true);
@@ -194,11 +199,11 @@ public class NewsServiceTest {
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
 
-        verify(notificationFacade, times(1)).displayNotification(groupedMessages, bus);
+        verify(notificationFacade).displayNotification(Utils.sortByDate(groupedMessages), bus);
     }
 
     @Test
-    public void testShoulNotdDisplayNotificationWhenPreferencesDisabled() {
+    public void testShoulNotdDisplayNotificationWhenPreferencesDisabled() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
         when(preferences.isNotificationEnabled()).thenReturn(false);
@@ -228,10 +233,11 @@ public class NewsServiceTest {
         when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
     }
 
-    private List<IFeedMessage> mockFeedMessages(int count) {
+    private List<IFeedMessage> mockFeedMessages(int count) throws ParseException {
         List<IFeedMessage> messages = Lists.newArrayList();
         for (int i = 0; i < count; i++) {
-            messages.add(new FeedMessage("id" + i, new Date(), "rndm", "rndm", Urls.toUrl("https://www.eclipse.org/")));
+            messages.add(new FeedMessage("id" + i, dateFormat.parse("10/06/199" + i + " 12:00:00"), "rndm", "rndm",
+                    Urls.toUrl("https://www.eclipse.org/")));
         }
         return messages;
     }
