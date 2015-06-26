@@ -75,7 +75,7 @@ public class FeedMessage implements IFeedMessage {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 
     @Override
