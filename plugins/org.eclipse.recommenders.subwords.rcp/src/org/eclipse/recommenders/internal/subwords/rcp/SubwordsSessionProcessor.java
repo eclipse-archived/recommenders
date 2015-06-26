@@ -335,11 +335,10 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                     if (lastIndexOfHash >= 0) {
                         // This covers the case where the user starts with a prefix of "Collections#" and continues from
                         // there.
-                        bestSequence = LCSS.bestSubsequence(matchingArea,
-                                lastIndexOfHash < 0 ? prefix : prefix.substring(lastIndexOfHash + 1));
+                        bestSequence = LCSS.bestSubsequence(matchingArea, prefix.substring(lastIndexOfHash + 1));
                     } else {
                         // Besides the obvious, this also covers the case where the user starts with a prefix of
-                        // "Collections#e".
+                        // "Collections#e", which manifests itself as just "e".
                         bestSequence = LCSS.bestSubsequence(matchingArea, prefix);
                     }
                 }

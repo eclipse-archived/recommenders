@@ -22,7 +22,8 @@ import com.google.common.collect.Iterables;
 
 public final class Versions {
 
-    private static final Pattern VERSION_PATTERNS = Pattern.compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){2}");
+    private static final Pattern VERSION_PATTERNS = Pattern
+            .compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){2}");
     private static final Pattern FIND_VERSION_PATTERN = Pattern
             .compile("(([1-9][0-9]*)|[0-9])(\\.(([1-9][0-9]*)|[0-9])){0,2}");
 
@@ -112,7 +113,7 @@ public final class Versions {
 
     /**
      * Checks if the version has the correct format.
-     * 
+     *
      * The version must have the following structure: <code>major.minor.micro</code> where major, minor and micro are
      * any number (but w\o leading 0).
      */
@@ -125,7 +126,7 @@ public final class Versions {
      * <code>major.minor.micro</code> where major, minor and micro are any number (but w\o leading 0). If a minor and/or
      * micro version number is missing '.0' will be added for them.
      * <p>
-     * 
+     *
      * If it is not possible to extract the version the input value is returned.
      */
     public static String canonicalizeVersion(String version) {
@@ -142,12 +143,12 @@ public final class Versions {
      * string and add a '.0' if the number of '.' is smaller than 2 or ".0.0" if the number of '.' is 0.
      */
     private static String addMissingVersionPartsIfNecessary(String version) {
-        String temp = version;
+        StringBuilder temp = new StringBuilder(version);
         String[] parts = version.split("\\.");
         int missingVersionParts = 3 - parts.length;
         for (int i = 0; i < missingVersionParts; i++) {
-            temp += ".0";
+            temp.append(".0");
         }
-        return temp;
+        return temp.toString();
     }
 }

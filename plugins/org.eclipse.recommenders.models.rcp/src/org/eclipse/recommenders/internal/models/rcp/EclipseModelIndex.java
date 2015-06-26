@@ -190,9 +190,19 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     }
 
     private boolean indexAlreadyDownloaded(File location) {
-        return location.exists() && location.listFiles().length > 1;
-        // 2 = if this folder contains an index, there must be more than one file...
-        // On mac, we often have hidden files in the folder. This is just simple heuristic.
+        if (!location.exists()) {
+            return false;
+        }
+        File[] files = location.listFiles();
+        if (files == null) {
+            return false;
+        }
+        if (files.length <= 1) {
+            // If this folder contains an index, there must be more than one file...
+            // TODO However, on Mac OS, we often have hidden files in the folder. This is just simple heuristic.
+            return false;
+        }
+        return true;
     }
 
     /**
