@@ -1346,7 +1346,8 @@
   <setupTask
       xsi:type="setup:VariableTask"
       name="train.url"
-      value="http://download.eclipse.org/releases/luna"/>
+      value="http://download.eclipse.org/releases/mars"
+      defaultValue=""/>
   <setupTask
       xsi:type="setup:VariableTask"
       id="eclipse.target.platform"
@@ -1491,7 +1492,7 @@
     <setupTask
         xsi:type="pde:TargetPlatformTask"
         id=""
-        name="Target Definition for Eclipse Luna (4.4)">
+        name="Target Definition for Eclipse Mars (4.5)">
       <description></description>
     </setupTask>
     <setupTask
@@ -2050,7 +2051,7 @@
     </setupTask>
     <setupTask
         xsi:type="pde:TargetPlatformTask"
-        name="Target Definition for Eclipse Luna (4.4)"/>
+        name="Target Definition for Eclipse Mars (4.5)"/>
     <setupTask
         xsi:type="mylyn:MylynQueriesTask"
         repositoryURL="https://bugs.eclipse.org/bugs"
