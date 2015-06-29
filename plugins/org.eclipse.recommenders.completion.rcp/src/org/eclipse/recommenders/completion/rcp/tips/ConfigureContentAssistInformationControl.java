@@ -20,8 +20,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.text.AbstractInformationControl;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -47,18 +50,32 @@ public class ConfigureContentAssistInformationControl extends AbstractInformatio
 
     private final String info;
     private final CompletionRcpPreferences preferences;
+    private final String statusLineText;
 
     public ConfigureContentAssistInformationControl(Shell parent, String statusLineText, String info,
             CompletionRcpPreferences preferences) {
         super(parent, statusLineText);
         this.info = requireNonNull(info);
         this.preferences = preferences;
+        this.statusLineText = statusLineText;
         create();
     }
 
     @Override
     public boolean hasContents() {
         return true;
+    }
+
+    @Override
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return new IInformationControlCreator() {
+
+            @Override
+            public IInformationControl createInformationControl(Shell parent) {
+                return new ConfigureContentAssistInformationControl(parent, statusLineText,
+                        Messages.PROPOSAL_TOOLTIP_DISCOVER_EXTENSIONS, preferences);
+            }
+        };
     }
 
     @Override
@@ -78,13 +95,14 @@ public class ConfigureContentAssistInformationControl extends AbstractInformatio
                 if (StringUtils.startsWith(url, HTTP) || StringUtils.startsWith(url, HTTPS)) {
                     BrowserUtils.openInExternalBrowser(url);
                 } else if (StringUtils.startsWith(url, X_PREFERENCES)) {
-                    createPreferenceDialogOn(getActiveWorkbenchShell(),
-                            StringUtils.substringAfter(url, X_PREFERENCES), null, null).open();
+                    createPreferenceDialogOn(getActiveWorkbenchShell(), StringUtils.substringAfter(url, X_PREFERENCES),
+                            null, null).open();
                 } else if (preferences != null && StringUtils.startsWith(url, X_SESSION_PROCESSOR)) {
                     String sessionProcessorIdWithSwitch = StringUtils.substringAfter(url, X_SESSION_PROCESSOR);
                     char processorSwitch = sessionProcessorIdWithSwitch.charAt(0);
                     String sessionProcessorId = StringUtils.substring(sessionProcessorIdWithSwitch, 1);
-                    SessionProcessorDescriptor descriptor = preferences.getSessionProcessorDescriptor(sessionProcessorId);
+                    SessionProcessorDescriptor descriptor = preferences
+                            .getSessionProcessorDescriptor(sessionProcessorId);
                     if (descriptor != null) {
                         if (processorSwitch == SWITCH_ON) {
                             preferences.setSessionProcessorEnabled(ImmutableList.of(descriptor), NONE);

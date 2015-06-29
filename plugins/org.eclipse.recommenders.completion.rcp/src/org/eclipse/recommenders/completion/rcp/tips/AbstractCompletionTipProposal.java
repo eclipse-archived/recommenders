@@ -25,7 +25,7 @@ public abstract class AbstractCompletionTipProposal extends AbstractJavaCompleti
 
     /**
      * Place this proposal at the bottom of the list.
-     * 
+     *
      * We have to use -10001 as Integer.MIN_VALUE does not work (possibly due to underflow) and other proposals (e.g.,
      * Subwords matches) can have a relevance of -10000.
      */
