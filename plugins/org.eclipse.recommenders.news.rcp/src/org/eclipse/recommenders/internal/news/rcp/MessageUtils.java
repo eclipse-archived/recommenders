@@ -7,19 +7,34 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MessageUtils {
+
+    public static final int TODAY = 0;
+    public static final int YESTERDAY = 1;
+    public static final int THIS_WEEK = 2;
+    public static final int LAST_WEEK = 3;
+    public static final int THIS_MONTH = 4;
+    public static final int LAST_MONTH = 5;
+    public static final int THIS_YEAR = 6;
+    public static final int OLDER = 7;
 
     public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
         if (map == null) {
@@ -101,6 +116,71 @@ public class MessageUtils {
             entry.setValue(list);
         }
         return map;
+    }
+
+    public static List<List<IFeedMessage>> splitMessagesByAge(List<IFeedMessage> messages) {
+        Locale locale = Locale.getDefault();
+        Calendar calendar = Calendar.getInstance(locale);
+        return splitMessagesByAge(messages, calendar.getTime(), locale);
+    }
+
+    @VisibleForTesting
+    public static List<List<IFeedMessage>> splitMessagesByAge(List<IFeedMessage> messages, Date now, Locale locale) {
+        List<List<IFeedMessage>> result = Lists.newArrayList();
+        for (int i = 0; i <= OLDER; i++) {
+            List<IFeedMessage> list = Lists.newArrayList();
+            result.add(list);
+        }
+        if (messages == null) {
+            return result;
+        }
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+        for (IFeedMessage message : messages) {
+            for (int i = 0; i <= OLDER; i++) {
+                if (message.getDate().after(getPeriodStartDate(i, today, locale))
+                        || message.getDate().equals(getPeriodStartDate(i, today, locale))) {
+                    result.get(i).add(message);
+                    break;
+                }
+            }
+            if (message.getDate().before(getPeriodStartDate(OLDER, today, locale))
+                    || message.getDate().equals(getPeriodStartDate(OLDER, today, locale))) {
+                result.get(OLDER).add(message);
+            }
+        }
+        return result;
+    }
+
+    public static Date getPeriodStartDate(int period, Date today, Locale locale) {
+        Calendar calendar = GregorianCalendar.getInstance(locale);
+        calendar.setTime(today);
+        if (period == TODAY) {
+            return calendar.getTime();
+        } else if (period == YESTERDAY) {
+            calendar.add(Calendar.DATE, -1);
+        } else if (period == THIS_WEEK) {
+            int firstDayOfWeek = calendar.getFirstDayOfWeek();
+            calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
+        } else if (period == LAST_WEEK) {
+            int firstDayOfWeek = calendar.getFirstDayOfWeek();
+            calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
+            calendar.add(Calendar.DATE, -1);
+            calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
+        } else if (period == THIS_MONTH) {
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+        } else if (period == LAST_MONTH) {
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.DATE, -1);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+        } else if (period == THIS_YEAR) {
+            calendar.set(Calendar.MONTH, 0);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+        } else if (period == OLDER) {
+            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
+            calendar.set(Calendar.MONTH, 11);
+            calendar.set(Calendar.DAY_OF_MONTH, 31);
+        }
+        return calendar.getTime();
     }
 
 }
