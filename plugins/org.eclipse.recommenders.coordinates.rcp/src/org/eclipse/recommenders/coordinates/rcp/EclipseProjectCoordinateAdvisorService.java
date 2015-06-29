@@ -13,7 +13,7 @@ package org.eclipse.recommenders.coordinates.rcp;
 import static com.google.common.base.Optional.absent;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.eclipse.recommenders.internal.coordinates.rcp.CoordinatesRcpModule.IDENTIFIED_PROJECT_COORDINATES;
-import static org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages.ERROR_IN_ADVISOR_SERVICE_SUGGEST;
+import static org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
@@ -42,7 +42,9 @@ import org.eclipse.recommenders.internal.coordinates.rcp.AdvisorDescriptors;
 import org.eclipse.recommenders.internal.coordinates.rcp.CoordinatesRcpPreferences;
 import org.eclipse.recommenders.internal.coordinates.rcp.DependencyInfoJsonTypeAdapter;
 import org.eclipse.recommenders.internal.coordinates.rcp.ProjectCoordinateJsonTypeAdapter;
+import org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.rcp.IRcpService;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.gson.OptionalJsonTypeAdapter;
 import org.slf4j.Logger;
@@ -69,16 +71,16 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
 
     private static final Logger LOG = LoggerFactory.getLogger(EclipseProjectCoordinateAdvisorService.class);
 
+    @SuppressWarnings("serial")
+    private static final Type CACHE_TYPE_TOKEN = new TypeToken<Map<DependencyInfo, Optional<ProjectCoordinate>>>() {
+    }.getType();
+
     private final ProjectCoordinateAdvisorService delegate;
     private final CoordinatesRcpPreferences prefs;
     private final LoadingCache<DependencyInfo, Optional<ProjectCoordinate>> projectCoordinateCache;
 
     private final File persistenceFile;
     private final Gson cacheGson;
-
-    @SuppressWarnings("serial")
-    private final Type cacheType = new TypeToken<Map<DependencyInfo, Optional<ProjectCoordinate>>>() {
-    }.getType();
 
     private Map<IProjectCoordinateAdvisor, AdvisorDescriptor> descriptors = Maps.newHashMap();
 
@@ -155,23 +157,28 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     }
 
     @PostConstruct
-    public void open() throws IOException {
+    public void open() {
         startAsync();
     }
 
     @Override
-    protected void startUp() throws Exception {
+    protected void startUp() {
         configureAdvisorList(prefs.advisorConfiguration);
 
         if (!persistenceFile.exists()) {
             return;
         }
-        String json = Files.toString(persistenceFile, Charsets.UTF_8);
-        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
 
-        for (Entry<DependencyInfo, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
-            projectCoordinateCache.put(entry.getKey(), entry.getValue());
+        String json;
+        try {
+            json = Files.toString(persistenceFile, Charsets.UTF_8);
+        } catch (IOException e) {
+            Logs.log(ERROR_FAILED_TO_READ_CACHED_COORDINATES, e, persistenceFile);
+            return;
         }
+
+        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, CACHE_TYPE_TOKEN);
+        projectCoordinateCache.putAll(deserializedCache);
     }
 
     private void configureAdvisorList(String advisorConfiguration) {
@@ -199,14 +206,21 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     }
 
     @PreDestroy
-    public void close() throws IOException {
+    public void close() {
         stopAsync();
     }
 
     @Override
-    protected void shutDown() throws Exception {
-        String json = cacheGson.toJson(projectCoordinateCache.asMap(), cacheType);
-        Files.write(json, persistenceFile, Charsets.UTF_8);
+    protected void shutDown() {
+        String json = cacheGson.toJson(projectCoordinateCache.asMap(), CACHE_TYPE_TOKEN);
+        try {
+            Files.write(json, persistenceFile, Charsets.UTF_8);
+        } catch (IOException e) {
+            Logs.log(LogMessages.ERROR_FAILED_TO_WRITE_CACHED_COORDINATES, e, persistenceFile);
+
+            // Delete the file (if it exists at all) so not to leave it in a corrupt state.
+            FileUtils.deleteQuietly(persistenceFile);
+        }
     }
 
     @Subscribe
@@ -215,7 +229,7 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     }
 
     @Subscribe
-    public void onEvent(AdvisorConfigurationChangedEvent e) throws IOException {
+    public void onEvent(AdvisorConfigurationChangedEvent e) {
         clearCache();
         configureAdvisorList(prefs.advisorConfiguration);
     }

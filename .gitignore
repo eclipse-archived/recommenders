@@ -6,6 +6,9 @@ target/
 .classpath
 .settings/
 
+## No Eclipse settings from nested workspace
+.metadata/
+
 ## No Checkstyle plugin settings
 .checkstyle
 

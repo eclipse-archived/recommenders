@@ -23,9 +23,13 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages ERROR_ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_ADVISOR_INSTANTIATION_FAILED);
     public static final ILogMessage ERROR_BIND_FILE_NAME = new LogMessages(ERROR, Messages.LOG_ERROR_BIND_FILE_NAME);
+    public static final ILogMessage ERROR_FAILED_TO_READ_CACHED_COORDINATES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_READ_CACHED_COORDINATES);
+    public static final ILogMessage ERROR_FAILED_TO_WRITE_CACHED_COORDINATES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_WRITE_CACHED_COORDINATES);
     public static final ILogMessage ERROR_IN_ADVISOR_SERVICE_SUGGEST = new LogMessages(ERROR,
             Messages.LOG_ERROR_IN_ADVISOR_SERVICE_SUGGEST);
 
