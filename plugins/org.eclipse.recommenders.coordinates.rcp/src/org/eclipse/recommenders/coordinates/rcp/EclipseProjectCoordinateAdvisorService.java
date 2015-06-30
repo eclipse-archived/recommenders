@@ -65,6 +65,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
         implements IProjectCoordinateAdvisorService, IRcpService {
@@ -169,15 +170,15 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
             return;
         }
 
-        String json;
+        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache;
         try {
-            json = Files.toString(persistenceFile, Charsets.UTF_8);
-        } catch (IOException e) {
+            String json = Files.toString(persistenceFile, Charsets.UTF_8);
+            deserializedCache = cacheGson.fromJson(json, CACHE_TYPE_TOKEN);
+        } catch (IOException | JsonParseException e) {
             Logs.log(ERROR_FAILED_TO_READ_CACHED_COORDINATES, e, persistenceFile);
             return;
         }
 
-        Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, CACHE_TYPE_TOKEN);
         projectCoordinateCache.putAll(deserializedCache);
     }
 
@@ -212,8 +213,8 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
 
     @Override
     protected void shutDown() {
-        String json = cacheGson.toJson(projectCoordinateCache.asMap(), CACHE_TYPE_TOKEN);
         try {
+            String json = cacheGson.toJson(projectCoordinateCache.asMap(), CACHE_TYPE_TOKEN);
             Files.write(json, persistenceFile, Charsets.UTF_8);
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_FAILED_TO_WRITE_CACHED_COORDINATES, e, persistenceFile);
