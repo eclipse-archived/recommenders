@@ -24,7 +24,6 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
-import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -72,8 +71,7 @@ public class ConfigureContentAssistInformationControl extends AbstractInformatio
 
             @Override
             public IInformationControl createInformationControl(Shell parent) {
-                return new ConfigureContentAssistInformationControl(parent, statusLineText,
-                        Messages.PROPOSAL_TOOLTIP_DISCOVER_EXTENSIONS, preferences);
+                return new ConfigureContentAssistInformationControl(parent, statusLineText, info, preferences);
             }
         };
     }
