@@ -176,7 +176,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         // TODO the handling of setProposalInfo should be improved soon.
         try {
             if (javaMethodCompletionProposalClass == c) {
-                IProcessableProposal res = factory.newJavaMethodCompletionProposal(coreProposal, context);
+                IProcessableProposal res = factory.newJavaMethodCompletionProposal(coreProposal,
+                        (JavaMethodCompletionProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (javaFieldWithCastedReceiverCompletionProposalClass == c) {
@@ -200,19 +201,23 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (lazyGenericTypeProposalClass == c) {
-                IProcessableProposal res = factory.newLazyGenericTypeProposal(coreProposal, context);
+                IProcessableProposal res = factory.newLazyGenericTypeProposal(coreProposal,
+                        (LazyGenericTypeProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (lazyJavaTypeCompletionProposalClass == c) {
-                IProcessableProposal res = factory.newLazyJavaTypeCompletionProposal(coreProposal, context);
+                IProcessableProposal res = factory.newLazyJavaTypeCompletionProposal(coreProposal,
+                        (LazyJavaTypeCompletionProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (filledArgumentNamesMethodProposalClass == c) {
-                IProcessableProposal res = factory.newFilledArgumentNamesMethodProposal(coreProposal, context);
+                IProcessableProposal res = factory.newFilledArgumentNamesMethodProposal(coreProposal,
+                        (FilledArgumentNamesMethodProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (parameterGuessingProposalClass == c) {
-                IProcessableProposal res = factory.newParameterGuessingProposal(coreProposal, context);
+                IProcessableProposal res = factory.newParameterGuessingProposal(coreProposal,
+                        (ParameterGuessingProposal) uiProposal, context);
                 setProposalInfo(res, uiProposal);
                 return res;
             } else if (methodDeclarationCompletionProposalClass == c) {
@@ -272,26 +277,22 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
     @Override
     public IProcessableProposal newLazyGenericTypeProposal(CompletionProposal coreProposal,
-            JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableLazyGenericTypeProposal(coreProposal, context));
-    }
-
-    protected IProcessableProposal postConstruct(IProcessableProposal res) {
-        res.setProposalProcessorManager(new ProposalProcessorManager(res));
-        return res;
+            LazyGenericTypeProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableLazyGenericTypeProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newFilledArgumentNamesMethodProposal(CompletionProposal coreProposal,
-            JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableFilledArgumentNamesMethodProposal(coreProposal, context));
+            FilledArgumentNamesMethodProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableFilledArgumentNamesMethodProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newParameterGuessingProposal(CompletionProposal coreProposal,
-            JavaContentAssistInvocationContext context) {
+            ParameterGuessingProposal uiProposal, JavaContentAssistInvocationContext context) {
         final boolean fillBestGuess = shouldFillArgumentNames();
-        return postConstruct(new ProcessableParameterGuessingProposal(coreProposal, context, fillBestGuess));
+        return postConstruct(new ProcessableParameterGuessingProposal(coreProposal, context, fillBestGuess),
+                uiProposal);
     }
 
     private boolean shouldFillArgumentNames() {
@@ -308,7 +309,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     public IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
                     throws JavaModelException {
-        return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context));
+        return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context),
+                uiProposal);
     }
 
     @Override
@@ -316,7 +318,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             JavaFieldWithCastedReceiverCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             return postConstruct(
-                    new ProcessableJavaFieldWithCastedReceiverCompletionProposal(coreProposal, uiProposal, context));
+                    new ProcessableJavaFieldWithCastedReceiverCompletionProposal(coreProposal, uiProposal, context),
+                    uiProposal);
         } catch (JavaModelException e) {
             throw Throwables.propagate(e);
         }
@@ -326,7 +329,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     public IProcessableProposal newJavaCompletionProposal(CompletionProposal coreProposal,
             JavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
-            return postConstruct(new ProcessableJavaCompletionProposal(coreProposal, uiProposal, context));
+            return postConstruct(new ProcessableJavaCompletionProposal(coreProposal, uiProposal, context), uiProposal);
         } catch (JavaModelException e) {
             throw Throwables.propagate(e);
         }
@@ -335,31 +338,31 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
             JavadocLinkTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableJavadocLinkTypeCompletionProposal(coreProposal, context));
+        return postConstruct(new ProcessableJavadocLinkTypeCompletionProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
             JavadocInlineTagCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableJavadocInlineTagCompletionProposal(coreProposal, context));
+        return postConstruct(new ProcessableJavadocInlineTagCompletionProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newJavaMethodCompletionProposal(CompletionProposal coreProposal,
-            JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableJavaMethodCompletionProposal(coreProposal, context));
+            JavaMethodCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableJavaMethodCompletionProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newLazyJavaTypeCompletionProposal(CompletionProposal coreProposal,
-            JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableLazyJavaTypeCompletionProposal(coreProposal, context));
+            LazyJavaTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
+        return postConstruct(new ProcessableLazyJavaTypeCompletionProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newOverrideCompletionProposal(CompletionProposal coreProposal,
             OverrideCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableOverrideCompletionProposal(coreProposal, uiProposal, context));
+        return postConstruct(new ProcessableOverrideCompletionProposal(coreProposal, uiProposal, context), uiProposal);
     }
 
     @Override
@@ -378,7 +381,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             }
             if (type != null) {
                 return postConstruct(ProcessableMethodDeclarationCompletionProposal.newProposal(coreProposal, type,
-                        uiProposal.getRelevance()));
+                        uiProposal.getRelevance()), uiProposal);
             }
         } catch (CoreException e) {
             throw Throwables.propagate(e);
@@ -391,8 +394,10 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             GetterSetterCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             IField field = (IField) uiProposal.getJavaElement();
-            return postConstruct(new ProcessableGetterSetterCompletionProposal(coreProposal, field,
-                    startsWithAny(uiProposal.getDisplayString(), "get", "is"), uiProposal.getRelevance())); //$NON-NLS-1$ //$NON-NLS-2$
+            return postConstruct(
+                    new ProcessableGetterSetterCompletionProposal(coreProposal, field,
+                            startsWithAny(uiProposal.getDisplayString(), "get", "is"), uiProposal.getRelevance()), //$NON-NLS-1$ //$NON-NLS-2$
+                    uiProposal);
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
@@ -401,12 +406,28 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newLazyPackageCompletionProposal(CompletionProposal coreProposal,
             LazyPackageCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableLazyPackageCompletionProposal(coreProposal, context));
+        return postConstruct(new ProcessableLazyPackageCompletionProposal(coreProposal, context), uiProposal);
     }
 
     @Override
     public IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
             LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        return postConstruct(new ProcessableLazyJavaCompletionProposal(coreProposal, context));
+        return postConstruct(new ProcessableLazyJavaCompletionProposal(coreProposal, context), uiProposal);
     }
+
+    /**
+     * {@link AbstractJavaCompletionProposal#setTriggerCharacters(char[])} is called by
+     * {@link org.eclipse.jdt.ui.text.java.CompletionProposalCollector} after a new completion proposal is created. We
+     * must copy the trigger characters from the originalProposal to the processableProposal in order to mimic the JDT
+     * behavior.
+     *
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=471386">Bug 471386</a>
+     */
+    protected <T extends AbstractJavaCompletionProposal & IProcessableProposal> T postConstruct(T processableProposal,
+            AbstractJavaCompletionProposal originalProposal) {
+        processableProposal.setProposalProcessorManager(new ProposalProcessorManager(processableProposal));
+        processableProposal.setTriggerCharacters(originalProposal.getTriggerCharacters());
+        return processableProposal;
+    }
+
 }
