@@ -10,10 +10,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Provider;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -28,6 +31,7 @@ import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor;
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
 import org.eclipse.recommenders.utils.Pair;
+import org.eclipse.ui.IEditorPart;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,9 +128,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         scenarios.add(scenario("Camel case match", method("ArrayList arrayList; aL$"), COMPREHENSIVE,
                 MIN_CAMELCASE_MATCH_RELEVANCE, MAX_CAMELCASE_MATCH_RELEVANCE, "arrayList"));
 
-        scenarios.add(scenario("Exact match of anonymous inner type",
-                classbody("Maps", "public void method() { new Map$ }"), PREFIX_LENGTH_2, MIN_SUBWORDS_MATCH_RELEVANCE,
-                MAX_PREFIX_MATCH_RELEVANCE, "Map(", "Maps("));
+        scenarios.add(
+                scenario("Exact match of anonymous inner type", classbody("Maps", "public void method() { new Map$ }"),
+                        PREFIX_LENGTH_2, MIN_SUBWORDS_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE, "Map(", "Maps("));
 
         return scenarios;
     }
@@ -152,9 +156,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
                 int relevance = proposal.getRelevance();
                 if (relevance > lastRelevance) {
-                    fail(String
-                            .format("Encountered proposal %s with a relevance %d. Expected a relevance lower than the previous expected proposal's relevance of %d.",
-                                    expectedProposal, relevance, lastRelevance));
+                    fail(String.format(
+                            "Encountered proposal %s with a relevance %d. Expected a relevance lower than the previous expected proposal's relevance of %d.",
+                            expectedProposal, relevance, lastRelevance));
                 }
                 lastRelevance = relevance;
                 if (relevance >= minRelevance && relevance <= maxRelevance) {
@@ -193,12 +197,20 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         SessionProcessor baseRelevanceSessionProcessor = new BaseRelevanceSessionProcessor();
 
         CompletionRcpPreferences prefs = Mockito.mock(CompletionRcpPreferences.class);
-        Mockito.when(prefs.getEnabledSessionProcessors()).thenReturn(
-                ImmutableSet.of(new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
-                        baseRelevanceSessionProcessor), new SessionProcessorDescriptor("subwords", "name", "desc",
-                        null, 0, true, "", processor)));
+        Mockito.when(prefs.getEnabledSessionProcessors())
+                .thenReturn(ImmutableSet.of(
+                        new SessionProcessorDescriptor("base", "base", "desc", null, 0, true, "",
+                                baseRelevanceSessionProcessor),
+                        new SessionProcessorDescriptor("subwords", "name", "desc", null, 0, true, "", processor)));
 
-        IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs);
+        IntelligentCompletionProposalComputer sut = new MockedIntelligentCompletionProposalComputer(processor, prefs,
+                new Provider<IEditorPart>() {
+
+                    @Override
+                    public IEditorPart get() {
+                        return (IEditorPart) new CompilationUnitEditor();
+                    }
+                });
         sut.sessionStarted();
 
         List<ICompletionProposal> actual = sut.computeCompletionProposals(ctx, new NullProgressMonitor());

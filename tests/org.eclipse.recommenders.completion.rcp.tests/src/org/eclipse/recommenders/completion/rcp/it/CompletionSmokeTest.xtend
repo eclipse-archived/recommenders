@@ -1,5 +1,7 @@
 package org.eclipse.recommenders.completion.rcp.it
 
+import javax.inject.Provider;
+
 import com.google.common.base.Optional
 import com.google.common.collect.ImmutableSet
 import org.eclipse.core.resources.ResourcesPlugin
@@ -8,6 +10,7 @@ import org.eclipse.jdt.core.ICompilationUnit
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.IType
 import org.eclipse.jdt.core.dom.AST
+import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer
 import org.eclipse.recommenders.calls.ICallModel
 import org.eclipse.recommenders.calls.ICallModelProvider
@@ -425,7 +428,13 @@ class CompletionSmokeTest {
       val ast = cu.reconcile(AST::JLS4, true, true, null, null);
       Assert.assertNotNull(ast)
 
-      val computer = new MockedIntelligentCompletionProposalComputer(sut, preferences)
+      val editorProvider = new Provider<IEditorPart>() {
+        override get() {
+          return new CompilationUnitEditor as IEditorPart
+        }
+      };
+
+      val computer = new MockedIntelligentCompletionProposalComputer(sut, preferences, editorProvider)
 
       for (completionIndex : struct.second) {
          val ctx = new JavaContentAssistContextMock(cu, completionIndex)
@@ -472,9 +481,9 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
 
    T processor;
 
-   new(T processor, CompletionRcpPreferences preferences) {
+   new(T processor, CompletionRcpPreferences preferences, Provider<IEditorPart> retriever) {
       super(preferences, new CachingAstProvider(), new SharedImages,
-         CallCompletionContextFunctions.registerDefaults(CompletionContextFunctions.defaultFunctions));
+         CallCompletionContextFunctions.registerDefaults(CompletionContextFunctions.defaultFunctions), retriever);
       this.processor = processor
    }
 

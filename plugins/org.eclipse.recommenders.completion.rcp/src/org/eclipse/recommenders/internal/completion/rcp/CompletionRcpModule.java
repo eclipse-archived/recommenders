@@ -37,6 +37,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.Visibl
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.ICompletionContextFunction;
 import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
@@ -56,8 +57,8 @@ public class CompletionRcpModule extends AbstractModule {
         functions.addBinding(ENCLOSING_ELEMENT).to(EnclosingElementContextFunction.class);
         functions.addBinding(ENCLOSING_TYPE).to(EnclosingTypeContextFunction.class);
         functions.addBinding(ENCLOSING_METHOD).to(EnclosingMethodContextFunction.class);
-        functions.addBinding(ENCLOSING_METHOD_FIRST_DECLARATION).to(
-                EnclosingMethodFirstDeclarationContextFunction.class);
+        functions.addBinding(ENCLOSING_METHOD_FIRST_DECLARATION)
+                .to(EnclosingMethodFirstDeclarationContextFunction.class);
         functions.addBinding(EXPECTED_TYPE).to(ExpectedTypeContextFunction.class);
         functions.addBinding(EXPECTED_TYPENAMES).to(ExpectedTypeNamesContextFunction.class);
         functions.addBinding(IS_COMPLETION_ON_TYPE).to(CompletionOnTypeContextFunction.class);
@@ -80,5 +81,10 @@ public class CompletionRcpModule extends AbstractModule {
     public CompletionRcpPreferences provideCompletionPreferences(IWorkbench wb) {
         IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
         return ContextInjectionFactory.make(CompletionRcpPreferences.class, context);
+    }
+
+    @Provides
+    public IEditorPart provideActiveEditor(IWorkbench wb) {
+        return wb.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
     }
 }
