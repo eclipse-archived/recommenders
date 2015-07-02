@@ -263,6 +263,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 completionIdentifier = new String(coreProposal.getDeclarationSignature());
                 break;
             case CompletionProposal.METHOD_REF:
+            case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
             case CompletionProposal.METHOD_NAME_REFERENCE: {
                 // result: myMethodName(Lsome/Param;I)V
                 completionIdentifier = new StringBuilder().append(coreProposal.getName()).append(' ')
@@ -331,15 +332,26 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             public boolean isPrefix(String prefix) {
                 if (this.prefix != prefix) {
                     this.prefix = prefix;
-                    int lastIndexOfHash = prefix.lastIndexOf('#');
-                    if (lastIndexOfHash >= 0) {
-                        // This covers the case where the user starts with a prefix of "Collections#" and continues from
-                        // there.
-                        bestSequence = LCSS.bestSubsequence(matchingArea, prefix.substring(lastIndexOfHash + 1));
+                    CompletionProposal coreProposal = proposal.getCoreProposal().orNull();
+                    if (coreProposal != null
+                            && (coreProposal.getKind() == CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER
+                                    || coreProposal.getKind() == CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER)) {
+                        // This covers the case where the user starts with a prefix of "receiver.ge" and continues
+                        // typing 't' from there: In this case, prefix == "receiver.get" rather than "get".
+                        // I have only ever encountered this with proposal kinds of *_REF_WITH_CASTED_RECEIVER.
+                        int lastIndexOfDot = prefix.lastIndexOf('.');
+                        bestSequence = LCSS.bestSubsequence(matchingArea, prefix.substring(lastIndexOfDot + 1));
                     } else {
-                        // Besides the obvious, this also covers the case where the user starts with a prefix of
-                        // "Collections#e", which manifests itself as just "e".
-                        bestSequence = LCSS.bestSubsequence(matchingArea, prefix);
+                        int lastIndexOfHash = prefix.lastIndexOf('#');
+                        if (lastIndexOfHash >= 0) {
+                            // This covers the case where the user starts with a prefix of "Collections#" and continues
+                            // from there.
+                            bestSequence = LCSS.bestSubsequence(matchingArea, prefix.substring(lastIndexOfHash + 1));
+                        } else {
+                            // Besides the obvious, this also covers the case where the user starts with a prefix of
+                            // "Collections#e", which manifests itself as just "e".
+                            bestSequence = LCSS.bestSubsequence(matchingArea, prefix);
+                        }
                     }
                 }
                 return prefix.isEmpty() || bestSequence.length > 0;
