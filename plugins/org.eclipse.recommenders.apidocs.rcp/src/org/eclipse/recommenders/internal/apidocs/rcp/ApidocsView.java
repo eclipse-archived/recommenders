@@ -71,7 +71,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -87,9 +86,8 @@ public class ApidocsView extends ViewPart {
     private final ApidocsPreferences preferences;
 
     private static final long LABEL_FLAGS = JavaElementLabels.ALL_FULLY_QUALIFIED | JavaElementLabels.M_PRE_RETURNTYPE
-            | JavaElementLabels.M_PARAMETER_TYPES | JavaElementLabels.M_PARAMETER_NAMES
-            | JavaElementLabels.M_EXCEPTIONS | JavaElementLabels.F_PRE_TYPE_SIGNATURE
-            | JavaElementLabels.T_TYPE_PARAMETERS;
+            | JavaElementLabels.M_PARAMETER_TYPES | JavaElementLabels.M_PARAMETER_NAMES | JavaElementLabels.M_EXCEPTIONS
+            | JavaElementLabels.F_PRE_TYPE_SIGNATURE | JavaElementLabels.T_TYPE_PARAMETERS;
     private static final int MOVE_AFTER = 1;
     private static final int MOVE_BEFORE = 0;
 
@@ -364,7 +362,6 @@ public class ApidocsView extends ViewPart {
     }
 
     @Subscribe
-    @AllowConcurrentEvents
     public void onJavaSelection(final JavaElementSelectionEvent selection) {
         activeSelection = selection;
         if (visible && activeProvider != null && activeSelection != null) {
@@ -378,8 +375,8 @@ public class ApidocsView extends ViewPart {
         }
     }
 
-    private void runProvider(JavaElementSelectionEvent selection) throws IllegalAccessException,
-            InvocationTargetException {
+    private void runProvider(JavaElementSelectionEvent selection)
+            throws IllegalAccessException, InvocationTargetException {
         Optional<Method> opt = subscriptionManager.findSubscribedMethod(activeProvider, selection);
         if (opt.isPresent()) {
             Method method = opt.get();
@@ -422,8 +419,8 @@ public class ApidocsView extends ViewPart {
             text = element.getElementName();
             break;
         case IJavaElement.LOCAL_VARIABLE:
-            text = JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
-                    | JavaElementLabels.F_POST_QUALIFIED);
+            text = JavaElementLabels.getElementLabel(element,
+                    JavaElementLabels.F_PRE_TYPE_SIGNATURE | JavaElementLabels.F_POST_QUALIFIED);
             break;
         default:
             text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
