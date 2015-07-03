@@ -29,6 +29,7 @@ public final class Messages extends NLS {
     public static String LABEL_NOTIFICATION_NAME;
     public static String LABEL_NO_NEW_MESSAGES;
     public static String LABEL_MARK_AS_READ;
+    public static String LABEL_PREFERENCES;
     public static String LABEL_TODAY;
     public static String LABEL_YESTERDAY;
     public static String LABEL_THIS_WEEK;
