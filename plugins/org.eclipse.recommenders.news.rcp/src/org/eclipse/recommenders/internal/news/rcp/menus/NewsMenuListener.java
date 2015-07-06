@@ -45,10 +45,7 @@ public class NewsMenuListener implements IMenuListener {
     @Override
     public void menuAboutToShow(IMenuManager manager) {
         for (Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
-            String menuName = entry.getKey().getName();
-            if (containsUnreadMessages(entry.getValue())) {
-                menuName = menuName.concat(" (" + getUnreadMessagesNumber(entry.getValue()) + ")");
-            }
+            String menuName = getMenuEntryTitle(entry.getKey().getName(), entry.getValue());
             MenuManager menu = new MenuManager(menuName, entry.getKey().getId());
             if (entry.getKey().getIcon() != null) {
                 // in Kepler: The method setImageDescriptor(ImageDescriptor) is undefined for the type MenuManager
@@ -108,9 +105,10 @@ public class NewsMenuListener implements IMenuListener {
                     eventBus.post(createFeedMessageReadEvent(message.getId()));
                 }
             };
-            action.setText(message.getTitle());
             if (!message.isRead()) {
-                action.setText(Messages.UNREAD_MESSAGE_PREFIX.concat(action.getText()));
+                action.setText(Messages.UNREAD_MESSAGE_PREFIX.concat(message.getTitle()));
+            } else {
+                action.setText(Messages.READ_MESSAGE_PREFIX.concat(message.getTitle()));
             }
             menu.add(action);
         }
@@ -125,13 +123,19 @@ public class NewsMenuListener implements IMenuListener {
         menu.add(action);
     }
 
-    private boolean containsUnreadMessages(List<IFeedMessage> messages) {
+    private static String getMenuEntryTitle(String feedName, List<IFeedMessage> messages) {
+        boolean read = false;
         for (IFeedMessage message : messages) {
-            if (!message.isRead()) {
-                return true;
+            if (message.isRead()) {
+                read = true;
             }
         }
-        return false;
+        if (read) {
+            return Messages.READ_MESSAGE_PREFIX.concat(feedName);
+        } else {
+            return Messages.UNREAD_MESSAGE_PREFIX.concat(feedName)
+                    .concat(" (" + getUnreadMessagesNumber(messages) + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
 
 }
