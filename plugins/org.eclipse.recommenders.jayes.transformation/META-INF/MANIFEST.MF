@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.jayes.transformation
-Bundle-Version: 2.2.1.qualifier
+Bundle-Version: 2.2.2.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.recommenders.jayes;bundle-version="[2.2.1,2.2.2)"
+Require-Bundle: org.eclipse.recommenders.jayes;bundle-version="[2.2.2,2.2.3)"
 Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
  com.google.common.primitives;version="[15.0.0,16.0.0)",

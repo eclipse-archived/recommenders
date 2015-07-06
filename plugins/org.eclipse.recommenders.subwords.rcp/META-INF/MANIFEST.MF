@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.subwords.rcp;singleton:=true
-Bundle-Version: 2.2.1.qualifier
+Bundle-Version: 2.2.2.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -12,10 +12,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.1,2.2.2)",
- org.eclipse.recommenders.injection;bundle-version="[2.2.1,2.2.2)",
- org.eclipse.recommenders.rcp;bundle-version="[2.2.1,2.2.2)",
- org.eclipse.recommenders.utils;bundle-version="[2.2.1,2.2.2)",
+ org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.2,2.2.3)",
+ org.eclipse.recommenders.injection;bundle-version="[2.2.2,2.2.3)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.2.2,2.2.3)",
+ org.eclipse.recommenders.utils;bundle-version="[2.2.2,2.2.3)",
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
