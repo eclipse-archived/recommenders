@@ -53,7 +53,7 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
                 Document model = readModelFromFile(pomfile);
                 return extractProjectCoordinateFromModel(model);
             }
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
             log.error("Could not read pom.xml file of dependency :" + dependencyInfo, e);
             return absent();
         }

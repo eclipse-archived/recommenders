@@ -56,7 +56,9 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_ADVISOR_INSTANTIATION_FAILED;
     public static String LOG_ERROR_BIND_FILE_NAME;
     public static String LOG_ERROR_FAILED_TO_READ_CACHED_COORDINATES;
+    public static String LOG_ERROR_FAILED_TO_READ_MANUAL_MAPPINGS;
     public static String LOG_ERROR_FAILED_TO_WRITE_CACHED_COORDINATES;
+    public static String LOG_ERROR_FAILED_TO_WRITE_MANUAL_MAPPINGS;
     public static String LOG_ERROR_IN_ADVISOR_SERVICE_SUGGEST;
 
     static {
