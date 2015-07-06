@@ -25,7 +25,6 @@ import org.eclipse.recommenders.internal.news.rcp.menus.NewsMenuListener;
 import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INewsService;
-import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,13 +38,12 @@ import com.google.common.eventbus.Subscribe;
 public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
 
     private final INewsService service;
-
+    private final NewsMenuListener newsMenuListener;
     private UpdatingNewsAction updatingNewsAction;
     private MenuManager menuManager;
-    private NewsMenuListener newsMenuListener;
 
     @Inject
-    public NewsToolbarContribution(INewsService service, SharedImages images, EventBus eventBus) {
+    public NewsToolbarContribution(INewsService service, EventBus eventBus) {
         this.service = service;
         eventBus.register(this);
         newsMenuListener = new NewsMenuListener(eventBus);

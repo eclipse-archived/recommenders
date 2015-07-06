@@ -9,10 +9,9 @@ package org.eclipse.recommenders.internal.news.rcp;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.Objects;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
-
-import com.google.common.base.Objects;
 
 public class FeedMessage implements IFeedMessage {
 
@@ -59,18 +58,18 @@ public class FeedMessage implements IFeedMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (obj == null) {
+        if (other == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != other.getClass()) {
             return false;
         }
-        FeedMessage that = (FeedMessage) obj;
-        return Objects.equal(this.getId(), that.getId());
+        FeedMessage that = (FeedMessage) other;
+        return Objects.equals(this.getId(), that.getId());
     }
 
     @Override
