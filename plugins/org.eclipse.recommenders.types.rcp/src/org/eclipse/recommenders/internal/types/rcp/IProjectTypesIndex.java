@@ -18,10 +18,9 @@ import com.google.common.collect.ImmutableSet;
 
 public interface IProjectTypesIndex extends Closeable {
 
-    ImmutableSet<String> subtypes(ITypeName expected, String prefix);
+    ImmutableSet<String> subtypes(ITypeName expected);
 
     void suggestRebuild();
 
     void delete();
-
 }

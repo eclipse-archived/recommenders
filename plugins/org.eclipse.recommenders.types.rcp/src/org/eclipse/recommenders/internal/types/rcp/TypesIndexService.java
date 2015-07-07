@@ -125,9 +125,9 @@ public class TypesIndexService implements ITypesIndexService, IElementChangedLis
     }
 
     @Override
-    public Set<String> subtypes(ITypeName expected, String prefix, IJavaProject project) {
+    public Set<String> subtypes(ITypeName expected, IJavaProject project) {
         IProjectTypesIndex index = indexProvider.findOrCreateIndex(project);
-        return index.subtypes(expected, prefix);
+        return index.subtypes(expected);
     }
 
     private final class ShutdownListener implements IWorkbenchListener {

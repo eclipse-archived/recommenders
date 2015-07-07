@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.types.rcp;
 
 import static com.google.common.base.Objects.equal;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.search.NumericRangeQuery.newLongRange;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
@@ -39,10 +38,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.IOUtils;
@@ -83,7 +82,6 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private static final String F_PACAKGE_FRAGEMENT_ROOT_TYPE = "pfrType"; //$NON-NLS-1$
 
     private static final String F_NAME = "name"; //$NON-NLS-1$
-    private static final String F_SIMPLE_NAME = "simpleName"; //$NON-NLS-1$
     private static final String F_LAST_MODIFIED = "lastModified"; //$NON-NLS-1$
     private static final String F_LOCATION = "location"; //$NON-NLS-1$
     private static final String F_INSTANCEOF = "instanceof"; //$NON-NLS-1$
@@ -91,8 +89,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private static final String V_JAVA_LANG_OBJECT = "java.lang.Object"; //$NON-NLS-1$
     private static final String V_ARCHIVE = "archive"; //$NON-NLS-1$
 
-    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(new Term(
-            F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
+    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(
+            new Term(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
 
     private final IJavaProject project;
     private final File indexDir;
@@ -176,8 +174,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private List<IPackageFragmentRoot> findArchivePackageFragmentRoots() {
-        Iterable<IPackageFragmentRoot> filtered = Iterables.filter(
-                JavaElementsFinder.findPackageFragmentRoots(project), new ArchiveFragmentRootsOnlyPredicate());
+        Iterable<IPackageFragmentRoot> filtered = Iterables.filter(JavaElementsFinder.findPackageFragmentRoots(project),
+                new ArchiveFragmentRootsOnlyPredicate());
         Iterable<IPackageFragmentRoot> result;
         result = Iterables.filter(filtered, new Predicate<IPackageFragmentRoot>() {
 
@@ -230,12 +228,12 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     @Override
-    public ImmutableSet<String> subtypes(ITypeName expected, String prefix) {
+    public ImmutableSet<String> subtypes(ITypeName expected) {
         if (!isRunning()) {
             return ImmutableSet.of();
         }
         try {
-            return doSubtypes(expected, prefix);
+            return doSubtypes(expected);
         } catch (Exception e) {
             // temporary workaround for
             // https://bugs.eclipse.org/bugs/show_bug.cgi?id=464925
@@ -245,7 +243,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     @VisibleForTesting
-    protected ImmutableSet<String> doSubtypes(ITypeName expected, String prefix) {
+    protected ImmutableSet<String> doSubtypes(ITypeName expected) {
         if (expected == null) {
             return ImmutableSet.of();
         }
@@ -254,11 +252,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         ImmutableSet.Builder<String> b = ImmutableSet.builder();
 
         IndexSearcher searcher = getSearcher();
-        BooleanQuery query = new BooleanQuery();
-        query.add(new TermQuery(new Term(F_INSTANCEOF, type)), Occur.MUST);
-        if (isNotBlank(prefix)) {
-            query.add(new WildcardQuery(new Term(F_SIMPLE_NAME, prefix + '*')), Occur.MUST);
-        }
+        Query query = new TermQuery(new Term(F_INSTANCEOF, type));
         try {
             TopDocs search = searcher.search(query, Integer.MAX_VALUE);
             for (ScoreDoc sdoc : search.scoreDocs) {
@@ -400,37 +394,31 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     private void indexType(IType type, IProgressMonitor monitor) {
         Document doc = new Document();
-        {
-            // name:
-            doc.add(new Field(F_NAME, type.getFullyQualifiedName(), Store.YES, NOT_ANALYZED));
-            doc.add(new Field(F_SIMPLE_NAME, type.getElementName(), Store.NO, NOT_ANALYZED));
-        }
-        {
-            // location:
-            File location = findPackageFragmentRoot(type).orNull();
-            if (location != null) {
-                doc.add(new Field(F_LOCATION, location.getAbsolutePath(), Store.NO, Index.NOT_ANALYZED));
-            }
-        }
-        {
-            doc.add(new Field(F_INSTANCEOF, type.getFullyQualifiedName(), Store.NO, NOT_ANALYZED));
 
+        // name:
+        doc.add(new Field(F_NAME, type.getFullyQualifiedName(), Store.YES, NOT_ANALYZED));
+
+        // location:
+        File location = findPackageFragmentRoot(type).orNull();
+        if (location != null) {
+            doc.add(new Field(F_LOCATION, location.getAbsolutePath(), Store.NO, Index.NOT_ANALYZED));
         }
-        {
-            // extends:
-            try {
-                ITypeHierarchy h = type.newSupertypeHierarchy(null);
-                for (IType supertypes : h.getAllSupertypes(type)) {
-                    String fullyQualifiedName = supertypes.getFullyQualifiedName();
-                    if (equal(V_JAVA_LANG_OBJECT, fullyQualifiedName)) {
-                        continue;
-                    }
-                    doc.add(new Field(F_INSTANCEOF, fullyQualifiedName, Store.NO, NOT_ANALYZED));
+
+        // extends:
+        doc.add(new Field(F_INSTANCEOF, type.getFullyQualifiedName(), Store.NO, NOT_ANALYZED));
+        try {
+            ITypeHierarchy h = type.newSupertypeHierarchy(null);
+            for (IType supertypes : h.getAllSupertypes(type)) {
+                String fullyQualifiedName = supertypes.getFullyQualifiedName();
+                if (equal(V_JAVA_LANG_OBJECT, fullyQualifiedName)) {
+                    continue;
                 }
-            } catch (Exception e) {
-                log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+                doc.add(new Field(F_INSTANCEOF, fullyQualifiedName, Store.NO, NOT_ANALYZED));
             }
+        } catch (Exception e) {
+            log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         }
+
         addDocument(doc, monitor);
     }
 
@@ -513,6 +501,5 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             }
             return false;
         }
-
     }
 }
