@@ -10,6 +10,7 @@ package org.eclipse.recommenders.internal.news.rcp;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
@@ -71,29 +72,23 @@ public class FeedDescriptor {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (obj == null) {
+        if (other == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != other.getClass()) {
             return false;
         }
-        FeedDescriptor rhs = (FeedDescriptor) obj;
-        if (!getId().equals(rhs.getId())) {
-            return false;
-        }
-        return true;
+        FeedDescriptor that = (FeedDescriptor) other;
+        return Objects.equals(this.getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        final int prime = 43;
-        int result = 1;
-        result = prime * result + (getId() == null ? 0 : getId().hashCode());
-        return result;
+        return Objects.hashCode(getId());
     }
 
     private boolean isUrlValid(String url) {

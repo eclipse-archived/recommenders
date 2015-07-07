@@ -15,7 +15,7 @@ import org.eclipse.core.expressions.PropertyTester;
 
 public class PreferenceTester extends PropertyTester {
 
-    private NewsRcpPreferences preferences;
+    private final NewsRcpPreferences preferences;
 
     @Inject
     public PreferenceTester(NewsRcpPreferences preferences) {
