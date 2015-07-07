@@ -11,6 +11,7 @@ import static org.eclipse.recommenders.internal.news.rcp.FeedEvents.createFeedMe
 import static org.eclipse.recommenders.internal.news.rcp.MessageUtils.*;
 import static org.eclipse.recommenders.internal.news.rcp.menus.MarkAsReadAction.*;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,9 +107,9 @@ public class NewsMenuListener implements IMenuListener {
                 }
             };
             if (!message.isRead()) {
-                action.setText(Messages.UNREAD_MESSAGE_PREFIX.concat(message.getTitle()));
+                action.setText(MessageFormat.format(Messages.UNREAD_MESSAGE, message.getTitle()));
             } else {
-                action.setText(Messages.READ_MESSAGE_PREFIX.concat(message.getTitle()));
+                action.setText(MessageFormat.format(Messages.READ_MESSAGE_OR_FEED, message.getTitle()));
             }
             menu.add(action);
         }
@@ -124,17 +125,11 @@ public class NewsMenuListener implements IMenuListener {
     }
 
     private static String getMenuEntryTitle(String feedName, List<IFeedMessage> messages) {
-        boolean read = false;
-        for (IFeedMessage message : messages) {
-            if (message.isRead()) {
-                read = true;
-            }
-        }
-        if (read) {
-            return Messages.READ_MESSAGE_PREFIX.concat(feedName);
+        int unreadMessages = getUnreadMessagesNumber(messages);
+        if (unreadMessages > 0) {
+            return MessageFormat.format(Messages.UNREAD_FEED, feedName, unreadMessages);
         } else {
-            return Messages.UNREAD_MESSAGE_PREFIX.concat(feedName)
-                    .concat(" (" + getUnreadMessagesNumber(messages) + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+            return MessageFormat.format(Messages.READ_MESSAGE_OR_FEED, feedName);
         }
     }
 
