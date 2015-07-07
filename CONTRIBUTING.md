@@ -125,6 +125,8 @@ Releasing a New Version of Code Recommenders
 
 The following is of concern only to committers to Eclipse Code Recommenders.
 
+### Code
+
 To release a new version of Code Recommenders, perform the following steps:
 
 - `export RELEASE_VERSION=x.y.z`
@@ -169,8 +171,26 @@ Submit the second change.
 After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) have been successful, promote the release build to the [milestones](download.eclipse.org/recommenders/updates/milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
 
 - In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/), select the release build.
-- Click *Promotion Status* and start the `milestones` jobs
+- Select *Promotion Status* and start the `milestones` jobs
 - Enter a `MILESTONES_VERSION` parameter of `v${RELEASE_VERSION}.R`
-- Click *Promotion Status* and start the `stable` jobs
+- Select *Promotion Status* and start the `stable` jobs
 - Enter a `STABLE_VERSION` parameter of `v${RELEASE_VERSION}`
-- Click *Configure* and assign a *DisplayName* of v`$RECOMMENDERS_RELEASE`
+- Select *Configure* and assign a *DisplayName* of v`$RECOMMENDERS_RELEASE`
+
+The new version is now available for download.
+
+### Bugzilla
+
+To make the release version and next version known to Bugzilla, perform the following steps:
+
+* Log into the [Bugzilla manager](https://dev.eclipse.org/committers/bugs/bugz_manager.php).
+* Edit the `technology.recommenders` project.
+* Select *Add bugzilla version* and add the **release** version in question.
+* Select *Add bugzilla milestone* and add the **next** version with a *Sortkey* using the following pattern: 1-digit major version, 1-digit minor version, 3-digit micro version.
+
+To ensure that all users of the Automated Error Reporting receive notifications that a given bug has been fixed in the release version, perform the following steps:
+
+* Search for all [issues closed in the release version](https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&list_id=12164819&product=Recommenders&target_milestone=RELEASE_VERSION).
+* Select *Change Several Bugs at Once*.
+* Enter the following text in *Status Whiteboard*: `Fixed in Code Recommenders v${RELEASE_VERSION}. Please update.`
+* *Commit* the change.
