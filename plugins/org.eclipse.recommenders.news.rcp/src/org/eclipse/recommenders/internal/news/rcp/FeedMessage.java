@@ -25,7 +25,11 @@ public class FeedMessage implements IFeedMessage {
 
     public FeedMessage(String id, Date date, String description, String title, URL url) {
         super();
-        this.id = id;
+        if (id == null) {
+            this.id = url.toString();
+        } else {
+            this.id = id;
+        }
         this.date = date;
         this.description = description;
         this.title = title;

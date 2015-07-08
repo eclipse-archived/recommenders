@@ -7,7 +7,7 @@
  */
 package org.eclipse.recommenders.internal.news.rcp.l10n;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -28,6 +28,12 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final LogMessages ERROR_FETCHING_MESSAGES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FETCHING_MESSAGES);
+
+    public static final LogMessages WARNING_DUPLICATE_FEED = new LogMessages(WARNING,
+            Messages.LOG_WARNING_DUPLICATE_FEED);
+
+    public static final LogMessages ERROR_FEED_MALFORMED_URL = new LogMessages(WARNING,
+            Messages.FEED_DESCRIPTOR_MALFORMED_URL);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
