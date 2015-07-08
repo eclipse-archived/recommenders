@@ -13,6 +13,7 @@ package org.eclipse.recommenders.net;
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.http.auth.AuthScope.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -21,6 +22,9 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.fluent.Executor;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
@@ -36,6 +40,7 @@ public final class Proxies {
         // Not meant to be instantiated
     }
 
+    private static final String NTLM_SCHEME = "ntlm";
     private static final String DOUBLEBACKSLASH = "\\\\"; //$NON-NLS-1$
     private static final String ENV_USERDOMAIN = "USERDOMAIN"; //$NON-NLS-1$
     private static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain"; //$NON-NLS-1$
@@ -125,13 +130,16 @@ public final class Proxies {
         }
 
         String userName = getUserName(userId).orNull();
-        String pass = proxy.getPassword();
+        String password = proxy.getPassword();
         String workstation = getWorkstation().orNull();
         String domain = getUserDomain(userId).orNull();
 
         HttpHost proxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
-
-        return executor.auth(proxyHost, userName, pass, workstation, domain);
+        return executor
+                .auth(new AuthScope(proxyHost, ANY_REALM, NTLM_SCHEME),
+                        new NTCredentials(userName, password, workstation, domain))
+                .auth(new AuthScope(proxyHost, ANY_REALM, ANY_SCHEME),
+                        new UsernamePasswordCredentials(userName, password));
     }
 
     private static Optional<IProxyData> getProxyData(IProxyService service, URI target) {

@@ -20,10 +20,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.fluent.Executor;
 import org.eclipse.core.internal.net.ProxyData;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.recommenders.testing.RetainSystemProperties;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -40,14 +45,15 @@ public class ProxiesTest {
     static final String ENV_USERDOMAIN = "USERDOMAIN";
     static final String PROP_HTTP_AUTH_NTLM_DOMAIN = "http.auth.ntlm.domain";
 
+    @Rule
+    public final RetainSystemProperties retainSystemProperties = new RetainSystemProperties();
+
     @Test
     public void testUserDomain() {
         assertThat(Proxies.getUserDomain("mydomain\\\\user").orNull(), is(equalTo("mydomain")));
 
-        // System.getenv().put(ProxyUtils.ENV_USERDOMAIN, "mydomain_env\\\\user");
-        // assertEquals(null, ProxyUtils.getUserDomain("mydomain_env\\\\user").orNull());
+        System.setProperty(PROP_HTTP_AUTH_NTLM_DOMAIN, DOMAIN_PROPERTIES);
 
-        System.getProperties().put(PROP_HTTP_AUTH_NTLM_DOMAIN, DOMAIN_PROPERTIES);
         assertThat(Proxies.getUserDomain(DOMAIN_PROPERTIES).orNull(), is(equalTo(DOMAIN_PROPERTIES)));
     }
 
@@ -88,13 +94,19 @@ public class ProxiesTest {
         IProxyService service = Mockito.mock(IProxyService.class);
         when(service.select(uri)).thenReturn(new IProxyData[] { proxyData });
 
-        Executor authenticationExecutor = mock(Executor.class);
-
         Executor executor = mock(Executor.class);
-        when(executor.auth(new HttpHost(host, PORT), USER, PASSWORD, getWorkstation().orNull(),
-                getUserDomain(USER).orNull())).thenReturn(authenticationExecutor);
+        when(executor.auth(new AuthScope(new HttpHost(host, PORT), AuthScope.ANY_REALM, AuthScope.ANY_SCHEME),
+                new UsernamePasswordCredentials(USER, PASSWORD))).thenReturn(executor);
+        when(executor.auth(new AuthScope(new HttpHost(host, PORT), AuthScope.ANY_REALM, "ntlm"),
+                new NTCredentials(USER, PASSWORD, getWorkstation().orNull(), getUserDomain(USER).orNull())))
+                        .thenReturn(executor);
 
-        assertThat(proxyAuthentication(service, executor, uri), is(equalTo(authenticationExecutor)));
+        assertThat(proxyAuthentication(service, executor, uri), is(equalTo(executor)));
+
+        verify(executor).auth(new AuthScope(new HttpHost(host, PORT), AuthScope.ANY_REALM, AuthScope.ANY_SCHEME),
+                new UsernamePasswordCredentials(USER, PASSWORD));
+        verify(executor).auth(new AuthScope(new HttpHost(host, PORT), AuthScope.ANY_REALM, "ntlm"),
+                new NTCredentials(USER, PASSWORD, getWorkstation().orNull(), getUserDomain(USER).orNull()));
     }
 
     @Test
@@ -102,7 +114,7 @@ public class ProxiesTest {
         URI uri = new URI(EXAMPLE_DOT_COM);
         IProxyData proxyData = new ProxyData(uri.getScheme(), uri.getHost(), PORT, false, null);
         IProxyService service = Mockito.mock(IProxyService.class);
-        Mockito.when(service.select(uri)).thenReturn(new IProxyData[] { proxyData });
+        when(service.select(uri)).thenReturn(new IProxyData[] { proxyData });
 
         Executor executor = mock(Executor.class);
 
