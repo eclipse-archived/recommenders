@@ -7,13 +7,17 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import static org.eclipse.recommenders.internal.news.rcp.Constants.*;
+
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -21,38 +25,67 @@ import com.google.common.base.Preconditions;
 
 public class FeedDescriptor {
 
-    private final IConfigurationElement config;
+    private final boolean defaultRepository;
+    private final String id;
+    private final URL url;
+    private final String name;
+    private final String pollingInterval;
+    private final String description;
+    private final String iconPath;
     private boolean enabled;
 
     public FeedDescriptor(FeedDescriptor that) {
-        this(that.config, that.enabled);
+        this(that.getId(), that.getUrl().toString(), that.getName(), that.isEnabled(), that.isDefaultRepository(),
+                that.getPollingInterval(), that.getDescription(), that.getIconPath());
     }
 
     public FeedDescriptor(IConfigurationElement config, boolean enabled) {
-        this.config = config;
+        this(config.getAttribute(ATTRIBUTE_ID), config.getAttribute(ATTRIBUTE_URL), config.getAttribute(ATTRIBUTE_NAME),
+                enabled, true, config.getAttribute(ATTRIBUTE_POLLING_INTERVAL),
+                config.getAttribute(ATTRIBUTE_DESCRIPTION), config.getAttribute(ATTRIBUTE_ICON));
+    }
+
+    public FeedDescriptor(String url, String name, String pollingInterval) {
+        this(url, url, name, true, false, pollingInterval, null, null);
+    }
+
+    private FeedDescriptor(String id, String url, String name, boolean enabled, boolean defaultRepository,
+            String pollingInterval, String description, String iconPath) {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkArgument(isUrlValid(url), Messages.FEED_DESCRIPTOR_MALFORMED_URL);
+
+        this.id = id;
+        this.url = stringToUrl(url);
+        this.name = name;
         this.enabled = enabled;
-        Preconditions.checkNotNull(getId());
-        Preconditions.checkArgument(isUrlValid(config.getAttribute("url")), Messages.FEED_DESCRIPTOR_MALFORMED_URL); //$NON-NLS-1$
+        this.defaultRepository = defaultRepository;
+        this.pollingInterval = pollingInterval;
+        this.description = description;
+        this.iconPath = iconPath;
     }
 
     public String getId() {
-        return config.getAttribute("id"); //$NON-NLS-1$
+        return id;
     }
 
     public String getName() {
-        return config.getAttribute("name"); //$NON-NLS-1$
+        return name;
     }
 
     public URL getUrl() {
-        return stringToUrl(config.getAttribute("url")); //$NON-NLS-1$
+        return url;
     }
 
     public String getDescription() {
-        return config.getAttribute("description"); //$NON-NLS-1$
+        return description;
     }
 
     public String getPollingInterval() {
-        return config.getAttribute("pollingInterval"); //$NON-NLS-1$
+        return pollingInterval;
+    }
+
+    public boolean isDefaultRepository() {
+        return defaultRepository;
     }
 
     public boolean isEnabled() {
@@ -64,7 +97,6 @@ public class FeedDescriptor {
     }
 
     public Image getIcon() {
-        String iconPath = config.getAttribute("icon"); //$NON-NLS-1$
         if (iconPath != null) {
             return AbstractUIPlugin.imageDescriptorFromPlugin(Constants.PLUGIN_ID, iconPath).createImage();
         }
@@ -91,7 +123,7 @@ public class FeedDescriptor {
         return Objects.hashCode(getId());
     }
 
-    private boolean isUrlValid(String url) {
+    public static boolean isUrlValid(String url) {
         URL u;
         try {
             u = new URL(url);
@@ -102,12 +134,17 @@ public class FeedDescriptor {
         return true;
     }
 
-    private URL stringToUrl(String s) {
+    private static URL stringToUrl(String url) {
         try {
-            return new URL(s);
+            return new URL(url);
         } catch (MalformedURLException e) {
             // should never happen
+            Logs.log(LogMessages.ERROR_FEED_MALFORMED_URL, url);
             return null;
         }
+    }
+
+    private String getIconPath() {
+        return iconPath;
     }
 }

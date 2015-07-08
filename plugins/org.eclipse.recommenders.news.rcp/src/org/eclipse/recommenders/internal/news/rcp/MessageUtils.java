@@ -69,7 +69,7 @@ public class MessageUtils {
         for (IFeedMessage message : entry.getValue()) {
             if (properties.getDates(Constants.FILENAME_FEED_DATES).get(entry.getKey().getId()) == null) {
                 feedMessages.add(message);
-            } else if (message.getDate()
+            } else if (message.getDate() != null && message.getDate()
                     .after(properties.getDates(Constants.FILENAME_FEED_DATES).get(entry.getKey().getId()))) {
                 feedMessages.add(message);
             }
@@ -110,6 +110,9 @@ public class MessageUtils {
             Collections.sort(list, new Comparator<IFeedMessage>() {
                 @Override
                 public int compare(IFeedMessage lhs, IFeedMessage rhs) {
+                    if (rhs.getDate() == null || lhs.getDate() == null) {
+                        return 0;
+                    }
                     return rhs.getDate().compareTo(lhs.getDate());
                 }
             });
@@ -137,14 +140,18 @@ public class MessageUtils {
         Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
         for (IFeedMessage message : messages) {
             for (int i = 0; i <= OLDER; i++) {
+                if (message.getDate() == null) {
+                    result.get(OLDER).add(message);
+                    break;
+                }
                 if (message.getDate().after(getPeriodStartDate(i, today, locale))
                         || message.getDate().equals(getPeriodStartDate(i, today, locale))) {
                     result.get(i).add(message);
                     break;
                 }
             }
-            if (message.getDate().before(getPeriodStartDate(OLDER, today, locale))
-                    || message.getDate().equals(getPeriodStartDate(OLDER, today, locale))) {
+            if (message.getDate() != null && (message.getDate().before(getPeriodStartDate(OLDER, today, locale))
+                    || message.getDate().equals(getPeriodStartDate(OLDER, today, locale)))) {
                 result.get(OLDER).add(message);
             }
         }

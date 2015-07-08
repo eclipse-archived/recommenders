@@ -16,12 +16,15 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.utils,
- org.eclipse.ui
+ org.eclipse.ui,
+ org.eclipse.jface
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
  com.google.common.eventbus;version="15.0.0",
  com.google.common.io;version="15.0.0",
+  com.google.common.reflect;version="[15.0.0,16.0.0)",
+ com.google.gson;version="[2.0.0,3.0.0)",
  org.apache.commons.lang3;version="[3.0.0,4.0.0)",
  org.apache.commons.lang3.time;version="[3.0.0,4.0.0)"
 

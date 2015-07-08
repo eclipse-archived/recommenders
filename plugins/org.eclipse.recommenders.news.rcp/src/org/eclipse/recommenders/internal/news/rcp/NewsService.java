@@ -98,8 +98,10 @@ public class NewsService implements INewsService {
     @Subscribe
     @Override
     public void handleMessageRead(FeedMessageReadEvent event) {
-        readIds.add(event.getId());
-        newsFeedProperties.writeReadIds(readIds);
+        if (event.getId() != null) {
+            readIds.add(event.getId());
+            newsFeedProperties.writeReadIds(readIds);
+        }
     }
 
     @Subscribe
@@ -234,7 +236,8 @@ public class NewsService implements INewsService {
             notificationFacade.displayNotification(messages, bus);
             Map<FeedDescriptor, Date> feedDates = Maps.newHashMap();
             for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
-                feedDates.put(entry.getKey(), entry.getValue().get(0).getDate());
+                Date date = new Date();
+                feedDates.put(entry.getKey(), date);
             }
             updateFeedDates(feedDates);
         }

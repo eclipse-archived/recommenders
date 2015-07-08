@@ -34,6 +34,10 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     private String feeds;
 
     @Inject
+    @Preference(Constants.PREF_CUSTOM_FEED_LIST_SORTED)
+    private String customFeeds;
+
+    @Inject
     @Preference(Constants.PREF_POLLING_INTERVAL)
     private Long pollingInterval;
 
@@ -55,10 +59,12 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
         s.putBoolean(Constants.PREF_NOTIFICATION_ENABLED, false);
         s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
-        s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.store(FeedDescriptors.getRegisteredFeeds()));
+        s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.feedsToString(FeedDescriptors.getRegisteredFeeds()));
     }
 
     public List<FeedDescriptor> getFeedDescriptors() {
-        return FeedDescriptors.load(feeds, FeedDescriptors.getRegisteredFeeds());
+        List<FeedDescriptor> feeds = FeedDescriptors.load(this.feeds, FeedDescriptors.getRegisteredFeeds());
+        feeds.addAll(FeedDescriptors.getFeeds(customFeeds));
+        return feeds;
     }
 }

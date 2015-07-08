@@ -24,6 +24,7 @@ public class TestUtils {
     public static FeedDescriptor enabled(String id) {
         IConfigurationElement config = Mockito.mock(IConfigurationElement.class);
         when(config.getAttribute("id")).thenReturn(id);
+        when(config.getAttribute("name")).thenReturn(id);
         when(config.getAttribute("url")).thenReturn(TEST_URL);
         return new FeedDescriptor(config, true);
     }
@@ -31,6 +32,7 @@ public class TestUtils {
     public static FeedDescriptor disabled(String id) {
         IConfigurationElement config = Mockito.mock(IConfigurationElement.class);
         when(config.getAttribute("id")).thenReturn(id);
+        when(config.getAttribute("name")).thenReturn(id);
         when(config.getAttribute("url")).thenReturn(TEST_URL);
         return new FeedDescriptor(config, false);
     }

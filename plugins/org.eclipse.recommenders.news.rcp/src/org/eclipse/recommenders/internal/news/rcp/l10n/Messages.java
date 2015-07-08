@@ -17,10 +17,23 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_TITLE;
     public static String PREFPAGE_DESCRIPTION;
+    public static String PREFPAGE_BUTTON_NEW;
+    public static String PREFPAGE_BUTTON_EDIT;
+    public static String PREFPAGE_BUTTON_REMOVE;
+    public static String FEED_DIALOG_TITLE;
+    public static String FEED_DIALOG_ERROR;
+    public static String FIELD_LABEL_FEED_NAME;
+    public static String FIELD_LABEL_URL;
     public static String FIELD_LABEL_FEEDS;
     public static String FIELD_LABEL_NEWS_ENABLED;
     public static String FIELD_LABEL_NOTIFICATION_ENABLED;
     public static String FIELD_LABEL_POLLING_INTERVAL;
+    public static String FEED_DIALOG_ERROR_EMPTY_NAME;
+    public static String FEED_DIALOG_ERROR_EMPTY_URL;
+    public static String FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED;
+    public static String FEED_DIALOG_ERROR_INVALID_URL;
+    public static String FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY;
+    public static String FEED_DIALOG_ERROR_DUPLICATE_FEED;
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
     public static String POLL_FEED_JOB_NAME;
@@ -51,6 +64,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_WRITING_PROPERTIES;
     public static String LOG_ERROR_CONNECTING_URL;
     public static String LOG_ERROR_FETCHING_MESSAGES;
+    public static String LOG_WARNING_DUPLICATE_FEED;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
