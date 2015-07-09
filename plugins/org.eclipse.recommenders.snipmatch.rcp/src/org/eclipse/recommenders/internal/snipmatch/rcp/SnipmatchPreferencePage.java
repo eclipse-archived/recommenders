@@ -258,8 +258,8 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         protected void editConfiguration(SnippetRepositoryConfiguration oldConfiguration) {
-            List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
-                    WizardDescriptors.loadAvailableWizards(), oldConfiguration);
+            List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors
+                    .filterApplicableWizardDescriptors(WizardDescriptors.loadAvailableWizards(), oldConfiguration);
             if (!suitableWizardDescriptors.isEmpty()) {
                 ISnippetRepositoryWizard wizard;
                 if (suitableWizardDescriptors.size() == 1) {
@@ -318,8 +318,8 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         }
 
         private CheckboxTableViewer getTableControl(Composite parent) {
-            final CheckboxTableViewer tableViewer = CheckboxTableViewer.newCheckList(parent, SWT.BORDER
-                    | SWT.FULL_SELECTION);
+            final CheckboxTableViewer tableViewer = CheckboxTableViewer.newCheckList(parent,
+                    SWT.BORDER | SWT.FULL_SELECTION);
 
             tableViewer.setLabelProvider(new ColumnLabelProvider() {
 
@@ -367,6 +367,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         @Override
         public void loadDefault() {
             super.loadDefault();
+            // Force storing of both provided and custom repositories
             setPresentsDefaultValue(false);
         }
 

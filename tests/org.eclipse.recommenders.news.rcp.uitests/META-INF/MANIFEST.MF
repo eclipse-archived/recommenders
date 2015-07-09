@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.eclipse.recommenders.news.rcp.tests
+Bundle-SymbolicName: org.eclipse.recommenders.news.rcp.uitests
 Bundle-Version: 2.2.3.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
@@ -9,7 +9,9 @@ Fragment-Host: org.eclipse.recommenders.news.rcp
 Require-Bundle: org.eclipse.recommenders.testing,
  org.junit,
  org.hamcrest,
+ org.eclipse.ui,
  org.mockito,
+ org.eclipse.swtbot.eclipse.finder,
  org.eclipse.swtbot.junit4_x,
- org.eclipse.swtbot.eclipse.finder
+ org.apache.log4j
 Import-Package: com.google.common.collect;version="[15.0.0,16.0.0)"

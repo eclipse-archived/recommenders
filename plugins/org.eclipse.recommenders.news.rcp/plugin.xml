@@ -11,17 +11,17 @@
    <extension point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ui.preferencePages.Workbench"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsFeedPreferencePage"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
             id="org.eclipse.recommenders.news.rcp.preferencePage"
             name="%preferencePage.newsFeed.name">
       </page>
    </extension>
    <extension point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
-            id="org.eclipse.recommenders.news.rcp.preferenceTester"
+            id="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             type="java.lang.Object"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.PreferenceTester"
-            namespace="org.eclipse.recommenders.news.rcp.preferenceTester"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
+            namespace="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             properties="newsEnabled">
       </propertyTester>
    </extension>
@@ -32,7 +32,7 @@
                <visibleWhen checkEnabled="false">
                   <test
                      forcePluginActivation="true"
-                     property="org.eclipse.recommenders.news.rcp.preferenceTester.newsEnabled">
+                     property="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester.newsEnabled">
                   </test>
                </visibleWhen>
             </control>

@@ -32,5 +32,6 @@ public final class Constants {
     public static final String ATTRIBUTE_DESCRIPTION = "description"; //$NON-NLS-1$
     public static final String ATTRIBUTE_POLLING_INTERVAL = "pollingInterval"; //$NON-NLS-1$
     public static final String ATTRIBUTE_ICON = "icon"; //$NON-NLS-1$
+    public static final String SYSPROP_ECLIPSE_BUILD_ID = "eclipse.buildId"; //$NON-NLS-1$
 
 }

@@ -30,6 +30,7 @@ import org.eclipse.recommenders.news.rcp.IPollFeedJob;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -60,6 +61,14 @@ public class NewsService implements INewsService {
 
     @Override
     public void start() {
+        if (!isRealEclipse()) {
+            return;
+        }
+        doStart();
+    }
+
+    @VisibleForTesting
+    protected void doStart() {
         if (!preferences.isEnabled()) {
             return;
         }
@@ -241,5 +250,15 @@ public class NewsService implements INewsService {
             }
             updateFeedDates(feedDates);
         }
+    }
+
+    /**
+     * A real Eclipse is an Eclipse run by a user. A non-real Eclipse is one executed by tests. Use this method to
+     * prevent execution of code during tests.
+     *
+     * @return <code>true</code> when the eclipse.build system property is set, <code>false</code>otherwise.
+     */
+    public static boolean isRealEclipse() {
+        return !Strings.isNullOrEmpty(System.getProperty(Constants.SYSPROP_ECLIPSE_BUILD_ID));
     }
 }

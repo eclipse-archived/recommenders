@@ -73,7 +73,7 @@ public class NewsServiceTest {
         Set<FeedDescriptor> feeds = ImmutableSet.of(feed);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
-        sut.start();
+        sut.doStart();
 
         verify(jobFacade, times(1)).schedulePollFeeds(sut, feeds);
     }
@@ -84,7 +84,7 @@ public class NewsServiceTest {
         mockPreferences(false, ImmutableList.of(feed));
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
-        sut.start();
+        sut.doStart();
 
         verifyZeroInteractions(jobFacade);
     }

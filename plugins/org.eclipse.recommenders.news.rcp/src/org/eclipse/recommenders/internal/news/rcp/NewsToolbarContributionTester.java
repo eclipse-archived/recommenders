@@ -13,17 +13,20 @@ import javax.inject.Inject;
 
 import org.eclipse.core.expressions.PropertyTester;
 
-public class PreferenceTester extends PropertyTester {
+public class NewsToolbarContributionTester extends PropertyTester {
 
     private final NewsRcpPreferences preferences;
 
     @Inject
-    public PreferenceTester(NewsRcpPreferences preferences) {
+    public NewsToolbarContributionTester(NewsRcpPreferences preferences) {
         this.preferences = preferences;
     }
 
     @Override
     public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+        if (!NewsService.isRealEclipse()) {
+            return false;
+        }
         if (PREF_NEWS_ENABLED.equals(property)) {
             return preferences.isEnabled();
         }
