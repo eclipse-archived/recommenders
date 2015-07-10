@@ -136,6 +136,7 @@ public class FeedDialog extends TitleAreaDialog {
 
     private void updateDialog() {
         setErrorMessage(null);
+        String duplicateFeedForUrl = getFeedId(urlValue.getText()).orNull();
 
         if (Strings.isNullOrEmpty(nameValue.getText())) {
             setErrorMessage(Messages.FEED_DIALOG_ERROR_EMPTY_NAME);
@@ -149,9 +150,8 @@ public class FeedDialog extends TitleAreaDialog {
         } else if (!isUrlValid(urlValue.getText()) || !urlValue.getText().contains(".")) {
             setErrorMessage(Messages.FEED_DIALOG_ERROR_INVALID_URL);
             super.getButton(OK).setEnabled(false);
-        } else if (getFeedByUrl(urlValue.getText()) != null) {
-            setErrorMessage(
-                    MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, getFeedByUrl(urlValue.getText())));
+        } else if (duplicateFeedForUrl != null) {
+            setErrorMessage(MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, duplicateFeedForUrl));
             super.getButton(OK).setEnabled(false);
         } else if (!pollingIntervalValue.getText().matches("[0-9]+")) {
             setErrorMessage(Messages.FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY);
@@ -183,7 +183,7 @@ public class FeedDialog extends TitleAreaDialog {
         return false;
     }
 
-    private Optional<String> getFeedByUrl(String url) {
+    private Optional<String> getFeedId(String url) {
         for (FeedDescriptor feed : newsRcpPreferences.getFeedDescriptors()) {
             if (feed.getUrl().toString().equals(url)) {
                 return Optional.of(feed.getId());
