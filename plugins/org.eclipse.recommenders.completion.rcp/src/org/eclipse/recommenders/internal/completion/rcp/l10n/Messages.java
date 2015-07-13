@@ -37,9 +37,6 @@ public final class Messages extends NLS {
 
     public static String FIELD_TOOLTIP_ENABLE_COMPLETION;
 
-    public static String DIALOG_TITLE_FAILED_TO_GUESS_PARAMETERS;
-    public static String DIALOG_TITLE_FAILURE;
-
     public static String JOB_DISABLING_CONTENT_ASSIST_CATEGORY;
     public static String JOB_ENABLING_CONTENT_ASSIST_CATEGORY;
 
