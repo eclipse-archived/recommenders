@@ -21,10 +21,10 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.google.common.collect.ImmutableList;
@@ -102,7 +102,7 @@ public class NewsMenuListener implements IMenuListener {
 
                 @Override
                 public void run() {
-                    BrowserUtils.openInExternalBrowser(message.getUrl());
+                    BrowserUtils.openInDefaultBrowser(message.getUrl());
                     eventBus.post(createFeedMessageReadEvent(message.getId()));
                 }
             };

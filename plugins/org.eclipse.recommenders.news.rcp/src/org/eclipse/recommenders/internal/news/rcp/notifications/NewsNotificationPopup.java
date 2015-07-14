@@ -19,11 +19,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -91,7 +91,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
                 link.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        BrowserUtils.openInExternalBrowser(e.text);
+                        BrowserUtils.openInDefaultBrowser(message.getUrl());
                         eventBus.post(createFeedMessageReadEvent(message.getId()));
                     }
                 });
