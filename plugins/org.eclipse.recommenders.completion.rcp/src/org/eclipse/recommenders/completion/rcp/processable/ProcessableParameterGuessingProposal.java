@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
 public class ProcessableParameterGuessingProposal extends ParameterGuessingProposal implements IProcessableProposal {
 
     private final Map<IProposalTag, Object> tags = Maps.newHashMap();
-    private CompletionProposal coreProposal;
+    private final CompletionProposal coreProposal;
 
     private ProposalProcessorManager mgr;
     private String lastPrefix;

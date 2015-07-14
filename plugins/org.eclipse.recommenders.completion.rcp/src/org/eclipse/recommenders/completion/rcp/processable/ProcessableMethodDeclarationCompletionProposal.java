@@ -72,8 +72,9 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
         return false;
     }
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
-    private CompletionProposal coreProposal;
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
     private String lastPrefix;
     private String lastPrefixStyled;
@@ -85,8 +86,6 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
         super(type, methodName, returnTypeSig, start, length, relevance);
         coreProposal = proposal;
     }
-
-    // ===========
 
     @Override
     public Image getImage() {

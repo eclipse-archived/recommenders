@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.completion.rcp.processable;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS_VISIBLE;
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -30,9 +31,10 @@ import com.google.common.collect.Maps;
 public class ProcessableLazyPackageCompletionProposal extends LazyPackageCompletionProposal
         implements IProcessableProposal {
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
@@ -42,9 +44,6 @@ public class ProcessableLazyPackageCompletionProposal extends LazyPackageComplet
         super(proposal, context);
         coreProposal = proposal;
     }
-
-    //
-    // ===========
 
     // getImage() is final, thus we re-implement computeImage()
     @Override
@@ -68,6 +67,14 @@ public class ProcessableLazyPackageCompletionProposal extends LazyPackageComplet
             setStyledDisplayString(decorated);
         }
         return super.getStyledDisplayString();
+    }
+
+    @Override
+    public boolean isPrefix(final String prefix, final String completion) {
+        lastPrefix = prefix;
+        boolean res = mgr.prefixChanged(prefix) || super.isPrefix(prefix, completion);
+        setTag(IS_VISIBLE, res);
+        return res;
     }
 
     @Override

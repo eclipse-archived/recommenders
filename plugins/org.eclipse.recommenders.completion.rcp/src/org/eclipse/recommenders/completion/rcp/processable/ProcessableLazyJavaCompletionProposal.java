@@ -39,13 +39,11 @@ public class ProcessableLazyJavaCompletionProposal extends LazyJavaCompletionPro
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    protected ProcessableLazyJavaCompletionProposal(final CompletionProposal coreProposal,
-            final JavaContentAssistInvocationContext context) {
+    protected ProcessableLazyJavaCompletionProposal(CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }
-
-    // ===========
 
     // getImage() is final, thus we re-implement computeImage()
     @Override

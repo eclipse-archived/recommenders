@@ -33,9 +33,10 @@ import com.google.common.collect.Maps;
 public class ProcessableJavaFieldWithCastedReceiverCompletionProposal
         extends JavaFieldWithCastedReceiverCompletionProposal implements IProcessableProposal {
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
@@ -48,8 +49,6 @@ public class ProcessableJavaFieldWithCastedReceiverCompletionProposal
                 coreProposal);
         this.coreProposal = coreProposal;
     }
-
-    // ===========
 
     @Override
     public Image getImage() {

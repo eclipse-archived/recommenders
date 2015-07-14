@@ -31,9 +31,10 @@ import com.google.common.collect.Maps;
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableJavaCompletionProposal extends JavaCompletionProposal implements IProcessableProposal {
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
-    private ProposalProcessorManager mgr;
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
     private final CompletionProposal coreProposal;
+
+    private ProposalProcessorManager mgr;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;

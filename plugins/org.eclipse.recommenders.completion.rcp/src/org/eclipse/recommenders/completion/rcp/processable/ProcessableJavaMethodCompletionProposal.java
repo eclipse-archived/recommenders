@@ -36,9 +36,10 @@ import com.google.common.collect.Maps;
 public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletionProposal
         implements IProcessableProposal {
 
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
@@ -85,8 +86,6 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
             return super.createRequiredTypeCompletionProposal(completionProposal, invocationContext);
         }
     }
-
-    // ===========
 
     // getImage() is final, thus we re-implement computeImage()
     @Override
