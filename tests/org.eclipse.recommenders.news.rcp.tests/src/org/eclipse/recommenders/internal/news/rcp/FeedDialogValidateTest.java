@@ -10,7 +10,6 @@ package org.eclipse.recommenders.internal.news.rcp;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
 
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -43,7 +42,6 @@ public class FeedDialogValidateTest {
     private String url;
     private String pollingInterval;
     private String expectedMessage;
-    private NewsRcpPreferences preferences;
 
     public FeedDialogValidateTest(FeedDescriptor feed, String name, String url, String pollingInterval,
             String expectedMessage) {
@@ -79,11 +77,9 @@ public class FeedDialogValidateTest {
 
     @Test
     public void testValidateFeedDialog() {
-        preferences = mock(NewsRcpPreferences.class);
         List<FeedDescriptor> feeds = Lists.newArrayList(TestUtils.enabled(VALID_FEED_ID));
-        when(preferences.getFeedDescriptors()).thenReturn(feeds);
 
-        assertThat(FeedDialog.validateFeedDialog(feed, name, url, pollingInterval, preferences),
+        assertThat(FeedDialog.validateFeedDialog(feed, name, url, pollingInterval, feeds),
                 is(equalTo(expectedMessage)));
     }
 }

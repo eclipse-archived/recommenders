@@ -33,27 +33,43 @@ import com.google.common.collect.ImmutableList;
 
 public class FeedDialog extends TitleAreaDialog {
     private static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("http", "https"); //$NON-NLS-1$ , //$NON-NLS-2$
-    private final NewsRcpPreferences newsRcpPreferences;
+    private final List<FeedDescriptor> existingDescriptors;
     private FeedDescriptor feed;
     private Text nameValue;
     private Text urlValue;
     private Text pollingIntervalValue;
 
-    public FeedDialog(Shell parentShell, NewsRcpPreferences newsRcpPreferences) {
-        this(parentShell, null, newsRcpPreferences);
+    public FeedDialog(Shell parentShell, List<FeedDescriptor> existingDescriptors) {
+        this(parentShell, null, existingDescriptors);
     }
 
-    public FeedDialog(Shell parentShell, FeedDescriptor feed, NewsRcpPreferences newsRcpPreferences) {
+    public FeedDialog(Shell parentShell, FeedDescriptor feed, List<FeedDescriptor> existingDescriptors) {
         super(parentShell);
         this.feed = feed;
-        this.newsRcpPreferences = newsRcpPreferences;
+        this.existingDescriptors = existingDescriptors;
+    }
+
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        if (feed != null) {
+            newShell.setText(Messages.FEED_DIALOG_TITLE_EDIT);
+        } else {
+            newShell.setText(Messages.FEED_DIALOG_TITLE_NEW);
+        }
     }
 
     @Override
     public void create() {
         super.create();
-        setTitle(Messages.FEED_DIALOG_TITLE);
+        if (feed != null) {
+            setTitle(Messages.FEED_DIALOG_TITLE_EDIT);
+        } else {
+            setTitle(Messages.FEED_DIALOG_TITLE_NEW);
+        }
+        setMessage(Messages.FEED_DIALOG_DESCRIPTION);
         setHelpAvailable(false);
+        setTitleImage(CommonImages.RSS_DIALOG_TITLE.createImage());
         super.getButton(OK).setEnabled(false);
     }
 
@@ -136,16 +152,18 @@ public class FeedDialog extends TitleAreaDialog {
 
     private void updateDialog() {
         setErrorMessage(validateFeedDialog(feed, nameValue.getText(), urlValue.getText(),
-                pollingIntervalValue.getText(), newsRcpPreferences));
+                pollingIntervalValue.getText(), existingDescriptors));
         if (getErrorMessage() == null) {
             super.getButton(OK).setEnabled(true);
+        } else {
+            super.getButton(OK).setEnabled(false);
         }
     }
 
     @VisibleForTesting
     static String validateFeedDialog(FeedDescriptor currentFeed, String name, String url, String pollingInterval,
-            NewsRcpPreferences preferences) {
-        String duplicateFeedForUrl = getFeedId(url, preferences).orNull();
+            List<FeedDescriptor> existingDescriptors) {
+        FeedDescriptor duplicateFeed = getFeedWithDuplicateUrl(url, currentFeed, existingDescriptors).orNull();
         if (Strings.isNullOrEmpty(name)) {
             return Messages.FEED_DIALOG_ERROR_EMPTY_NAME;
         } else if (Strings.isNullOrEmpty(url)) {
@@ -154,8 +172,8 @@ public class FeedDialog extends TitleAreaDialog {
             return Messages.FEED_DIALOG_ERROR_INVALID_URL;
         } else if (!isUriProtocolSupported(parseUriQuietly(url).orNull(), ACCEPTED_PROTOCOLS)) {
             return MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, url);
-        } else if (duplicateFeedForUrl != null && currentFeed == null) {
-            return MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, duplicateFeedForUrl);
+        } else if (duplicateFeed != null) {
+            return MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, duplicateFeed.getName());
         } else if (!pollingInterval.matches("[0-9]+")) { //$NON-NLS-1$
             return Messages.FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY;
         }
@@ -183,10 +201,15 @@ public class FeedDialog extends TitleAreaDialog {
         return false;
     }
 
-    private static Optional<String> getFeedId(String url, NewsRcpPreferences preferences) {
-        for (FeedDescriptor feed : preferences.getFeedDescriptors()) {
-            if (feed.getUrl().toString().equals(url)) {
-                return Optional.of(feed.getId());
+    private static Optional<FeedDescriptor> getFeedWithDuplicateUrl(String url, FeedDescriptor feed,
+            List<FeedDescriptor> descriptors) {
+        for (FeedDescriptor compare : descriptors) {
+            if (feed == compare) {
+                continue;
+            }
+
+            if (url.equals(compare.getUrl().toString())) {
+                return Optional.of(compare);
             }
         }
         return Optional.absent();

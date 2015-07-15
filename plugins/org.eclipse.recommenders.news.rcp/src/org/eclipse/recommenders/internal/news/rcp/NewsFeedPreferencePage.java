@@ -265,7 +265,8 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         }
 
         protected void editFeed(FeedDescriptor oldFeed) {
-            FeedDialog dialog = new FeedDialog(getShell(), oldFeed, newsRcpPreferences);
+            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            FeedDialog dialog = new FeedDialog(getShell(), oldFeed, descriptors);
             List<FeedDescriptor> feeds = getTableInput();
             if (dialog.open() == Window.OK) {
                 int index = feeds.indexOf(oldFeed);
@@ -284,7 +285,8 @@ public class NewsFeedPreferencePage extends FieldEditorPreferencePage implements
         }
 
         protected void addNewFeed() {
-            FeedDialog dialog = new FeedDialog(getShell(), newsRcpPreferences);
+            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            FeedDialog dialog = new FeedDialog(getShell(), descriptors);
             List<FeedDescriptor> feeds = getTableInput();
             if (dialog.open() == Window.OK) {
                 feeds.add(dialog.getFeed());

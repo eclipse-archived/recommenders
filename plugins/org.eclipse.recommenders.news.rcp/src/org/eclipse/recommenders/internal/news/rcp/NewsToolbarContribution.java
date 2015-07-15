@@ -22,7 +22,6 @@ import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.menus.NewsMenuListener;
-import org.eclipse.recommenders.internal.news.rcp.notifications.CommonImages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.swt.SWT;

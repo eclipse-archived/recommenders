@@ -20,7 +20,8 @@ public final class Messages extends NLS {
     public static String PREFPAGE_BUTTON_NEW;
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_REMOVE;
-    public static String FEED_DIALOG_TITLE;
+    public static String FEED_DIALOG_TITLE_NEW;
+    public static String FEED_DIALOG_TITLE_EDIT;
     public static String FEED_DIALOG_ERROR;
     public static String FIELD_LABEL_FEED_NAME;
     public static String FIELD_LABEL_URL;
@@ -34,6 +35,7 @@ public final class Messages extends NLS {
     public static String FEED_DIALOG_ERROR_INVALID_URL;
     public static String FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY;
     public static String FEED_DIALOG_ERROR_DUPLICATE_FEED;
+    public static String FEED_DIALOG_DESCRIPTION;
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
     public static String POLL_FEED_JOB_NAME;
