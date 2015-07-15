@@ -6,6 +6,9 @@
 	<feature id="org.eclipse.recommenders.mylyn.rcp.feature" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.main"/>
 	</feature>
+	<feature id="org.eclipse.recommenders.news.rcp.feature" version="0.0.0">
+		<category name="org.eclipse.recommenders.repositories.categories.main"/>
+	</feature>
 	<feature id="org.eclipse.recommenders.snipmatch.rcp.feature" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.main"/>
 	</feature>
@@ -16,6 +19,9 @@
 		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
 	</feature>
 	<feature id="org.eclipse.recommenders.mylyn.rcp.feature.source" version="0.0.0">
+		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
+	</feature>
+	<feature id="org.eclipse.recommenders.news.rcp.feature.source" version="0.0.0">
 		<category name="org.eclipse.recommenders.repositories.categories.sources"/>
 	</feature>
 	<feature id="org.eclipse.recommenders.snipmatch.rcp.feature.source" version="0.0.0">
