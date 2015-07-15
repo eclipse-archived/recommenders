@@ -45,8 +45,6 @@ public class ProcessableJavadocLinkTypeCompletionProposal extends JavadocLinkTyp
         this.coreProposal = coreProposal;
     }
 
-    // ===========
-
     // getImage() is final, thus we re-implement computeImage()
     @Override
     protected Image computeImage() {

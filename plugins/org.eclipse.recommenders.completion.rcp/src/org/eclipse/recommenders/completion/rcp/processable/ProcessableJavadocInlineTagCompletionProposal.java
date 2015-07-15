@@ -44,7 +44,6 @@ public class ProcessableJavadocInlineTagCompletionProposal extends JavadocInline
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }
-    // ===========
 
     // getImage() is final, thus we re-implement computeImage()
     @Override

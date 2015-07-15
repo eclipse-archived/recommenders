@@ -42,9 +42,11 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
 
     private static final Field F_SUPER_TYPE = Reflections
             .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
-    private Map<IProposalTag, Object> tags = Maps.newHashMap();
+
+    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final CompletionProposal coreProposal;
+
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
     private String lastPrefix;
     private String lastPrefixStyled;
     private StyledString initialDisplayString;

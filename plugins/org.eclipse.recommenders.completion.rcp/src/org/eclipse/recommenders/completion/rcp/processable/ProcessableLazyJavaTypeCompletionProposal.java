@@ -45,8 +45,6 @@ public class ProcessableLazyJavaTypeCompletionProposal extends LazyJavaTypeCompl
         this.coreProposal = coreProposal;
     }
 
-    // ===========
-
     // getImage() is final, thus we re-implement computeImage()
     @Override
     protected Image computeImage() {
