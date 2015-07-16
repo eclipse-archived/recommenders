@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.news.rcp.feature"
       label="%label"
-      version="2.2.3.qualifier"
+      version="2.3.0.qualifier"
       provider-name="%provider-name"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
