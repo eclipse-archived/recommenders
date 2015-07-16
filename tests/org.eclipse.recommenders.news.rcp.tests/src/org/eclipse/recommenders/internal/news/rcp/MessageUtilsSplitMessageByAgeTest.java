@@ -67,8 +67,8 @@ public class MessageUtilsSplitMessageByAgeTest {
         scenarios
                 .add(new Object[] { on(MONDAY_2015_06_01), messagesFrom(MONDAY_2015_06_01, null, SATURDAY_2015_05_30),
                         expectedGroupings(today(MONDAY_2015_06_01), yesterday(), thisWeek(),
-                                lastWeek(SATURDAY_2015_05_30), thisMonth(), lastMonth(), thisYear(),
-                                older((Date) null)),
+                                lastWeek(SATURDAY_2015_05_30), thisMonth(), lastMonth(), thisYear(), older(),
+                                undetermined((Date) null)),
                         Locale.US });
 
         // Future message
@@ -140,7 +140,7 @@ public class MessageUtilsSplitMessageByAgeTest {
     private static List<List<Date>> expectedGroupings(List<Date>... expectedDates) {
         List<List<Date>> result = Lists.newArrayList();
         result.addAll(Arrays.asList(expectedDates));
-        while (result.size() <= MessageUtils.OLDER) {
+        while (result.size() <= MessageUtils.UNDETERMINED) {
             result.add(Collections.<Date>emptyList());
         }
         return result;
@@ -175,7 +175,8 @@ public class MessageUtilsSplitMessageByAgeTest {
         assertThat(splitMessages.get(LAST_MONTH), is(equalTo(createMessages(expectedDates.get(LAST_MONTH)))));
         assertThat(splitMessages.get(THIS_YEAR), is(equalTo(createMessages(expectedDates.get(THIS_YEAR)))));
         assertThat(splitMessages.get(OLDER), is(equalTo(createMessages(expectedDates.get(OLDER)))));
-        assertThat(splitMessages, hasSize(OLDER + 1));
+        assertThat(splitMessages.get(UNDETERMINED), is(equalTo(createMessages(expectedDates.get(UNDETERMINED)))));
+        assertThat(splitMessages, hasSize(UNDETERMINED + 1));
     }
 
     private static Date getDate(int year, int month, int day) {
@@ -213,6 +214,10 @@ public class MessageUtilsSplitMessageByAgeTest {
     }
 
     private static List<Date> older(Date... dates) {
+        return Arrays.asList(dates);
+    }
+
+    private static List<Date> undetermined(Date... dates) {
         return Arrays.asList(dates);
     }
 

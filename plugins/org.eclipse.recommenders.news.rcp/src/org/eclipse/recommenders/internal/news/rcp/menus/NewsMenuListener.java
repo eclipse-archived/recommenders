@@ -87,8 +87,8 @@ public class NewsMenuListener implements IMenuListener {
         List<List<IFeedMessage>> groupedMessages = splitMessagesByAge(messages);
         List<String> labels = ImmutableList.of(Messages.LABEL_TODAY, Messages.LABEL_YESTERDAY, Messages.LABEL_THIS_WEEK,
                 Messages.LABEL_LAST_WEEK, Messages.LABEL_THIS_MONTH, Messages.LABEL_LAST_MONTH,
-                Messages.LABEL_THIS_YEAR, Messages.LABEL_OLDER_ENTRIES);
-        for (int i = 0; i <= OLDER; i++) {
+                Messages.LABEL_THIS_YEAR, Messages.LABEL_OLDER_ENTRIES, Messages.LABEL_UNDETERMINED_ENTRIES);
+        for (int i = 0; i <= UNDETERMINED; i++) {
             if (!groupedMessages.get(i).isEmpty()) {
                 addLabel(menu, labels.get(i));
                 addMessages(menu, groupedMessages.get(i));

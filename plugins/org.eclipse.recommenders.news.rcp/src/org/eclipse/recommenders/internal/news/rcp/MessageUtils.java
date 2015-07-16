@@ -35,6 +35,7 @@ public class MessageUtils {
     public static final int LAST_MONTH = 5;
     public static final int THIS_YEAR = 6;
     public static final int OLDER = 7;
+    public static final int UNDETERMINED = 8;
 
     public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
         if (map == null) {
@@ -130,7 +131,7 @@ public class MessageUtils {
     @VisibleForTesting
     public static List<List<IFeedMessage>> splitMessagesByAge(List<IFeedMessage> messages, Date now, Locale locale) {
         List<List<IFeedMessage>> result = Lists.newArrayList();
-        for (int i = 0; i <= OLDER; i++) {
+        for (int i = 0; i <= UNDETERMINED; i++) {
             List<IFeedMessage> list = Lists.newArrayList();
             result.add(list);
         }
@@ -141,7 +142,7 @@ public class MessageUtils {
         for (IFeedMessage message : messages) {
             for (int i = 0; i <= OLDER; i++) {
                 if (message.getDate() == null) {
-                    result.get(OLDER).add(message);
+                    result.get(UNDETERMINED).add(message);
                     break;
                 }
                 if (message.getDate().after(getPeriodStartDate(i, today, locale))

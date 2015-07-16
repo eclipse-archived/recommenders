@@ -53,6 +53,7 @@ public final class Messages extends NLS {
     public static String LABEL_LAST_MONTH;
     public static String LABEL_THIS_YEAR;
     public static String LABEL_OLDER_ENTRIES;
+    public static String LABEL_UNDETERMINED_ENTRIES;
     public static String TOOLTIP_NO_NEW_MESSAGES;
     public static String TOOLTIP_NEW_MESSAGES;
     public static String HINT_MORE_MESSAGES;
