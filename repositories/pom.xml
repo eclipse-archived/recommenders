@@ -16,14 +16,7 @@
 	<name>Update Sites</name>
 
 	<modules>
-		<!-- Contains all features produced by Eclipse Code Recommenders. -->
-		<module>head</module>
-		<!-- May contain features that have not undergone a release review. -->
-		<module>milestones</module>
-		<!-- Contains features that have undergone a release review. -->
-		<module>stable</module>
-		<!-- Contains features that are contributed to the current simultaneous release. -->
-		<module>simrel</module>
+		<module>main</module>
 		<!-- Composite update sites referring to Code Recommenders Incubator projects. -->
 		<module>incubators-head</module>
 		<module>incubators-milestones</module>
@@ -98,8 +91,8 @@
 								<layout>p2</layout>
 							</repository>
 							<repository>
-								<id>luna</id>
-								<url>http://download.eclipse.org/releases/luna</url>
+								<id>mars</id>
+								<url>http://download.eclipse.org/releases/mars</url>
 								<layout>p2</layout>
 							</repository>
 						</repositories>
