@@ -1,17 +1,17 @@
 #! /bin/bash -e
 
 if [ -z "$1" ]; then
-    echo "No simultaneous release name (e.g., 'luna', 'mars') supplied."
+    echo "No simultaneous release name (e.g., 'kepler', 'luna', 'mars') supplied."
     exit 1
 else
     SIMREL=$1
 fi
 
 if [ -z "$2" ]; then
-    echo "No release name ('head', 'milestones', 'stable', 'simrel') supplied."
+    echo "No repository name (e.g., 'main') supplied."
     exit 2
 else
-    RELEASE=$2
+    REPOSITORY=$2
 fi
 
 if [ -z "$3" ]; then
@@ -24,7 +24,7 @@ fi
 echo "Publishing '${RELEASE}' repository of '${SIMREL}' configuration at http://${DOWNLOAD_PATH}"
 echo
 
-SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${RELEASE}/target/repository
+SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
 TARGET=/home/data/httpd/${DOWNLOAD_PATH}
 
 mkdir -p ${TARGET}
