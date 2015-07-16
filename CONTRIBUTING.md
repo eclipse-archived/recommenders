@@ -123,13 +123,17 @@ Do not be alarmed if your change is not immediately merged; most changes require
 Releasing a New Version of Code Recommenders
 --------------------------------------------
 
-The following is of concern only to committers to Eclipse Code Recommenders.
+Note: The following is of concern only to committers to Eclipse Code Recommenders.
 
-### Code
+Depending on whether you are performing a new major, minor release or maintenance release, the following steps differ.
 
-To release a new version of Code Recommenders, perform the following steps:
+### Git (Maintenance Release)
+
+To release a new **maintenance version** (same major/minor version, different micro version) of Code Recommenders, perform the following steps:
 
 - `export RELEASE_VERSION=x.y.z`
+- `git fetch`
+- `git checkout origin/maintenance`
 - `git clean -df`
 - `mvn clean -Dtycho.mode=maven`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${RELEASE_VERSION}`
@@ -137,9 +141,9 @@ To release a new version of Code Recommenders, perform the following steps:
 - `mvn tidy:pom`
 - `git commit -a -m "[releng] ${RELEASE_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
-- `git push origin HEAD:refs/for/master`
+- `git push origin HEAD:refs/for/maintenance`
 
-Thereafter, switch to the next (SNAPSHOT) version:
+Thereafter, switch to the next (SNAPSHOT) version: (**unless** this is going to be the last release with this major/minor version):
 
 - `export NEXT_VERSION=x.y.(z+1)`
 - `git checkout HEAD^ -- '*'`
@@ -156,28 +160,28 @@ Manually bump the version in the `feature/requires/import` elements of `features
 
 - `git commit -a -m "[releng] ${NEXT_VERSION}-SNAPSHOT"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
-- `git push origin HEAD:refs/for/master`
+- `git push origin HEAD:refs/for/maintenance`
 
 Wait till **both** commits have been built successfully by [Gerrit code review](https://git.eclipse.org/r/#/q/project:recommenders/org.eclipse.recommenders), only then submit the first one.
-Then wait till [the Hudson build](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) is successful, then check out the merge commit and tag it.
+Then wait till the [maintenance Hudson build](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/) is successful, then check out the merge commit and tag it.
 
 * `git fetch`
-* `git checkout origin/master`
+* `git checkout origin/maintenance`
 * `git tag v${RELEASE_VERSION}`
 * `git push origin v${RELEASE_VERSION}`
 
 Submit the second change.
 
-After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) have been successful, promote the release build to the [milestones](download.eclipse.org/recommenders/updates/milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
+After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/) have been successful, promote the release build to the [maintenance-milestones](download.eclipse.org/recommenders/updates/maintenance-milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
 
-- In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/), select the release build.
+- In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/), select the release build.
 - Select *Promotion Status* and start the `milestones` jobs
 - Enter a `MILESTONES_VERSION` parameter of `v${RELEASE_VERSION}.R`
 - Select *Promotion Status* and start the `stable` jobs
 - Enter a `STABLE_VERSION` parameter of `v${RELEASE_VERSION}`
 - Select *Configure* and assign a *DisplayName* of v`$RECOMMENDERS_RELEASE`
 
-The new version is now available for download.
+The new maintenance version is now available for download.
 
 ### Bugzilla
 
