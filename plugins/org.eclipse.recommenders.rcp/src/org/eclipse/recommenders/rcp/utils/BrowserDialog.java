@@ -24,15 +24,23 @@ public class BrowserDialog extends Dialog {
     private static final Composite NULL_COMPOSITE = null;
 
     private final String url;
+    private final int width;
+    private final int height;
 
     protected BrowserDialog(Shell parentShell, String url) {
+        this(parentShell, url, 1000, 500);
+    }
+
+    protected BrowserDialog(Shell parentShell, String url, int width, int height) {
         super(parentShell);
         this.url = url;
+        this.width = width;
+        this.height = height;
     }
 
     @Override
     protected void configureShell(Shell newShell) {
-        newShell.setSize(1000, 500);
+        newShell.setSize(width, height);
         super.configureShell(newShell);
     }
 
@@ -43,7 +51,7 @@ public class BrowserDialog extends Dialog {
         GridDataFactory.swtDefaults().grab(true, true).applyTo(container);
 
         Browser browser = new Browser(container, SWT.NONE);
-        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).hint(1000, 500).grab(true, true).applyTo(browser);
+        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).hint(width, height).grab(true, true).applyTo(browser);
 
         browser.setUrl(url);
         browser.setVisible(true);

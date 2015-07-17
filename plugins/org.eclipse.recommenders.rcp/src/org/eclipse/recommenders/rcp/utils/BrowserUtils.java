@@ -77,6 +77,12 @@ public final class BrowserUtils {
         browserDialog.open();
     }
 
+    public static void openInDialogBrowser(String url, int width, int height) {
+        BrowserDialog browserDialog = new BrowserDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), url,
+                width, height);
+        browserDialog.open();
+    }
+
     public static void openInDialogBrowser(URL url) {
         openInDialogBrowser(url.toExternalForm());
     }
