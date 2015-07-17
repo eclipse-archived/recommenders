@@ -40,7 +40,7 @@ public class BrowserDialog extends Dialog {
 
     @Override
     protected void configureShell(Shell newShell) {
-        newShell.setSize(1000, 500);
+        newShell.setSize(width, height);
         super.configureShell(newShell);
     }
 
