@@ -241,7 +241,7 @@ public class NewsService implements INewsService {
     public void displayNotification() {
         Map<FeedDescriptor, List<IFeedMessage>> messages = MessageUtils
                 .getLatestMessages(getMessages(Constants.COUNT_PER_FEED));
-        if (preferences.isNotificationEnabled() && !messages.isEmpty()) {
+        if (!messages.isEmpty()) {
             notificationFacade.displayNotification(messages, bus);
             Map<FeedDescriptor, Date> feedDates = Maps.newHashMap();
             for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {

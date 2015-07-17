@@ -20,6 +20,7 @@ public final class Messages extends NLS {
     public static String PREFPAGE_BUTTON_NEW;
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_REMOVE;
+    public static String PREFPAGE_NOTIFICATION_ENABLEMENT;
     public static String FEED_DIALOG_TITLE_NEW;
     public static String FEED_DIALOG_TITLE_EDIT;
     public static String FEED_DIALOG_ERROR;
@@ -59,6 +60,8 @@ public final class Messages extends NLS {
     public static String TOOLTIP_NO_NEW_MESSAGES;
     public static String TOOLTIP_NEW_MESSAGES;
     public static String HINT_MORE_MESSAGES;
+    public static String LABEL_DESKTOP_NOTIFICATION_LABEL;
+    public static String LABEL_DESKTOP_NOTIFICATION_DESCRIPTION;
 
     public static String NOTIFICATION_TITLE;
     public static String UNREAD_MESSAGE;

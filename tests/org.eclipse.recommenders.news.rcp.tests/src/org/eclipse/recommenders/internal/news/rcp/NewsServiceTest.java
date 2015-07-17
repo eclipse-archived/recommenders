@@ -191,7 +191,6 @@ public class NewsServiceTest {
     public void testShouldDisplayNotification() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        when(preferences.isNotificationEnabled()).thenReturn(true);
         HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
@@ -200,21 +199,6 @@ public class NewsServiceTest {
         sut.jobDone(job);
 
         verify(notificationFacade).displayNotification(MessageUtils.sortByDate(groupedMessages), bus);
-    }
-
-    @Test
-    public void testShoulNotdDisplayNotificationWhenPreferencesDisabled() throws ParseException {
-        FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        mockPreferences(true, ImmutableList.of(feed));
-        when(preferences.isNotificationEnabled()).thenReturn(false);
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
-        groupedMessages.put(feed, mockFeedMessages(COUNT_PER_FEED));
-        when(job.getMessages()).thenReturn(groupedMessages);
-
-        NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
-        sut.jobDone(job);
-
-        verifyZeroInteractions(notificationFacade);
     }
 
     private Map<String, Date> mockPollDates(String id, int change) {

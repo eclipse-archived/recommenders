@@ -47,11 +47,11 @@ public class NewsPreferencePageUITest {
 
     @After
     public void tearDown() {
-        if (!bot.activeShell().getText().equals("Preferences")) {
-            bot.button("Cancel").click();
+        if (!bot.activeShell().getText().equals("Preferences")) { //$NON-NLS-1$
+            bot.button("Cancel").click(); //$NON-NLS-1$
         }
-        bot.button("Restore Defaults").click();
-        bot.button("OK").click();
+        bot.button("Restore Defaults").click(); //$NON-NLS-1$
+        bot.button("OK").click(); //$NON-NLS-1$
     }
 
     @Test
@@ -69,8 +69,8 @@ public class NewsPreferencePageUITest {
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(VALID_FEED_URL);
 
         // the space below is here because TitleAreaDialog also adds a space to messages
-        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_EMPTY_NAME), is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_EMPTY_NAME), is(notNullValue())); //$NON-NLS-1$
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
@@ -78,8 +78,8 @@ public class NewsPreferencePageUITest {
         bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
 
-        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_EMPTY_URL), is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_EMPTY_URL), is(notNullValue())); //$NON-NLS-1$
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
@@ -88,8 +88,8 @@ public class NewsPreferencePageUITest {
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(INVALID_FEED_URL);
 
-        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_INVALID_URL), is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_INVALID_URL), is(notNullValue())); //$NON-NLS-1$
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
@@ -99,19 +99,19 @@ public class NewsPreferencePageUITest {
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(VALID_FEED_URL);
         bot.textWithLabel(Messages.FIELD_LABEL_POLLING_INTERVAL).setText(CHARACTERS_AND_DIGITS);
 
-        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY), is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY), is(notNullValue())); //$NON-NLS-1$
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
     public void testAddCustomFeedWithDuplicateURL() {
         bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
-        bot.textWithLabel(Messages.FIELD_LABEL_URL).setText("http://planeteclipse.org/planet/rss20.xml");
+        bot.textWithLabel(Messages.FIELD_LABEL_URL).setText("http://planeteclipse.org/planet/rss20.xml"); //$NON-NLS-1$
 
-        assertThat(bot.text(" " + MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, "Planet Eclipse")),
+        assertThat(bot.text(" " + MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, "Planet Eclipse")), //$NON-NLS-1$ //$NON-NLS-2$
                 is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
@@ -124,7 +124,7 @@ public class NewsPreferencePageUITest {
                 bot.text(" "
                         + MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, INVALID_FEED_PROTOCOL)),
                 is(notNullValue()));
-        assertThat(bot.button("OK").isEnabled(), is(false));
+        assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
 
     @Test
@@ -169,7 +169,7 @@ public class NewsPreferencePageUITest {
 
         // the shell will be still Preferences, because it's not possible to edit default repository feed, so the dialog
         // won't be opened
-        assertThat(bot.activeShell().getText(), is(equalTo("Preferences")));
+        assertThat(bot.activeShell().getText(), is(equalTo("Preferences"))); //$NON-NLS-1$
         assertThat(bot.button(Messages.PREFPAGE_BUTTON_EDIT).isEnabled(), is(false));
     }
 
@@ -203,11 +203,18 @@ public class NewsPreferencePageUITest {
         addCustomFeed(bot);
         applyChangesAndReopenPreferencePage();
 
-        bot.button("Restore Defaults").click();
+        bot.button("Restore Defaults").click(); //$NON-NLS-1$
 
         applyChangesAndReopenPreferencePage();
 
         assertThat(bot.table().rowCount(), is(equalTo(2)));
+    }
+
+    @Test
+    public void testNotificationLinkLeadsToProperPreferencePage() {
+        bot.link().click();
+
+        assertThat(bot.checkBox("Enable notifications"), is(notNullValue())); //$NON-NLS-1$
     }
 
     private static void openPreferencePage(SWTWorkbenchBot bot) {

@@ -58,4 +58,28 @@
             url="http://marketplace.eclipse.org/rss.xml">
       </feed>
    </extension>
+   <extension
+         point="org.eclipse.mylyn.commons.notifications.ui.notifications">
+      <category
+            icon="icons/eview16/rss-active.gif"
+            id="org.eclipse.recommenders.news"
+            label="%notifcations.category.name">
+      </category>
+      <event
+            categoryId="org.eclipse.recommenders.news"
+            id="org.eclipse.recommenders.news.rcp.NewMessages"
+            label="%notifcations.event.label">
+            <description>
+          %notification.description
+       </description>
+       <defaultHandler
+               sinkId="org.eclipse.recommenders.news.rcp.sink">
+         </defaultHandler>
+      </event>
+      <sink
+            class="org.eclipse.recommenders.internal.news.rcp.notifications.NewsPopupNotificationSink"
+            id="org.eclipse.recommenders.news.rcp.sink"
+            label="%notifcations.sink.name">
+      </sink>
+   </extension>
 </plugin>

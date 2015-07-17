@@ -26,10 +26,6 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     private boolean enabled;
 
     @Inject
-    @Preference(Constants.PREF_NOTIFICATION_ENABLED)
-    private boolean notificationEnabled;
-
-    @Inject
     @Preference(Constants.PREF_FEED_LIST_SORTED)
     private String feeds;
 
@@ -43,10 +39,6 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
 
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public boolean isNotificationEnabled() {
-        return notificationEnabled;
     }
 
     public Long getPollingInterval() {
