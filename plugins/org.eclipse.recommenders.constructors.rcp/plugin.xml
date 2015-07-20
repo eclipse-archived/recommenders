@@ -13,7 +13,13 @@
 		<page id="org.eclipse.recommenders.constructors.rcp.preferencePages.constructors"
 			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			class="org.eclipse.recommenders.internal.constructors.rcp.ConstructorsPreferencePage"
-			name="%preferencePages.constructors.name"/>
+			name="%preferencePages.constructors.name">
+			<keywordReference id="org.eclipse.recommenders.constructors.rcp.keywords.constructors"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.constructors.rcp.keywords.constructors"
+			label="%keywords.constructors.label"/>
 	</extension>
 	<extension point="org.eclipse.equinox.preferences.preferences">
 		<initializer class="org.eclipse.recommenders.internal.constructors.rcp.PreferenceInitializer"/>

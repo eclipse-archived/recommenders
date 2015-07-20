@@ -13,7 +13,13 @@
 		<page id="org.eclipse.recommenders.calls.rcp.preferencePages.calls"
 			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			class="org.eclipse.recommenders.internal.calls.rcp.CallsPreferencePage"
-			name="%preferencePages.calls.name"/>
+			name="%preferencePages.calls.name">
+			<keywordReference id="org.eclipse.recommenders.calls.rcp.keywords.calls"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.calls.rcp.keywords.calls"
+			label="%keywords.calls.label"/>
 	</extension>
 	<extension point="org.eclipse.equinox.preferences.preferences">
 		<initializer class="org.eclipse.recommenders.internal.calls.rcp.PreferenceInitializer"/>
