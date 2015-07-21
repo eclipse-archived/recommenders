@@ -16,12 +16,19 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.recommenders.rcp.utils.BrowserUtils;
+import org.eclipse.ui.PlatformUI;
 
 public class OpenBrowserDialogHandler extends AbstractHandler {
 
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        BrowserUtils.openInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
+    public Object execute(final ExecutionEvent event) throws ExecutionException {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                BrowserUtils.openInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
+            }
+        });
         return null;
     }
 }
