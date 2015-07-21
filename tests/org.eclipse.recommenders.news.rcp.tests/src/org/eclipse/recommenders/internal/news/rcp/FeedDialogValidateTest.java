@@ -37,11 +37,11 @@ public class FeedDialogValidateTest {
     private static final String VALID_FEED_POLLING_INTERVAL = "23";
     private static final String NO_ERROR = null;
 
-    private FeedDescriptor feed;
-    private String name;
-    private String url;
-    private String pollingInterval;
-    private String expectedMessage;
+    private final FeedDescriptor feed;
+    private final String name;
+    private final String url;
+    private final String pollingInterval;
+    private final String expectedMessage;
 
     public FeedDialogValidateTest(FeedDescriptor feed, String name, String url, String pollingInterval,
             String expectedMessage) {

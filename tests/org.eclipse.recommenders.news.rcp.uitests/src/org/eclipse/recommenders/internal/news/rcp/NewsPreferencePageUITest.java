@@ -244,9 +244,10 @@ public class NewsPreferencePageUITest {
     }
 
     public static class NodeAvailableAndSelect extends DefaultCondition {
-        private SWTBotTree tree;
-        private String parent;
-        private String node;
+
+        private final SWTBotTree tree;
+        private final String parent;
+        private final String node;
 
         /**
          * Wait for a tree node (with a known parent) to become visible, and select it when it does. Note that this wait
