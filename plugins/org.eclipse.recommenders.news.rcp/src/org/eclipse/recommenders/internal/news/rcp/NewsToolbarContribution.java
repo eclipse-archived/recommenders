@@ -45,7 +45,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
     public NewsToolbarContribution(INewsService service, EventBus eventBus) {
         this.service = service;
         eventBus.register(this);
-        newsMenuListener = new NewsMenuListener(eventBus);
+        newsMenuListener = new NewsMenuListener(eventBus, service);
     }
 
     @Override

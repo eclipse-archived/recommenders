@@ -40,7 +40,6 @@ public final class Messages extends NLS {
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
     public static String POLL_FEED_JOB_NAME;
-    public static String POLL_FEED_JOB_TASK_NAME;
     public static String POLL_FEED_JOB_SUBTASK_POLLING_FEED;
     public static String JOB_NAME_CLOSE;
     public static String JOB_NAME_FADE;
@@ -48,6 +47,7 @@ public final class Messages extends NLS {
     public static String LABEL_NO_NEW_MESSAGES;
     public static String LABEL_MARK_AS_READ;
     public static String LABEL_PREFERENCES;
+    public static String LABEL_POLL_FEEDS;
     public static String LABEL_TODAY;
     public static String LABEL_YESTERDAY;
     public static String LABEL_THIS_WEEK;
