@@ -9,6 +9,7 @@ package org.eclipse.recommenders.internal.news.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -318,15 +319,17 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
                 @Override
                 public String getText(Object element) {
-                    FeedDescriptor descriptor = cast(element);
-                    return descriptor.getName();
+                    FeedDescriptor feed = cast(element);
+                    return feed.getName();
                 }
 
                 @Override
                 public String getToolTipText(Object element) {
-                    FeedDescriptor descriptor = cast(element);
-                    return descriptor.getDescription();
+                    FeedDescriptor feed = cast(element);
+                    return MessageFormat.format(Messages.FEED_TOOLTIP, feed.getUrl(),
+                            feed.getPollingInterval());
                 }
+
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new ArrayContentProvider());
@@ -346,9 +349,9 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                         .getFeeds(getPreferenceStore().getString(Constants.PREF_CUSTOM_FEED_LIST_SORTED)));
             }
             List<FeedDescriptor> checkedElements = Lists.newArrayList();
-            for (FeedDescriptor descriptor : input) {
-                if (descriptor.isEnabled()) {
-                    checkedElements.add(descriptor);
+            for (FeedDescriptor feed : input) {
+                if (feed.isEnabled()) {
+                    checkedElements.add(feed);
                 }
             }
 
@@ -424,11 +427,11 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         public List<FeedDescriptor> getValue() {
-            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
-            for (FeedDescriptor descriptor : descriptors) {
-                descriptor.setEnabled(tableViewer.getChecked(descriptor));
+            List<FeedDescriptor> feeds = cast(tableViewer.getInput());
+            for (FeedDescriptor feed : feeds) {
+                feed.setEnabled(tableViewer.getChecked(feed));
             }
-            return descriptors;
+            return feeds;
         }
     }
 }

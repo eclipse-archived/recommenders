@@ -31,6 +31,7 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_NEWS_ENABLED;
     public static String FIELD_LABEL_NOTIFICATION_ENABLED;
     public static String FIELD_LABEL_POLLING_INTERVAL;
+    public static String FEED_TOOLTIP;
     public static String FEED_DIALOG_ERROR_EMPTY_NAME;
     public static String FEED_DIALOG_ERROR_EMPTY_URL;
     public static String FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED;
