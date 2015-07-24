@@ -15,6 +15,8 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -55,6 +57,14 @@ public class BrowserDialog extends Dialog {
 
         browser.setUrl(url);
         browser.setVisible(true);
+
+        browser.addTitleListener(new TitleListener() {
+
+            @Override
+            public void changed(TitleEvent event) {
+                getShell().setText(event.title);
+            }
+        });
 
         return browser;
     }
