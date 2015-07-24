@@ -66,7 +66,7 @@
 	<properties>
 		<recommendersVersion>2.2.3-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
-		<tychoVersion>0.23.0</tychoVersion>
+		<tychoVersion>0.23.1</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>mars</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
@@ -106,7 +106,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.3</version>
 					<configuration>
 						<source>${javaVersion}</source>
 						<target>${javaVersion}</target>
@@ -145,7 +145,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.5</version>
+					<version>2.6</version>
 				</plugin>
 				<!-- Apache Maven reporting plugins -->
 				<plugin>
@@ -365,7 +365,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.11</version>
+					<version>1.14</version>
 					<configuration>
 						<signature>
 							<groupId>org.codehaus.mojo.signature</groupId>
@@ -382,7 +382,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.2.201409121644</version>
+					<version>0.7.5.201505241946</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.xtext</groupId>
