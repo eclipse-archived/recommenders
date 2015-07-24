@@ -37,7 +37,13 @@
 		<page id="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.CompletionsPreferencePage"
-			name="%preferencePages.completions.name"/>
+			name="%preferencePages.completions.name">
+			<keywordReference id="org.eclipse.recommenders.completion.rcp.keywords.completions"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.completion.rcp.keywords.completions"
+			label="%keywords.completions.label"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences"/>

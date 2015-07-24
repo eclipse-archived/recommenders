@@ -23,7 +23,12 @@
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
 			class="org.eclipse.recommenders.internal.models.rcp.ModelsPreferencePage"
 			name="%preferencePages.models.name">
+			<keywordReference id="org.eclipse.recommenders.models.rcp.keywords.models"/>
 		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.models.rcp.keywords.models"
+			label="%keywords.models.label"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.internal.models.rcp.PreferenceInitializer"/>

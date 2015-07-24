@@ -15,7 +15,13 @@
 		<page id="org.eclipse.recommenders.subwords.rcp.preferencePages.subwords"
 			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			class="org.eclipse.recommenders.internal.subwords.rcp.SubwordsPreferencePage"
-			name="%preferencePages.subwords.name"/>
+			name="%preferencePages.subwords.name">
+			<keywordReference id="org.eclipse.recommenders.subwords.rcp.keywords.subwords"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.subwords.rcp.keywords.subwords"
+			label="%keywords.subwords.label"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferenceInitializer"/>

@@ -19,10 +19,16 @@
 			name="%quickAssistProcessors.chain.name"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
-		<page id="org.eclipse.recommenders.chain.rcp.preferencePages.chain"
+		<page id="org.eclipse.recommenders.chain.rcp.preferencePages.chains"
 			category="org.eclipse.recommenders.completion.rcp.preferencePages.completions"
 			class="org.eclipse.recommenders.internal.chain.rcp.ChainsPreferencePage"
-			name="%preferencePages.chain.name"/>
+			name="%preferencePages.chain.name">
+			<keywordReference id="org.eclipse.recommenders.chain.rcp.keywords.chains"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.chain.rcp.keywords.chains"
+			label="%keywords.chains.label"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.internal.chain.rcp.ChainPreferenceInitializer"/>
