@@ -25,6 +25,7 @@ import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.google.common.collect.ImmutableList;
@@ -32,11 +33,13 @@ import com.google.common.eventbus.EventBus;
 
 public class NewsMenuListener implements IMenuListener {
     private final EventBus eventBus;
+    private final INewsService service;
     private Map<FeedDescriptor, List<IFeedMessage>> messages;
 
-    public NewsMenuListener(EventBus eventBus) {
+    public NewsMenuListener(EventBus eventBus, INewsService service) {
         super();
         this.eventBus = eventBus;
+        this.service = service;
     }
 
     public void setMessages(Map<FeedDescriptor, List<IFeedMessage>> messages) {
@@ -58,6 +61,7 @@ public class NewsMenuListener implements IMenuListener {
         }
         manager.add(new Separator());
         manager.add(newMarkAllAsReadAction(eventBus));
+        manager.add(pollFeedsAction());
         manager.add(new Separator());
         manager.add(newPreferencesAction());
     }
@@ -79,6 +83,20 @@ public class NewsMenuListener implements IMenuListener {
             @Override
             public String getText() {
                 return Messages.LABEL_PREFERENCES;
+            }
+        };
+    }
+
+    private Action pollFeedsAction() {
+        return new Action() {
+            @Override
+            public void run() {
+                service.start();
+            }
+
+            @Override
+            public String getText() {
+                return Messages.LABEL_POLL_FEEDS;
             }
         };
     }
