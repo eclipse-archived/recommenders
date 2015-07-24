@@ -93,14 +93,12 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
     @Override
     public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
-        boolean result = super.performOk();
-        doPerformOK(store.getBoolean(Constants.PREF_NEWS_ENABLED), enabledEditor.getBooleanValue(),
+        return doPerformOK(store.getBoolean(Constants.PREF_NEWS_ENABLED), enabledEditor.getBooleanValue(),
                 newsRcpPreferences.getFeedDescriptors(), feedEditor.getValue());
-        return result;
     }
 
     @VisibleForTesting
-    void doPerformOK(boolean oldEnabledValue, boolean newEnabledValue, List<FeedDescriptor> oldFeedValue,
+    boolean doPerformOK(boolean oldEnabledValue, boolean newEnabledValue, List<FeedDescriptor> oldFeedValue,
             List<FeedDescriptor> newFeedValue) {
         boolean forceStop = false;
         boolean forceStart = false;
@@ -123,12 +121,15 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
                 service.removeFeed(newFeed);
             }
-            for (FeedDescriptor feed : newFeedValue) {
-                if (!oldFeedValue.contains(feed)) {
-                    forceStart = true;
-                }
+        }
+
+        for (FeedDescriptor feed : newFeedValue) {
+            if (!oldFeedValue.contains(feed)) {
+                forceStart = true;
             }
         }
+
+        boolean result = super.performOk();
 
         if (forceStart) {
             service.start();
@@ -136,6 +137,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         if (forceStop) {
             service.forceStop();
         }
+
+        return result;
     }
 
     private final class FeedEditor extends FieldEditor {
