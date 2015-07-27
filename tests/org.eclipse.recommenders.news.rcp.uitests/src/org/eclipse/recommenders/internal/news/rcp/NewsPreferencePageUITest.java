@@ -217,6 +217,13 @@ public class NewsPreferencePageUITest {
         assertThat(bot.checkBox("Enable notifications"), is(notNullValue())); //$NON-NLS-1$
     }
 
+    @Test
+    public void testWebBrowserSettingsinkLeadsToProperPreferencePage() {
+        bot.link(1).click("Web Browser");
+
+        assertThat(bot.radio("Use internal web browser"), is(notNullValue())); //$NON-NLS-1$
+    }
+
     private static void openPreferencePage(SWTWorkbenchBot bot) {
         PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 

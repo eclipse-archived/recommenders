@@ -21,6 +21,7 @@ public final class Messages extends NLS {
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_REMOVE;
     public static String PREFPAGE_NOTIFICATION_ENABLEMENT;
+    public static String PREFPAGE_WEB_BROWSER_SETTINGS;
     public static String FEED_DIALOG_TITLE_NEW;
     public static String FEED_DIALOG_TITLE_EDIT;
     public static String FEED_DIALOG_ERROR;
