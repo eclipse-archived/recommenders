@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.google.common.base.Joiner;
+
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class NewsPreferencePageUITest {
     private static final String VALID_FEED_NAME = "feed"; //$NON-NLS-1$
@@ -121,8 +123,8 @@ public class NewsPreferencePageUITest {
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(INVALID_FEED_PROTOCOL);
 
         assertThat(
-                bot.text(" "
-                        + MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, INVALID_FEED_PROTOCOL)),
+                bot.text(" " + MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED,
+                        INVALID_FEED_PROTOCOL, Joiner.on(", ").join(FeedDialog.ACCEPTED_PROTOCOLS))),
                 is(notNullValue()));
         assertThat(bot.button("OK").isEnabled(), is(false)); //$NON-NLS-1$
     }
