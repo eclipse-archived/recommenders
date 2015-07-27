@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -43,7 +44,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.jdt.AstBindings;
-import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
@@ -125,10 +125,12 @@ public class AstDefUseFinder extends ASTVisitor {
     }
 
     private void refineDefKindByBinding(final Name node) {
-        IVariableBinding b = Checks.castOrNull(node.resolveBinding());
-        if (b == null) {
+        IBinding binding = node.resolveBinding();
+        if (!(binding instanceof IVariableBinding)) {
             return;
-        } else if (b.isField()) {
+        }
+        IVariableBinding b = (IVariableBinding) binding;
+        if (b.isField()) {
             defKind = FIELD;
         } else if (b.isParameter()) {
             defKind = PARAM;
@@ -216,7 +218,8 @@ public class AstDefUseFinder extends ASTVisitor {
                 break;
             default:
                 // when we have completely broken code, this may happen... ignore it.
-                // throwUnreachable("Did not expect this LHS expression to be possible here. Pls report this snippet: %s",
+                // throwUnreachable("Did not expect this LHS expression to be possible here. Pls report this snippet:
+                // %s",
                 // lhs);
             }
         }

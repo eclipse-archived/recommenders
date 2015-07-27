@@ -15,7 +15,12 @@
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
 			class="org.eclipse.recommenders.internal.coordinates.rcp.AdvisorsPreferencePage"
 			name="%preferencePages.advisors.name">
+			<keywordReference id="org.eclipse.recommenders.coordinates.rcp.keywords.advisors"/>
 		</page>
+	</extension>
+	<extension point="org.eclipse.ui.keywords">
+		<keyword id="org.eclipse.recommenders.coordinates.rcp.keywords.advisors"
+			label="%keywords.advisors.label"/>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.eclipse.recommenders.internal.coordinates.rcp.PreferenceInitializer"/>
