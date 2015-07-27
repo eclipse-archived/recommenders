@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.chain.rcp;
 
 import static org.eclipse.recommenders.internal.chain.rcp.TypeBindingAnalyzer.*;
-import static org.eclipse.recommenders.utils.Checks.castOrNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,8 +103,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
     @VisibleForTesting
     /**
-     * Ensures that we only make recommendations if we are not on the default tab. Disables this engine if the user
-     *   has activated chain completion on default content assist list
+     * Ensures that we only make recommendations if we are not on the default tab. Disables this engine if the user has
+     * activated chain completion on default content assist list
      */
     protected boolean shouldMakeProposals() {
         final Set<String> excluded = Sets.newHashSet(PreferenceConstants.getExcludedCompletionProposalCategories());
@@ -120,10 +119,11 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean initializeRequiredContext(final ContentAssistInvocationContext context) {
-        JavaContentAssistInvocationContext jdtCtx = castOrNull(context);
-        if (jdtCtx == null) {
+        if (!(context instanceof JavaContentAssistInvocationContext)) {
             return false;
         }
+        JavaContentAssistInvocationContext jdtCtx = (JavaContentAssistInvocationContext) context;
+
         ctx = new RecommendersCompletionContext(jdtCtx, astProvider);
         final Optional<Scope> optionalScope = ScopeAccessWorkaround.resolveScope(ctx);
         if (!optionalScope.isPresent()) {
@@ -148,7 +148,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             invocationSite = (CompletionOnMemberAccess) node;
             findEntrypointsForCompletionOnMemberAccess((CompletionOnMemberAccess) node);
         } else if (node instanceof CompletionOnSingleNameReference
-                || node instanceof CompletionOnQualifiedAllocationExpression || node instanceof CompletionOnMessageSend) {
+                || node instanceof CompletionOnQualifiedAllocationExpression
+                || node instanceof CompletionOnMessageSend) {
             invocationSite = (InvocationSite) node;
             findEntrypointsForCompletionOnSingleName();
         }
@@ -176,7 +177,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void addPublicStaticMembersToEntrypoints(final TypeBinding type) {
-        for (final Binding m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(type, invocationSite, scope)) {
+        for (final Binding m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(type, invocationSite,
+                scope)) {
             if (matchesExpectedPrefix(m)) {
                 entrypoints.add(new ChainElement(m, false));
             }
@@ -257,7 +259,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
         final List<Optional<TypeBinding>> expectedTypes = TypeBindingAnalyzer.resolveBindingsForExpectedTypes(ctx,
                 scope);
-        final ChainFinder finder = new ChainFinder(expectedTypes, Sets.newHashSet(excludedTypes), invocationSite, scope);
+        final ChainFinder finder = new ChainFinder(expectedTypes, Sets.newHashSet(excludedTypes), invocationSite,
+                scope);
         try {
             new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
                 @Override
