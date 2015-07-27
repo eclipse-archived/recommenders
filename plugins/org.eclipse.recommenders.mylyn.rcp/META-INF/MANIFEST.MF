@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.mylyn.rcp;singleton:=true
-Bundle-Version: 2.2.3.qualifier
+Bundle-Version: 2.2.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -10,5 +10,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
  org.eclipse.mylyn.context.core,
- org.eclipse.recommenders.injection;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.3,2.2.4)"
+ org.eclipse.recommenders.injection;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.4,2.2.5)"

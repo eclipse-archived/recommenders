@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp;singleton:=true
-Bundle-Version: 2.2.3.qualifier
+Bundle-Version: 2.2.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Eclipse-ExtensibleAPI: true
@@ -15,10 +15,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.recommenders.injection;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.jdt;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.rcp;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.utils;bundle-version="[2.2.3,2.2.4)",
+ org.eclipse.recommenders.injection;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.jdt;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.utils;bundle-version="[2.2.4,2.2.5)",
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor

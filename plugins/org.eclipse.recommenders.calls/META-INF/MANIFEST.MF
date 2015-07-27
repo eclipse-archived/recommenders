@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.calls
-Bundle-Version: 2.2.3.qualifier
+Bundle-Version: 2.2.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.recommenders.utils;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.models;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.jayes;bundle-version="[2.2.3,2.2.4)",
- org.eclipse.recommenders.jayes.io;bundle-version="[2.2.3,2.2.4)"
+Require-Bundle: org.eclipse.recommenders.utils;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.models;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.jayes;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.jayes.io;bundle-version="[2.2.4,2.2.5)"
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.cache;version="[15.0.0,16.0.0)",
