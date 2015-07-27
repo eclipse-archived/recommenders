@@ -153,7 +153,7 @@ The version numbers of the required `org.eclipse.recommenders.*` bundles will no
 To do this perform the following three steps:
 
 - `export SECOND_NEXT_MAINTENANCE_VERSION=x.y.(z+2)`
-- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${NEXT_MAINTENANCE_VERSION},${NEXT_MAINTENANCE_VERSION}\([)\"]*\)/\1${NEXT_MAINTENANCE_VERSION},${SECOND_NEXT_MAINTENANCE_VERSION}\2/"`
+- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${MAINTENANCE_VERSION},${NEXT_MAINTENANCE_VERSION}\([)\"]*\)/\1${NEXT_MAINTENANCE_VERSION},${SECOND_NEXT_MAINTENANCE_VERSION}\2/"`
 - `find plugins -type f -iname "*.bak" | xargs rm`
 
 Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
