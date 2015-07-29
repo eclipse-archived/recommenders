@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.swt.SWT;
@@ -168,13 +167,14 @@ public class FeedDialog extends TitleAreaDialog {
     static String validateFeedDialog(FeedDescriptor currentFeed, String name, String url, String pollingInterval,
             List<FeedDescriptor> existingDescriptors) {
         FeedDescriptor duplicateFeed = getFeedWithDuplicateUrl(url, currentFeed, existingDescriptors).orNull();
+        URI feedUri = parseUriQuietly(url).orNull();
         if (Strings.isNullOrEmpty(name)) {
             return Messages.FEED_DIALOG_ERROR_EMPTY_NAME;
         } else if (Strings.isNullOrEmpty(url)) {
             return Messages.FEED_DIALOG_ERROR_EMPTY_URL;
-        } else if (parseUriQuietly(url).orNull() == null) {
+        } else if (feedUri == null || !feedUri.isAbsolute()) {
             return Messages.FEED_DIALOG_ERROR_INVALID_URL;
-        } else if (!isUriProtocolSupported(parseUriQuietly(url).orNull(), ACCEPTED_PROTOCOLS)) {
+        } else if (!isUriProtocolSupported(feedUri, ACCEPTED_PROTOCOLS)) {
             return MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, url,
                     Joiner.on(", ").join(ACCEPTED_PROTOCOLS)); //$NON-NLS-1$
         } else if (duplicateFeed != null) {
@@ -199,7 +199,7 @@ public class FeedDialog extends TitleAreaDialog {
             return false;
         }
         for (String protocol : protocols) {
-            if (StringUtils.equalsIgnoreCase(protocol, uri.getScheme())) {
+            if (protocol.equalsIgnoreCase(uri.getScheme()) || protocol.equalsIgnoreCase(uri.toString())) {
                 return true;
             }
         }

@@ -73,6 +73,9 @@ public class FeedDialogValidateTest {
         scenarios.add(new Object[] { null, VALID_FEED_NAME, VALID_FEED_URL, VALID_FEED_POLLING_INTERVAL, NO_ERROR });
         scenarios.add(new Object[] { TestUtils.enabled(VALID_FEED_ID), VALID_FEED_NAME, VALID_FEED_URL,
                 VALID_FEED_POLLING_INTERVAL, NO_ERROR });
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=473757
+        scenarios.add(new Object[] { null, VALID_FEED_NAME, "http", VALID_FEED_POLLING_INTERVAL,
+                Messages.FEED_DIALOG_ERROR_INVALID_URL });
 
         return scenarios;
     }
