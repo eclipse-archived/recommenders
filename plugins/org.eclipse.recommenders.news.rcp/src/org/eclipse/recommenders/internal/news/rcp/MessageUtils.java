@@ -27,15 +27,27 @@ import com.google.common.collect.Maps;
 
 public class MessageUtils {
 
-    public static final int TODAY = 0;
-    public static final int YESTERDAY = 1;
-    public static final int THIS_WEEK = 2;
-    public static final int LAST_WEEK = 3;
-    public static final int THIS_MONTH = 4;
-    public static final int LAST_MONTH = 5;
-    public static final int THIS_YEAR = 6;
-    public static final int OLDER = 7;
-    public static final int UNDETERMINED = 8;
+    public enum MessageAge {
+        TODAY(0),
+        YESTERDAY(1),
+        THIS_WEEK(2),
+        LAST_WEEK(3),
+        THIS_MONTH(4),
+        LAST_MONTH(5),
+        THIS_YEAR(6),
+        OLDER(7),
+        UNDETERMINED(8);
+
+        private final int index;
+
+        MessageAge(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
 
     public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
         if (map == null) {
@@ -131,59 +143,61 @@ public class MessageUtils {
     @VisibleForTesting
     public static List<List<IFeedMessage>> splitMessagesByAge(List<IFeedMessage> messages, Date now, Locale locale) {
         List<List<IFeedMessage>> result = Lists.newArrayList();
-        for (int i = 0; i <= UNDETERMINED; i++) {
+        for (int i = 0; i < MessageAge.values().length; i++) {
             List<IFeedMessage> list = Lists.newArrayList();
             result.add(list);
         }
+
         if (messages == null) {
             return result;
         }
         Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
         for (IFeedMessage message : messages) {
-            for (int i = 0; i <= OLDER; i++) {
+            for (MessageAge messageAge : MessageAge.values()) {
                 if (message.getDate() == null) {
-                    result.get(UNDETERMINED).add(message);
+                    result.get(MessageAge.UNDETERMINED.getIndex()).add(message);
                     break;
                 }
-                if (message.getDate().after(getPeriodStartDate(i, today, locale))
-                        || message.getDate().equals(getPeriodStartDate(i, today, locale))) {
-                    result.get(i).add(message);
+                if (message.getDate().after(getPeriodStartDate(messageAge, today, locale))
+                        || message.getDate().equals(getPeriodStartDate(messageAge, today, locale))) {
+                    result.get(messageAge.getIndex()).add(message);
                     break;
                 }
             }
-            if (message.getDate() != null && (message.getDate().before(getPeriodStartDate(OLDER, today, locale))
-                    || message.getDate().equals(getPeriodStartDate(OLDER, today, locale)))) {
-                result.get(OLDER).add(message);
+            if (message.getDate() != null
+                    && (message.getDate().before(getPeriodStartDate(MessageAge.OLDER, today, locale))
+                            || message.getDate().equals(getPeriodStartDate(MessageAge.OLDER, today, locale)))) {
+                result.get(MessageAge.OLDER.getIndex()).add(message);
             }
         }
         return result;
     }
 
-    public static Date getPeriodStartDate(int period, Date today, Locale locale) {
+    public static Date getPeriodStartDate(MessageAge messageAge, Date today, Locale locale) {
         Calendar calendar = GregorianCalendar.getInstance(locale);
         calendar.setTime(today);
-        if (period == TODAY) {
+        if (messageAge == MessageAge.TODAY) {
             return calendar.getTime();
-        } else if (period == YESTERDAY) {
+        } else if (messageAge == MessageAge.YESTERDAY) {
             calendar.add(Calendar.DATE, -1);
-        } else if (period == THIS_WEEK) {
+        } else if (messageAge == MessageAge.THIS_WEEK) {
             int firstDayOfWeek = calendar.getFirstDayOfWeek();
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-        } else if (period == LAST_WEEK) {
+        } else if (messageAge == MessageAge.LAST_WEEK) {
             int firstDayOfWeek = calendar.getFirstDayOfWeek();
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
             calendar.add(Calendar.DATE, -1);
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-        } else if (period == THIS_MONTH) {
+        } else if (messageAge == MessageAge.THIS_MONTH) {
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == LAST_MONTH) {
+        } else if (messageAge == MessageAge.LAST_MONTH) {
             calendar.set(Calendar.DAY_OF_MONTH, 1);
             calendar.add(Calendar.DATE, -1);
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == THIS_YEAR) {
+        } else if (messageAge == MessageAge.THIS_YEAR) {
             calendar.set(Calendar.MONTH, 0);
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == OLDER) {
+        } else if (messageAge == MessageAge.OLDER) {
             calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
             calendar.set(Calendar.MONTH, 11);
             calendar.set(Calendar.DAY_OF_MONTH, 31);

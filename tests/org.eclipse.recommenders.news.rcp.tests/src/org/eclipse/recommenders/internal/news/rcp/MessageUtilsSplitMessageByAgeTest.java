@@ -7,7 +7,6 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
-import static org.eclipse.recommenders.internal.news.rcp.MessageUtils.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -21,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.recommenders.internal.news.rcp.MessageUtils.MessageAge;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,7 +140,7 @@ public class MessageUtilsSplitMessageByAgeTest {
     private static List<List<Date>> expectedGroupings(List<Date>... expectedDates) {
         List<List<Date>> result = Lists.newArrayList();
         result.addAll(Arrays.asList(expectedDates));
-        while (result.size() <= MessageUtils.UNDETERMINED) {
+        while (result.size() < MessageAge.values().length) {
             result.add(Collections.<Date>emptyList());
         }
         return result;
@@ -167,16 +167,25 @@ public class MessageUtilsSplitMessageByAgeTest {
 
         List<List<IFeedMessage>> splitMessages = MessageUtils.splitMessagesByAge(inputMessages, today, locale);
 
-        assertThat(splitMessages.get(TODAY), is(equalTo(createMessages(expectedDates.get(TODAY)))));
-        assertThat(splitMessages.get(YESTERDAY), is(equalTo(createMessages(expectedDates.get(YESTERDAY)))));
-        assertThat(splitMessages.get(THIS_WEEK), is(equalTo(createMessages(expectedDates.get(THIS_WEEK)))));
-        assertThat(splitMessages.get(LAST_WEEK), is(equalTo(createMessages(expectedDates.get(LAST_WEEK)))));
-        assertThat(splitMessages.get(THIS_MONTH), is(equalTo(createMessages(expectedDates.get(THIS_MONTH)))));
-        assertThat(splitMessages.get(LAST_MONTH), is(equalTo(createMessages(expectedDates.get(LAST_MONTH)))));
-        assertThat(splitMessages.get(THIS_YEAR), is(equalTo(createMessages(expectedDates.get(THIS_YEAR)))));
-        assertThat(splitMessages.get(OLDER), is(equalTo(createMessages(expectedDates.get(OLDER)))));
-        assertThat(splitMessages.get(UNDETERMINED), is(equalTo(createMessages(expectedDates.get(UNDETERMINED)))));
-        assertThat(splitMessages, hasSize(UNDETERMINED + 1));
+        assertThat(splitMessages.get(MessageAge.TODAY.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.TODAY.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.YESTERDAY.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.YESTERDAY.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.THIS_WEEK.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.THIS_WEEK.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.LAST_WEEK.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.LAST_WEEK.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.THIS_MONTH.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.THIS_MONTH.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.LAST_MONTH.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.LAST_MONTH.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.THIS_YEAR.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.THIS_YEAR.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.OLDER.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.OLDER.getIndex())))));
+        assertThat(splitMessages.get(MessageAge.UNDETERMINED.getIndex()),
+                is(equalTo(createMessages(expectedDates.get(MessageAge.UNDETERMINED.getIndex())))));
+        assertThat(splitMessages, hasSize(MessageAge.values().length));
     }
 
     private static Date getDate(int year, int month, int day) {
