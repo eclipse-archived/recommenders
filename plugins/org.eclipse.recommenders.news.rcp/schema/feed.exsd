@@ -49,24 +49,27 @@
 
    <element name="feed">
       <complexType>
+         <choice minOccurs="0" maxOccurs="1">
+            <element ref="urlParameters"/>
+         </choice>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  feeds name
                </documentation>
             </annotation>
          </attribute>
          <attribute name="url" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  feeds url
                </documentation>
             </annotation>
          </attribute>
          <attribute name="pollingInterval" type="string">
             <annotation>
                <documentation>
-                  
+                  feeds polling interval - it determines how often feed will be polled, however not more often than plugins polling interval (exceptions: &apos;Poll Now&apos; button pressed or changes done via preference page
                </documentation>
             </annotation>
          </attribute>
@@ -83,10 +86,37 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
+                  feeds ID. It would be for the best if it&apos;s unique. You can follow the schema: YOUR_PLUGIN_ID.feed
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="urlParameter">
+      <complexType>
+         <attribute name="key" type="string">
+            <annotation>
+               <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="urlParameters">
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="urlParameter"/>
+         </sequence>
       </complexType>
    </element>
 
@@ -104,7 +134,23 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Example feed: 
+&lt;p&gt;
+&lt;pre&gt;
+    &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
+      &lt;feed
+            id=&quot;org.eclipse.recommenders.news.rcp.planet.eclipse&quot;
+            name=&quot;Planet Eclipse&quot;
+            url=&quot;http://planeteclipse.org/planet/rss20.xml&quot;
+            pollingInterval=&quot;480&quot;&gt;
+            &lt;urlParameters&gt;
+            &lt;urlParameter key=&quot;utm_medium&quot; value=&quot;ide&quot;/&gt;
+            &lt;urlParameter key=&quot;foo&quot; value=&quot;bar&quot;/&gt;
+            &lt;/urlParameters&gt;
+      &lt;/feed&gt;
+   &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
       </documentation>
    </annotation>
 

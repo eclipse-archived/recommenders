@@ -76,12 +76,14 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
                 feedTitle.setFont(CommonFonts.BOLD);
                 feedTitle.setText(entry.getKey().getName());
 
-                feedCounter = feedCounter + processMessages(composite, entry.getValue(), messagesPerFeed);
+                feedCounter = feedCounter
+                        + processMessages(composite, entry.getValue(), messagesPerFeed, entry.getKey());
             }
         }
     }
 
-    private int processMessages(Composite composite, List<IFeedMessage> messages, int calculatedMessagesPerFeed) {
+    private int processMessages(Composite composite, List<IFeedMessage> messages, int calculatedMessagesPerFeed,
+            final FeedDescriptor feed) {
         int messagesPerFeed = 0;
         for (final IFeedMessage message : messages) {
             if (messagesPerFeed < calculatedMessagesPerFeed) {
@@ -91,7 +93,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
                 link.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        BrowserUtils.openInDefaultBrowser(message.getUrl());
+                        BrowserUtils.openInDefaultBrowser(message.getUrl(), feed.getParameters());
                         eventBus.post(createFeedMessageReadEvent(message.getId()));
                     }
                 });

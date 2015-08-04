@@ -35,5 +35,9 @@ public final class Constants {
     public static final String SYSPROP_ECLIPSE_BUILD_ID = "eclipse.buildId"; //$NON-NLS-1$
     public static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
     public static final long SOCKET_TIMEOUT = TimeUnit.SECONDS.toMillis(5);
+    public static final String ATTRIBUTE_PARAMETERS = "urlParameters"; //$NON-NLS-1$
+    public static final String ATTRIBUTE_PARAMETER = "urlParameter"; //$NON-NLS-1$
+    public static final String ATTRIBUTE_PARAMETER_KEY = "key"; //$NON-NLS-1$
+    public static final String ATTRIBUTE_PARAMETER_VALUE = "value"; //$NON-NLS-1$
 
 }

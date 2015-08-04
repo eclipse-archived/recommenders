@@ -76,6 +76,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FETCHING_MESSAGES;
     public static String LOG_WARNING_DUPLICATE_FEED;
     public static String LOG_ERROR_CONNECTING_URL_WITH_STATUS_CODE;
+    public static String LOG_ERROR_MALFORMED_URL;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

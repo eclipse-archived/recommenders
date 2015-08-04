@@ -56,7 +56,7 @@ public class NewsMenuListener implements IMenuListener {
                 // in Kepler: The method setImageDescriptor(ImageDescriptor) is undefined for the type MenuManager
                 // menu.setImageDescriptor(ImageDescriptor.createFromImage(entry.getKey().getIcon()));
             }
-            groupEntries(menu, entry.getValue());
+            groupEntries(menu, entry);
             addMarkAsReadAction(entry.getKey(), menu);
             manager.add(menu);
         }
@@ -102,26 +102,26 @@ public class NewsMenuListener implements IMenuListener {
         };
     }
 
-    private void groupEntries(MenuManager menu, List<IFeedMessage> messages) {
-        List<List<IFeedMessage>> groupedMessages = splitMessagesByAge(messages);
+    private void groupEntries(MenuManager menu, Entry<FeedDescriptor, List<IFeedMessage>> entry) {
+        List<List<IFeedMessage>> groupedMessages = splitMessagesByAge(entry.getValue());
         List<String> labels = ImmutableList.of(Messages.LABEL_TODAY, Messages.LABEL_YESTERDAY, Messages.LABEL_THIS_WEEK,
                 Messages.LABEL_LAST_WEEK, Messages.LABEL_THIS_MONTH, Messages.LABEL_LAST_MONTH,
                 Messages.LABEL_THIS_YEAR, Messages.LABEL_OLDER_ENTRIES, Messages.LABEL_UNDETERMINED_ENTRIES);
         for (int i = 0; i < MessageAge.values().length; i++) {
             if (!groupedMessages.get(i).isEmpty()) {
                 addLabel(menu, labels.get(i));
-                addMessages(menu, groupedMessages.get(i));
+                addMessages(menu, groupedMessages.get(i), entry.getKey());
             }
         }
     }
 
-    private void addMessages(MenuManager menu, List<IFeedMessage> messages) {
+    private void addMessages(MenuManager menu, List<IFeedMessage> messages, final FeedDescriptor feed) {
         for (final IFeedMessage message : messages) {
             Action action = new Action() {
 
                 @Override
                 public void run() {
-                    BrowserUtils.openInDefaultBrowser(message.getUrl());
+                    BrowserUtils.openInDefaultBrowser(message.getUrl(), feed.getParameters());
                     eventBus.post(createFeedMessageReadEvent(message.getId()));
                 }
             };
