@@ -17,7 +17,6 @@ import java.util.Objects;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 

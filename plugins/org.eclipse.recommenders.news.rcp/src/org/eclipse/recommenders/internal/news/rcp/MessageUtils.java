@@ -77,7 +77,7 @@ public class MessageUtils {
     }
 
     public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, List<IFeedMessage>> entry) {
-        NewsFeedProperties properties = new NewsFeedProperties();
+        NewsProperties properties = new NewsProperties();
         List<IFeedMessage> feedMessages = Lists.newArrayList();
         for (IFeedMessage message : entry.getValue()) {
             if (properties.getDates(Constants.FILENAME_FEED_DATES).get(entry.getKey().getId()) == null) {

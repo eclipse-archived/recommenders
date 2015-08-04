@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.inject.Singleton;
+
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
-import org.eclipse.recommenders.news.rcp.INewsFeedProperties;
-import org.eclipse.recommenders.utils.Logs;
+import org.eclipse.recommenders.news.rcp.INewsProperties;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -33,7 +35,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
-public class NewsFeedProperties implements INewsFeedProperties {
+@Creatable
+@Singleton
+public class NewsProperties implements INewsProperties {
 
     private static final String FILENAME_READ_MESSAGES = "read-messages.properties"; //$NON-NLS-1$
     private static final String VALUE_READ = "read"; //$NON-NLS-1$
@@ -42,13 +46,13 @@ public class NewsFeedProperties implements INewsFeedProperties {
     private final File pollDatesFile;
     private final File feedDatesFile;
 
-    public NewsFeedProperties() {
+    public NewsProperties() {
         this(getFile(FILENAME_READ_MESSAGES), getFile(Constants.FILENAME_POLL_DATES),
                 getFile(Constants.FILENAME_FEED_DATES));
     }
 
     @VisibleForTesting
-    protected NewsFeedProperties(File readMessagesFile, File pollDatesFile, File feedDatesFile) {
+    protected NewsProperties(File readMessagesFile, File pollDatesFile, File feedDatesFile) {
         this.readMessagesFile = readMessagesFile;
         this.pollDatesFile = pollDatesFile;
         this.feedDatesFile = feedDatesFile;
@@ -89,7 +93,7 @@ public class NewsFeedProperties implements INewsFeedProperties {
     }
 
     private static File getFile(String name) {
-        Bundle bundle = FrameworkUtil.getBundle(NewsFeedProperties.class);
+        Bundle bundle = FrameworkUtil.getBundle(NewsProperties.class);
         File stateLocation = Platform.getStateLocation(bundle).toFile();
         return new File(stateLocation, name);
     }

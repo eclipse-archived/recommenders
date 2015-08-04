@@ -11,8 +11,10 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -33,21 +35,25 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+@Creatable
 public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
 
-    private final INewsService service;
-    private final NewsMenuListener newsMenuListener;
+    @Inject
+    private INewsService service;
+    private NewsMenuListener newsMenuListener;
     private UpdatingNewsAction updatingNewsAction;
     private MenuManager menuManager;
 
-    @Inject
-    public NewsToolbarContribution(INewsService service, EventBus eventBus) {
-        this.service = service;
-        eventBus.register(this);
-        newsMenuListener = new NewsMenuListener(eventBus, service);
+    public NewsToolbarContribution() {
+        NewsRcpModule.initiateContext(this);
+    }
+
+    @PostConstruct
+    public void init() {
+        NewsRcpModule.EVENT_BUS.register(this);
+        newsMenuListener = new NewsMenuListener(NewsRcpModule.EVENT_BUS, service);
     }
 
     @Override

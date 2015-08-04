@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
-import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;

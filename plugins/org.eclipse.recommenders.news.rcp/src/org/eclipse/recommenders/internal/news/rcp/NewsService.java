@@ -17,12 +17,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.AllReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
-import org.eclipse.recommenders.news.rcp.INewsFeedProperties;
+import org.eclipse.recommenders.news.rcp.INewsProperties;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.recommenders.news.rcp.INotificationFacade;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
@@ -38,17 +42,20 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+@Creatable
+@Singleton
 public class NewsService implements INewsService {
 
     private final NewsRcpPreferences preferences;
-    private final INewsFeedProperties newsFeedProperties;
+    private final INewsProperties newsFeedProperties;
     private final Set<String> readIds;
     private final IJobFacade jobFacade;
     private final EventBus bus;
     private final INotificationFacade notificationFacade;
     private final HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
 
-    public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsFeedProperties newsFeedProperties,
+    @VisibleForTesting
+    public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsProperties newsFeedProperties,
             IJobFacade jobFacade, INotificationFacade notificationFacade) {
         this.preferences = preferences;
         bus.register(this);
@@ -57,6 +64,12 @@ public class NewsService implements INewsService {
         this.newsFeedProperties = newsFeedProperties;
         this.jobFacade = jobFacade;
         this.notificationFacade = notificationFacade;
+    }
+
+    @Inject
+    public NewsService(NewsRcpPreferences preferences, INewsProperties newsProperties, IJobFacade jobFacade,
+            INotificationFacade notificationFacade) {
+        this(preferences, NewsRcpModule.EVENT_BUS, newsProperties, jobFacade, notificationFacade);
     }
 
     @Override

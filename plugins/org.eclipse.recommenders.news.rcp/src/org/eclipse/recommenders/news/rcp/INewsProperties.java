@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 
-public interface INewsFeedProperties {
+public interface INewsProperties {
 
     Set<String> getReadIds();
 

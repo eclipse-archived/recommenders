@@ -16,9 +16,11 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 
 @SuppressWarnings("restriction")
+@Creatable
 public class NewsRcpPreferences extends AbstractPreferenceInitializer {
 
     @Inject

@@ -25,8 +25,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
-import org.eclipse.recommenders.news.rcp.INewsFeedProperties;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.news.rcp.INewsProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +51,7 @@ public class NewsServiceTest {
     private NewsRcpPreferences preferences;
     private EventBus bus;
     private IJobFacade jobFacade;
-    private INewsFeedProperties properties;
+    private INewsProperties properties;
     private PollFeedJob job;
     private NotificationFacade notificationFacade;
 
@@ -61,7 +60,7 @@ public class NewsServiceTest {
         preferences = mock(NewsRcpPreferences.class);
         bus = mock(EventBus.class);
         jobFacade = mock(JobFacade.class);
-        properties = mock(NewsFeedProperties.class);
+        properties = mock(NewsProperties.class);
         job = mock(PollFeedJob.class);
         notificationFacade = mock(NotificationFacade.class);
     }
@@ -221,7 +220,7 @@ public class NewsServiceTest {
         List<IFeedMessage> messages = Lists.newArrayList();
         for (int i = 0; i < count; i++) {
             messages.add(new FeedMessage("id" + i, dateFormat.parse("10/06/199" + i + " 12:00:00"), "rndm", "rndm",
-                    Urls.toUrl("https://www.eclipse.org/")));
+                    PollFeedJob.toUrl("https://www.eclipse.org/")));
         }
         return messages;
     }

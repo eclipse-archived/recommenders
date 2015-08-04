@@ -39,7 +39,7 @@ public class NewsFeedPropertiesTest {
     private final String testIdTwo = "testIDtwo";
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-    private NewsFeedProperties sut;
+    private NewsProperties sut;
 
     @Rule
     public final TemporaryFolder tmp = new TemporaryFolder();
@@ -49,7 +49,7 @@ public class NewsFeedPropertiesTest {
         File readMessagesFile = tmp.newFile("read-messages.properties");
         File pollDatesFile = tmp.newFile("poll-dates.properties");
         File feedDatesFile = tmp.newFile("feed-dates.properties");
-        sut = new NewsFeedProperties(readMessagesFile, pollDatesFile, feedDatesFile);
+        sut = new NewsProperties(readMessagesFile, pollDatesFile, feedDatesFile);
     }
 
     @Test

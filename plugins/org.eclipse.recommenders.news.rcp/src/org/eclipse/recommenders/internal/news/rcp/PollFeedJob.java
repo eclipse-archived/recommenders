@@ -12,6 +12,7 @@ import static org.eclipse.recommenders.internal.news.rcp.Proxies.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -41,14 +42,14 @@ import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
-import org.eclipse.recommenders.utils.Logs;
-import org.eclipse.recommenders.utils.Urls;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -144,7 +145,7 @@ public class PollFeedJob extends Job implements IPollFeedJob {
             @Override
             public IFeedMessage apply(FeedEntry entry) {
                 return new FeedMessage(entry.getId(), entry.getDate(), entry.getDescription(), entry.getTitle(),
-                        Urls.toUrl(entry.getUrl()));
+                        toUrl(entry.getUrl()));
             }
         }).toList();
     }
@@ -164,6 +165,15 @@ public class PollFeedJob extends Job implements IPollFeedJob {
             return Optional.of(url.toURI());
         } catch (URISyntaxException e) {
             return Optional.absent();
+        }
+    }
+
+    @VisibleForTesting
+    static URL toUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw Throwables.propagate(e);
         }
     }
 

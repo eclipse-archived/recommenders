@@ -6,12 +6,12 @@
       <module class="org.eclipse.recommenders.internal.news.rcp.NewsRcpModule"/>
    </extension>
    <extension point="org.eclipse.ui.startup">
-      <startup class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.Startup"/>
+      <startup class="org.eclipse.recommenders.internal.news.rcp.Startup"/>
    </extension>
    <extension point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ui.preferencePages.Workbench"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
+            class="org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
             id="org.eclipse.recommenders.news.rcp.preferencePage"
             name="%preferencePage.newsFeed.name">
             <keywordReference id="org.eclipse.recommenders.news.rcp.keywords.news"/>
@@ -25,7 +25,7 @@
       <propertyTester
             id="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             type="java.lang.Object"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
+            class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
             namespace="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             properties="newsEnabled">
       </propertyTester>
@@ -33,7 +33,7 @@
    <extension point="org.eclipse.ui.menus">
       <menuContribution allPopups="true" locationURI="toolbar:org.eclipse.ui.trim.status">
          <toolbar id="org.eclipse.recommenders.trim.rcp.status.contributions">
-            <control class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsToolbarContribution" id="org.eclipse.recommenders.rcp.toolbar.contributions.news">
+            <control class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContribution" id="org.eclipse.recommenders.rcp.toolbar.contributions.news">
                <visibleWhen checkEnabled="false">
                   <test
                      forcePluginActivation="true"

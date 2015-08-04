@@ -9,8 +9,8 @@ package org.eclipse.recommenders.internal.news.rcp.l10n;
 
 import static org.eclipse.core.runtime.IStatus.*;
 
-import org.eclipse.recommenders.utils.Logs;
-import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.internal.news.rcp.Logs;
+import org.eclipse.recommenders.internal.news.rcp.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
