@@ -32,8 +32,11 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages WARNING_DUPLICATE_FEED = new LogMessages(WARNING,
             Messages.LOG_WARNING_DUPLICATE_FEED);
 
-    public static final LogMessages ERROR_FEED_MALFORMED_URL = new LogMessages(WARNING,
+    public static final LogMessages ERROR_FEED_MALFORMED_URL = new LogMessages(ERROR,
             Messages.FEED_DESCRIPTOR_MALFORMED_URL);
+
+    public static final LogMessages ERROR_CONNECTING_URL_WITH_STATUS_CODE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CONNECTING_URL_WITH_STATUS_CODE);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

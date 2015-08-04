@@ -27,6 +27,8 @@ import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
@@ -60,7 +62,17 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
     @Subscribe
     public void handle(NewFeedItemsEvent event) {
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+        if (workbench.isClosing()) {
+            return;
+        }
+
+        final Display display = workbench.getDisplay();
+        if (display.isDisposed()) {
+            return;
+        }
+
+        display.asyncExec(new Runnable() {
 
             @Override
             public void run() {

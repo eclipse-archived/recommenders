@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
 import org.eclipse.recommenders.news.rcp.INewsService;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class JobFacade implements IJobFacade {
 
@@ -34,7 +36,11 @@ public class JobFacade implements IJobFacade {
         };
         job.setSystem(true);
         job.setPriority(Job.DECORATE);
-        job.schedule(delay);
+        // to avoid https://bugs.eclipse.org/bugs/show_bug.cgi?id=67632 after
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=67632#c1
+        if (FrameworkUtil.getBundle(this.getClass()).getState() == Bundle.ACTIVE) {
+            job.schedule(delay);
+        }
     }
 
     @Override

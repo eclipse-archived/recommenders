@@ -21,7 +21,7 @@ public final class Constants {
     public static final String PREF_NOTIFICATION_ENABLED = "newsNotificationEnabled"; //$NON-NLS-1$
     public static final String POLL_FEED_JOB_FAMILY = "newsFeedJob"; //$NON-NLS-1$
     public static final String PREF_POLLING_INTERVAL = "pollingInterval"; //$NON-NLS-1$
-    public static final Long DEFAULT_POLLING_INTERVAL = TimeUnit.HOURS.toMinutes(8);
+    public static final long DEFAULT_POLLING_INTERVAL = TimeUnit.HOURS.toMinutes(8);
     public static final String FILENAME_POLL_DATES = "poll-dates.properties"; //$NON-NLS-1$
     public static final String FILENAME_FEED_DATES = "feed-dates.properties"; //$NON-NLS-1$
     public static final int COUNT_PER_FEED = 20;
@@ -33,5 +33,7 @@ public final class Constants {
     public static final String ATTRIBUTE_POLLING_INTERVAL = "pollingInterval"; //$NON-NLS-1$
     public static final String ATTRIBUTE_ICON = "icon"; //$NON-NLS-1$
     public static final String SYSPROP_ECLIPSE_BUILD_ID = "eclipse.buildId"; //$NON-NLS-1$
+    public static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
+    public static final long SOCKET_TIMEOUT = TimeUnit.SECONDS.toMillis(5);
 
 }

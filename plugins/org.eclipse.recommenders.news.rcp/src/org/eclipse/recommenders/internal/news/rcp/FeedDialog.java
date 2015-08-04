@@ -110,7 +110,7 @@ public class FeedDialog extends TitleAreaDialog {
         pollingInterval.setText(Messages.FIELD_LABEL_POLLING_INTERVAL);
         pollingIntervalValue = new Text(container, SWT.BORDER);
         pollingIntervalValue.setTextLimit(4);
-        pollingIntervalValue.setText(Constants.DEFAULT_POLLING_INTERVAL.toString());
+        pollingIntervalValue.setText(String.valueOf(Constants.DEFAULT_POLLING_INTERVAL));
         if (feed != null) {
             pollingIntervalValue.setText(feed.getPollingInterval());
         }
