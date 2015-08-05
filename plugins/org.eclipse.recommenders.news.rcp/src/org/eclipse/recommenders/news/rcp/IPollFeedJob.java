@@ -8,14 +8,14 @@
 package org.eclipse.recommenders.news.rcp;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
+import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 
 public interface IPollFeedJob {
 
-    Map<FeedDescriptor, List<IFeedMessage>> getMessages();
+    Map<FeedDescriptor, PollingResult> getMessages();
 
     Map<FeedDescriptor, Date> getPollDates();
 

@@ -49,12 +49,12 @@ public class MessageUtils {
         }
     }
 
-    public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
+    public static boolean containsUnreadMessages(Map<FeedDescriptor, PollingResult> map) {
         if (map == null) {
             return false;
         }
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : map.entrySet()) {
-            for (IFeedMessage message : entry.getValue()) {
+        for (Map.Entry<FeedDescriptor, PollingResult> entry : map.entrySet()) {
+            for (IFeedMessage message : entry.getValue().getMessages()) {
                 if (!message.isRead()) {
                     return true;
                 }
@@ -63,23 +63,22 @@ public class MessageUtils {
         return false;
     }
 
-    public static Map<FeedDescriptor, List<IFeedMessage>> getLatestMessages(
-            Map<FeedDescriptor, List<IFeedMessage>> messages) {
+    public static Map<FeedDescriptor, PollingResult> getLatestMessages(Map<FeedDescriptor, PollingResult> messages) {
         Preconditions.checkNotNull(messages);
-        Map<FeedDescriptor, List<IFeedMessage>> result = Maps.newHashMap();
-        for (Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
+        Map<FeedDescriptor, PollingResult> result = Maps.newHashMap();
+        for (Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
             List<IFeedMessage> list = updateMessages(entry);
             if (!list.isEmpty()) {
-                result.put(entry.getKey(), list);
+                result.put(entry.getKey(), new PollingResult(entry.getValue().getStatus(), list));
             }
         }
         return sortByDate(result);
     }
 
-    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, List<IFeedMessage>> entry) {
+    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, PollingResult> entry) {
         NewsProperties properties = new NewsProperties();
         List<IFeedMessage> feedMessages = Lists.newArrayList();
-        for (IFeedMessage message : entry.getValue()) {
+        for (IFeedMessage message : entry.getValue().getMessages()) {
             if (properties.getDates(Constants.FILENAME_FEED_DATES).get(entry.getKey().getId()) == null) {
                 feedMessages.add(message);
             } else if (message.getDate() != null && message.getDate()
@@ -103,23 +102,23 @@ public class MessageUtils {
         return counter;
     }
 
-    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, List<IFeedMessage>> messages) {
+    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, PollingResult> messages) {
         if (messages == null) {
             return Collections.emptyList();
         }
         List<IFeedMessage> result = Lists.newArrayList();
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
-            result.addAll(entry.getValue());
+        for (Map.Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+            result.addAll(entry.getValue().getMessages());
         }
         return result;
     }
 
-    public static Map<FeedDescriptor, List<IFeedMessage>> sortByDate(Map<FeedDescriptor, List<IFeedMessage>> map) {
+    public static Map<FeedDescriptor, PollingResult> sortByDate(Map<FeedDescriptor, PollingResult> map) {
         if (map == null) {
             return Maps.newHashMap();
         }
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : map.entrySet()) {
-            List<IFeedMessage> list = entry.getValue();
+        for (Map.Entry<FeedDescriptor, PollingResult> entry : map.entrySet()) {
+            List<IFeedMessage> list = entry.getValue().getMessages();
             Collections.sort(list, new Comparator<IFeedMessage>() {
                 @Override
                 public int compare(IFeedMessage lhs, IFeedMessage rhs) {
@@ -129,7 +128,7 @@ public class MessageUtils {
                     return rhs.getDate().compareTo(lhs.getDate());
                 }
             });
-            entry.setValue(list);
+            entry.setValue(new PollingResult(entry.getValue().getStatus(), list));
         }
         return map;
     }

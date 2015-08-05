@@ -8,17 +8,17 @@
 package org.eclipse.recommenders.news.rcp;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.AllReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
+import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 
 public interface INewsService {
 
-    Map<FeedDescriptor, List<IFeedMessage>> getMessages(int countPerFeed);
+    Map<FeedDescriptor, PollingResult> getMessages(int countPerFeed);
 
     void start();
 

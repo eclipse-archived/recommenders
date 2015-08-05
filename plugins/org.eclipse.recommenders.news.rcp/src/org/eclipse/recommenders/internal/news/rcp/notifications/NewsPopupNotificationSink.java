@@ -9,14 +9,13 @@
  */
 package org.eclipse.recommenders.internal.news.rcp.notifications;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.mylyn.commons.notifications.core.AbstractNotification;
 import org.eclipse.mylyn.commons.notifications.core.NotificationSink;
 import org.eclipse.mylyn.commons.notifications.core.NotificationSinkEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
@@ -32,7 +31,7 @@ public class NewsPopupNotificationSink extends NotificationSink {
 
             @Override
             public void run() {
-                Map<FeedDescriptor, List<IFeedMessage>> messages = null;
+                Map<FeedDescriptor, PollingResult> messages = null;
                 EventBus eventBus = null;
                 for (AbstractNotification notification : event.getNotifications()) {
                     if (notification instanceof NewMessageNotification) {

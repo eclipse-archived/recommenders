@@ -39,6 +39,8 @@ public final class Messages extends NLS {
     public static String FEED_DIALOG_ERROR_POLLING_INTERVAL_DIGITS_ONLY;
     public static String FEED_DIALOG_ERROR_DUPLICATE_FEED;
     public static String FEED_DIALOG_DESCRIPTION;
+    public static String FEED_NOT_POLLED_YET;
+    public static String FEED_EMPTY;
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
     public static String POLL_FEED_JOB_NAME;

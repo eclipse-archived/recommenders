@@ -58,7 +58,7 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class PollFeedJob extends Job implements IPollFeedJob {
     private final NotificationEnvironment environment;
-    private final Map<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+    private final Map<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
     private final Set<FeedDescriptor> feeds = Sets.newHashSet();
     private final Map<FeedDescriptor, Date> pollDates = Maps.newHashMap();
 
@@ -97,10 +97,12 @@ public class PollFeedJob extends Job implements IPollFeedJob {
                         pollDates.put(feed, new Date());
                         sub.worked(10);
                     } else {
-                        Logs.log(LogMessages.ERROR_CONNECTING_URL, url);
+                        Logs.log(LogMessages.WARNING_CONNECTING_URL, url);
+                        groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
                     }
                 } catch (IOException e) {
-                    Logs.log(LogMessages.ERROR_CONNECTING_URL, e, url);
+                    Logs.log(LogMessages.WARNING_CONNECTING_URL, url);
+                    groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
                 }
             }
             return Status.OK_STATUS;
@@ -125,9 +127,13 @@ public class PollFeedJob extends Job implements IPollFeedJob {
                         httpResponse.getStatusLine().getStatusCode());
                 return;
             }
+            PollingResult.Status status = PollingResult.Status.OK;
             try (InputStream in = new BufferedInputStream(httpResponse.getEntity().getContent())) {
                 List<IFeedMessage> messages = Lists.newArrayList(readMessages(in, monitor, feed.getId()));
-                groupedMessages.put(feed, messages);
+                if (messages.isEmpty()) {
+                    status = PollingResult.Status.FEED_NOT_FOUND_AT_URL;
+                }
+                groupedMessages.put(feed, new PollingResult(status, messages));
             }
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_FETCHING_MESSAGES, e, feed.getUrl());
@@ -151,7 +157,7 @@ public class PollFeedJob extends Job implements IPollFeedJob {
     }
 
     @Override
-    public Map<FeedDescriptor, List<IFeedMessage>> getMessages() {
+    public Map<FeedDescriptor, PollingResult> getMessages() {
         return groupedMessages;
     }
 

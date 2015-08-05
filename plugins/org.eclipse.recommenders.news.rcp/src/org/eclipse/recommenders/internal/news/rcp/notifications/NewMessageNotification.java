@@ -10,14 +10,14 @@
 package org.eclipse.recommenders.internal.news.rcp.notifications;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.mylyn.commons.notifications.ui.AbstractUiNotification;
+import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
+import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.eventbus.EventBus;
@@ -26,10 +26,10 @@ import com.google.common.eventbus.EventBus;
 public class NewMessageNotification extends AbstractUiNotification {
 
     private final EventBus bus;
-    private final Map<FeedDescriptor, List<IFeedMessage>> messages;
+    private final Map<FeedDescriptor, PollingResult> messages;
 
-    public NewMessageNotification(EventBus bus, Map<FeedDescriptor, List<IFeedMessage>> messages) {
-        super("org.eclipse.recommenders.news.rcp.NewMessages");
+    public NewMessageNotification(EventBus bus, Map<FeedDescriptor, PollingResult> messages) {
+        super(Constants.NEWS_NOTIFICATION_ID);
         this.bus = bus;
         this.messages = messages;
     }
@@ -38,7 +38,7 @@ public class NewMessageNotification extends AbstractUiNotification {
         return bus;
     }
 
-    public Map<FeedDescriptor, List<IFeedMessage>> getMessages() {
+    public Map<FeedDescriptor, PollingResult> getMessages() {
         return messages;
     }
 

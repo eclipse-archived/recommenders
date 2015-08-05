@@ -39,5 +39,6 @@ public final class Constants {
     public static final String ATTRIBUTE_PARAMETER = "urlParameter"; //$NON-NLS-1$
     public static final String ATTRIBUTE_PARAMETER_KEY = "key"; //$NON-NLS-1$
     public static final String ATTRIBUTE_PARAMETER_VALUE = "value"; //$NON-NLS-1$
+    public static final String NEWS_NOTIFICATION_ID = "org.eclipse.recommenders.news.rcp.NewMessages"; //$NON-NLS-1$
 
 }

@@ -11,6 +11,8 @@ import static org.eclipse.recommenders.internal.news.rcp.TestUtils.enabled;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.text.DateFormat;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.recommenders.internal.news.rcp.PollingResult.Status;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
 import org.eclipse.recommenders.news.rcp.INewsProperties;
@@ -92,39 +95,39 @@ public class NewsServiceTest {
     public void testGetMessagesIfMoreThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages, hasKey(feed));
-        assertThat(sutMessages.get(feed), hasSize(COUNT_PER_FEED));
+        assertThat(sutMessages.get(feed).getMessages(), hasSize(COUNT_PER_FEED));
     }
 
     @Test
     public void testGetMessagesIfLessThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(LESS_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages, hasKey(feed));
-        assertThat(sutMessages.get(feed), hasSize(LESS_THAN_COUNT_PER_FEED));
+        assertThat(sutMessages.get(feed).getMessages(), hasSize(LESS_THAN_COUNT_PER_FEED));
     }
 
     @Test
     public void testGetMessagesIfNoFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
@@ -139,18 +142,18 @@ public class NewsServiceTest {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         FeedDescriptor secondFeed = enabled(SECOND_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         groupedMessages.put(secondFeed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, List<IFeedMessage>> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages.keySet(), containsInAnyOrder(feed, secondFeed));
         assertThat(sutMessages.size(), is(2));
-        assertThat(sutMessages.get(feed), hasSize(COUNT_PER_FEED));
+        assertThat(sutMessages.get(feed).getMessages(), hasSize(COUNT_PER_FEED));
     }
 
     @Test
@@ -186,18 +189,19 @@ public class NewsServiceTest {
         assertThat(sut.shouldPoll(feed, true), is(true));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testShouldDisplayNotification() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
 
-        verify(notificationFacade).displayNotification(MessageUtils.sortByDate(groupedMessages), bus);
+        verify(notificationFacade).displayNotification((Map<FeedDescriptor, PollingResult>) any(), eq(bus));
     }
 
     private Map<String, Date> mockPollDates(String id, int change) {
@@ -216,12 +220,12 @@ public class NewsServiceTest {
         when(preferences.getPollingInterval()).thenReturn(POLLING_INTERVAL);
     }
 
-    private List<IFeedMessage> mockFeedMessages(int count) throws ParseException {
+    private PollingResult mockFeedMessages(int count) throws ParseException {
         List<IFeedMessage> messages = Lists.newArrayList();
         for (int i = 0; i < count; i++) {
             messages.add(new FeedMessage("id" + i, dateFormat.parse("10/06/199" + i + " 12:00:00"), "rndm", "rndm",
                     PollFeedJob.toUrl("https://www.eclipse.org/")));
         }
-        return messages;
+        return new PollingResult(Status.OK, messages);
     }
 }

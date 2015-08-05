@@ -8,7 +8,6 @@
 package org.eclipse.recommenders.internal.news.rcp;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -16,7 +15,6 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.mylyn.commons.notifications.ui.NotificationsUi;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NewMessageNotification;
-import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INotificationFacade;
 
 import com.google.common.eventbus.EventBus;
@@ -27,7 +25,7 @@ import com.google.common.eventbus.EventBus;
 public class NotificationFacade implements INotificationFacade {
 
     @Override
-    public void displayNotification(final Map<FeedDescriptor, List<IFeedMessage>> messages, final EventBus eventBus) {
+    public void displayNotification(final Map<FeedDescriptor, PollingResult> messages, final EventBus eventBus) {
         NotificationsUi.getService().notify(Arrays.asList(new NewMessageNotification(eventBus, messages)));
     }
 

@@ -42,9 +42,9 @@ public class MessageUtilsGetUnreadMessagesNumberTest {
 
         scenarios.add(new Object[] { null, EXPECT_ZERO });
         scenarios.add(new Object[] { Collections.emptyList(), EXPECT_ZERO });
-        scenarios.add(new Object[] { TestUtils.mockMessages(true), EXPECT_ZERO });
-        scenarios.add(new Object[] { TestUtils.mockMessages(false), EXPECT_ONE });
-        scenarios.add(new Object[] { TestUtils.mockMessages(true, false, false), EXPECT_TWO });
+        scenarios.add(new Object[] { TestUtils.mockMessagesAsList(true), EXPECT_ZERO });
+        scenarios.add(new Object[] { TestUtils.mockMessagesAsList(false), EXPECT_ONE });
+        scenarios.add(new Object[] { TestUtils.mockMessagesAsList(true, false, false), EXPECT_TWO });
 
         return scenarios;
     }
