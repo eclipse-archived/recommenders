@@ -39,6 +39,10 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     @Preference(Constants.PREF_POLLING_INTERVAL)
     private Long pollingInterval;
 
+    @Inject
+    @Preference(Constants.PREF_STARTUP_DELAY)
+    private Long startupDelay;
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -47,12 +51,17 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         return pollingInterval;
     }
 
+    public Long getStartupDelay() {
+        return startupDelay;
+    }
+
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences s = DefaultScope.INSTANCE.getNode(Constants.PLUGIN_ID);
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
         s.putBoolean(Constants.PREF_NOTIFICATION_ENABLED, false);
         s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
+        s.putLong(Constants.PREF_STARTUP_DELAY, Constants.DEFAULT_STARTUP_DELAY);
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.feedsToString(FeedDescriptors.getRegisteredFeeds()));
     }
 

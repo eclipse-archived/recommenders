@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -57,6 +58,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
     private NewsRcpPreferences newsRcpPreferences;
     private BooleanFieldEditor enabledEditor;
     private FeedEditor feedEditor;
+    private IntegerFieldEditor startupEditor;
 
     @VisibleForTesting
     public NewsPreferencePage(INewsService service, NewsRcpPreferences newsRcpPreferences) {
@@ -74,6 +76,9 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED, 0,
                 getFieldEditorParent());
         addField(enabledEditor);
+        startupEditor = new IntegerFieldEditor(Constants.PREF_STARTUP_DELAY, Messages.FIELD_LABEL_STARTUP_DELAY,
+                getFieldEditorParent(), 4);
+        addField(startupEditor);
 
         final Composite bottomGroup = new Composite(getFieldEditorParent(), SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(bottomGroup);

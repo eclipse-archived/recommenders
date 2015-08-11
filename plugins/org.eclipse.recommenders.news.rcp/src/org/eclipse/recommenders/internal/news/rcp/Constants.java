@@ -21,7 +21,9 @@ public final class Constants {
     public static final String PREF_NOTIFICATION_ENABLED = "newsNotificationEnabled"; //$NON-NLS-1$
     public static final String POLL_FEED_JOB_FAMILY = "newsFeedJob"; //$NON-NLS-1$
     public static final String PREF_POLLING_INTERVAL = "pollingInterval"; //$NON-NLS-1$
+    public static final String PREF_STARTUP_DELAY = "startupDelay"; //$NON-NLS-1$
     public static final long DEFAULT_POLLING_INTERVAL = TimeUnit.HOURS.toMinutes(8);
+    public static final long DEFAULT_STARTUP_DELAY = TimeUnit.MINUTES.toMinutes(5);
     public static final String FILENAME_POLL_DATES = "poll-dates.properties"; //$NON-NLS-1$
     public static final String FILENAME_FEED_DATES = "feed-dates.properties"; //$NON-NLS-1$
     public static final int COUNT_PER_FEED = 20;
