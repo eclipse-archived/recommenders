@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -50,6 +51,7 @@ public class NewsMenuListener implements IMenuListener {
 
     @Override
     public void menuAboutToShow(IMenuManager manager) {
+        messages = new TreeMap<FeedDescriptor, PollingResult>(messages);
         for (Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
             String menuName = getMenuEntryTitle(entry.getKey().getName(), entry.getValue().getMessages());
             MenuManager menu = new MenuManager(menuName, entry.getKey().getId());

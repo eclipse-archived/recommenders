@@ -25,7 +25,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
-public class FeedDescriptor {
+public class FeedDescriptor implements Comparable {
 
     private final boolean defaultRepository;
     private final String id;
@@ -175,5 +175,14 @@ public class FeedDescriptor {
         }
 
         return result;
+    }
+
+    @Override
+    public int compareTo(Object other) {
+        if (getClass() != other.getClass()) {
+            throw new IllegalArgumentException();
+        }
+        FeedDescriptor that = (FeedDescriptor) other;
+        return this.getName().compareTo(that.getName());
     }
 }
