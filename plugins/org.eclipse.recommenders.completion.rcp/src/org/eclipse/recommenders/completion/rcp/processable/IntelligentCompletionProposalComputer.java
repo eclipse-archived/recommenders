@@ -35,6 +35,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.internal.ui.text.java.JavaAllCompletionProposalComputer;
+import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -147,6 +148,11 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
                         proposalFactory);
                 res.add(jdtProposal);
+                if (jdtProposal instanceof JavaMethodCompletionProposal) {
+                    int position = guessContextInformationPosition(jdtContext);
+                    JavaMethodCompletionProposal jmcp = (JavaMethodCompletionProposal) jdtProposal;
+                    jmcp.setContextInformationPosition(position);
+                }
                 if (jdtProposal instanceof IProcessableProposal) {
                     IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
                     crProposal.setTag(CONTEXT, crContext);
