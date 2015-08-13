@@ -68,9 +68,9 @@ public final class Logs {
 
     public abstract static class DefaultLogMessage implements ILogMessage {
 
-        private int severity;
-        private int code;
-        private String message;
+        private final int severity;
+        private final int code;
+        private final String message;
 
         public DefaultLogMessage(int severity, int code, String message) {
             ensureIsGreaterOrEqualTo(code, 1, "The error code cannot be '0'");
@@ -202,7 +202,7 @@ public final class Logs {
 
     private static final class FakeBundle implements Bundle {
 
-        private String symbolicName;
+        private final String symbolicName;
 
         public FakeBundle(String fakeBundleId) {
             this.symbolicName = fakeBundleId;

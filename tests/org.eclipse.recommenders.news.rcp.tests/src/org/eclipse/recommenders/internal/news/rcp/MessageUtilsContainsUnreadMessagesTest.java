@@ -31,8 +31,8 @@ public class MessageUtilsContainsUnreadMessagesTest {
     private static final boolean EXPECT_TRUE = true;
     private static final boolean EXPECT_FALSE = false;
 
-    private Map<FeedDescriptor, PollingResult> inputMap;
-    private boolean expectedResult;
+    private final Map<FeedDescriptor, PollingResult> inputMap;
+    private final boolean expectedResult;
 
     public MessageUtilsContainsUnreadMessagesTest(Map<FeedDescriptor, PollingResult> inputMap, boolean expectedResult) {
         this.inputMap = inputMap;

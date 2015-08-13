@@ -89,53 +89,48 @@ public class FeedDialog extends TitleAreaDialog {
     }
 
     private void createFeed(Composite container) {
-        Label name = new Label(container, SWT.NONE);
-        name.setText(Messages.FIELD_LABEL_FEED_NAME);
         GridData gridData = new GridData();
         gridData.grabExcessHorizontalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
-        nameValue = new Text(container, SWT.BORDER);
+        String nameInputValue = ""; //$NON-NLS-1$
+        String urlInputValue = ""; //$NON-NLS-1$
+        String pollingIntervalInputValue = String.valueOf(Constants.DEFAULT_POLLING_INTERVAL);
         if (feed != null) {
-            nameValue.setText(feed.getName());
+            nameInputValue = feed.getName();
+            urlInputValue = feed.getUrl().toString();
+            pollingIntervalInputValue = feed.getPollingInterval();
         }
-        nameValue.setLayoutData(gridData);
-        Label url = new Label(container, SWT.NONE);
-        url.setText(Messages.FIELD_LABEL_URL);
-        urlValue = new Text(container, SWT.BORDER);
-        if (feed != null) {
-            urlValue.setText(feed.getUrl().toString());
-        }
-        urlValue.setLayoutData(gridData);
-        Label pollingInterval = new Label(container, SWT.NONE);
-        pollingInterval.setText(Messages.FIELD_LABEL_POLLING_INTERVAL);
-        pollingIntervalValue = new Text(container, SWT.BORDER);
+        nameValue = createLabelInputFieldPair(container, gridData, nameValue, Messages.FIELD_LABEL_FEED_NAME,
+                nameInputValue);
+        urlValue = createLabelInputFieldPair(container, gridData, urlValue, Messages.FIELD_LABEL_URL, urlInputValue);
+        pollingIntervalValue = createLabelInputFieldPair(container, gridData, pollingIntervalValue,
+                Messages.FIELD_LABEL_POLLING_INTERVAL, pollingIntervalInputValue);
         pollingIntervalValue.setTextLimit(4);
-        pollingIntervalValue.setText(String.valueOf(Constants.DEFAULT_POLLING_INTERVAL));
-        if (feed != null) {
-            pollingIntervalValue.setText(feed.getPollingInterval());
+        addModifyListeners(nameValue, urlValue, pollingIntervalValue);
+    }
+
+    private Text createLabelInputFieldPair(Composite container, GridData gridData, Text text, String labelText,
+            String inputValue) {
+        Label label = new Label(container, SWT.NONE);
+        label.setText(labelText);
+        text = new Text(container, SWT.BORDER);
+        text.setText(inputValue);
+        text.setLayoutData(gridData);
+        return text;
+    }
+
+    private void addModifyListeners(Text... texts) {
+        ModifyListener validateDialog = new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                updateDialog();
+            }
+
+        };
+        for (Text text : texts) {
+            text.addModifyListener(validateDialog);
         }
-        pollingIntervalValue.setLayoutData(gridData);
-        nameValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
-        urlValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
-        pollingIntervalValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
     }
 
     @Override

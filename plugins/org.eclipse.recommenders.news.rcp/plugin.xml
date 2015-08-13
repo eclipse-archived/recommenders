@@ -2,9 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="org.eclipse.recommenders.news.rcp.feed" name="%extension-point.feed.name" schema="schema/feed.exsd"/>
-   <extension point="org.eclipse.recommenders.injection.modules">
-      <module class="org.eclipse.recommenders.internal.news.rcp.NewsRcpModule"/>
-   </extension>
    <extension point="org.eclipse.ui.startup">
       <startup class="org.eclipse.recommenders.internal.news.rcp.Startup"/>
    </extension>

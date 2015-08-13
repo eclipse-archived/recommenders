@@ -108,6 +108,20 @@ public class NewsServiceTest {
     }
 
     @Test
+    public void testGetMessagesIfNoFeed() {
+        FeedDescriptor feed = enabled(FIRST_ELEMENT);
+        mockPreferences(true, ImmutableList.of(feed));
+        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        when(job.getMessages()).thenReturn(groupedMessages);
+
+        NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
+        sut.jobDone(job);
+
+        assertNotNull(sut.getMessages(COUNT_PER_FEED));
+        assertThat(sut.getMessages(COUNT_PER_FEED).isEmpty(), is(true));
+    }
+
+    @Test
     public void testGetMessagesIfLessThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
@@ -121,20 +135,6 @@ public class NewsServiceTest {
 
         assertThat(sutMessages, hasKey(feed));
         assertThat(sutMessages.get(feed).getMessages(), hasSize(LESS_THAN_COUNT_PER_FEED));
-    }
-
-    @Test
-    public void testGetMessagesIfNoFeed() {
-        FeedDescriptor feed = enabled(FIRST_ELEMENT);
-        mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
-        when(job.getMessages()).thenReturn(groupedMessages);
-
-        NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
-        sut.jobDone(job);
-
-        assertNotNull(sut.getMessages(COUNT_PER_FEED));
-        assertThat(sut.getMessages(COUNT_PER_FEED).isEmpty(), is(true));
     }
 
     @Test

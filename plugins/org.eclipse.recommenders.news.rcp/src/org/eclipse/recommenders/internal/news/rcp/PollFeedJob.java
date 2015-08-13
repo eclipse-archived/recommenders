@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
@@ -74,41 +75,46 @@ public class PollFeedJob extends Job implements IPollFeedJob {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         SubMonitor sub = SubMonitor.convert(monitor, feeds.size() * 100);
-        // max time until a connection to the server has to be established.
-        int connectTimeout = (int) Constants.CONNECTION_TIMEOUT;
-        // max time between two packets sent back to the client.
-        int socketTimeout = (int) Constants.SOCKET_TIMEOUT;
         try {
-            URL url = null;
             Executor executor = Executor.newInstance();
             for (FeedDescriptor feed : feeds) {
-                try {
-                    if (monitor.isCanceled() || FrameworkUtil.getBundle(this.getClass()).getState() != Bundle.ACTIVE) {
-                        return Status.CANCEL_STATUS;
-                    }
-                    url = feed.getUrl();
-                    URI feedUri = urlToUri(feed.getUrl()).orNull();
-                    if (feedUri != null) {
-                        Request request = Request.Get(feedUri).viaProxy(getProxyHost(feedUri).orNull())
-                                .connectTimeout(connectTimeout).staleConnectionCheck(true).socketTimeout(socketTimeout);
-                        Response response = proxyAuthentication(executor, feedUri).execute(request);
-                        sub.worked(10);
-                        updateGroupedMessages(response.returnResponse(), feed, sub.newChild(80));
-                        pollDates.put(feed, new Date());
-                        sub.worked(10);
-                    } else {
-                        Logs.log(LogMessages.WARNING_CONNECTING_URL, url);
-                        groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
-                    }
-                } catch (IOException e) {
-                    Logs.log(LogMessages.WARNING_CONNECTING_URL, url);
-                    groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+                if (monitor.isCanceled() || FrameworkUtil.getBundle(this.getClass()).getState() != Bundle.ACTIVE) {
+                    return Status.CANCEL_STATUS;
                 }
+                pollFeed(monitor, sub, executor, feed);
             }
             return Status.OK_STATUS;
         } finally {
             monitor.done();
         }
+    }
+
+    private void pollFeed(IProgressMonitor monitor, SubMonitor sub, Executor executor, FeedDescriptor feed) {
+        try {
+            URI feedUri = urlToUri(feed.getUrl()).orNull();
+            if (feedUri != null) {
+                Response response = connectToUrl(feed, executor, feedUri);
+                sub.worked(10);
+                updateGroupedMessages(response.returnResponse(), feed, sub.newChild(80));
+                pollDates.put(feed, new Date());
+                sub.worked(10);
+            } else {
+                Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
+                groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+            }
+        } catch (IOException e) {
+            Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
+            groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+        }
+    }
+
+    private Response connectToUrl(FeedDescriptor feed, Executor executor, URI feedUri)
+            throws ClientProtocolException, IOException {
+        Request request = Request.Get(feedUri).viaProxy(getProxyHost(feedUri).orNull())
+                .connectTimeout((int) Constants.CONNECTION_TIMEOUT).staleConnectionCheck(true)
+                .socketTimeout((int) Constants.SOCKET_TIMEOUT);
+        Response response = proxyAuthentication(executor, feedUri).execute(request);
+        return response;
     }
 
     @Override
