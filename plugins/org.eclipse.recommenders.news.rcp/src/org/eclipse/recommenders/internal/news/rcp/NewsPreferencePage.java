@@ -121,6 +121,22 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             forceStop = true;
         }
 
+        forceStart = chceckFeedsConsistency(oldFeedValue, newFeedValue, forceStart);
+
+        boolean result = super.performOk();
+
+        if (forceStart) {
+            service.start();
+        }
+        if (forceStop) {
+            service.forceStop();
+        }
+
+        return result;
+    }
+
+    private boolean chceckFeedsConsistency(List<FeedDescriptor> oldFeedValue, List<FeedDescriptor> newFeedValue,
+            boolean forceStart) {
         for (FeedDescriptor oldFeed : oldFeedValue) {
             if (!newFeedValue.contains(oldFeed)) {
                 service.removeFeed(oldFeed);
@@ -140,17 +156,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                 forceStart = true;
             }
         }
-
-        boolean result = super.performOk();
-
-        if (forceStart) {
-            service.start();
-        }
-        if (forceStop) {
-            service.forceStop();
-        }
-
-        return result;
+        return forceStart;
     }
 
     private final class FeedEditor extends FieldEditor {

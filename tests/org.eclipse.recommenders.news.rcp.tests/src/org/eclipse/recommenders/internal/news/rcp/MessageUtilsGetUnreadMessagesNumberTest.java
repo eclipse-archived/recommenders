@@ -28,8 +28,8 @@ public class MessageUtilsGetUnreadMessagesNumberTest {
     private static final int EXPECT_ONE = 1;
     private static final int EXPECT_TWO = 2;
 
-    private List<IFeedMessage> inputMessages;
-    private int expectedResult;
+    private final List<IFeedMessage> inputMessages;
+    private final int expectedResult;
 
     public MessageUtilsGetUnreadMessagesNumberTest(List<IFeedMessage> inputMessages, int expectedResult) {
         this.inputMessages = inputMessages;

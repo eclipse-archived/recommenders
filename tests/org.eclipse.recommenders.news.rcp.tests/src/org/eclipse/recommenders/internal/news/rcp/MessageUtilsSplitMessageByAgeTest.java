@@ -44,10 +44,10 @@ public class MessageUtilsSplitMessageByAgeTest {
     private static final Date TUESDAY_2015_06_02 = getDate(2015, Calendar.JUNE, 2);
     private static final Date WEDNESDAY_2015_06_03 = getDate(2015, Calendar.JUNE, 3);
 
-    private Date today;
-    private List<Date> inputDates;
-    private List<List<Date>> expectedDates;
-    private Locale locale;
+    private final Date today;
+    private final List<Date> inputDates;
+    private final List<List<Date>> expectedDates;
+    private final Locale locale;
 
     public MessageUtilsSplitMessageByAgeTest(Date today, List<Date> inputMessages, List<List<Date>> expectedDates,
             Locale locale) {

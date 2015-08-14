@@ -33,8 +33,8 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class MessageUtilsMergeMessagesTest {
 
-    private Map<FeedDescriptor, PollingResult> inputMap;
-    private List<IFeedMessage> expectedMessages;
+    private final Map<FeedDescriptor, PollingResult> inputMap;
+    private final List<IFeedMessage> expectedMessages;
 
     public MessageUtilsMergeMessagesTest(Map<FeedDescriptor, PollingResult> inputMap,
             List<IFeedMessage> expectedMessages) {

@@ -37,9 +37,9 @@ public class BrowserUtilsTest {
     private static final String BASE_URL_WITH_SPACE = "http://eclipse.org";
     private static final String BASE_URL_WITH_PARAMETER = "http://eclipse.org?foo=bar";
 
-    private String actualUrl;
-    private Map<String, String> parameters;
-    private String expectedUrl;
+    private final String actualUrl;
+    private final Map<String, String> parameters;
+    private final String expectedUrl;
 
     @Parameters
     public static Collection<Object[]> scenarios() {
