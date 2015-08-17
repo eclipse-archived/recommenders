@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -102,6 +103,10 @@ public class PollFeedJob extends Job implements IPollFeedJob {
                 Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
                 groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
             }
+        } catch (UnknownHostException e) {
+            // Do not log failures due to no Internet connectivity.
+            // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=474785>
+            groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
         } catch (IOException e) {
             Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
             groupedMessages.put(feed, PollingResult.newConnectionErrorResult());

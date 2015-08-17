@@ -24,7 +24,7 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages ERROR_WRITING_PROPERTIES = new LogMessages(ERROR,
             Messages.LOG_ERROR_WRITING_PROPERTIES);
 
-    public static final LogMessages WARNING_CONNECTING_URL = new LogMessages(WARNING, Messages.LOG_ERROR_CONNECTING_URL);
+    public static final LogMessages WARNING_CONNECTING_URL = new LogMessages(WARNING, Messages.LOG_WARNING_CONNECTING_URL);
 
     public static final LogMessages ERROR_FETCHING_MESSAGES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FETCHING_MESSAGES);

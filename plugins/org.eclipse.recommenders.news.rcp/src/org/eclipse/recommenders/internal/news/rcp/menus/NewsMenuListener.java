@@ -141,7 +141,7 @@ public class NewsMenuListener implements IMenuListener {
         if (status.equals(Status.FEEDS_NOT_POLLED_YET)) {
             action.setText(Messages.FEED_NOT_POLLED_YET);
         } else if (status.equals(Status.ERROR_CONNECTING_TO_FEED)) {
-            action.setText(MessageFormat.format(Messages.LOG_ERROR_CONNECTING_URL, feed.getUrl()));
+            action.setText(MessageFormat.format(Messages.LOG_WARNING_CONNECTING_URL, feed.getUrl()));
         } else if (status.equals(Status.FEED_NOT_FOUND_AT_URL)) {
             action.setText(MessageFormat.format(Messages.FEED_EMPTY, feed.getUrl()));
         }

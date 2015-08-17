@@ -76,11 +76,12 @@ public final class Messages extends NLS {
 
     public static String LOG_ERROR_READING_PROPERTIES;
     public static String LOG_ERROR_WRITING_PROPERTIES;
-    public static String LOG_ERROR_CONNECTING_URL;
     public static String LOG_ERROR_FETCHING_MESSAGES;
-    public static String LOG_WARNING_DUPLICATE_FEED;
     public static String LOG_ERROR_CONNECTING_URL_WITH_STATUS_CODE;
     public static String LOG_ERROR_MALFORMED_URL;
+
+    public static String LOG_WARNING_CONNECTING_URL;
+    public static String LOG_WARNING_DUPLICATE_FEED;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
