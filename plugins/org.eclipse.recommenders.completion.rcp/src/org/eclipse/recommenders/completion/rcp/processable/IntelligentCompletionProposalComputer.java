@@ -35,6 +35,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.internal.ui.text.java.JavaAllCompletionProposalComputer;
+import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -67,6 +68,17 @@ import com.google.common.collect.Sets;
 @SuppressWarnings({ "restriction", "rawtypes" })
 public class IntelligentCompletionProposalComputer extends JavaAllCompletionProposalComputer
         implements ICompletionListener, ICompletionListenerExtension2 {
+
+    /**
+     * A whitelist ensuring that the CompilationUnitEditor we are dealing with actually contains Java code. This is
+     * necessary as certain plugins (Groovy Eclipse, Scala IDE) extend the JDT's CompilationUnitEditor.
+     *
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=470372">Bug 470372</a>
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=470406">Bug 470406</a>
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=474318">Bug 474318</a>
+     */
+    private static final List<String> JAVA_EDITOR_WHITELIST = ImmutableList.of(CompilationUnitEditor.class.getName(),
+            "org.eclipse.wb.internal.core.editor.multi.DesignerEditor");
 
     private final CompletionRcpPreferences preferences;
     private final IAstProvider astProvider;
@@ -123,7 +135,20 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
         storeContext(context);
 
         if (!isTriggeredInJavaProject()) {
-            return Collections.emptyList();
+            // We can't make recommendations. Fall back to JDT.
+            if (!isContentAssistConfigurationOkay()) {
+                // JDT is still active, so don't add any proposals.
+                return Collections.emptyList();
+            } else {
+                // JDT is inactive. Return all proposals JDT would have made.
+                List<ICompletionProposal> res = Lists.newLinkedList();
+                for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
+                    IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
+                            proposalFactory);
+                    res.add(jdtProposal);
+                }
+                return res;
+            }
         }
 
         if (!isContentAssistConfigurationOkay()) {
@@ -147,6 +172,11 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
                         proposalFactory);
                 res.add(jdtProposal);
+                if (jdtProposal instanceof JavaMethodCompletionProposal) {
+                    int position = guessContextInformationPosition(jdtContext);
+                    JavaMethodCompletionProposal jmcp = (JavaMethodCompletionProposal) jdtProposal;
+                    jmcp.setContextInformationPosition(position);
+                }
                 if (jdtProposal instanceof IProcessableProposal) {
                     IProcessableProposal crProposal = (IProcessableProposal) jdtProposal;
                     crProposal.setTag(CONTEXT, crContext);
@@ -174,10 +204,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
             return false;
         }
 
-        // Certain plugins (Groovy Eclipse, Scala IDE) extend the JDT's CompilationUnitEditor.
-        // The check ensures that the editor actually contains Java code.
-        // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=470372>
-        if (!editor.getClass().equals(CompilationUnitEditor.class)) {
+        if (!JAVA_EDITOR_WHITELIST.contains(editor.getClass().getName())) {
             return false;
         }
 
