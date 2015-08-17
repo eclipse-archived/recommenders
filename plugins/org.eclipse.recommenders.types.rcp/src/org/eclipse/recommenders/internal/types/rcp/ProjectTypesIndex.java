@@ -416,7 +416,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                 doc.add(new Field(F_INSTANCEOF, fullyQualifiedName, Store.NO, NOT_ANALYZED));
             }
         } catch (Exception e) {
-            log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+            log(LogMessages.ERROR_ACCESSING_TYPE_HIERARCHY, e, type);
         }
 
         addDocument(doc, monitor);
