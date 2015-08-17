@@ -6,19 +6,17 @@ Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.core.expressions,
+Require-Bundle: com.google.inject;bundle-version="[3.0.0,4.0.0)",
+ org.eclipse.core.expressions,
+ org.eclipse.core.net,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.mylyn.commons.notifications.core,
  org.eclipse.mylyn.commons.notifications.feed,
- org.eclipse.ui,
- org.eclipse.jface,
  org.eclipse.mylyn.commons.notifications.ui,
- org.eclipse.core.net,
- com.google.inject;bundle-version="[3.0.0,4.0.0)",
- org.apache.commons.httpclient;bundle-version="[3.0.0,4.0.0)"
+ org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
