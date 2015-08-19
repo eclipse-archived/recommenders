@@ -22,6 +22,7 @@ public class CommonImages {
 
     private static final URL BASE_URL = FrameworkUtil.getBundle(CommonImages.class).getEntry("/icons/"); //$NON-NLS-1$
 
+    private static final String T_ELCL = "elcl16"; //$NON-NLS-1$
     private static final String T_EVIEW = "eview16"; //$NON-NLS-1$
     private static final String T_WIZBAN = "wizban"; //$NON-NLS-1$
 
@@ -29,9 +30,11 @@ public class CommonImages {
 
     public static final ImageDescriptor NOTIFICATION_CLOSE_HOVER = create(T_EVIEW, "notification-close-active.gif"); //$NON-NLS-1$
 
-    public static final ImageDescriptor RSS_ACTIVE = create(T_EVIEW, "rss-active.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor RSS_ACTIVE = create(T_EVIEW, "rss-active.png"); //$NON-NLS-1$
 
-    public static final ImageDescriptor RSS_INACTIVE = create(T_EVIEW, "rss-inactive.gif"); //$NON-NLS-1$ ;
+    public static final ImageDescriptor RSS_INACTIVE = create(T_EVIEW, "rss-inactive.png"); //$NON-NLS-1$
+
+    public static final ImageDescriptor REFRESH = create(T_ELCL, "refresh.png"); //$NON-NLS-1$
 
     public static final ImageDescriptor RSS_DIALOG_TITLE = create(T_WIZBAN, "rss-wizban.png"); //$NON-NLS-1$
 
