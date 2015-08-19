@@ -306,7 +306,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             if (configurations == null) {
                 return Lists.newArrayList();
             }
-            return Lists.newArrayList(configurations);
+            return configurations;
         }
 
         protected void addNewFeed() {

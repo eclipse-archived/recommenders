@@ -68,8 +68,12 @@ public class NewsMenuListener implements IMenuListener {
             manager.add(menu);
         }
 
-        manager.add(newMarkAllAsReadAction(eventBus));
+        if (messages.isEmpty()) {
+            manager.add(addAction(Messages.LABEL_ALL_FEEDS_DISABLED, false));
+        }
+
         manager.add(new Separator());
+        manager.add(newMarkAllAsReadAction(eventBus));
         manager.add(pollFeedsAction());
         manager.add(new Separator());
         manager.add(new PreferenceAction());
@@ -133,6 +137,14 @@ public class NewsMenuListener implements IMenuListener {
         action.setEnabled(false);
         menu.add(new Separator());
         menu.add(action);
+    }
+
+    private Action addAction(String text, boolean enabled) {
+        Action action = new Action() {
+        };
+        action.setText(text);
+        action.setEnabled(enabled);
+        return action;
     }
 
     private void addStatusLabel(MenuManager menu, Status status, FeedDescriptor feed) {

@@ -129,7 +129,9 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             clearMenu();
             HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
             for (FeedDescriptor feed : preferences.getFeedDescriptors()) {
-                groupedMessages.put(feed, new PollingResult(Status.FEEDS_NOT_POLLED_YET));
+                if (feed.isEnabled()) {
+                    groupedMessages.put(feed, new PollingResult(Status.FEEDS_NOT_POLLED_YET));
+                }
             }
             newsMenuListener.setMessages(groupedMessages);
             menuManager.addMenuListener(newsMenuListener);
