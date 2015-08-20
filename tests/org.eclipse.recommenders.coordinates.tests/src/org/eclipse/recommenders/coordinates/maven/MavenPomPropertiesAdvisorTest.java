@@ -38,12 +38,13 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class MavenPomPropertiesAdvisorTest {
 
-    private static final DependencyInfo EXAMPLE_JAR = new DependencyInfo(new File("example.jar").getAbsoluteFile(), JAR);
+    private static final DependencyInfo EXAMPLE_JAR = new DependencyInfo(new File("example.jar").getAbsoluteFile(),
+            JAR);
     private static final DependencyInfo EXAMPLE_PROJECT = new DependencyInfo(new File("example").getAbsoluteFile(),
             PROJECT);
 
-    private static final Properties ORG_EXAMPLE_PROPS = createProperties("org.example", "example", "1.0.0");
-    private static final Properties COM_EXAMPLE_PROPS = createProperties("com.example", "example", "1.0.0");
+    private static final Properties ORG_EXAMPLE_PROPS = gavProperties("org.example", "example", "1.0.0");
+    private static final Properties COM_EXAMPLE_PROPS = gavProperties("com.example", "example", "1.0.0");
     private static final ProjectCoordinate COORDINATE = new ProjectCoordinate("org.example", "example", "1.0.0");
 
     private final DependencyInfo dependency;
@@ -82,30 +83,39 @@ public class MavenPomPropertiesAdvisorTest {
         scenarios.add(scenario("Invalid pom.properties: artifactId mismatch", EXAMPLE_JAR,
                 of("META-INF/maven/org.example/invalid/pom.properties", ORG_EXAMPLE_PROPS), null));
 
+        scenarios.add(scenario("Invalid pom.properties: no groupId", EXAMPLE_JAR,
+                of("META-INF/maven/org.example/example/pom.properties", gavProperties(null, "example", "1.0.0")),
+                null));
+
+        scenarios.add(scenario("Invalid pom.properties: no artifactId", EXAMPLE_JAR,
+                of("META-INF/maven/org.example/example/pom.properties", gavProperties("org.example", null, "1.0.0")),
+                null));
+
+        scenarios.add(scenario("Invalid pom.properties: no version", EXAMPLE_JAR,
+                of("META-INF/maven/org.example/example/pom.properties",
+                        gavProperties("org.example", "example", null)),
+                null));
+
         scenarios.add(scenario("Wrong dependency type", EXAMPLE_PROJECT,
                 of("META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS), null));
 
-        scenarios.add(scenario(
-                "Multiple pom.properties, only one valid",
-                EXAMPLE_JAR,
+        scenarios.add(scenario("Multiple pom.properties, only one valid", EXAMPLE_JAR,
                 of("META-INF/maven/invalid/example/pom.properties", ORG_EXAMPLE_PROPS,
-                        "META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS), COORDINATE));
-        scenarios.add(scenario(
-                "Multiple pom.properties, only one valid",
-                EXAMPLE_JAR,
+                        "META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS),
+                COORDINATE));
+        scenarios.add(scenario("Multiple pom.properties, only one valid", EXAMPLE_JAR,
                 of("META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS,
-                        "META-INF/maven/invalid/example/pom.properties", ORG_EXAMPLE_PROPS), COORDINATE));
+                        "META-INF/maven/invalid/example/pom.properties", ORG_EXAMPLE_PROPS),
+                COORDINATE));
 
-        scenarios.add(scenario(
-                "Multiple pom.properties, all valid",
-                EXAMPLE_JAR,
+        scenarios.add(scenario("Multiple pom.properties, all valid", EXAMPLE_JAR,
                 of("META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS,
-                        "META-INF/maven/com.example/example/pom.properties", COM_EXAMPLE_PROPS), null));
-        scenarios.add(scenario(
-                "Multiple pom.properties, all valid",
-                EXAMPLE_JAR,
+                        "META-INF/maven/com.example/example/pom.properties", COM_EXAMPLE_PROPS),
+                null));
+        scenarios.add(scenario("Multiple pom.properties, all valid", EXAMPLE_JAR,
                 of("META-INF/maven/com.example/example/pom.properties", COM_EXAMPLE_PROPS,
-                        "META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS), null));
+                        "META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS),
+                null));
 
         return scenarios;
     }
@@ -125,12 +135,18 @@ public class MavenPomPropertiesAdvisorTest {
                 Optional.fromNullable(expectedProjectCoordinate) };
     }
 
-    private static Properties createProperties(String groupId, String artifactId, String version) {
+    private static Properties gavProperties(String groupId, String artifactId, String version) {
         Properties properties = new Properties();
-        properties.put(GROUP_ID, groupId);
-        properties.put(ARTIFACT_ID, artifactId);
-        properties.put(VERSION, version);
+        putIfNonNull(properties, GROUP_ID, groupId);
+        putIfNonNull(properties, ARTIFACT_ID, artifactId);
+        putIfNonNull(properties, VERSION, version);
         return properties;
+    }
+
+    private static void putIfNonNull(Properties properties, String key, String value) {
+        if (value != null) {
+            properties.put(key, value);
+        }
     }
 
     private static IFileToJarFileConverter createIFileToJarFileConverter(Map<String, Properties> propertyFiles) {
