@@ -11,12 +11,22 @@ import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
-import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 
+/**
+ * Implementors are responsible for polling feeds.
+ *
+ */
 public interface IPollFeedJob {
+    /**
+     *
+     * @return Messages that have been polled
+     */
+    Map<FeedDescriptor, IPollingResult> getMessages();
 
-    Map<FeedDescriptor, PollingResult> getMessages();
-
+    /**
+     *
+     * @return Map of Feed and its polling date.
+     */
     Map<FeedDescriptor, Date> getPollDates();
 
 }

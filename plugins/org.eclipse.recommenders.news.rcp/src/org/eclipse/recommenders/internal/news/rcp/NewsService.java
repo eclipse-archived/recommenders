@@ -30,6 +30,7 @@ import org.eclipse.recommenders.news.rcp.INewsProperties;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.recommenders.news.rcp.INotificationFacade;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
@@ -51,7 +52,7 @@ public class NewsService implements INewsService {
     private final IJobFacade jobFacade;
     private final EventBus bus;
     private final INotificationFacade notificationFacade;
-    private final HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+    private final HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
 
     @VisibleForTesting
     public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsProperties newsFeedProperties,
@@ -88,12 +89,12 @@ public class NewsService implements INewsService {
     }
 
     @Override
-    public Map<FeedDescriptor, PollingResult> getMessages(final int countPerFeed) {
-        Map<FeedDescriptor, PollingResult> transformedMap = Maps.transformValues(groupedMessages,
-                new Function<PollingResult, PollingResult>() {
+    public Map<FeedDescriptor, IPollingResult> getMessages(final int countPerFeed) {
+        Map<FeedDescriptor, IPollingResult> transformedMap = Maps.transformValues(groupedMessages,
+                new Function<IPollingResult, IPollingResult>() {
 
                     @Override
-                    public PollingResult apply(PollingResult input) {
+                    public PollingResult apply(IPollingResult input) {
                         ImmutableList<IFeedMessage> list = FluentIterable.from(input.getMessages()).limit(countPerFeed)
                                 .toList();
                         for (IFeedMessage message : list) {
@@ -129,7 +130,7 @@ public class NewsService implements INewsService {
     @Subscribe
     @Override
     public void handleAllRead(AllReadEvent event) {
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : groupedMessages.entrySet()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : groupedMessages.entrySet()) {
             for (IFeedMessage message : entry.getValue().getMessages()) {
                 readIds.add(message.getId());
             }
@@ -140,8 +141,8 @@ public class NewsService implements INewsService {
     @Override
     public void jobDone(IPollFeedJob job) {
         boolean newMessage = false;
-        Map<FeedDescriptor, PollingResult> messages = job.getMessages();
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+        Map<FeedDescriptor, IPollingResult> messages = job.getMessages();
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             if (!groupedMessages.containsKey(entry.getKey())) {
                 groupedMessages.put(entry.getKey(), entry.getValue());
                 if (!entry.getValue().getMessages().isEmpty()) {
@@ -219,15 +220,10 @@ public class NewsService implements INewsService {
         jobFacade.cancelPollFeeds();
     }
 
-    @Override
-    public void updateFeedDates(Map<FeedDescriptor, Date> map) {
-        newsFeedProperties.writeDates(map, Constants.FILENAME_FEED_DATES);
-    }
-
     private void updateReadIds() {
         Set<String> result = Sets.newHashSet();
         Set<String> allMessages = Sets.newHashSet();
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : groupedMessages.entrySet()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : groupedMessages.entrySet()) {
             for (IFeedMessage message : entry.getValue().getMessages()) {
                 allMessages.add(message.getId());
             }
@@ -243,15 +239,15 @@ public class NewsService implements INewsService {
 
     @Override
     public void displayNotification() {
-        Map<FeedDescriptor, PollingResult> messages = MessageUtils
+        Map<FeedDescriptor, IPollingResult> messages = MessageUtils
                 .getLatestMessages(getMessages(Constants.COUNT_PER_FEED));
         if (!messages.isEmpty()) {
             notificationFacade.displayNotification(messages, bus);
             Map<FeedDescriptor, Date> feedDates = Maps.newHashMap();
-            for (Map.Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+            for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
                 feedDates.put(entry.getKey(), Calendar.getInstance().getTime());
             }
-            updateFeedDates(feedDates);
+            newsFeedProperties.writeDates(feedDates, Constants.FILENAME_FEED_DATES);
         }
     }
 

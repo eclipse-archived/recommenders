@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -49,11 +50,11 @@ public class MessageUtils {
         }
     }
 
-    public static boolean containsUnreadMessages(Map<FeedDescriptor, PollingResult> map) {
+    public static boolean containsUnreadMessages(Map<FeedDescriptor, IPollingResult> map) {
         if (map == null) {
             return false;
         }
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : map.entrySet()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : map.entrySet()) {
             for (IFeedMessage message : entry.getValue().getMessages()) {
                 if (!message.isRead()) {
                     return true;
@@ -63,10 +64,10 @@ public class MessageUtils {
         return false;
     }
 
-    public static Map<FeedDescriptor, PollingResult> getLatestMessages(Map<FeedDescriptor, PollingResult> messages) {
+    public static Map<FeedDescriptor, IPollingResult> getLatestMessages(Map<FeedDescriptor, IPollingResult> messages) {
         Preconditions.checkNotNull(messages);
-        Map<FeedDescriptor, PollingResult> result = Maps.newHashMap();
-        for (Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+        Map<FeedDescriptor, IPollingResult> result = Maps.newHashMap();
+        for (Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             List<IFeedMessage> list = updateMessages(entry);
             if (!list.isEmpty()) {
                 result.put(entry.getKey(), new PollingResult(entry.getValue().getStatus(), list));
@@ -75,7 +76,7 @@ public class MessageUtils {
         return sortByDate(result);
     }
 
-    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, PollingResult> entry) {
+    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, IPollingResult> entry) {
         NewsProperties properties = new NewsProperties();
         List<IFeedMessage> feedMessages = Lists.newArrayList();
         for (IFeedMessage message : entry.getValue().getMessages()) {
@@ -102,22 +103,22 @@ public class MessageUtils {
         return counter;
     }
 
-    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, PollingResult> messages) {
+    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, IPollingResult> messages) {
         if (messages == null) {
             return Collections.emptyList();
         }
         List<IFeedMessage> result = Lists.newArrayList();
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             result.addAll(entry.getValue().getMessages());
         }
         return result;
     }
 
-    public static Map<FeedDescriptor, PollingResult> sortByDate(Map<FeedDescriptor, PollingResult> map) {
+    public static Map<FeedDescriptor, IPollingResult> sortByDate(Map<FeedDescriptor, IPollingResult> map) {
         if (map == null) {
             return Maps.newHashMap();
         }
-        for (Map.Entry<FeedDescriptor, PollingResult> entry : map.entrySet()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : map.entrySet()) {
             List<IFeedMessage> list = entry.getValue().getMessages();
             Collections.sort(list, new Comparator<IFeedMessage>() {
                 @Override

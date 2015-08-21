@@ -27,11 +27,11 @@ import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.CommonImages;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils.MessageAge;
-import org.eclipse.recommenders.internal.news.rcp.PollingResult;
-import org.eclipse.recommenders.internal.news.rcp.PollingResult.Status;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INewsService;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
@@ -39,7 +39,7 @@ import com.google.common.eventbus.EventBus;
 public class NewsMenuListener implements IMenuListener {
     private final EventBus eventBus;
     private final INewsService service;
-    private Map<FeedDescriptor, PollingResult> messages;
+    private Map<FeedDescriptor, IPollingResult> messages;
 
     public NewsMenuListener(EventBus eventBus, INewsService service) {
         super();
@@ -47,14 +47,14 @@ public class NewsMenuListener implements IMenuListener {
         this.service = service;
     }
 
-    public void setMessages(Map<FeedDescriptor, PollingResult> messages) {
+    public void setMessages(Map<FeedDescriptor, IPollingResult> messages) {
         this.messages = messages;
     }
 
     @Override
     public void menuAboutToShow(IMenuManager manager) {
-        messages = new TreeMap<FeedDescriptor, PollingResult>(messages);
-        for (Entry<FeedDescriptor, PollingResult> entry : messages.entrySet()) {
+        messages = new TreeMap<FeedDescriptor, IPollingResult>(messages);
+        for (Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             String menuName = getMenuEntryTitle(entry.getKey().getName(), entry.getValue().getMessages());
             MenuManager menu = new MenuManager(menuName, entry.getKey().getId());
             if (entry.getKey().getIcon() != null) {
@@ -105,7 +105,7 @@ public class NewsMenuListener implements IMenuListener {
         };
     }
 
-    private void groupEntries(MenuManager menu, Entry<FeedDescriptor, PollingResult> entry) {
+    private void groupEntries(MenuManager menu, Entry<FeedDescriptor, IPollingResult> entry) {
         List<List<IFeedMessage>> groupedMessages = splitMessagesByAge(entry.getValue().getMessages());
         List<String> labels = ImmutableList.of(Messages.LABEL_TODAY, Messages.LABEL_YESTERDAY, Messages.LABEL_THIS_WEEK,
                 Messages.LABEL_LAST_WEEK, Messages.LABEL_THIS_MONTH, Messages.LABEL_LAST_MONTH,

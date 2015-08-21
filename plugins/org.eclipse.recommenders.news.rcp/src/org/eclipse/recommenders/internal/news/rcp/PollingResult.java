@@ -11,19 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 
 import com.google.common.collect.Lists;
 
-public class PollingResult {
+public class PollingResult implements IPollingResult {
     private final Status status;
     private final List<IFeedMessage> messages;
-
-    public enum Status {
-        OK,
-        FEEDS_NOT_POLLED_YET,
-        FEED_NOT_FOUND_AT_URL,
-        ERROR_CONNECTING_TO_FEED
-    }
 
     public PollingResult(Status status, List<IFeedMessage> messages) {
         this.status = status;
@@ -35,10 +29,12 @@ public class PollingResult {
         messages = Lists.newArrayList();
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
 
+    @Override
     public List<IFeedMessage> getMessages() {
         return messages;
     }

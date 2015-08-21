@@ -12,8 +12,8 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.recommenders.internal.news.rcp.PollingResult.Status;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;

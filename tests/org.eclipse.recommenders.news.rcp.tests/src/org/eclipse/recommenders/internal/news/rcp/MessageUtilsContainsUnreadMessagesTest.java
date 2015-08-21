@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -31,10 +32,11 @@ public class MessageUtilsContainsUnreadMessagesTest {
     private static final boolean EXPECT_TRUE = true;
     private static final boolean EXPECT_FALSE = false;
 
-    private final Map<FeedDescriptor, PollingResult> inputMap;
+    private final Map<FeedDescriptor, IPollingResult> inputMap;
     private final boolean expectedResult;
 
-    public MessageUtilsContainsUnreadMessagesTest(Map<FeedDescriptor, PollingResult> inputMap, boolean expectedResult) {
+    public MessageUtilsContainsUnreadMessagesTest(Map<FeedDescriptor, IPollingResult> inputMap,
+            boolean expectedResult) {
         this.inputMap = inputMap;
         this.expectedResult = expectedResult;
     }

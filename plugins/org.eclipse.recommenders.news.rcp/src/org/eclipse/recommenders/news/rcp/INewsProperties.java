@@ -14,12 +14,32 @@ import java.util.Set;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 
 public interface INewsProperties {
-
+    /**
+     * @return Set of message IDs read by user.
+     */
     Set<String> getReadIds();
 
+    /**
+     * Persists message IDs read by user.
+     *
+     * @param readIds
+     *            set of messages IDs
+     */
     void writeReadIds(Set<String> readIds);
 
+    /**
+     * @param filename
+     *            name of file to load data from
+     * @return Map of String and Date, for example message IDs and date when they were polled
+     */
     Map<String, Date> getDates(String filename);
 
+    /**
+     *
+     * @param map
+     *            Map to be saved, for example message IDs and date when they were polled
+     * @param filename
+     *            name of file to save data to
+     */
     void writeDates(Map<FeedDescriptor, Date> map, String filename);
 }

@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.recommenders.news.rcp" id="feed" name="News Feed"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows plug-ins to add RSS feeds that can be polled by News plug-in.
       </documentation>
    </annotation>
 
@@ -125,7 +125,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         2.3.0
       </documentation>
    </annotation>
 
@@ -134,7 +134,21 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         Example feed: 
+         Exmaple feed:
+&lt;p&gt;
+&lt;pre&gt;
+    &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
+      &lt;feed
+            id=&quot;org.eclipse.recommenders.news.rcp.planet.eclipse&quot;
+            name=&quot;Planet Eclipse&quot;
+            url=&quot;http://planeteclipse.org/planet/rss20.xml&quot;
+            pollingInterval=&quot;480&quot;&gt;
+      &lt;/feed&gt;
+   &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
+
+Example feed with URL parameters, which are optional:
 &lt;p&gt;
 &lt;pre&gt;
     &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
@@ -159,18 +173,29 @@
          <meta.section type="apiinfo"/>
       </appinfo>
       <documentation>
-         [Enter API information here.]
+         &lt;dl&gt;Feeds extension point attributes:
+&lt;dt&gt;&lt;code&gt;id&lt;/code&gt; - unique identificator for your extension point, for example your plug-in id or your plug-in id with suffix &apos;.feed./dt&gt;
+&lt;dt&gt;&lt;code&gt;name&lt;/code&gt; - human-readable value that is displayed to users (via News menu and Preference page)/dt&gt;
+&lt;dt&gt;&lt;code&gt;url&lt;/code&gt; - absolute URL of RSS feed/dt&gt;
+&lt;dt&gt;&lt;code&gt;pollingInterval&lt;/code&gt; - interval at which feed will be polled, however it&apos;s secondary to user&apos;s preference/dt&gt;
+&lt;dt&gt;&lt;code&gt;urlParameters&lt;/code&gt; - list of URL parameters (key-value pairs)/dt&gt;
+&lt;dt&gt;&lt;code&gt;urlParameter&lt;/code&gt; - key - value pair which represents URL parameter for example: &apos;foo=bar&apos; (whole URL: &apos;https://www.eclipse.org/home/index.php?foo=bar&apos;) would be &lt;code&gt;&lt;urlParameter&gt; key=&quot;foo&quot; value=&quot;bar&quot; /&gt;/dt&gt; &lt;/dl&gt;
       </documentation>
    </annotation>
+
 
    <annotation>
       <appinfo>
-         <meta.section type="implementation"/>
+         <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         Copyright (c) 2015 Pawel Nowak, Johannes Dorn, Marcel Bruch, 
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+&lt;a 
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
-
 
 </schema>

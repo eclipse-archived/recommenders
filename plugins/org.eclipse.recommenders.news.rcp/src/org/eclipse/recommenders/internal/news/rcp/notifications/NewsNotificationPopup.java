@@ -22,9 +22,9 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
-import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -41,10 +41,10 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     private static final int DELAY_CLOSE_MS = 4000;
     private static final int DEFAULT_NOTIFICATION_MESSAGES = 6;
 
-    private final Map<FeedDescriptor, PollingResult> messages;
+    private final Map<FeedDescriptor, IPollingResult> messages;
     private final EventBus eventBus;
 
-    public NewsNotificationPopup(Display display, Map<FeedDescriptor, PollingResult> messages, EventBus eventBus) {
+    public NewsNotificationPopup(Display display, Map<FeedDescriptor, IPollingResult> messages, EventBus eventBus) {
         super(display);
         this.messages = messages;
         this.eventBus = eventBus;
@@ -56,7 +56,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     protected void createContentArea(Composite composite) {
         super.createContentArea(composite);
         composite.setLayout(new GridLayout(1, true));
-        Map<FeedDescriptor, PollingResult> sortedMap = MessageUtils.sortByDate(messages);
+        Map<FeedDescriptor, IPollingResult> sortedMap = MessageUtils.sortByDate(messages);
 
         processNotificationData(composite, sortedMap);
 
@@ -65,11 +65,11 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         hint.setText(Messages.HINT_MORE_MESSAGES);
     }
 
-    private void processNotificationData(Composite composite, Map<FeedDescriptor, PollingResult> sortedMap) {
+    private void processNotificationData(Composite composite, Map<FeedDescriptor, IPollingResult> sortedMap) {
         int feedCounter = 0;
         int messagesPerFeed = DEFAULT_NOTIFICATION_MESSAGES < sortedMap.size() ? 1
                 : DEFAULT_NOTIFICATION_MESSAGES / sortedMap.size();
-        for (Entry<FeedDescriptor, PollingResult> entry : sortedMap.entrySet()) {
+        for (Entry<FeedDescriptor, IPollingResult> entry : sortedMap.entrySet()) {
             if (feedCounter < DEFAULT_NOTIFICATION_MESSAGES) {
                 Label feedTitle = new Label(composite, SWT.NONE);
                 GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)

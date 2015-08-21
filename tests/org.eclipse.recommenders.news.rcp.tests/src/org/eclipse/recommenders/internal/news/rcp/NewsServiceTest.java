@@ -25,10 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.internal.news.rcp.PollingResult.Status;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
 import org.eclipse.recommenders.news.rcp.INewsProperties;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,13 +96,13 @@ public class NewsServiceTest {
     public void testGetMessagesIfMoreThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, IPollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages, hasKey(feed));
         assertThat(sutMessages.get(feed).getMessages(), hasSize(COUNT_PER_FEED));
@@ -111,7 +112,7 @@ public class NewsServiceTest {
     public void testGetMessagesIfNoFeed() {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
@@ -125,13 +126,13 @@ public class NewsServiceTest {
     public void testGetMessagesIfLessThanCountPerFeed() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(LESS_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, IPollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages, hasKey(feed));
         assertThat(sutMessages.get(feed).getMessages(), hasSize(LESS_THAN_COUNT_PER_FEED));
@@ -142,14 +143,14 @@ public class NewsServiceTest {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         FeedDescriptor secondFeed = enabled(SECOND_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         groupedMessages.put(secondFeed, mockFeedMessages(MORE_THAN_COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
-        Map<FeedDescriptor, PollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
+        Map<FeedDescriptor, IPollingResult> sutMessages = sut.getMessages(COUNT_PER_FEED);
 
         assertThat(sutMessages.keySet(), containsInAnyOrder(feed, secondFeed));
         assertThat(sutMessages.size(), is(2));
@@ -194,14 +195,14 @@ public class NewsServiceTest {
     public void testShouldDisplayNotification() throws ParseException {
         FeedDescriptor feed = enabled(FIRST_ELEMENT);
         mockPreferences(true, ImmutableList.of(feed));
-        HashMap<FeedDescriptor, PollingResult> groupedMessages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
         groupedMessages.put(feed, mockFeedMessages(COUNT_PER_FEED));
         when(job.getMessages()).thenReturn(groupedMessages);
 
         NewsService sut = new NewsService(preferences, bus, properties, jobFacade, notificationFacade);
         sut.jobDone(job);
 
-        verify(notificationFacade).displayNotification((Map<FeedDescriptor, PollingResult>) any(), eq(bus));
+        verify(notificationFacade).displayNotification((Map<FeedDescriptor, IPollingResult>) any(), eq(bus));
     }
 
     private Map<String, Date> mockPollDates(String id, int change) {
