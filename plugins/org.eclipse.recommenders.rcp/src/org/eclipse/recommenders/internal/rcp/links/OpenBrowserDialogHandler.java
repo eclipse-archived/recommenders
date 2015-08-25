@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.ui.PlatformUI;
 
 public class OpenBrowserDialogHandler extends AbstractHandler {
@@ -26,7 +26,7 @@ public class OpenBrowserDialogHandler extends AbstractHandler {
 
             @Override
             public void run() {
-                BrowserUtils.openInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
+                Browsers.openInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
             }
         });
         return null;

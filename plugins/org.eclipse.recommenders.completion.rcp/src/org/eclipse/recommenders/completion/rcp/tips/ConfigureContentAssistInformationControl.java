@@ -24,7 +24,7 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -91,7 +91,7 @@ public class ConfigureContentAssistInformationControl extends AbstractInformatio
                 dispose();
                 String url = e.text;
                 if (StringUtils.startsWith(url, HTTP) || StringUtils.startsWith(url, HTTPS)) {
-                    BrowserUtils.openInExternalBrowser(url);
+                    Browsers.openInExternalBrowser(url);
                 } else if (StringUtils.startsWith(url, X_PREFERENCES)) {
                     createPreferenceDialogOn(getActiveWorkbenchShell(), StringUtils.substringAfter(url, X_PREFERENCES),
                             null, null).open();

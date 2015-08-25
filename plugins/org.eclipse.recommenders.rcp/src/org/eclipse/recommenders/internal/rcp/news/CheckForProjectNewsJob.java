@@ -34,10 +34,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.recommenders.internal.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.rcp.l10n.Messages;
-import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Pair;
+import org.eclipse.ui.PlatformUI;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -115,7 +115,7 @@ public class CheckForProjectNewsJob extends Job {
             return;
         }
 
-        Shells.getDisplay().asyncExec(new Runnable() {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
                 new NewsNotificationPopup(link).open();

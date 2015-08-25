@@ -8,7 +8,7 @@
  * Contributors:
  *    Simon Laffoy - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.internal.utils.rcp;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-@Deprecated
 public class BrowserDialog extends Dialog {
 
     private static final Composite NULL_COMPOSITE = null;
@@ -30,11 +29,11 @@ public class BrowserDialog extends Dialog {
     private final int width;
     private final int height;
 
-    protected BrowserDialog(Shell parentShell, String url) {
+    public BrowserDialog(Shell parentShell, String url) {
         this(parentShell, url, 1000, 500);
     }
 
-    protected BrowserDialog(Shell parentShell, String url, int width, int height) {
+    public BrowserDialog(Shell parentShell, String url, int width, int height) {
         super(parentShell);
         this.url = url;
         this.width = width;

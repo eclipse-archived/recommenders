@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2012 Darmstadt University of Technology.
+ * Copyright (c) 2015 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,12 +8,13 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils.rcp;
+
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-@Deprecated
 public class TimeDelimitedProgressMonitor implements IProgressMonitor {
 
     private final IProgressMonitor delegate;
@@ -21,13 +22,13 @@ public class TimeDelimitedProgressMonitor implements IProgressMonitor {
     private final long start = System.currentTimeMillis();
     private final long limit;
 
-    public TimeDelimitedProgressMonitor(IProgressMonitor delegate, long limitInMillis) {
+    public TimeDelimitedProgressMonitor(IProgressMonitor delegate, long limit, TimeUnit unit) {
         this.delegate = delegate == null ? new NullProgressMonitor() : delegate;
-        limit = limitInMillis;
+        this.limit = unit.toMillis(limit);
     }
 
-    public TimeDelimitedProgressMonitor(long limitInMillis) {
-        this(new NullProgressMonitor(), limitInMillis);
+    public TimeDelimitedProgressMonitor(long limit, TimeUnit unit) {
+        this(new NullProgressMonitor(), limit, unit);
     }
 
     @Override

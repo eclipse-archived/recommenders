@@ -22,6 +22,7 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.recommenders.models;bundle-version="[2.2.4,2.2.5)",
  org.eclipse.recommenders.rcp;bundle-version="[2.2.4,2.2.5)",
  org.eclipse.recommenders.utils;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.utils.rcp;bundle-version="[2.2.4,2.2.5)",
  org.eclipse.ui,
  org.eclipse.ui.ide
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",

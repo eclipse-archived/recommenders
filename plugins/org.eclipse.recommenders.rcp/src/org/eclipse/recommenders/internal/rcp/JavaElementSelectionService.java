@@ -27,7 +27,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
-import org.eclipse.recommenders.rcp.utils.Selections;
+import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -45,8 +45,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 public class JavaElementSelectionService implements ISelectionListener {
 
     @VisibleForTesting
-    protected ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder()
-            .setNameFormat("Recommenders-Timeout-Manager").build()); //$NON-NLS-1$
+    protected ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1,
+            new ThreadFactoryBuilder().setNameFormat("Recommenders-Timeout-Manager").build()); //$NON-NLS-1$
     private final EventBus bus;
     private JavaElementSelectionEvent lastEvent = new JavaElementSelectionEvent(null, null);
 

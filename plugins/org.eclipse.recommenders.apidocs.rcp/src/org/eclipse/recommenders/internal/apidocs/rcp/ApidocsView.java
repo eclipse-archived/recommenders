@@ -46,7 +46,7 @@ import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.PartListener2Adapter;
-import org.eclipse.recommenders.rcp.utils.Selections;
+import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;

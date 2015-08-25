@@ -39,9 +39,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
-import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
-import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -108,7 +107,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
-            .applyTo(tableViewer.getTable());
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override
@@ -320,13 +319,10 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
             };
             enable.loadSelection();
             Link contentAssistLink = new Link(parent, SWT.NONE | SWT.WRAP);
-            contentAssistLink.setLayoutData(GridDataFactory
-                    .swtDefaults()
-                    .span(2, 1)
-                    .align(SWT.FILL, SWT.BEGINNING)
-                    .grab(true, false)
-                    .hint(super.convertHorizontalDLUsToPixels(contentAssistLink,
-                            IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT).create());
+            contentAssistLink.setLayoutData(GridDataFactory.swtDefaults().span(2, 1).align(SWT.FILL, SWT.BEGINNING)
+                    .grab(true, false).hint(super.convertHorizontalDLUsToPixels(contentAssistLink,
+                            IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT)
+                    .create());
             contentAssistLink.setText(Messages.PREFPAGE_FOOTER_COMPLETIONS);
             contentAssistLink.addSelectionListener(new SelectionAdapter() {
 

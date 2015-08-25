@@ -64,5 +64,4 @@ public class SearchContext implements ISearchContext {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
 }

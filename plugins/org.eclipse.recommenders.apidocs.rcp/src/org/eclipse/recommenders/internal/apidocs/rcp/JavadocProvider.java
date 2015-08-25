@@ -49,8 +49,8 @@ import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.FontData;
@@ -163,7 +163,7 @@ public final class JavadocProvider extends ApidocProvider {
                                 }
 
                             } else {
-                                BrowserUtils.openInDefaultBrowser(url);
+                                Browsers.openInDefaultBrowser(url);
                             }
                         } catch (final Exception e) {
                             log(ERROR_DURING_JAVADOC_SELECTION, e, url);

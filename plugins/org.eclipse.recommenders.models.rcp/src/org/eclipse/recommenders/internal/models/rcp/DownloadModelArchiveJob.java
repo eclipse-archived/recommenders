@@ -32,7 +32,7 @@ import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelArchiveDownloadedEvent;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -142,7 +142,7 @@ public class DownloadModelArchiveJob extends Job {
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent event) {
-                    BrowserUtils.openInExternalBrowser(event.text);
+                    Browsers.openInExternalBrowser(event.text);
                 }
             });
             return link;
