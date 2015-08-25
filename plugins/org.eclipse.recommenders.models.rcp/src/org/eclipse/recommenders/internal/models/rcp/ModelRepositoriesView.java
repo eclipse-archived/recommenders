@@ -76,7 +76,7 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelCoordinatesAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
-import org.eclipse.recommenders.rcp.utils.Selections;
+import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -360,8 +360,8 @@ public class ModelRepositoriesView extends ViewPart {
 
                 coordinatesGroupedByRepo.clear();
                 for (Entry<String, Collection<ModelCoordinate>> entry : fetchedCoordinates.asMap().entrySet()) {
-                    coordinatesGroupedByRepo
-                            .putAll(entry.getKey(), createCoordiantes(entry.getKey(), entry.getValue()));
+                    coordinatesGroupedByRepo.putAll(entry.getKey(),
+                            createCoordiantes(entry.getKey(), entry.getValue()));
                 }
 
                 treeViewer.setInput(getViewSite());
@@ -390,7 +390,8 @@ public class ModelRepositoriesView extends ViewPart {
     }
 
     private List<KnownCoordinate> createCoordiantes(String url, Collection<ModelCoordinate> modelCoordinates) {
-        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = groupByProjectCoordinate(modelCoordinates);
+        Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = groupByProjectCoordinate(
+                modelCoordinates);
 
         List<KnownCoordinate> coordinates = Lists.newArrayList();
         for (ProjectCoordinate pc : coordinatesGroupedByProjectCoordinate.keySet()) {
@@ -405,8 +406,8 @@ public class ModelRepositoriesView extends ViewPart {
                 .create();
 
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
-            coordinatesGroupedByProjectCoordinate
-                    .put(ModelCoordinates.toProjectCoordinate(modelCoordinate), modelCoordinate);
+            coordinatesGroupedByProjectCoordinate.put(ModelCoordinates.toProjectCoordinate(modelCoordinate),
+                    modelCoordinate);
         }
         return coordinatesGroupedByProjectCoordinate;
     }
@@ -512,12 +513,12 @@ public class ModelRepositoriesView extends ViewPart {
                     if (url.isPresent() && prefs.remotes.length > 1) {
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                                    @Override
-                                    public void run() {
-                                        deleteRepository(url.get());
-                                        refreshData();
-                                    }
-                                });
+                            @Override
+                            public void run() {
+                                deleteRepository(url.get());
+                                refreshData();
+                            }
+                        });
                     }
                 }
             }
@@ -649,8 +650,8 @@ public class ModelRepositoriesView extends ViewPart {
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 KnownCoordinate key = createKey(e.model);
                 if (key != null) {
-                    KnownCoordinate element = Iterables.tryFind(coordinatesGroupedByRepo.get(key.url),
-                            Predicates.equalTo(key)).orNull();
+                    KnownCoordinate element = Iterables
+                            .tryFind(coordinatesGroupedByRepo.get(key.url), Predicates.equalTo(key)).orNull();
                     if (element != null) {
                         treeViewer.update(element, null);
                     }

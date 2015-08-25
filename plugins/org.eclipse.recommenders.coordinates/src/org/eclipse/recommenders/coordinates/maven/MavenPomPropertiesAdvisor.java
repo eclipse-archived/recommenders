@@ -94,16 +94,21 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
         final Properties properties = new Properties();
         try {
             properties.load(inputStream);
-            String groupID = parseGroupID(properties);
-            String artifactID = parseArtifactID(properties);
-            String version = parseVersion(properties);
-            if (!groupID.equals(extractGroupID(propertiesFileName))) {
+            String groupId = properties.getProperty(GROUP_ID);
+            String artifactId = properties.getProperty(ARTIFACT_ID);
+            String version = properties.getProperty(VERSION);
+
+            if (!extractGroupID(propertiesFileName).equals(groupId)) {
                 return absent();
             }
-            if (!artifactID.equals(extractArtifactID(propertiesFileName))) {
+            if (!extractArtifactID(propertiesFileName).equals(artifactId)) {
                 return absent();
             }
-            return tryNewProjectCoordinate(groupID, artifactID, canonicalizeVersion(version));
+            if (version == null) {
+                return absent();
+            }
+
+            return tryNewProjectCoordinate(groupId, artifactId, canonicalizeVersion(version));
         } catch (IOException e) {
             return absent();
         }
@@ -121,22 +126,6 @@ public class MavenPomPropertiesAdvisor extends AbstractProjectCoordinateAdvisor 
 
     private Optional<JarFile> readJarFileIn(File file) {
         return jarFileConverter.createJarFile(file);
-    }
-
-    private String parseGroupID(final Properties properties) {
-        return parseAttribute(properties, GROUP_ID);
-    }
-
-    private String parseArtifactID(final Properties properties) {
-        return parseAttribute(properties, ARTIFACT_ID);
-    }
-
-    private String parseVersion(final Properties properties) {
-        return parseAttribute(properties, VERSION);
-    }
-
-    private String parseAttribute(final Properties properties, String attributeName) {
-        return properties.getProperty(attributeName);
     }
 
     @Override

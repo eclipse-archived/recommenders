@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils.rcp;
 
 import static com.google.common.base.Optional.*;
 
@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.Viewer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
-@Deprecated
 @SuppressWarnings({ "unchecked" })
 public final class Selections {
 
@@ -72,5 +71,4 @@ public final class Selections {
         List<T> list = toList(selection);
         return Sets.newHashSet(list);
     }
-
 }

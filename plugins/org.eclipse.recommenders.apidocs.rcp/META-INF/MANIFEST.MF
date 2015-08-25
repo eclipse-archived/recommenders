@@ -18,6 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.models.rcp;bundle-version="[2.3.0,2.3.1)",
  org.eclipse.recommenders.rcp;bundle-version="[2.3.0,2.3.1)",
  org.eclipse.recommenders.utils;bundle-version="[2.3.0,2.3.1)",
+ org.eclipse.recommenders.utils.rcp;bundle-version="[2.3.0,2.3.1)",
  org.eclipse.ui,
  org.eclipse.ui.editors
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",

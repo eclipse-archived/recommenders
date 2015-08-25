@@ -25,10 +25,10 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -109,7 +109,7 @@ public class SnippetSourcePage extends FormPage {
                 sharedImages.getDescriptor(SharedImages.Images.ELCL_HELP)) {
             @Override
             public void run() {
-                BrowserUtils.openInExternalBrowser(HELP_URL);
+                Browsers.openInExternalBrowser(HELP_URL);
             };
         };
         EditorUtils.addActionToForm(form, showHelpAction, Messages.EDITOR_TOOLBAR_ITEM_HELP);

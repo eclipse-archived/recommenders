@@ -66,13 +66,13 @@ import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateSelectionDi
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.ObjectToBooleanConverter;
-import org.eclipse.recommenders.rcp.utils.Selections;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
+import org.eclipse.recommenders.utils.rcp.Browsers;
+import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -195,8 +195,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 txtDescription = managedForm.getToolkit().createText(managedForm.getForm().getBody(),
                         snippet.getDescription(), SWT.NONE);
-                txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER)
-                        .grab(true, false).span(2, 1).indent(horizontalIndent, 0).create());
+                txtDescription.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false)
+                        .span(2, 1).indent(horizontalIndent, 0).create());
                 txtDescription.setMessage(Messages.EDITOR_TEXT_MESSAGE_SNIPPET_DESCRIPTION);
 
                 Label lblLocation = managedForm.getToolkit().createLabel(managedForm.getForm().getBody(),
@@ -231,9 +231,8 @@ public class SnippetMetadataPage extends FormPage {
                         return super.getText(element);
                     }
                 });
-                comboLocation.getCombo().setLayoutData(
-                        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1)
-                                .indent(horizontalIndent, 0).create());
+                comboLocation.getCombo().setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER)
+                        .grab(true, false).span(2, 1).indent(horizontalIndent, 0).create());
 
                 final ControlDecoration locationErrorDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
@@ -244,8 +243,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 final ControlDecoration locationDescriptionDecoration = new ControlDecoration(comboLocation.getCombo(),
                         SWT.LEFT);
-                FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
-                        DEC_INFORMATION);
+                FieldDecoration infoDecoration = FieldDecorationRegistry.getDefault()
+                        .getFieldDecoration(DEC_INFORMATION);
                 locationDescriptionDecoration.setImage(infoDecoration.getImage());
                 locationDescriptionDecoration.setDescriptionText(Messages.EDITOR_DESCRIPTION_LOCATION);
                 locationDescriptionDecoration.setMarginWidth(1);
@@ -271,8 +270,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 listViewerExtraSearchTerms = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
                 List lstExtraSearchTerm = listViewerExtraSearchTerms.getList();
-                lstExtraSearchTerm.setLayoutData(GridDataFactory.fillDefaults().grab(true, false)
-                        .indent(horizontalIndent, 0).create());
+                lstExtraSearchTerm.setLayoutData(
+                        GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0).create());
 
                 final ControlDecoration extraSearchTermsDescriptionDecoration = new ControlDecoration(
                         listViewerExtraSearchTerms.getList(), SWT.TOP | SWT.LEFT);
@@ -281,8 +280,8 @@ public class SnippetMetadataPage extends FormPage {
                         .setDescriptionText(Messages.EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS);
                 extraSearchTermsDescriptionDecoration.setMarginWidth(1);
 
-                btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(
-                        managedForm.getForm().getBody(), SWT.NONE);
+                btnContainerExtraSearchTerms = managedForm.getToolkit().createComposite(managedForm.getForm().getBody(),
+                        SWT.NONE);
                 btnContainerExtraSearchTerms.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
                 managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
                 btnContainerExtraSearchTerms.setLayout(new GridLayout(1, false));
@@ -316,8 +315,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 listViewerTags = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
                 List lstTags = listViewerTags.getList();
-                lstTags.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0)
-                        .create());
+                lstTags.setLayoutData(
+                        GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0).create());
 
                 final ControlDecoration tagsDescriptionDecoration = new ControlDecoration(listViewerTags.getList(),
                         SWT.TOP | SWT.LEFT);
@@ -330,8 +329,8 @@ public class SnippetMetadataPage extends FormPage {
                 managedForm.getToolkit().paintBordersFor(btnContainerExtraSearchTerms);
                 btnContainerTags.setLayout(new GridLayout(1, false));
 
-                Button btnAddTag = managedForm.getToolkit().createButton(btnContainerTags, Messages.EDITOR_BUTTON_ADD_TAGS,
-                        SWT.NONE);
+                Button btnAddTag = managedForm.getToolkit().createButton(btnContainerTags,
+                        Messages.EDITOR_BUTTON_ADD_TAGS, SWT.NONE);
                 btnAddTag.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
@@ -359,8 +358,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 listViewerDependencies = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
                 List lstDependencies = listViewerDependencies.getList();
-                lstDependencies.setLayoutData(GridDataFactory.fillDefaults().grab(true, true)
-                        .indent(horizontalIndent, 0).create());
+                lstDependencies.setLayoutData(
+                        GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0).create());
 
                 final ControlDecoration dependencyDescriptionDecoration = new ControlDecoration(
                         listViewerDependencies.getList(), SWT.TOP | SWT.LEFT);
@@ -435,8 +434,8 @@ public class SnippetMetadataPage extends FormPage {
 
                 txtUuid = managedForm.getToolkit().createText(managedForm.getForm().getBody(),
                         snippet.getUuid().toString(), SWT.READ_ONLY);
-                txtUuid.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0)
-                        .create());
+                txtUuid.setLayoutData(
+                        GridDataFactory.fillDefaults().grab(true, false).indent(horizontalIndent, 0).create());
             }
 
             @Override
@@ -474,7 +473,7 @@ public class SnippetMetadataPage extends FormPage {
                 sharedImages.getDescriptor(SharedImages.Images.ELCL_HELP)) {
             @Override
             public void run() {
-                BrowserUtils.openInExternalBrowser(HELP_URL);
+                Browsers.openInExternalBrowser(HELP_URL);
             };
         };
         EditorUtils.addActionToForm(form, showHelpAction, Messages.EDITOR_TOOLBAR_ITEM_HELP);
@@ -498,7 +497,8 @@ public class SnippetMetadataPage extends FormPage {
     private Set<ProjectCoordinate> changeVersionsToZero(Set<ProjectCoordinate> resolved) {
         Set<ProjectCoordinate> result = Sets.newHashSet();
         for (ProjectCoordinate projectCoordinate : resolved) {
-            result.add(new ProjectCoordinate(projectCoordinate.getGroupId(), projectCoordinate.getArtifactId(), "0.0.0")); //$NON-NLS-1$
+            result.add(
+                    new ProjectCoordinate(projectCoordinate.getGroupId(), projectCoordinate.getArtifactId(), "0.0.0")); //$NON-NLS-1$
         }
         return result;
     }
@@ -541,8 +541,8 @@ public class SnippetMetadataPage extends FormPage {
                 return null;
             }
         };
-        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_TAG, Messages.DIALOG_MESSAGE_ENTER_NEW_TAG,
-                "", validator) { //$NON-NLS-1$
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_TAG, Messages.DIALOG_MESSAGE_ENTER_NEW_TAG, "", //$NON-NLS-1$
+                validator) {
             @Override
             protected void okPressed() {
                 ppTags.add(getValue());
@@ -607,8 +607,8 @@ public class SnippetMetadataPage extends FormPage {
 
             @Override
             public void handleListChange(ListChangeEvent event) {
-                if (!Arrays.equals(listViewerExtraSearchTerms.getList().getItems(), snippet.getExtraSearchTerms()
-                        .toArray())) {
+                if (!Arrays.equals(listViewerExtraSearchTerms.getList().getItems(),
+                        snippet.getExtraSearchTerms().toArray())) {
                     contentsPart.markStale();
                 } else {
                     contentsPart.markDirty();
@@ -632,8 +632,8 @@ public class SnippetMetadataPage extends FormPage {
         });
 
         // dependencies
-        ppDependencies = BeanProperties
-                .set(Snippet.class, "neededDependencies", ProjectCoordinate.class).observe(snippet); //$NON-NLS-1$
+        ppDependencies = BeanProperties.set(Snippet.class, "neededDependencies", ProjectCoordinate.class) //$NON-NLS-1$
+                .observe(snippet);
         ViewerSupport.bind(listViewerDependencies, ppDependencies, new SimpleValueProperty() {
 
             @Override

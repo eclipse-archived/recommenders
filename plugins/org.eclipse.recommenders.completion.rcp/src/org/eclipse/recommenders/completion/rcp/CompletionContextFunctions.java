@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Objects.firstNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR_CHAR;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
@@ -79,10 +79,10 @@ import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.jdt.AstBindings;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.TimeDelimitedProgressMonitor;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -213,7 +213,8 @@ public final class CompletionContextFunctions {
     public static class ExpectedTypeNamesContextFunction implements ICompletionContextFunction<Set<ITypeName>> {
 
         @Override
-        public Set<ITypeName> compute(IRecommendersCompletionContext context, CompletionContextKey<Set<ITypeName>> key) {
+        public Set<ITypeName> compute(IRecommendersCompletionContext context,
+                CompletionContextKey<Set<ITypeName>> key) {
             ASTNode completion = context.getCompletionNode().orNull();
             InternalCompletionContext core = context.get(INTERNAL_COMPLETIONCONTEXT, null);
 
@@ -399,7 +400,7 @@ public final class CompletionContextFunctions {
             ICompilationUnit cu = context.getCompilationUnit();
             ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
             try {
-                cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
+                cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
             } catch (final Exception e) {
                 log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }

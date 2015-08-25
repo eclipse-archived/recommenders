@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static java.lang.Math.min;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
@@ -58,10 +58,10 @@ import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCom
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.internal.subwords.rcp.l10n.LogMessages;
-import org.eclipse.recommenders.rcp.utils.TimeDelimitedProgressMonitor;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
+import org.eclipse.recommenders.utils.rcp.TimeDelimitedProgressMonitor;
 import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -113,7 +113,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             // TODO maybe we can get rid of that call by simply using the 'right' collector for the first time? This
             // would save ~5 ms I guess.
             NoProposalCollectingCompletionRequestor collector = new NoProposalCollectingCompletionRequestor();
-            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
+            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
             InternalCompletionContext compContext = collector.getCoreContext();
             if (compContext == null) {
                 Logs.log(LogMessages.ERROR_COMPLETION_CONTEXT_NOT_COLLECTED, cu.getPath());
@@ -304,7 +304,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             JavaContentAssistInvocationContext coreContext, int offset) {
         ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
         try {
-            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT));
+            cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
         } catch (final Exception e) {
             log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
         }

@@ -16,14 +16,15 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.internal.rcp.l10n.Messages;
-import org.eclipse.recommenders.rcp.utils.BrowserUtils;
 import org.eclipse.recommenders.rcp.utils.Shells;
+import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.PlatformUI;
 
 public class NewsNotificationPopup extends AbstractNotificationPopup {
 
@@ -31,7 +32,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     private String message;
 
     public NewsNotificationPopup(String link) {
-        super(Shells.getDisplay());
+        super(PlatformUI.getWorkbench().getDisplay());
         setFadingEnabled(true);
         setDelayClose(DELAY_CLOSE_MS);
         this.message = link;
@@ -43,19 +44,19 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         composite.setLayout(new GridLayout(1, true));
         Link link = new Link(composite, SWT.WRAP);
         link.setText(message);
-        link.setLayoutData(GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
-                .create());
+        link.setLayoutData(
+                GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT).create());
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                BrowserUtils.openInExternalBrowser(e.text);
+                Browsers.openInExternalBrowser(e.text);
             }
         });
 
         Link optout = new Link(composite, SWT.WRAP);
         optout.setText(Messages.NEWS_TURN_OFF_MESSAGE);
-        optout.setLayoutData(GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
-                .create());
+        optout.setLayoutData(
+                GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT).create());
         optout.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

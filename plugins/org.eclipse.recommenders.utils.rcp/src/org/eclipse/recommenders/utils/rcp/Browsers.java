@@ -8,10 +8,11 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils.rcp;
 
 import java.net.URL;
 
+import org.eclipse.recommenders.internal.utils.rcp.BrowserDialog;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.program.Program;
@@ -19,10 +20,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
-@Deprecated
-public final class BrowserUtils {
+public final class Browsers {
 
-    private BrowserUtils() {
+    private Browsers() {
         // Not meant to be instantiated
     }
 
@@ -68,7 +68,7 @@ public final class BrowserUtils {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                BrowserUtils.openInExternalBrowser(event.text);
+                Browsers.openInExternalBrowser(event.text);
             }
         });
     }

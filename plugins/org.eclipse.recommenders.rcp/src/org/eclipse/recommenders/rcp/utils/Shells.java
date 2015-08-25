@@ -17,6 +17,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 
+@Deprecated
 public final class Shells {
 
     private Shells() {
