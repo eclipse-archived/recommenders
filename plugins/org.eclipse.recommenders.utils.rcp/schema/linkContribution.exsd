@@ -25,21 +25,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-
+                  
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-
+                  
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-
+                  
                </documentation>
                <appinfo>
                   <meta.attribute translatable="true"/>
@@ -61,7 +61,7 @@
          <attribute name="label" type="string" use="required">
             <annotation>
                <documentation>
-                  A short description to be displayed. This part &lt;b&gt;MUST&lt;/b&gt; contain a hyperlink tag (&lt;a&gt;&lt;a/&gt;).
+                  A short description to be displayed. This part &lt;b&gt;MUST&lt;/b&gt; contain a hyperlink tag (&amp;lt;a&amp;gt; ... &amp;lt;/a&amp;gt;).
                </documentation>
             </annotation>
          </attribute>
@@ -97,7 +97,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         2.1.13
+         2.2.4
       </documentation>
    </annotation>
 
@@ -114,7 +114,7 @@
  &lt;linkContribution
   commandId=&quot;org.eclipse.recommenders.rcp.openBrowser&quot;
   icon=&quot;icon.png&quot;
-  label=&quot;Visit the &lt;a href=&quot;http://www.eclipse.org/recommenders/&quot;&gt;Project Homepage&lt;/a&gt;&quot;
+  label=&quot;Visit the &amp;lt;a href=&amp;quot;http://www.eclipse.org/recommenders/&amp;quot;&amp;gt;Project Homepage&amp;lt;/a&amp;gt;&quot;
   preferencePageId=&quot;org.eclipse.recommenders.rcp.preferencePages.root&quot;
   priority=&quot;0&quot;&gt;
  &lt;/linkContribution&gt;

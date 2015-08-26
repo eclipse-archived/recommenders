@@ -25,6 +25,4 @@ public final class Constants {
 
     public static final String NEWS_ENABLED = "news-enabled"; //$NON-NLS-1$
     public static final String NEWS_LAST_CHECK = "news-last-check"; //$NON-NLS-1$
-
-    public static final String COMMAND_HREF_ID = "org.eclipse.recommenders.rcp.linkContribution.href"; //$NON-NLS-1$
 }

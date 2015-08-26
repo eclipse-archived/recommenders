@@ -8,16 +8,16 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.links;
+package org.eclipse.recommenders.utils.rcp.preferences;
 
 import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.recommenders.internal.rcp.l10n.Messages;
-import org.eclipse.recommenders.internal.rcp.links.ContributionLink;
-import org.eclipse.recommenders.internal.rcp.links.ContributionsReader;
+import org.eclipse.recommenders.internal.utils.rcp.l10n.Messages;
+import org.eclipse.recommenders.internal.utils.rcp.preferences.ContributionLink;
+import org.eclipse.recommenders.internal.utils.rcp.preferences.ContributionsReader;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public abstract class AbstractLinkContributionPage extends PreferencePage implements IWorkbenchPreferencePage {
+
+    public static final String COMMAND_HREF_ID = "org.eclipse.recommenders.utils.rcp.linkContribution.href"; //$NON-NLS-1$
 
     private final String preferencePageId;
 

@@ -1,12 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.eclipse.recommenders.utils.rcp
+Bundle-SymbolicName: org.eclipse.recommenders.utils.rcp;singleton:=true
 Bundle-Version: 2.2.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.recommenders.utils,
  org.eclipse.ui
-Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
- com.google.common.collect;version="[15.0.0,16.0.0)"
-Export-Package: org.eclipse.recommenders.utils.rcp
+Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
+ com.google.common.base;version="[15.0.0,16.0.0)",
+ com.google.common.collect;version="[15.0.0,16.0.0)",
+ com.google.common.primitives;version="[15.0.0,16.0.0)"
+Export-Package: org.eclipse.recommenders.utils.rcp;
+  uses:="org.eclipse.core.runtime,
+   com.google.common.base,
+   org.eclipse.swt.widgets,
+   org.eclipse.jface.viewers",
+ org.eclipse.recommenders.utils.rcp.preferences;uses:="org.eclipse.ui,org.eclipse.swt.widgets,org.eclipse.jface.preference"

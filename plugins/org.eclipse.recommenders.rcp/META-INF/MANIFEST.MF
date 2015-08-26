@@ -47,7 +47,6 @@ Export-Package: org.eclipse.recommenders.internal.rcp;x-friends:="org.eclipse.re
    org.eclipse.jface.resource,
    org.eclipse.ui.services,
    org.eclipse.recommenders.utils.names",
- org.eclipse.recommenders.rcp.links;uses:="org.eclipse.ui,org.eclipse.swt.widgets,org.eclipse.jface.preference",
  org.eclipse.recommenders.rcp.utils;
   uses:="org.eclipse.jdt.core,
    org.eclipse.jdt.internal.compiler.lookup,

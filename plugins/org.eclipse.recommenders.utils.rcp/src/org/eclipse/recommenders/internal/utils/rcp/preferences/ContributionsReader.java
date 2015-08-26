@@ -8,9 +8,9 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.links;
+package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
+import static org.eclipse.recommenders.internal.utils.rcp.l10n.LogMessages.ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +35,7 @@ public final class ContributionsReader {
         // Not meant to be instantiated
     }
 
-    private static final String PREF_CONTRIBUTION_ID = "org.eclipse.recommenders.rcp.linkContribution"; //$NON-NLS-1$
+    private static final String PREF_CONTRIBUTION_ID = "org.eclipse.recommenders.utils.rcp.linkContribution"; //$NON-NLS-1$
     private static final String CONTRIBUTION_ELEMENT = "linkContribution"; //$NON-NLS-1$
 
     private static final String PREF_PAGE_ID_ATTRIBUTE = "preferencePageId"; //$NON-NLS-1$

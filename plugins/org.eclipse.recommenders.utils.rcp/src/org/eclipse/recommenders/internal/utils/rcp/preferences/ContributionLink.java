@@ -8,16 +8,16 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.links;
+package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;
-import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.ERROR_FAILED_TO_EXECUTE_COMMAND;
+import static org.eclipse.recommenders.utils.rcp.preferences.AbstractLinkContributionPage.COMMAND_HREF_ID;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.recommenders.internal.utils.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -98,7 +98,7 @@ public class ContributionLink implements Comparable<ContributionLink> {
                 handlerService.executeCommand(parameterizedCommand, null);
             }
         } catch (Exception e) {
-            Logs.log(ERROR_FAILED_TO_EXECUTE_COMMAND, commandId, e);
+            Logs.log(LogMessages.ERROR_FAILED_TO_EXECUTE_COMMAND, e, commandId);
         }
     }
 }
