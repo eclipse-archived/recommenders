@@ -11,16 +11,13 @@
 package org.eclipse.recommenders.internal.rcp;
 
 import static com.google.inject.Scopes.SINGLETON;
-import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
-import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +62,6 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -109,16 +105,6 @@ public class RcpModule extends AbstractModule implements Module {
         final JavaModelEventsService p = new JavaModelEventsService(bus, workspace);
         JavaCore.addElementChangedListener(p);
         return p;
-    }
-
-    @Singleton
-    @Provides
-    public EventBus provideWorkspaceEventBus() {
-        final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
-                "Recommenders-Bus-Thread-", //$NON-NLS-1$
-                1L, TimeUnit.MINUTES);
-        return new AsyncEventBus("Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
     }
 
     @Provides
