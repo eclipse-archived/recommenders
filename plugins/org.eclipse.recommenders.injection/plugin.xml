@@ -2,5 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="modules" name="Eclipse Code Recommenders Dependency Injection Modules Extension Point" schema="schema/injection.exsd"/>
-
+	<extension point="org.eclipse.recommenders.injection.modules">
+		<module class="org.eclipse.recommenders.internal.injection.InjectionModule"/>
+	</extension>
 </plugin>
