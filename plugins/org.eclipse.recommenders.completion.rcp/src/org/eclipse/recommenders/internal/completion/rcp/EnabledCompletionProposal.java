@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp;
 import static org.eclipse.jface.viewers.StyledString.DECORATIONS_STYLER;
 import static org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInformationControl.X_PREFERENCES;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.COMPLETION_PREFERENCE_PAGE_ID;
-import static org.eclipse.recommenders.rcp.utils.PreferencesHelper.createLinkLabelToPreferencePage;
 
 import java.text.MessageFormat;
 
@@ -27,6 +26,7 @@ import org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInform
 import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
+import org.eclipse.recommenders.utils.rcp.preferences.PreferencePages;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
@@ -36,7 +36,8 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
 
     private static final String HTTP_HOMEPAGE = "https://www.eclipse.org/recommenders/"; //$NON-NLS-1$
     private static final String HTTP_MANUAL = "https://www.eclipse.org/recommenders/manual/#completion-engines"; //$NON-NLS-1$
-    private static final String PREFERENCE_PAGE_NAME = createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
+    private static final String PREFERENCE_PAGE_NAME = PreferencePages
+            .createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
     private static final String PREFERENCE_PAGE_LINK = X_PREFERENCES + COMPLETION_PREFERENCE_PAGE_ID;
 
     private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLED_COMPLETION,

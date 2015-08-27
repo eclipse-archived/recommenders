@@ -40,6 +40,7 @@
 		<module>org.eclipse.recommenders.testing.tests</module>
 		<module>org.eclipse.recommenders.types.rcp.tests</module>
 		<module>org.eclipse.recommenders.utils.tests</module>
+		<module>org.eclipse.recommenders.utils.rcp.tests</module>
 	</modules>
 
 	<dependencies>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension-point id="org.eclipse.recommenders.utils.rcp.linkContribution" name="Link Contribution" schema="schema/linkContribution.exsd"/>
+	<extension point="org.eclipse.ui.commands">
+		<command id="org.eclipse.recommenders.utils.rcp.commands.openBrowser"
+			defaultHandler="org.eclipse.recommenders.internal.utils.rcp.preferences.OpenBrowserHandler"
+			name="%commands.openBrowser.name">
+			<commandParameter id="org.eclipse.recommenders.utils.rcp.linkContribution.href"
+				name="%commandParameter.uri.name"
+				optional="false">
+			</commandParameter>
+		</command>
+		<command id="org.eclipse.recommenders.utils.rcp.commands.openBrowserDialog"
+			defaultHandler="org.eclipse.recommenders.internal.utils.rcp.preferences.OpenBrowserDialogHandler"
+			name="%commands.openBrowser.name">
+			<commandParameter id="org.eclipse.recommenders.utils.rcp.linkContribution.href"
+				name="%commandParameter.uri.name"
+				optional="false">
+			</commandParameter>
+		</command>
+		<command id="org.eclipse.recommenders.utils.rcp.commands.openPreferences"
+			defaultHandler="org.eclipse.recommenders.internal.utils.rcp.preferences.OpenPreferencesHandler"
+			name="%commands.openPreferences.name">
+			<commandParameter id="org.eclipse.recommenders.utils.rcp.linkContribution.href"
+				name="%commandParameter.uri.name"
+				optional="false">
+			</commandParameter>
+		</command>
+	</extension>
+</plugin>

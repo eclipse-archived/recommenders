@@ -8,16 +8,12 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.utils.rcp.preferences;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
-/**
- * @deprecated use {@link org.eclipse.recommenders.utils.rcp.preferences.PreferencePages} instead
- */
-@Deprecated
-public class PreferencesHelper {
+public class PreferencePages {
 
     public static final String PREFERENCE_PAGE_EXTENTIONPOINT_ID = "org.eclipse.ui.preferencePages"; //$NON-NLS-1$
 
@@ -46,8 +42,8 @@ public class PreferencesHelper {
 
     private static String getAttributeOfPreferencePage(String preferencePageID, String attribute) {
         if (preferencePageID != null) {
-            IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                    .getConfigurationElementsFor(PREFERENCE_PAGE_EXTENTIONPOINT_ID);
+            IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                    PREFERENCE_PAGE_EXTENTIONPOINT_ID);
 
             if (elements != null) {
                 for (IConfigurationElement e : elements) {

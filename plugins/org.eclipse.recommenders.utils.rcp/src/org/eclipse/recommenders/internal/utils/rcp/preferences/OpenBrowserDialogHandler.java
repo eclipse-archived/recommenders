@@ -8,9 +8,9 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.links;
+package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
-import static org.eclipse.recommenders.internal.rcp.Constants.COMMAND_HREF_ID;
+import static org.eclipse.recommenders.utils.rcp.preferences.AbstractLinkContributionPage.COMMAND_HREF_ID;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

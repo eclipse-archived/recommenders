@@ -15,7 +15,7 @@ package org.eclipse.recommenders.internal.rcp;
 import static org.eclipse.recommenders.internal.rcp.Constants.PREF_PAGE_ID;
 
 import org.eclipse.recommenders.internal.rcp.l10n.Messages;
-import org.eclipse.recommenders.rcp.links.AbstractLinkContributionPage;
+import org.eclipse.recommenders.utils.rcp.preferences.AbstractLinkContributionPage;
 import org.eclipse.ui.IWorkbench;
 
 public class RootPreferencePage extends AbstractLinkContributionPage {

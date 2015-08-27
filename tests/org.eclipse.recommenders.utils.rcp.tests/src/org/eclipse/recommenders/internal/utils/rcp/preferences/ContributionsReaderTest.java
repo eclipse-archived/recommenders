@@ -8,7 +8,7 @@
  * Contributors:
  *    Yasser Aziza - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.links;
+package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -38,7 +38,7 @@ public class ContributionsReaderTest {
     /**
      * Bundle-SymbolicName required in order to load the {@link DEFAULT_LINK_ICON}.
      */
-    private static final String CONTRIBUTOR_ID = "org.eclipse.recommenders.rcp.tests";
+    private static final String CONTRIBUTOR_ID = "org.eclipse.recommenders.utils.rcp.tests";
 
     private static final String DEFAULT_LINK_ICON = "icons/obj16/eclipse.png";
 
