@@ -75,7 +75,7 @@ public final class AstBindings {
             final ITypeName res = VmTypeName.get(sb.toString());
             return of(res);
         } catch (final Exception e) {
-            log(FAILED_TO_CREATE_TYPENAME, b, e);
+            log(ERROR_FAILED_TO_CREATE_TYPENAME, b, e);
             return absent();
         }
     }
@@ -156,7 +156,7 @@ public final class AstBindings {
         try {
             ref = VmMethodName.get(sb.toString());
         } catch (final Exception e1) {
-            log(FAILED_TO_CREATE_METHODNAME, b, e1);
+            log(ERROR_FAILED_TO_CREATE_METHODNAME, b, e1);
             return absent();
         }
         return of(ref);

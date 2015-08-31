@@ -29,6 +29,8 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
     public static String LOG_ERROR_FAILED_TO_CREATE_METHODNAME;
 
+    public static String LOG_WARN_FAILED_TO_GET_TEXT_SELECTION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

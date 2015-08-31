@@ -12,7 +12,7 @@ package org.eclipse.recommenders.jdt.templates;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
-import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
+import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -46,9 +47,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * @see <a
- *      href="http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Fconcepts%2Fconcept-template-variables.htm">Template
- *      variables</a>
+ * @see <a href=
+ *      "http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Fconcepts%2Fconcept-template-variables.htm">
+ *      Template variables</a>
  */
 public class SnippetCodeBuilder {
 
@@ -78,9 +79,15 @@ public class SnippetCodeBuilder {
         try {
             text = doc.get(start, length);
         } catch (BadLocationException e) {
-            text = null;
+            IJavaElement javaElement = ast.getJavaElement();
+            log(WARN_FAILED_TO_GET_TEXT_SELECTION, e, javaElement == null ? null : javaElement.getHandleIdentifier(),
+                    start, length);
+            return "";
         }
         if (text == null) {
+            IJavaElement javaElement = ast.getJavaElement();
+            log(WARN_FAILED_TO_GET_TEXT_SELECTION, javaElement == null ? null : javaElement.getHandleIdentifier(),
+                    start, length);
             return ""; //$NON-NLS-1$
         }
         final char[] chars = text.toCharArray();
