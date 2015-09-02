@@ -78,8 +78,6 @@ import com.google.common.util.concurrent.AbstractIdleService;
 
 public class ProjectTypesIndex extends AbstractIdleService implements IProjectTypesIndex {
 
-    private static final int TICKS = 80000;
-
     private static final String F_PACAKGE_FRAGEMENT_ROOT_TYPE = "pfrType"; //$NON-NLS-1$
 
     private static final String F_NAME = "name"; //$NON-NLS-1$
@@ -91,8 +89,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private static final String V_JAVA_LANG_OBJECT = "java.lang.Object"; //$NON-NLS-1$
     private static final String V_ARCHIVE = "archive"; //$NON-NLS-1$
 
-    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(new Term(
-            F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
+    private static final TermQuery TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE = new TermQuery(
+            new Term(F_PACAKGE_FRAGEMENT_ROOT_TYPE, V_ARCHIVE));
 
     private final IJavaProject project;
     private final File indexDir;
@@ -176,8 +174,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private List<IPackageFragmentRoot> findArchivePackageFragmentRoots() {
-        Iterable<IPackageFragmentRoot> filtered = Iterables.filter(
-                JavaElementsFinder.findPackageFragmentRoots(project), new ArchiveFragmentRootsOnlyPredicate());
+        Iterable<IPackageFragmentRoot> filtered = Iterables.filter(JavaElementsFinder.findPackageFragmentRoots(project),
+                new ArchiveFragmentRootsOnlyPredicate());
         Iterable<IPackageFragmentRoot> result;
         result = Iterables.filter(filtered, new Predicate<IPackageFragmentRoot>() {
 
@@ -322,14 +320,20 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                SubMonitor progress = SubMonitor.convert(monitor,
-                        MessageFormat.format(Messages.MONITOR_NAME_INDEXING, project.getElementName()), TICKS);
                 Thread thread = Thread.currentThread();
                 int priority = thread.getPriority();
                 try {
                     thread.setPriority(Thread.MIN_PRIORITY);
+                    return doRun(monitor);
+                } finally {
+                    thread.setPriority(priority);
+                }
+            }
+
+            private IStatus doRun(IProgressMonitor monitor) {
+                try {
                     clear();
-                    rebuild(progress);
+                    rebuild(monitor);
                     commit();
                 } catch (OperationCanceledException e) {
                     res.setException(e);
@@ -338,7 +342,6 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                     res.setException(e);
                     res.setResult(new Status(IStatus.ERROR, Constants.BUNDLE_ID, e.getMessage(), e));
                 } finally {
-                    thread.setPriority(priority);
                     monitor.done();
                 }
                 res.setResult(Status.OK_STATUS);
@@ -351,25 +354,29 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     @VisibleForTesting
     synchronized void rebuild(IProgressMonitor monitor) {
-        SubMonitor progress = SubMonitor.convert(monitor);
         List<IPackageFragmentRoot> roots = findArchivePackageFragmentRoots();
+        SubMonitor progress = SubMonitor.convert(monitor, Messages.MONITOR_NAME_INDEXING, roots.size());
         for (IPackageFragmentRoot root : roots) {
-            progress.subTask(root.getElementName());
-            ImmutableList<IType> types = findTypes(root);
-            for (IType type : types) {
-                if (progress.isCanceled()) {
-                    setRebuildAfterNextAccess(true);
-                    throw new OperationCanceledException();
-                }
-                indexType(type, progress.newChild(1));
-            }
-            File location = JavaElementsFinder.findLocation(root).orNull();
-            if (location != null) {
-                registerArchivePackageFragmentRoot(location);
-            }
-            commit();
+            rebuildRoot(root, progress.newChild(1));
         }
-        progress.done();
+    }
+
+    private void rebuildRoot(IPackageFragmentRoot root, SubMonitor monitor) {
+        ImmutableList<IType> types = findTypes(root);
+        SubMonitor progress = SubMonitor.convert(monitor, types.size());
+        progress.subTask(root.getElementName());
+        for (IType type : types) {
+            if (progress.isCanceled()) {
+                setRebuildAfterNextAccess(true);
+                throw new OperationCanceledException();
+            }
+            indexType(type, progress.newChild(1));
+        }
+        File location = JavaElementsFinder.findLocation(root).orNull();
+        if (location != null) {
+            registerArchivePackageFragmentRoot(location);
+        }
+        commit();
     }
 
     private void cancelRebuild() {
@@ -398,7 +405,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         }
     }
 
-    private void indexType(IType type, IProgressMonitor monitor) {
+    private void indexType(IType type, SubMonitor monitor) {
         Document doc = new Document();
         {
             // name:
@@ -435,6 +442,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private void addDocument(Document doc, IProgressMonitor monitor) {
+        SubMonitor progress = SubMonitor.convert(monitor, 1);
         try {
             if (!monitor.isCanceled()) {
                 writer.addDocument(doc);
@@ -442,7 +450,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         } catch (Exception e) {
             log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         } finally {
-            monitor.done();
+            progress.worked(1);
         }
     }
 
