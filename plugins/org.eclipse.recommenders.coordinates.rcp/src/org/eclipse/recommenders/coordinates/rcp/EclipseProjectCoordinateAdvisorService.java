@@ -179,6 +179,12 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
             return;
         }
 
+        if (deserializedCache == null) {
+            // Can happen in json == "".
+            Logs.log(ERROR_FAILED_TO_READ_CACHED_COORDINATES, persistenceFile);
+            return;
+        }
+
         projectCoordinateCache.putAll(deserializedCache);
     }
 

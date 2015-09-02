@@ -14,17 +14,20 @@ import static org.eclipse.core.runtime.IStatus.ERROR;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.utils.Logs.ILogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
 
-    private static int code = 1;
-
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
+    private static int code = 1;
+
+    public static final ILogMessage ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND);
-    public static final LogMessages ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_FAILED_TO_OPEN_BROWSER = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_OPEN_BROWSER);
+    public static final ILogMessage ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE);
 
     private LogMessages(int severity, String message) {

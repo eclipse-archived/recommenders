@@ -362,7 +362,7 @@ public final class JavaElementsFinder {
                 break;
             }
         } catch (Exception e) {
-            Logs.log(LogMessages.FAILED_TO_CREATE_TYPENAME, e,
+            Logs.log(LogMessages.ERROR_FAILED_TO_CREATE_TYPENAME, e,
                     charToString(typeSignature) + (enclosing != null ? " in " + enclosing.getElementName() : ""));
         }
         return Optional.<ITypeName>fromNullable(res);

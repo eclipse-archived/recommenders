@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.utils.rcp;
 
+import static org.eclipse.recommenders.internal.utils.rcp.l10n.LogMessages.ERROR_FAILED_TO_OPEN_BROWSER;
+import static org.eclipse.recommenders.utils.Logs.log;
+
 import java.net.URL;
 
 import org.eclipse.recommenders.internal.utils.rcp.BrowserDialog;
@@ -35,6 +38,7 @@ public final class Browsers {
             IWebBrowser defaultBrowser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser(null);
             defaultBrowser.openURL(new URL(url));
         } catch (Exception e) {
+            log(ERROR_FAILED_TO_OPEN_BROWSER, e, url);
             // Ignore failure; this method is best effort.
         }
     }
@@ -54,7 +58,7 @@ public final class Browsers {
             externalBrowser.openURL(new URL(url));
         } catch (Exception e) {
             if (!Program.launch(url)) {
-                openInDefaultBrowser(url);
+                openInDefaultBrowser(url); // or log if that fails as well.
             }
         }
     }
@@ -68,7 +72,7 @@ public final class Browsers {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                Browsers.openInExternalBrowser(event.text);
+                openInExternalBrowser(event.text);
             }
         });
     }

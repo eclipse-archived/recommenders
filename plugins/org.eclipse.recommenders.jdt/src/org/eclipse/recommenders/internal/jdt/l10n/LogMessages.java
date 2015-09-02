@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.jdt.l10n;
 
-import static org.eclipse.core.runtime.IStatus.ERROR;
+import static org.eclipse.core.runtime.IStatus.*;
 
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
@@ -19,9 +19,9 @@ import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
 
-    private static int code = 1;
-
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
+
+    private static int code = 1;
 
     public static final ILogMessage ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED);
@@ -41,12 +41,15 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH);
     public static final ILogMessage ERROR_CANNOT_FIND_TYPE_IN_PROJECT = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT);
-    public static final LogMessages FAILED_TO_CREATE_TYPENAME = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_FAILED_TO_CREATE_TYPENAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_CREATE_TYPENAME);
-    public static final LogMessages FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_FAILED_TO_CREATE_METHODNAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_CREATE_METHODNAME);
-    public static final LogMessages ERROR_CANNOT_DETERMINE_LOCATION = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_CANNOT_DETERMINE_LOCATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_DETERMINE_LOCATION);
+
+    public static final ILogMessage WARN_FAILED_TO_GET_TEXT_SELECTION = new LogMessages(WARNING,
+            Messages.LOG_WARN_FAILED_TO_GET_TEXT_SELECTION);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

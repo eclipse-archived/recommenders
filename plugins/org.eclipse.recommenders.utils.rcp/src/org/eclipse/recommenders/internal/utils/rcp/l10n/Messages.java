@@ -19,6 +19,7 @@ public final class Messages extends NLS {
     public static String PREFPAGE_LINKS_DESCRIPTION;
 
     public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
+    public static String LOG_ERROR_FAILED_TO_OPEN_BROWSER;
     public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
 
     static {
