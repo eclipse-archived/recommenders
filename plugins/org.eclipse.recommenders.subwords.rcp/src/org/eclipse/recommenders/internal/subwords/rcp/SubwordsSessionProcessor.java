@@ -413,6 +413,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
                 if (minPrefixLengthForTypes < prefix.length() && StringUtils.equalsIgnoreCase(matchingArea, prefix)) {
                     relevanceBoost += 16 * RelevanceConstants.R_EXACT_NAME;
+                    proposal.setTag(IS_EXACT_MATCH, true);
                 }
 
                 // We only apply case matching to genuine Java proposals, i.e., proposals link HTML tags are ranked
@@ -423,7 +424,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                     // Don't adjust relevance.
                 } else if (startsWithIgnoreCase(matchingArea, prefix)) {
                     proposal.setTag(SUBWORDS_SCORE, null);
-                    proposal.setTag(IS_PREFIX_MATCH, true);
+                    proposal.setTag(IS_CASE_INSENSITIVE_PREFIX_MATCH, true);
                     relevanceBoost = IGNORE_CASE_RANGE_START + relevanceBoost;
                 } else if (CharOperation.camelCaseMatch(prefix.toCharArray(), matchingArea.toCharArray())
                         && isFromJavaCompletionProposalComputer(proposal)) {
