@@ -43,9 +43,17 @@ public enum ProposalTag implements IProposalTag {
      */
     IS_CAMEL_CASE_MATCH,
     /**
+     * Key to access a boolean value indicating whether the given proposal was an exact match.
+     */
+    IS_EXACT_MATCH,
+    /**
      * Key to access a boolean value indicating whether the given proposal was a pure prefix match.
      */
     IS_PREFIX_MATCH,
+    /**
+     * Key to access a boolean value indicating whether the given proposal was a prefix match only when ignoring casing.
+     */
+    IS_CASE_INSENSITIVE_PREFIX_MATCH,
     /**
      * Key to access a boolean value indicating whether the given proposal was visible to the user until the end of the
      * completion session.

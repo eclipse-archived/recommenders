@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.jdt.templates;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.*;
@@ -54,6 +55,7 @@ import com.google.common.collect.Sets;
 public class SnippetCodeBuilder {
 
     private final CompilationUnit ast;
+    private final ASTNode startNode;
     private final IDocument doc;
     private final IRegion textSelection;
 
@@ -64,12 +66,26 @@ public class SnippetCodeBuilder {
     private final StringBuilder sb = new StringBuilder();
 
     public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc, @Nonnull IRegion textSelection) {
-        Preconditions.checkNotNull(ast);
-        Preconditions.checkNotNull(doc);
-        Preconditions.checkNotNull(textSelection);
-        this.ast = ast;
-        this.doc = doc;
-        this.textSelection = textSelection;
+        this(ast, ast, doc, textSelection);
+    }
+
+    /**
+     * @param startNode
+     *            an {@code ASTNode} which <strong>must</strong> completely cover the {@code textSelection}. The closer
+     *            the node covers the selection the better the performance of {@link SnippetCodeBuilder#build()}. If in
+     *            doubt, use {@link #SnippetCodeBuilder(CompilationUnit, IDocument, IRegion)} to pass the entire
+     *            {@code CompilationUnit}.
+     */
+    public SnippetCodeBuilder(@Nonnull ASTNode startNode, @Nonnull IDocument doc, @Nonnull IRegion textSelection) {
+        this((CompilationUnit) startNode.getRoot(), startNode, doc, textSelection);
+    }
+
+    private SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull ASTNode startNode, @Nonnull IDocument doc,
+            @Nonnull IRegion textSelection) {
+        this.ast = requireNonNull(ast);
+        this.startNode = requireNonNull(startNode);
+        this.doc = requireNonNull(doc);
+        this.textSelection = requireNonNull(textSelection);
     }
 
     public String build() {
@@ -92,7 +108,7 @@ public class SnippetCodeBuilder {
         }
         final char[] chars = text.toCharArray();
 
-        final ASTNode enclosingNode = NodeFinder.perform(ast, start, length);
+        final ASTNode enclosingNode = NodeFinder.perform(startNode, start, length);
 
         outer: for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
