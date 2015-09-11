@@ -73,7 +73,14 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
 
     private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Document model)
             throws XPathExpressionException {
-        XPathFactory factory = XPathFactory.newInstance();
+        XPathFactory factory;
+        try {
+            factory = XPathFactory.newInstance();
+        } catch (RuntimeException e) {
+            // XPathFactory.newInstance() may fail. See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=477141>
+            log.error("Could not create XPathFactory. Try running Eclipse with -Djaxp.debug=true", e);
+            return absent();
+        }
         String groupId = factory.newXPath().evaluate("/project/groupId/text()", model);
         String artifactId = factory.newXPath().evaluate("/project/artifactId/text()", model);
         String version = factory.newXPath().evaluate("/project/version/text()", model);
