@@ -158,6 +158,10 @@ public class ProposalUtilsTest {
                 classbody("Example", "public void method() {}"),
                 method("Scenario", "new Example() { public void method() { this.method$ } };"),
                 METHOD_VOID));
+        scenarios.add(scenario("Overridden method of anonymous class",
+                classbody("Example", ""),
+                method("Scenario", "new Example() { public int hashCode() { this.hashCode$ } };"),
+                EXAMPLE_HASH_CODE));
         scenarios.add(postJdt451Scenario("Method of parameterized anonymous class",
                 classbody("Example<T>", "public void method() {}"),
                 method("Scenario", "new Example<String>() { public void method() { this.method$ } };"),
