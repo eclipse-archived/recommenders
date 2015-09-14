@@ -21,28 +21,30 @@ public abstract class Result<T> {
     public static final int OK = 0;
     public static final int ABSENT = -1;
 
+    private static final Absent DEFAULT_ABSENT = new Absent(ABSENT, null);
+
     public static <T> Result<T> of(T reference) {
         return new Present<T>(requireNonNull(reference));
     }
 
     public static <T> Result<T> fromNullable(@Nullable T nullableReference) {
-        return (nullableReference == null) ? Result.<T>absent() : new Present<T>(nullableReference);
+        return nullableReference == null ? Result.<T>absent() : new Present<T>(nullableReference);
     }
 
     public static <T> Result<T> absent() {
-        return (Result<T>) Absent.INSTANCE;
+        return (Result<T>) DEFAULT_ABSENT;
     }
 
     public static <T> Result<T> absent(int code) {
-        return (Result<T>) new AbsentWithReason(code, null);
+        return (Result<T>) new Absent(code, null);
     }
 
     public static <T> Result<T> absent(Throwable exception) {
-        return (Result<T>) new AbsentWithReason(0, exception);
+        return (Result<T>) new Absent(ABSENT, exception);
     }
 
     public static <T> Result<T> absent(int code, Throwable exception) {
-        return (Result<T>) new AbsentWithReason(code, exception);
+        return (Result<T>) new Absent(code, exception);
     }
 
     public abstract boolean isPresent();
@@ -56,6 +58,12 @@ public abstract class Result<T> {
     public abstract T or(T defaultValue);
 
     public abstract Result<Throwable> getException();
+
+    @Override
+    public abstract boolean equals(@Nullable Object other);
+
+    @Override
+    public abstract int hashCode();
 
     private static final class Present<T> extends Result<T> {
 
@@ -96,30 +104,40 @@ public abstract class Result<T> {
         }
 
         @Override
-        public String toString() {
-            return "Result.of(" + reference + ")";
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other instanceof Present) {
-                Present<?> that = (Present<?>) other;
-                return reference.equals(that.reference);
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
             }
-            return false;
+            if (other == null) {
+                return false;
+            }
+            if (getClass() != other.getClass()) {
+                return false;
+            }
+            Present<?> that = (Present<?>) other;
+            return Objects.equals(this.reference, that.reference);
         }
 
         @Override
         public int hashCode() {
-            return 0x598df91c + reference.hashCode();
+            return Objects.hash(reference);
+        }
+
+        @Override
+        public String toString() {
+            return "Result.of(" + reference + ")";
         }
     }
 
     private static final class Absent extends Result<Object> {
 
-        private static final Absent INSTANCE = new Absent();
+        private final int reason;
+        private final Throwable exception;
 
-        private Absent() {
+        private Absent(int reason, @Nullable Throwable exception) {
+            ensureIsTrue(reason != OK);
+            this.reason = reason;
+            this.exception = exception;
         }
 
         @Override
@@ -129,7 +147,7 @@ public abstract class Result<T> {
 
         @Override
         public boolean hasReason() {
-            return false;
+            return reason != ABSENT;
         }
 
         @Override
@@ -144,63 +162,6 @@ public abstract class Result<T> {
 
         @Override
         public int getReason() {
-            return ABSENT;
-        }
-
-        @Override
-        public Result<Throwable> getException() {
-            return Result.absent();
-        }
-
-        @Override
-        public String toString() {
-            return "Result.absent()";
-        }
-
-        @Override
-        public boolean equals(@Nullable Object that) {
-            return this == that;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0x598df91c;
-        }
-    }
-
-    private static final class AbsentWithReason extends Result<Object> {
-
-        private final int reason;
-        private final Throwable exception;
-
-        private AbsentWithReason(int reason, Throwable exception) {
-            ensureIsTrue(reason < ABSENT || reason > OK, "Reason must not be -1 or 0.");
-            this.reason = reason;
-            this.exception = exception;
-        }
-
-        @Override
-        public boolean isPresent() {
-            return false;
-        }
-
-        @Override
-        public boolean hasReason() {
-            return true;
-        }
-
-        @Override
-        public Object or(Object defaultValue) {
-            return defaultValue;
-        }
-
-        @Override
-        public Object get() {
-            throw Throws.throwIllegalStateException("cannot get() value from AbsentWithReason");
-        }
-
-        @Override
-        public int getReason() {
             return reason;
         }
 
@@ -210,22 +171,28 @@ public abstract class Result<T> {
         }
 
         @Override
-        public String toString() {
-            return "Result.error(" + reason + ", " + exception + ")";
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other instanceof AbsentWithReason) {
-                AbsentWithReason that = (AbsentWithReason) other;
-                return reason == that.reason && Objects.equals(exception, that.exception);
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
             }
-            return false;
+            if (other == null) {
+                return false;
+            }
+            if (getClass() != other.getClass()) {
+                return false;
+            }
+            Absent that = (Absent) other;
+            return this.reason == that.reason && Objects.equals(this.exception, that.exception);
         }
 
         @Override
         public int hashCode() {
-            return 0x598df91c + reason + (exception != null ? exception.hashCode() : 0);
+            return Objects.hash(reason, exception);
+        }
+
+        @Override
+        public String toString() {
+            return "Result.absent(" + reason + ", " + exception + ")";
         }
     }
 }
