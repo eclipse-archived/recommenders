@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.constructors.rcp;singleton:=true
-Bundle-Version: 2.2.4.qualifier
+Bundle-Version: 2.2.5.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -11,13 +11,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
- org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.constructors;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.injection;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.models;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.models.rcp;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.rcp;bundle-version="[2.2.4,2.2.5)",
- org.eclipse.recommenders.utils;bundle-version="[2.2.4,2.2.5)",
+ org.eclipse.recommenders.completion.rcp;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.constructors;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.injection;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.models;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.models.rcp;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.2.5,2.2.6)",
+ org.eclipse.recommenders.utils;bundle-version="[2.2.5,2.2.6)",
  org.eclipse.ui
 Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
