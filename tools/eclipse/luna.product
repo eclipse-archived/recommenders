@@ -9,9 +9,9 @@
    <launcherArgs>
       <programArgs>-console
       </programArgs>
-      <vmArgs>-Xmx512m
+      <vmArgs>-Declipse.buildId=runtime
+-Xmx512m
 -XX:MaxPermSize=256m
--Declipse.buildId=runtime
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -37,26 +37,13 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.cvs"/>
-      <feature id="org.eclipse.cvs.source"/>
       <feature id="org.eclipse.ecf.core.feature"/>
-      <feature id="org.eclipse.ecf.core.source.feature"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature"/>
-      <feature id="org.eclipse.ecf.core.ssl.source.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.source.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.source.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.emf.common.source"/>
       <feature id="org.eclipse.emf.databinding"/>
       <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.emf.ecore.source"/>
+      <feature id="org.eclipse.emf.source"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.core.feature.source"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature"/>
@@ -75,19 +62,22 @@
       <feature id="org.eclipse.jgit"/>
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.rcp.source"/>
-      <feature id="org.eclipse.sdk"/>
-      <feature id="org.eclipse.mylyn.commons"/>
-      <feature id="org.eclipse.mylyn.commons.notifications"/>
+      <feature id="org.eclipse.mylyn_feature"/>
+      <feature id="org.eclipse.mylyn.commons.sdk"/>
+      <feature id="org.eclipse.mylyn.context_feature"/>
+      <feature id="org.eclipse.mylyn.java_feature"/>
+      <feature id="org.eclipse.mylyn.pde_feature"/>
       <feature id="org.eclipse.pde"/>
       <feature id="org.eclipse.pde.source"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.platform.source"/>
       <feature id="org.eclipse.recommenders.3rd.feature"/>
-      <feature id="org.eclipse.recommenders.devel.feature"/>
-      <feature id="org.eclipse.recommenders.feature.rcp"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
+      <feature id="org.eclipse.recommenders.mylyn.rcp.feature"/>
       <feature id="org.eclipse.recommenders.news.rcp.feature"/>
       <feature id="org.eclipse.recommenders.snipmatch.rcp.feature"/>
+      <feature id="org.eclipse.sdk"/>
    </features>
+
 
 </product>

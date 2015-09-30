@@ -72,7 +72,7 @@
 <unit id="org.objenesis" version="1.0.0.v201105211943"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- This location points to the recommended Orbit build for Kepler SR2. -->
+<!-- Recommended Orbit build for Kepler SR2 -->
 <repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -88,8 +88,8 @@
 <unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9004 -->
 <unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
-<!-- This location points to the latest recommended build, as not all dependencies are part of the recommended Orbit build for Kepler SR2. -->
-<repository location="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
+<!-- Recommended Orbit build for Luna SR2, as not all dependencies are part of the recommended Orbit build for Kepler SR2 -->
+<repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
