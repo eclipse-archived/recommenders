@@ -16,7 +16,6 @@
 	<name>Targets Definitions</name>
 
 	<modules>
-		<module>juno</module>
 		<module>kepler</module>
 		<module>luna</module>
 		<module>mars</module>

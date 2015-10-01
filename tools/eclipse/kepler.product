@@ -3,14 +3,14 @@
 
 <product id="org.eclipse.sdk.ide" application="org.eclipse.ui.ide.workbench" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
       <programArgs>-console
       </programArgs>
-      <vmArgs>-Xmx512m
+      <vmArgs>-Declipse.buildId=runtime
+-Xmx512m
 -XX:MaxPermSize=256m
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -26,7 +26,6 @@
       </win>
    </launcher>
 
-
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</linux>
       <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</macos>
@@ -38,12 +37,11 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.cvs"/>
-      <feature id="org.eclipse.cvs.source"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.emf.databinding"/>
       <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.emf.source"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.core.feature.source"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature"/>
@@ -62,16 +60,21 @@
       <feature id="org.eclipse.jgit"/>
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.rcp.source"/>
-      <feature id="org.eclipse.sdk"/>
+      <feature id="org.eclipse.mylyn_feature"/>
+      <feature id="org.eclipse.mylyn.commons.sdk"/>
+      <feature id="org.eclipse.mylyn.context_feature"/>
+      <feature id="org.eclipse.mylyn.java_feature"/>
+      <feature id="org.eclipse.mylyn.pde_feature"/>
       <feature id="org.eclipse.pde"/>
       <feature id="org.eclipse.pde.source"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.platform.source"/>
       <feature id="org.eclipse.recommenders.3rd.feature"/>
-      <feature id="org.eclipse.recommenders.devel.feature"/>
-      <feature id="org.eclipse.recommenders.feature.rcp"/>
       <feature id="org.eclipse.recommenders.rcp.feature"/>
+      <feature id="org.eclipse.recommenders.mylyn.rcp.feature"/>
+      <feature id="org.eclipse.recommenders.news.rcp.feature"/>
       <feature id="org.eclipse.recommenders.snipmatch.rcp.feature"/>
+      <feature id="org.eclipse.sdk"/>
    </features>
 
 
