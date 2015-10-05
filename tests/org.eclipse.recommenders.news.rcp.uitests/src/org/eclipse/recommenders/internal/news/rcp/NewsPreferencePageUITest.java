@@ -63,7 +63,7 @@ public class NewsPreferencePageUITest {
 
         applyChangesAndReopenPreferencePage();
 
-        assertThat(bot.table().getTableItem(2).getText(), is(equalTo(VALID_FEED_NAME)));
+        assertThat(bot.table().getTableItem(1).getText(), is(equalTo(VALID_FEED_NAME)));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class NewsPreferencePageUITest {
     @Test
     public void testRemoveCustomFeed() {
         addCustomFeed(bot);
-        bot.table().getTableItem(2).select();
+        bot.table().getTableItem(1).select();
         bot.button(Messages.PREFPAGE_BUTTON_REMOVE).click();
         applyChangesAndReopenPreferencePage();
 
@@ -143,26 +143,26 @@ public class NewsPreferencePageUITest {
     @Test
     public void testEditCustomFeed() {
         addCustomFeed(bot);
-        bot.table().getTableItem(2).select();
+        bot.table().getTableItem(1).select();
         bot.button(Messages.PREFPAGE_BUTTON_EDIT).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME_A);
         bot.button("OK").click();
         applyChangesAndReopenPreferencePage();
 
         assertThat(bot.table().rowCount(), is(equalTo(3)));
-        assertThat(bot.table().getTableItem(2).getText(), is(equalTo(VALID_FEED_NAME_A)));
+        assertThat(bot.table().getTableItem(1).getText(), is(equalTo(VALID_FEED_NAME_A)));
     }
 
     @Test
     public void testEditCustomFeedByDoubleClick() {
         addCustomFeed(bot);
-        bot.table().doubleClick(2, 0);
+        bot.table().doubleClick(1, 0);
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME_A);
         bot.button("OK").click();
         applyChangesAndReopenPreferencePage();
 
         assertThat(bot.table().rowCount(), is(equalTo(3)));
-        assertThat(bot.table().getTableItem(2).getText(), is(equalTo(VALID_FEED_NAME_A)));
+        assertThat(bot.table().getTableItem(1).getText(), is(equalTo(VALID_FEED_NAME_A)));
     }
 
     @Test

@@ -26,6 +26,10 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.INewsService;
@@ -46,7 +50,9 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -196,6 +202,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
                 @Override
                 public void mouseDoubleClick(MouseEvent e) {
+                    tableViewer.setSelection(new StructuredSelection(FeedDescriptor.class), true);
                     TableItem item = tableViewer.getTable().getItem(new Point(e.x, e.y));
                     if (item == null) {
                         return;
@@ -273,12 +280,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         private FeedDescriptor getSelectedFeed() {
-            List<FeedDescriptor> tableInput = getTableInput();
-            int index = tableViewer.getTable().getSelectionIndex();
-            if (index != -1) {
-                return tableInput.get(index);
-            }
-            return null;
+            IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
+            return (FeedDescriptor) selected.getFirstElement();
         }
 
         protected void removeFeed(FeedDescriptor feed) {
@@ -306,7 +309,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             if (configurations == null) {
                 return Lists.newArrayList();
             }
-            return configurations;
+            return Lists.newArrayList(configurations);
         }
 
         protected void addNewFeed() {
@@ -374,6 +377,15 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             }
 
             tableViewer.setInput(input);
+            tableViewer.setComparator(new ViewerComparator() {
+                @Override
+                public int compare(Viewer viewer, Object e1, Object e2) {
+                    String feedName = Strings.nullToEmpty(((FeedDescriptor) e1).getName());
+                    String otherFeedName = Strings.nullToEmpty(((FeedDescriptor) e2).getName());
+                    return ComparisonChain.start().compare(feedName, otherFeedName, String.CASE_INSENSITIVE_ORDER)
+                            .compare(feedName, otherFeedName).result();
+                }
+            });
             tableViewer.setCheckedElements(checkedElements.toArray());
         }
 
