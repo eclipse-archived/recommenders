@@ -20,17 +20,23 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.rcp.utils.CompilerBindings;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
@@ -45,6 +51,14 @@ public final class ProposalUtils {
     private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
     private static final char[] JAVA_LANG_OBJECT = "Ljava.lang.Object;".toCharArray(); //$NON-NLS-1$
 
+    private static final Method INTERNAL_COMPLETION_PROPOSAL_GET_BINDING = Reflections
+            .getDeclaredMethod(InternalCompletionProposal.class, "getBinding").orNull(); //$NON-NLS-1$
+
+    @VisibleForTesting
+    public static boolean isGetBindingSupported() {
+        return INTERNAL_COMPLETION_PROPOSAL_GET_BINDING != null;
+    }
+
     /**
      * Workaround needed to handle proposals with generic signatures properly.
      *
@@ -57,6 +71,23 @@ public final class ProposalUtils {
     public static Optional<IMethodName> toMethodName(CompletionProposal proposal) {
         Preconditions.checkArgument(isKindSupported(proposal));
 
+        if (INTERNAL_COMPLETION_PROPOSAL_GET_BINDING != null && proposal instanceof InternalCompletionProposal) {
+            try {
+                MethodBinding binding = (MethodBinding) INTERNAL_COMPLETION_PROPOSAL_GET_BINDING.invoke(proposal);
+                IMethodName methodName = CompilerBindings.toMethodName(binding).orNull();
+                if (methodName == null) {
+                    return toMethodNameFallback(proposal);
+                }
+                return Optional.of(methodName);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                return toMethodNameFallback(proposal);
+            }
+        }
+
+        return toMethodNameFallback(proposal);
+    }
+
+    private static Optional<IMethodName> toMethodNameFallback(CompletionProposal proposal) {
         if (isArrayCloneMethod(proposal)) {
             return Optional.of(OBJECT_CLONE);
         }
@@ -101,16 +132,16 @@ public final class ProposalUtils {
 
     /**
      * Ensures that the separator of inner and outer types is always a dollar sign.
-     * 
+     *
      * <p>
      * This is necessary, as JDT uses a dot rather than dollar sign to separate inner and outer type <em>if</em> the
      * outer type is parameterized.
      * </p>
-     * 
+     *
      * <p>
      * Examples:
      * </p>
-     * 
+     *
      * <ul>
      * <li><code>org.example.Outer$Inner&lt:java.lang.String&gt;</code> ->
      * <code>org.example.Outer$Inner&lt:java.lang.String&gt;</code></li>

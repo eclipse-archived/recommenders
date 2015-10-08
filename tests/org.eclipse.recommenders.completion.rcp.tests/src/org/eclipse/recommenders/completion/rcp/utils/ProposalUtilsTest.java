@@ -38,7 +38,6 @@ public class ProposalUtilsTest {
 
     private static final IMethodName NESTED_METHOD_VOID = VmMethodName.get("LExample$Nested.method()V");
     private static final IMethodName INNER_METHOD_VOID = VmMethodName.get("LExample$Inner.method()V");
-    private static final IMethodName ANONYMOUS_METHOD_VOID = VmMethodName.get("LScenario$1.method()V");
 
     private static final IMethodName METHOD_INTS = VmMethodName.get("LExample.method([I)V");
     private static final IMethodName METHOD_OBJECTS = VmMethodName.get("LExample.method([Ljava/lang/Object;)V");
@@ -154,14 +153,18 @@ public class ProposalUtilsTest {
                 method("new Example<String>().new Inner().method$"),
                 INNER_METHOD_VOID));
 
-        scenarios.add(ignoredScenario("Method of anonymous class",
+        scenarios.add(postJdt451Scenario("Method of anonymous class",
                 classbody("Example", "public void method() {}"),
                 method("Scenario", "new Example() { public void method() { this.method$ } };"),
-                ANONYMOUS_METHOD_VOID));
-        scenarios.add(ignoredScenario("Method of parameterized anonymous class",
+                METHOD_VOID));
+        scenarios.add(scenario("Overridden method of anonymous class",
+                classbody("Example", ""),
+                method("Scenario", "new Example() { public int hashCode() { this.hashCode$ } };"),
+                EXAMPLE_HASH_CODE));
+        scenarios.add(postJdt451Scenario("Method of parameterized anonymous class",
                 classbody("Example<T>", "public void method() {}"),
                 method("Scenario", "new Example<String>() { public void method() { this.method$ } };"),
-                ANONYMOUS_METHOD_VOID));
+                METHOD_VOID));
 
         scenarios.add(scenario("Generic method with parameter of raw class",
                 classbody("Example<T>", "public void method(T t) {}"),
@@ -175,15 +178,15 @@ public class ProposalUtilsTest {
                 classbody("Example<O extends Object>", "public void method(O o) {}"),
                 method("new Example().method$"),
                 METHOD_OBJECT));
-        scenarios.add(ignoredScenario("Method With Unspecified Bounded Class Parameter As Argument",
+        scenarios.add(postJdt451Scenario("Method With Unspecified Bounded Class Parameter As Argument",
                 classbody("Example<N extends Number>", "public void method(N n) {}"),
                 method("new Example().method$"),
                 METHOD_NUMBER));
-        scenarios.add(ignoredScenario("Method With Specified Bounded Class Parameter As Argument",
+        scenarios.add(postJdt451Scenario("Method With Specified Bounded Class Parameter As Argument",
                 classbody("Example<N extends Number>", "public void method(N n) {}"),
                 method("new Example<Integer>().method$"),
                 METHOD_NUMBER));
-        scenarios.add(ignoredScenario("Method With Unspecified Multiple Bound Class Parameter As Argument",
+        scenarios.add(postJdt451Scenario("Method With Unspecified Multiple Bound Class Parameter As Argument",
                 classbody("Example<N extends Number & Comparable>", "public void method(N n) {}"),
                 method("new Example().method$"),
                 METHOD_NUMBER));
@@ -203,7 +206,7 @@ public class ProposalUtilsTest {
                 SET_INT_STRING));
 
         String auxiliaryDefinition = "class Auxiliary<L extends List<String>> { public <N extends L> void method(N n) { } }";
-        scenarios.add(ignoredScenario("Secondary Class With Nested, Bounded Parameters And Method With Bounded Parameter",
+        scenarios.add(postJdt451Scenario("Secondary Class With Nested, Bounded Parameters And Method With Bounded Parameter",
                 classbody("Example", "void method(Auxiliary a) {}") + auxiliaryDefinition,
                 classbody("SubExample extends Example", "void method(Auxiliary a) { a.method$ }"),
                 VmMethodName.get("LAuxiliary.method(Ljava/util/List;)V")));
@@ -229,11 +232,11 @@ public class ProposalUtilsTest {
                 classbody("Example", "public <O extends Object> void method(O o) {}"),
                 method("new Example().method$"),
                 METHOD_OBJECT));
-        scenarios.add(ignoredScenario("Generic method with parameter: N extends Number",
+        scenarios.add(postJdt451Scenario("Generic method with parameter: N extends Number",
                 classbody("Example", "public <N extends Number> void method(N n) {}"),
                 method("new Example().method$"),
                 METHOD_NUMBER));
-        scenarios.add(ignoredScenario("Generic method with parameter: N extends Number & Comparable",
+        scenarios.add(postJdt451Scenario("Generic method with parameter: N extends Number & Comparable",
                 classbody("Example", "public <N extends Number & Comparable> void method(N n) {}"),
                 method("new Example().method$"),
                 METHOD_NUMBER));
@@ -254,11 +257,11 @@ public class ProposalUtilsTest {
                 classbody("Example", "public static <O extends Object> void method(O o) {}"),
                 method("Example.<Integer>method$"),
                 METHOD_OBJECT));
-        scenarios.add(ignoredScenario("Parameterized static method with parameter: N extends Number",
+        scenarios.add(postJdt451Scenario("Parameterized static method with parameter: N extends Number",
                 classbody("Example", "public static <N extends Number> void method(N n) {}"),
                 method("Example.<Integer>method$"),
                 METHOD_NUMBER));
-        scenarios.add(ignoredScenario("Parameterized static method with parameter: N extends Number & Comparable",
+        scenarios.add(postJdt451Scenario("Parameterized static method with parameter: N extends Number & Comparable",
                 classbody("Example", "public static <N extends Number & Comparable> void method(N n) {}"),
                 method("Example.<Integer>method$"),
                 METHOD_NUMBER));
@@ -288,11 +291,11 @@ public class ProposalUtilsTest {
                 classbody("Example<O extends Object>", "protected Example(O o) {}"),
                 classbody("SubExample extends Example", "SubExample() { super($) }"),
                 INIT_OBJECT));
-        scenarios.add(ignoredScenario("Constructor with parameter: N extends Number",
+        scenarios.add(postJdt451Scenario("Constructor with parameter: N extends Number",
                 classbody("Example<N extends Number>", "protected Example(N n) {}"),
                 classbody("SubExample extends Example", "SubExample() { super($) }"),
                 INIT_NUMBER));
-        scenarios.add(ignoredScenario("Constructor with parameter: N extends Number & Comparable",
+        scenarios.add(postJdt451Scenario("Constructor with parameter: N extends Number & Comparable",
                 classbody("Example<N extends Number>", "protected Example(N n) {}"),
                 classbody("SubExample extends Example", "SubExample() { super($) }"),
                 INIT_NUMBER));
@@ -310,19 +313,19 @@ public class ProposalUtilsTest {
                 method("new Example.Nested$"),
                 NESTED_INIT));
 
-        scenarios.add(ignoredScenario("Constructor of inner class",
+        scenarios.add(postJdt451Scenario("Constructor of inner class",
                 classbody("Example", "public class Inner { public Inner() {} }"),
                 method("new Example().new Inner$"),
                 INNER_INIT_EXAMPLE));
-        scenarios.add(ignoredScenario("Constructor of generic inner class",
+        scenarios.add(postJdt451Scenario("Constructor of generic inner class",
                 classbody("Example", "public class Inner<T> { public Inner(T t) {} }"),
                 method("new Example().new Inner$"),
                 INNER_INIT_EXAMPLE_OBJECT));
-        scenarios.add(ignoredScenario("Constructor of inner class within raw outer class",
+        scenarios.add(postJdt451Scenario("Constructor of inner class within raw outer class",
                 classbody("Example<T>", "public class Inner { public Inner(T t) {} }"),
                 method("new Example().new Inner$"),
                 INNER_INIT_EXAMPLE_OBJECT));
-        scenarios.add(ignoredScenario("Constructor of inner class within parameterized outer class",
+        scenarios.add(postJdt451Scenario("Constructor of inner class within parameterized outer class",
                 classbody("Example<T>", "public class Inner { public Inner(T t) {} }"),
                 method("new Example<String>().new Inner$"),
                 INNER_INIT_EXAMPLE_OBJECT));
@@ -397,12 +400,13 @@ public class ProposalUtilsTest {
     }
 
     /**
-     * Ignored scenarios are due to <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=467902">Bug 467902</a>. Once
-     * JDT makes the necessary changes, the scenarios can be un-ignored.
+     * A scenario defined using this method will work only with JDT 4.5.1 or greater, which addresses
+     * <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=467902">Bug 467902</a>.
      */
-    private static Object[] ignoredScenario(String description, CharSequence exampleCU, CharSequence invokingCU,
+    private static Object[] postJdt451Scenario(String description, CharSequence exampleCU, CharSequence invokingCU,
             IMethodName expectedMethod) {
-        return new Object[] { true, description, exampleCU, invokingCU, expectedMethod };
+        return new Object[] { !ProposalUtils.isGetBindingSupported(), description, exampleCU, invokingCU,
+                expectedMethod };
     }
 
     @Test
