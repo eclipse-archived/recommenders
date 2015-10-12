@@ -18,6 +18,8 @@ public final class Constants {
 
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
 
+    public static final String DEBUG_COMPLETION_RCP = BUNDLE_NAME + "/debug"; //$NON-NLS-1$
+
     public static final String EXT_POINT_SESSION_PROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors"; //$NON-NLS-1$
     public static final String EXT_POINT_COMPLETION_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$
 

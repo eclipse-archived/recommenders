@@ -48,6 +48,8 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_UNEXPECTED_PROPOSAL_KIND;
     public static String LOG_ERROR_PROPOSAL_MATCHING_FAILED;
 
+    public static String LOG_INFO_FALLBACK_METHOD_NAME_CREATION;
+
     public static String LOG_WARNING_LINKAGE_ERROR;
 
     static {

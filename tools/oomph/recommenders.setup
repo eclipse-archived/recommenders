@@ -1358,7 +1358,7 @@
     <setupTask
         xsi:type="setup:ResourceCreationTask"
         content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&#xA;&lt;checkstyle-configurations file-format-version=&quot;5.0.0&quot; default-check-configuration=&quot;Code Recommenders Checkstyle Configuration&quot;>&#xA;  &lt;check-configuration name=&quot;Code Recommenders Checkstyle Configuration&quot; location=&quot;/coding-conventions/resources/checkstyle/config.xml&quot; type=&quot;project&quot; description=&quot;&quot;>&#xA;    &lt;additional-data name=&quot;protect-config-file&quot; value=&quot;false&quot;/>&#xA;  &lt;/check-configuration>&#xA;&lt;/checkstyle-configurations>&#xA;"
-        targetURL="file:/${workspace.location}/.metadata/.plugins/net.sf.eclipsecs.core/checkstyle-config.xml"/>
+        targetURL="${workspace.location|uri}/.metadata/.plugins/net.sf.eclipsecs.core/checkstyle-config.xml"/>
     <setupTask
         xsi:type="git:GitCloneTask"
         id="git.clone.recommenders"
@@ -1563,6 +1563,18 @@
         vm="true">
       <description>The port used to attach a remore Java Application for debugging purposes</description>
     </setupTask>
+    <setupTask
+        xsi:type="setup:ResourceCreationTask"
+        id="org.eclipse.recommenders.completion.rcp.options"
+        content="org.eclipse.recommenders.completion.rcp/debug=true"
+        targetURL="${installation.location|uri}/.options"
+        encoding="UTF8">
+      <description>Turns debug mode on for org.eclipse.recommenders.completion.rcp</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:EclipseIniTask"
+        option="-debug"
+        value="${installation.location}/.options"/>
     <stream
         name="master"/>
   </project>
