@@ -21,10 +21,15 @@ else
    DOWNLOAD_PATH=$3
 fi
 
+if [[ $(shopt -s nullglob; set -- ${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-jdk/*; echo $#) -ne 1 ]]; then
+    echo "Multiple axis values exist; expecting exactly one."
+    exit 4
+fi
+
 echo "Publishing '${REPOSITORY}' repository of '${SIMREL}' configuration at http://${DOWNLOAD_PATH}"
 echo
 
-SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
+SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-jdk/*/axis-simrel/${SIMREL}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
 TARGET=/home/data/httpd/${DOWNLOAD_PATH}
 
 mkdir -p ${TARGET}
