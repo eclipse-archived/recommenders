@@ -38,8 +38,11 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages ERROR_PROPOSAL_MATCHING_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_PROPOSAL_MATCHING_FAILED);
 
-    public static final LogMessages WARNING_LINKAGE_ERROR = new LogMessages(WARNING, Messages.LOG_WARNING_LINKAGE_ERROR);
+    public static final ILogMessage INFO_FALLBACK_METHOD_NAME_CREATION = new LogMessages(INFO,
+            Messages.LOG_INFO_FALLBACK_METHOD_NAME_CREATION);
 
+    public static final LogMessages WARNING_LINKAGE_ERROR = new LogMessages(WARNING,
+            Messages.LOG_WARNING_LINKAGE_ERROR);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

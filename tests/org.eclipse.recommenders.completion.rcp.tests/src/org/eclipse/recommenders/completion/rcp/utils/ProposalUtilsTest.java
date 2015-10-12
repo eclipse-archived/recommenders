@@ -38,7 +38,6 @@ public class ProposalUtilsTest {
 
     private static final IMethodName NESTED_METHOD_VOID = VmMethodName.get("LExample$Nested.method()V");
     private static final IMethodName INNER_METHOD_VOID = VmMethodName.get("LExample$Inner.method()V");
-    private static final IMethodName ANONYMOUS_METHOD_VOID = VmMethodName.get("LScenario$1.method()V");
 
     private static final IMethodName METHOD_INTS = VmMethodName.get("LExample.method([I)V");
     private static final IMethodName METHOD_OBJECTS = VmMethodName.get("LExample.method([Ljava/lang/Object;)V");

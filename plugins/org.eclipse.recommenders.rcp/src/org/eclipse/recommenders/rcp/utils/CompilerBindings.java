@@ -12,7 +12,6 @@ package org.eclipse.recommenders.rcp.utils;
 
 import static com.google.common.base.Optional.absent;
 
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -97,17 +96,6 @@ public final class CompilerBindings {
             return Optional.of(result);
         } catch (final RuntimeException e) {
             return absent();
-        }
-    }
-
-    public static final ASTNode UNKNOWN = new UNKNOWN();
-
-    private static final class UNKNOWN extends ASTNode {
-
-        @Override
-        public StringBuffer print(int indent, StringBuffer output) {
-            output.append("UNKNOWN"); //$NON-NLS-1$
-            return output;
         }
     }
 }
