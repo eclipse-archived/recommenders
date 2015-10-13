@@ -17,5 +17,6 @@ Export-Package: org.eclipse.recommenders.jdt;
   uses:="org.eclipse.jdt.core,
    com.google.common.base,
    org.eclipse.jdt.core.dom,
-   com.google.common.collect",
+   com.google.common.collect,
+   org.eclipse.recommenders.utils.names",
  org.eclipse.recommenders.jdt.templates;uses:="org.eclipse.jdt.core.dom,org.eclipse.jface.text"

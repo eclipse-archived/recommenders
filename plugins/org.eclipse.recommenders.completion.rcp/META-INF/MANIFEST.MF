@@ -21,8 +21,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.utils;bundle-version="[2.2.5,2.2.6)",
  org.eclipse.recommenders.utils.rcp;bundle-version="[2.2.5,2.2.6)",
  org.eclipse.ui,
- org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.editors
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.collect;version="[15.0.0,16.0.0)",
@@ -48,7 +47,6 @@ Export-Package: org.eclipse.recommenders.completion.rcp;
    org.eclipse.jface.text.source,
    org.eclipse.swt.graphics,
    com.google.common.base,
-   org.eclipse.jface.text,
    org.eclipse.jdt.internal.ui.text.java,
    org.eclipse.recommenders.completion.rcp,
    org.eclipse.jface.viewers,
@@ -60,7 +58,8 @@ Export-Package: org.eclipse.recommenders.completion.rcp;
    org.eclipse.recommenders.internal.completion.rcp,
    org.eclipse.recommenders.rcp,
    org.eclipse.jdt.internal.ui.text.javadoc,
-   com.google.common.collect",
+   com.google.common.collect,
+   javax.inject",
  org.eclipse.recommenders.completion.rcp.tips;
   uses:="org.eclipse.jface.text.contentassist,
    org.eclipse.core.runtime,
