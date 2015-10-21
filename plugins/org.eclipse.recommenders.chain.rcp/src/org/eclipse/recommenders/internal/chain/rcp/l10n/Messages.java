@@ -29,6 +29,11 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_TIMEOUT;
     public static String FIELD_ENABLE_QUICK_ASSIST_CHAINS;
 
+    public static String LOG_WARNING_CANNOT_HANDLE_ELEMENT_TYPE;
+    public static String LOG_WARNING_CANNOT_HANDLE_FOR_FINDING_ENTRY_POINTS;
+    public static String LOG_WARNING_CANNOT_HANDLE_RETURN_TYPE;
+    public static String LOG_WARNING_CANNOT_USE_AS_PARENT_OF_COMPLETION_LOCATION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

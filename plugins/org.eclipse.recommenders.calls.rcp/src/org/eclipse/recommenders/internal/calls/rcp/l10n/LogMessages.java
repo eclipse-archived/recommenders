@@ -23,6 +23,16 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
+    public static final ILogMessage ERROR_FAILED_TO_CREATE_PROPOSALS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_CREATE_PROPOSALS);
+    public static final ILogMessage ERROR_FAILED_TO_FIND_ARGUMENTS_FOR_METHODS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_FIND_ARGUMENTS_FOR_METHODS);
+    public static final ILogMessage ERROR_FAILED_TO_FIND_TYPE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_FIND_TYPE);
+    public static final ILogMessage ERROR_FAILED_TO_RESOLVE_SUPER_TYPE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_RESOLVE_SUPER_TYPE);
+    public static final ILogMessage ERROR_FAILED_TO_VALIDATE_TEMPLATE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_VALIDATE_TEMPLATE);
     public static final ILogMessage ERROR_RECEIVER_TYPE_LOOKUP_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED);
 

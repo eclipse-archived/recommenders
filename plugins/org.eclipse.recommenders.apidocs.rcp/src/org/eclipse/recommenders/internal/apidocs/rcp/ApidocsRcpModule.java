@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.FAILED_TO_INSTANTIATE_PROVIDER;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.ERROR_FAILED_TO_INSTANTIATE_PROVIDER;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.annotation.Retention;
@@ -100,7 +100,7 @@ public class ApidocsRcpModule extends AbstractModule {
             provider.setDescription(description);
             return Optional.of(provider);
         } catch (final Exception e) {
-            log(FAILED_TO_INSTANTIATE_PROVIDER, e, pluginId, element.getAttribute("class")); //$NON-NLS-1$
+            log(ERROR_FAILED_TO_INSTANTIATE_PROVIDER, e, pluginId, element.getAttribute("class")); //$NON-NLS-1$
             return Optional.absent();
         }
     }

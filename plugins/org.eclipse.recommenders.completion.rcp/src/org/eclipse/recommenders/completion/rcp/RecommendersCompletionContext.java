@@ -14,7 +14,9 @@ import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextFunctions.defaultFunctions;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.*;
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_FAILED_TO_PARSE_TYPE_NAME;
 import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +49,6 @@ import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -58,8 +58,6 @@ import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class RecommendersCompletionContext implements IRecommendersCompletionContext {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RecommendersCompletionContext.class);
 
     @VisibleForTesting
     public static Set<ITypeName> createTypeNamesFromSignatures(final char[][] sigs) {
@@ -79,7 +77,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
             } catch (Exception e) {
                 // this fails sometimes on method argument completion.
                 // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=396595
-                LOG.error("Couldn't parse type name: '{}'", String.valueOf(sig), e); //$NON-NLS-1$
+                log(ERROR_FAILED_TO_PARSE_TYPE_NAME, e, String.valueOf(sig));
             }
         }
         return res;

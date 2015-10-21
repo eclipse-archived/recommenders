@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.chain.rcp;
 
+import static org.eclipse.recommenders.internal.chain.rcp.l10n.LogMessages.WARNING_CANNOT_USE_AS_PARENT_OF_COMPLETION_LOCATION;
+import static org.eclipse.recommenders.utils.Logs.log;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,8 +41,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -48,8 +49,6 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public final class TypeBindingAnalyzer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TypeBindingAnalyzer.class);
 
     private static final Predicate<FieldBinding> NON_STATIC_FIELDS_ONLY_FILTER = new Predicate<FieldBinding>() {
 
@@ -106,9 +105,8 @@ public final class TypeBindingAnalyzer {
                 STATIC_NON_VOID_NON_PRIMITIVE_METHODS_ONLY_FILTER);
     }
 
-    private static Collection<Binding> findFieldsAndMethods(final TypeBinding type,
-            final InvocationSite invocationSite, final Scope scope, final Predicate<FieldBinding> fieldFilter,
-            final Predicate<MethodBinding> methodFilter) {
+    private static Collection<Binding> findFieldsAndMethods(final TypeBinding type, final InvocationSite invocationSite,
+            final Scope scope, final Predicate<FieldBinding> fieldFilter, final Predicate<MethodBinding> methodFilter) {
         final Map<String, Binding> tmp = Maps.newLinkedHashMap();
         final TypeBinding receiverType = scope.classScope().referenceContext.binding;
         for (final ReferenceBinding cur : findAllSupertypesIncludeingArgument(type)) {
@@ -222,7 +220,7 @@ public final class TypeBindingAnalyzer {
                 bindings.add(Optional.of(scope.getType(type.getClassName().toCharArray())));
             }
         } else {
-            LOG.warn("Can't handle {} as parent of completion location.", parent.getClass()); //$NON-NLS-1$
+            log(WARNING_CANNOT_USE_AS_PARENT_OF_COMPLETION_LOCATION, parent.getClass());
         }
         return bindings;
     }

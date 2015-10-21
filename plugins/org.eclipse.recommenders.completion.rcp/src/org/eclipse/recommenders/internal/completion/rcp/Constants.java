@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
+import org.eclipse.core.runtime.Platform;
+
 public final class Constants {
 
     private Constants() {
@@ -18,7 +20,11 @@ public final class Constants {
 
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
 
+    public static final String DEBUG_PROPOSAL_COLLECTING_COMPLETION_REQUESTOR = BUNDLE_NAME + "/debug"; //$NON-NLS-1$
+
     public static final String DEBUG_COMPLETION_RCP = BUNDLE_NAME + "/debug"; //$NON-NLS-1$
+
+    public static final boolean DEBUG = Boolean.parseBoolean(Platform.getDebugOption(Constants.DEBUG_COMPLETION_RCP));
 
     public static final String EXT_POINT_SESSION_PROCESSORS = "org.eclipse.recommenders.completion.rcp.sessionprocessors"; //$NON-NLS-1$
     public static final String EXT_POINT_COMPLETION_TIPS = "org.eclipse.recommenders.completion.rcp.tips"; //$NON-NLS-1$

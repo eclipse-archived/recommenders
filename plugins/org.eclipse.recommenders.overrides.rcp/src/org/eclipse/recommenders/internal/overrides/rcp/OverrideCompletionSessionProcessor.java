@@ -34,6 +34,7 @@ import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorMana
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.overrides.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.overrides.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -42,17 +43,14 @@ import org.eclipse.recommenders.overrides.IOverrideModelProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({ "restriction" })
 public class OverrideCompletionSessionProcessor extends SessionProcessor {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OverrideCompletionSessionProcessor.class);
 
     private final IProjectCoordinateProvider pcProvider;
     private final IOverrideModelProvider modelProvider;
@@ -89,7 +87,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
                 computeRecommendations();
                 return true;
             } catch (Exception e) {
-                LOG.error("An exception occured whilec omputing overrides recommendations.", e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_COMPUTE_OVERRIDE_RECOMMENDATIONS, e);
             } finally {
                 releaseModel();
             }

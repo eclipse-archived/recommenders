@@ -26,10 +26,18 @@ public final class LogMessages extends DefaultLogMessage {
     public static final ILogMessage ERROR_ADVISOR_INSTANTIATION_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_ADVISOR_INSTANTIATION_FAILED);
     public static final ILogMessage ERROR_BIND_FILE_NAME = new LogMessages(ERROR, Messages.LOG_ERROR_BIND_FILE_NAME);
+    public static final ILogMessage ERROR_FAILED_TO_CREATE_ADVISOR = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_CREATE_ADVISOR);
+    public static final ILogMessage ERROR_FAILED_TO_DETECT_PROJECT_JRE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_DETECT_PROJECT_JRE);
     public static final ILogMessage ERROR_FAILED_TO_READ_CACHED_COORDINATES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_CACHED_COORDINATES);
     public static final ILogMessage ERROR_FAILED_TO_READ_MANUAL_MAPPINGS = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_MANUAL_MAPPINGS);
+    public static final ILogMessage ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES);
+    public static final ILogMessage ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES);
     public static final ILogMessage ERROR_FAILED_TO_WRITE_CACHED_COORDINATES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_WRITE_CACHED_COORDINATES);
     public static final ILogMessage ERROR_FAILED_TO_WRITE_MANUAL_MAPPINGS = new LogMessages(ERROR,

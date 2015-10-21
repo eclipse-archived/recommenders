@@ -12,6 +12,8 @@
 package org.eclipse.recommenders.internal.chain.rcp;
 
 import static java.text.MessageFormat.format;
+import static org.eclipse.recommenders.internal.chain.rcp.l10n.LogMessages.WARNING_CANNOT_HANDLE_ELEMENT_TYPE;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -30,8 +32,6 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.recommenders.internal.chain.rcp.l10n.Messages;
 import org.eclipse.swt.graphics.Image;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -42,8 +42,6 @@ import com.google.common.collect.Multiset;
 @SuppressWarnings("restriction")
 public final class CompletionTemplateBuilder {
 
-    private static Logger log = LoggerFactory.getLogger(CompletionTemplateBuilder.class);
-
     private CompletionTemplateBuilder() {
     }
 
@@ -51,8 +49,8 @@ public final class CompletionTemplateBuilder {
         final String title = createChainCode(chain, true, 0);
         final String body = createChainCode(chain, false, chain.getExpectedDimensions());
 
-        final Template template = new Template(title, format(Messages.PROPOSAL_LABEL_ELEMENTS, chain
-                .getElements().size()), "java", body, false); //$NON-NLS-1$ 
+        final Template template = new Template(title,
+                format(Messages.PROPOSAL_LABEL_ELEMENTS, chain.getElements().size()), "java", body, false); //$NON-NLS-1$
         return createTemplateProposal(template, context);
     }
 
@@ -75,7 +73,7 @@ public final class CompletionTemplateBuilder {
                 }
                 break;
             default:
-                log.warn("Can't handle %s's element type.", edge); //$NON-NLS-1$
+                log(WARNING_CANNOT_HANDLE_ELEMENT_TYPE, edge);
             }
             final boolean appendVariables = !createAsTitle;
             appendArrayDimensions(sb, edge.getReturnTypeDimension(), expectedDimension, appendVariables, varNames);
@@ -146,9 +144,9 @@ public final class CompletionTemplateBuilder {
     static JavaContext createJavaContext(final JavaContentAssistInvocationContext contentAssistContext) {
         final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
         final TemplateContextType templateContextType = templateContextRegistry.getContextType(JavaContextType.ID_ALL);
-        final JavaContext javaTemplateContext = new JavaContext(templateContextType,
-                contentAssistContext.getDocument(), contentAssistContext.getInvocationOffset(), contentAssistContext
-                        .getCoreContext().getToken().length, contentAssistContext.getCompilationUnit());
+        final JavaContext javaTemplateContext = new JavaContext(templateContextType, contentAssistContext.getDocument(),
+                contentAssistContext.getInvocationOffset(), contentAssistContext.getCoreContext().getToken().length,
+                contentAssistContext.getCompilationUnit());
         javaTemplateContext.setForceEvaluation(true);
         return javaTemplateContext;
     }

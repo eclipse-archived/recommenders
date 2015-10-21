@@ -11,14 +11,12 @@
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class DnDProviderTransfer extends ByteArrayTransfer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DnDProviderTransfer.class);
 
     private static final String TYPE_NAME = "extdoc-provider-transfer-format"; //$NON-NLS-1$
     private static final int TYPEID = registerType(TYPE_NAME);
@@ -53,7 +51,7 @@ public final class DnDProviderTransfer extends ByteArrayTransfer {
     public Object nativeToJava(final TransferData transferData) {
         final Object convert = super.nativeToJava(transferData);
         if (isInvalidNativeType(convert)) {
-            LOG.error("Drag & Drop failed."); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_PERFORM_DRAG_AND_DROP);
         }
         return getExtdocProvider();
     }

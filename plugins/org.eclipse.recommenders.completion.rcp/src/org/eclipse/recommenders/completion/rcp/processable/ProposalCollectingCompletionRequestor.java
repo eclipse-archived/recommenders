@@ -35,10 +35,10 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.internal.completion.rcp.Constants;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
@@ -49,8 +49,9 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private static final Field F_PROPOSALS = Reflections
             .getDeclaredField(CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
-    private Logger log = LoggerFactory.getLogger(getClass());
+
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
+
     private JavaContentAssistInvocationContext jdtuiContext;
     private CompletionProposalCollector collector;
     private InternalCompletionContext compilerContext;
@@ -251,6 +252,8 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void completionFailure(IProblem problem) {
-        log.debug(problem.toString());
+        if (Constants.DEBUG) {
+            Logs.log(LogMessages.ERROR_COMPLETION_FAILURE_DURING_DEBUG_MODE, problem.toString());
+        }
     }
 }

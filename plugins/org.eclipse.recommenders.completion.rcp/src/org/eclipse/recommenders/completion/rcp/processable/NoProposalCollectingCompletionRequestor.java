@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_COMPLETION_FAILURE_DURING_DEBUG_MODE;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Map;
 
@@ -21,15 +23,12 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.recommenders.internal.completion.rcp.Constants;
 
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public class NoProposalCollectingCompletionRequestor extends CompletionRequestor {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
     private InternalCompletionContext compilerContext;
 
     public NoProposalCollectingCompletionRequestor() {
@@ -67,7 +66,9 @@ public class NoProposalCollectingCompletionRequestor extends CompletionRequestor
 
     @Override
     public void completionFailure(IProblem problem) {
-        log.debug(problem.toString());
+        if (Constants.DEBUG) {
+            log(ERROR_COMPLETION_FAILURE_DURING_DEBUG_MODE, problem.toString());
+        }
     }
 
     public InternalCompletionContext getCoreContext() {

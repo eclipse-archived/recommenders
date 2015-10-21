@@ -25,9 +25,9 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.tips.ICompletionTipProposal;
 import org.eclipse.recommenders.internal.completion.rcp.Constants;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.utils.Logs;
 import org.osgi.service.prefs.BackingStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
@@ -37,8 +37,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class TipsSessionProcessor extends SessionProcessor {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TipsSessionProcessor.class);
 
     private static final String PREF_NODE_ID_TIPS = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
     private static final String SEEN = "completion_tips_seen"; //$NON-NLS-1$
@@ -53,8 +51,8 @@ public class TipsSessionProcessor extends SessionProcessor {
     private boolean tipsSeen;
 
     public TipsSessionProcessor() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                Constants.EXT_POINT_COMPLETION_TIPS);
+        final IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                .getConfigurationElementsFor(Constants.EXT_POINT_COMPLETION_TIPS);
 
         Iterable<String> split = Splitter.on(':').omitEmptyStrings().split(getTipsPreferences().get(SEEN, "")); //$NON-NLS-1$
         seenTips = Sets.newHashSet(split);
@@ -67,7 +65,7 @@ public class TipsSessionProcessor extends SessionProcessor {
                             .createExecutableExtension(COMPLETION_TIP_CLASS);
                     unseenTips.put(proposal, id);
                 } catch (CoreException e) {
-                    LOG.error("Cannot instantiate completion tip", e); //$NON-NLS-1$
+                    Logs.log(LogMessages.ERROR_FAILED_TO_INSTANTIATE_COMPLETION_TIP, e);
                 }
             }
         }
@@ -131,7 +129,7 @@ public class TipsSessionProcessor extends SessionProcessor {
         try {
             store.flush();
         } catch (BackingStoreException e) {
-            LOG.error("Failed to flush preferences", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_FLUSH_PREFERENCES, e);
         }
     }
 

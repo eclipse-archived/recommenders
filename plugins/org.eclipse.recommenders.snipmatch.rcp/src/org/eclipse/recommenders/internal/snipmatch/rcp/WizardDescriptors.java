@@ -10,23 +10,20 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.collect.Lists;
 
 public final class WizardDescriptors {
-
-    private static final Logger LOG = LoggerFactory.getLogger(WizardDescriptors.class);
 
     private static final String CONFIGURATION_WIZARD_NAME = "name"; //$NON-NLS-1$
     private static final String CONFIGURATION_WIZARD = "wizard"; //$NON-NLS-1$
@@ -43,14 +40,14 @@ public final class WizardDescriptors {
                     .getConfigurationElementsFor(EXT_ID_CONFIGURATION_WIZARDS);
 
             for (IConfigurationElement configurationElement : elements) {
-                ISnippetRepositoryWizard wizard = Checks.cast(configurationElement.createExecutableExtension(CONFIGURATION_WIZARD));
+                ISnippetRepositoryWizard wizard = Checks
+                        .cast(configurationElement.createExecutableExtension(CONFIGURATION_WIZARD));
                 String name = configurationElement.getAttribute(CONFIGURATION_WIZARD_NAME);
 
                 wizardDescriptors.add(new WizardDescriptor(name, wizard));
             }
         } catch (CoreException e) {
-            LOG.error(MessageFormat.format("Exception while reading extension point {}", EXT_ID_CONFIGURATION_WIZARDS), //$NON-NLS-1$
-                    e);
+            Logs.log(LogMessages.ERROR_FAILED_TO_READ_EXTENSION_POINT, e, EXT_ID_CONFIGURATION_WIZARDS);
         }
         return wizardDescriptors;
     }

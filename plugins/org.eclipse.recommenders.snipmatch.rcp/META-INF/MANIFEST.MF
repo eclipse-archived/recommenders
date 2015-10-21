@@ -45,8 +45,7 @@ Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.eventbus;version="[15.0.0,16.0.0)",
  com.google.common.io;version="[15.0.0,16.0.0)",
  com.google.common.util.concurrent;version="[15.0.0,16.0.0)",
- org.apache.commons.lang3;version="[3.1.0,4.0.0)",
- org.slf4j;version="[1.7.0,2.0.0)"
+ org.apache.commons.lang3;version="[3.1.0,4.0.0)"
 Export-Package: org.eclipse.recommenders.snipmatch.rcp;
   uses:="org.eclipse.recommenders.snipmatch,
    org.eclipse.recommenders.internal.snipmatch.rcp,

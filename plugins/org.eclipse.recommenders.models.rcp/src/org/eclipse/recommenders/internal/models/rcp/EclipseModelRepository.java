@@ -30,6 +30,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -39,9 +40,8 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEven
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
@@ -55,8 +55,6 @@ import com.google.common.eventbus.Subscribe;
  * reconfiguring the underlying repository. It also manages proxy settings and handling of auto download properties.
  */
 public class EclipseModelRepository implements IModelRepository, IRcpService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EclipseModelRepository.class);
 
     private final File basedir;
     private final IProxyService proxy;
@@ -218,7 +216,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
             try {
                 open();
             } catch (Exception e) {
-                LOG.error("A error occurred while opening EclipseModelRepository after deleting models.", e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION, e);
             }
         }
     }

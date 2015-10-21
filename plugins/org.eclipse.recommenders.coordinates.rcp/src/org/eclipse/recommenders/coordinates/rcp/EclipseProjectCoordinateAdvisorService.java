@@ -47,8 +47,6 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.gson.OptionalJsonTypeAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
@@ -69,8 +67,6 @@ import com.google.gson.JsonParseException;
 
 public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
         implements IProjectCoordinateAdvisorService, IRcpService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EclipseProjectCoordinateAdvisorService.class);
 
     @SuppressWarnings("serial")
     private static final Type CACHE_TYPE_TOKEN = new TypeToken<Map<DependencyInfo, Optional<ProjectCoordinate>>>() {
@@ -205,7 +201,7 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
                     newDescriptors.put(advisor, descriptor);
                 }
             } catch (CoreException e) {
-                LOG.error("Exception during creation of advisor {}.", descriptor.getId(), e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_CREATE_ADVISOR, e, descriptor.getId());
             }
         }
         descriptors = newDescriptors;

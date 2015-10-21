@@ -66,6 +66,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -76,6 +77,7 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelCoordinatesAction;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -93,8 +95,6 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 import org.osgi.service.prefs.BackingStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -114,8 +114,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ModelRepositoriesView extends ViewPart {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ModelRepositoriesView.class);
 
     private DataBindingContext bindingContext;
 
@@ -695,7 +693,7 @@ public class ModelRepositoriesView extends ViewPart {
             s.put(PREF_REPOSITORY_URL_LIST, ModelsRcpPreferences.joinRemoteRepositoriesToString(newRemotes));
             s.flush();
         } catch (BackingStoreException e) {
-            LOG.error("Exception during storing of remote repository preferences", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_STORE_REMOTE_REPOSITORY_PREFERENCES, e);
         }
     }
 

@@ -37,12 +37,14 @@ public final class Messages extends NLS {
 
     public static String JOB_UPDATING_APIDOCS;
 
-    public static String LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS;
     public static String LOG_ERROR_DURING_JAVADOC_SELECTION;
+    public static String LOG_ERROR_FAILED_TO_CLEAR_PREFERENCES;
+    public static String LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS;
     public static String LOG_ERROR_FAILED_TO_INSTANTIATE_PROVIDER;
-    public static String LOG_ERROR_CLEAR_PREFERENCES;
-    public static String LOG_ERROR_READ_PREFERENCES;
-    public static String LOG_ERROR_SAVE_PREFERENCES;
+    public static String LOG_ERROR_FAILED_TO_PERFORM_DRAG_AND_DROP;
+    public static String LOG_ERROR_FAILED_TO_READ_PREFERENCES;
+    public static String LOG_ERROR_FAILED_TO_SAVE_PREFERENCES;
+    public static String LOG_ERROR_FAILED_TO_UPDATE_VIEW;
 
     public static String LOG_WARNING_NO_SUCH_ENTRY;
 

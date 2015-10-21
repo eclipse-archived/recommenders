@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp.templates;
 
+import static org.eclipse.recommenders.internal.calls.rcp.l10n.LogMessages.ERROR_FAILED_TO_VALIDATE_TEMPLATE;
+import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +25,6 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ComparisonChain;
 
@@ -33,13 +33,12 @@ import com.google.common.collect.ComparisonChain;
  */
 @SuppressWarnings("restriction")
 public class JavaTemplateProposal extends TemplateProposal implements Comparable<JavaTemplateProposal> {
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     private PatternRecommendation recommendation;
 
     /**
      * Creates a template proposal with a template and its context.
-     * 
+     *
      * @param template
      *            the template
      * @param context
@@ -91,7 +90,7 @@ public class JavaTemplateProposal extends TemplateProposal implements Comparable
                 return StringUtils.startsWithIgnoreCase(className, content);
             }
         } catch (BadLocationException e) {
-            log.error("Failed to validate template", e);
+            log(ERROR_FAILED_TO_VALIDATE_TEMPLATE, e);
         }
         return false;
     }
