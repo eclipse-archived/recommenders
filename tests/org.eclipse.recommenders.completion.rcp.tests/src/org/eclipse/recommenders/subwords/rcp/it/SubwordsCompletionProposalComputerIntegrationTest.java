@@ -116,6 +116,12 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
                 COMPREHENSIVE, MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE, "getZipInputStream()",
                 "setZipInputStream(ZipInputStream)"));
 
+        scenarios.add(scenario("Generated method stub ex", classbody("ex$"), COMPREHENSIVE, MIN_PREFIX_MATCH_RELEVANCE,
+                MAX_PREFIX_MATCH_RELEVANCE, "ex()"));
+
+        scenarios.add(scenario("Generated method stub exe", classbody("exe$"), COMPREHENSIVE,
+                MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE, "exe()"));
+
         scenarios.add(scenario("Subwords Type match", classbody("AaaXyzAaa", "public void method() { Xyz$ }"),
                 COMPREHENSIVE, MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE, "AaaXyzAaa"));
 
