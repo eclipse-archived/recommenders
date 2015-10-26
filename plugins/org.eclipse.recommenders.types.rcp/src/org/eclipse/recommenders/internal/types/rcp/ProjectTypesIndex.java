@@ -32,7 +32,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.NumericField;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -40,6 +39,7 @@ import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
@@ -67,7 +67,6 @@ import org.eclipse.recommenders.utils.names.Names;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -97,14 +96,13 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     private Directory directory;
     private IndexWriter writer;
-    private IndexReader reader;
-
-    private IndexSearcher searcher;
 
     private JobFuture activeRebuild = null;
     private boolean rebuildAfterNextAccess;
 
     private final File onlyIndexedJar;
+
+    private SearcherManager searchManager;
 
     public ProjectTypesIndex(IJavaProject project, File indexDir) {
         this(project, indexDir, null);
@@ -137,6 +135,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_35, new KeywordAnalyzer());
         writer = new IndexWriter(directory, conf);
         writer.commit();
+        searchManager = new SearcherManager(directory, null, null);
     }
 
     @VisibleForTesting
@@ -189,12 +188,16 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
     private Set<File> getIndexedRoots() throws IOException {
         Set<File> res = Sets.newHashSet();
-        IndexSearcher searcher = getSearcher();
-        TopDocs topDocs = searcher.search(TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE, Integer.MAX_VALUE);
-        for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-            Document doc = searcher.doc(scoreDoc.doc);
-            File location = new File(doc.get(F_LOCATION));
-            res.add(location);
+        IndexSearcher searcher = searchManager.acquire();
+        try {
+            TopDocs topDocs = searcher.search(TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE, Integer.MAX_VALUE);
+            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                Document doc = searcher.doc(scoreDoc.doc);
+                File location = new File(doc.get(F_LOCATION));
+                res.add(location);
+            }
+        } finally {
+            releaseQuietly(searcher);
         }
         return res;
     }
@@ -207,8 +210,12 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         query.add(newLongRange(F_LAST_MODIFIED, rootLocation.lastModified(), rootLocation.lastModified(), true, true),
                 Occur.MUST);
 
-        IndexSearcher searcher = getSearcher();
-        return searcher.search(query, 1).totalHits > 0;
+        IndexSearcher searcher = searchManager.acquire();
+        try {
+            return searcher.search(query, 1).totalHits > 0;
+        } finally {
+            releaseQuietly(searcher);
+        }
     }
 
     private Term termLocation(File rootLocation) {
@@ -224,7 +231,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     @Override
     protected void shutDown() throws Exception {
         cancelRebuild();
-        IOUtils.close(reader, writer, directory);
+        IOUtils.close(writer, directory);
+        searchManager.close();
     }
 
     @Override
@@ -251,7 +259,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
         ImmutableSet.Builder<String> b = ImmutableSet.builder();
 
-        IndexSearcher searcher = getSearcher();
+        IndexSearcher searcher = searchManager.acquire();
         BooleanQuery query = new BooleanQuery();
         query.add(new TermQuery(new Term(F_INSTANCEOF, type)), Occur.MUST);
         if (isNotBlank(prefix)) {
@@ -266,6 +274,8 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
             }
         } catch (Exception e) {
             log(LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
+        } finally {
+            releaseQuietly(searcher);
         }
 
         // check whether the index was flagged as 'needs a rebuild':
@@ -277,30 +287,11 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         return b.build();
     }
 
-    private IndexSearcher getSearcher() {
-        if (reader == null) {
-            reader = createReader();
-            searcher = new IndexSearcher(reader);
-            return searcher;
-        }
+    private void releaseQuietly(IndexSearcher searcher) {
         try {
-            IndexReader newReader = IndexReader.openIfChanged(reader);
-            if (newReader != null) {
-                reader.close();
-                reader = newReader;
-                searcher = new IndexSearcher(reader);
-            }
-        } catch (Exception e) {
-            log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
-        }
-        return searcher;
-    }
-
-    private IndexReader createReader() {
-        try {
-            return IndexReader.open(directory);
+            searchManager.release(searcher);
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            log(LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         }
     }
 
@@ -400,6 +391,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     private void commit() {
         try {
             writer.commit();
+            searchManager.maybeReopen();
         } catch (Exception e) {
             log(ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
         }
