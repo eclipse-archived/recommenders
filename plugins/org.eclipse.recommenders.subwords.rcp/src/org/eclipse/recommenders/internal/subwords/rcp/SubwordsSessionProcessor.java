@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.RelevanceConstants;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
@@ -165,6 +166,11 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         SortedSet<Integer> triggerlocations = Sets.newTreeSet(Ordering.natural().reverse());
         int emptyPrefix = offset - length;
 
+        // to make sure we get method stub creation proposals like exe --> private void exe()
+        // See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=477801
+        if (completionNode instanceof CompletionOnFieldType) {
+            triggerlocations.add(offset);
+        }
         // Trigger first with either the specified prefix or the specified minimum prefix length. Note that this is only
         // effective for type and constructor completions, but this situation cannot be detected reliably.
         int triggerOffset = min(minPrefixLengthForTypes, length);
