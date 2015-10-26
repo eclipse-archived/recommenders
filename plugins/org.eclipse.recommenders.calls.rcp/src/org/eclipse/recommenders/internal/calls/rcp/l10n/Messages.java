@@ -42,6 +42,11 @@ public final class Messages extends NLS {
     public static String TABLE_CELL_SUFFIX_PERCENTAGE;
     public static String TABLE_CELL_SUFFIX_PROMILLE;
 
+    public static String LOG_ERROR_FAILED_TO_CREATE_PROPOSALS;
+    public static String LOG_ERROR_FAILED_TO_FIND_ARGUMENTS_FOR_METHODS;
+    public static String LOG_ERROR_FAILED_TO_FIND_TYPE;
+    public static String LOG_ERROR_FAILED_TO_RESOLVE_SUPER_TYPE;
+    public static String LOG_ERROR_FAILED_TO_VALIDATE_TEMPLATE;
     public static String LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED;
 
     static {

@@ -31,9 +31,9 @@ import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.IDependencyListener;
 import org.eclipse.recommenders.coordinates.rcp.DependencyInfos;
+import org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.rcp.JavaModelEvents;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
@@ -45,8 +45,6 @@ import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("restriction")
 public class EclipseDependencyListener implements IDependencyListener {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EclipseDependencyListener.class);
 
     private final HashMultimap<DependencyInfo, DependencyInfo> workspaceDependenciesByProject = HashMultimap.create();
     private final HashMultimap<DependencyInfo, IPackageFragmentRoot> jrePackageFragmentRoots = HashMultimap.create();
@@ -67,7 +65,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                     registerDependenciesForJavaProject(javaProject);
                 }
             } catch (CoreException e) {
-                LOG.error("Failed to register dependencies for project {}", project, e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES, e, project);
             }
         }
     }
@@ -114,13 +112,13 @@ public class EclipseDependencyListener implements IDependencyListener {
                     dependencies.add(dependencyInfo);
                 } else if (packageFragmentRoot.getKind() == IPackageFragmentRoot.K_SOURCE
                         && packageFragmentRoot.getJavaProject() != null) {
-                    DependencyInfo dependencyInfo = DependencyInfos.createDependencyInfoForProject(packageFragmentRoot
-                            .getJavaProject());
+                    DependencyInfo dependencyInfo = DependencyInfos
+                            .createDependencyInfoForProject(packageFragmentRoot.getJavaProject());
                     dependencies.add(dependencyInfo);
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to search dependencies of project {}", javaProject, e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES, e, javaProject);
         }
         return dependencies;
     }
@@ -142,7 +140,7 @@ public class EclipseDependencyListener implements IDependencyListener {
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to detect JRE for project " + javaProject, e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_DETECT_PROJECT_JRE, e, javaProject);
         }
         return jreRoots;
     }

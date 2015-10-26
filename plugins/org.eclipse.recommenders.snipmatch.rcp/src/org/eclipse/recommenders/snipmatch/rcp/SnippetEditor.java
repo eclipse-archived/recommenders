@@ -47,8 +47,6 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -58,8 +56,6 @@ import com.google.inject.Inject;
 public class SnippetEditor extends FormEditor implements IResourceChangeListener {
 
     private static final int DEFAULT_PRIORITY = 100;
-
-    private static final Logger LOG = LoggerFactory.getLogger(SnippetEditor.class);
 
     private final Repositories repos;
     private final SnippetRepositoryConfigurations configs;
@@ -101,8 +97,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
     }
 
     private static List<IFormPage> readExtensionPoint(SnippetEditor editor) {
-        IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                Constants.EXT_POINT_PAGE_FACTORIES);
+        IConfigurationElement[] elements = Platform.getExtensionRegistry()
+                .getConfigurationElementsFor(Constants.EXT_POINT_PAGE_FACTORIES);
 
         List<IFormPage> pages = Lists.newLinkedList();
         for (final IConfigurationElement element : Ordering.natural()
@@ -174,9 +170,10 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
         if (!oldSnippet.getCode().isEmpty() && !snippet.getCode().equals(oldSnippet.getCode())) {
             int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
-                    Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
-                            Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
-                            Messages.DIALOG_OPTION_CANCEL }, 0).open();
+                    Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION,
+                    new String[] { Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
+                            Messages.DIALOG_OPTION_CANCEL },
+                    0).open();
 
             if (status == 1) {
                 // Store as new
@@ -204,7 +201,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             setPartName(getEditorInput().getName());
             editorDirtyStateChanged();
         } catch (IOException e) {
-            LOG.error("Exception while storing snippet.", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_STORE_SNIPPET, e);
         }
     }
 

@@ -35,6 +35,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
@@ -45,11 +46,10 @@ import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryClosedEven
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryOpenedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.recommenders.utils.Zips;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -69,8 +69,6 @@ import com.google.common.util.concurrent.AbstractIdleService;
  * underlying, downloading the new index if required and reopening the index.
  */
 public class EclipseModelIndex extends AbstractIdleService implements IModelIndex, IRcpService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EclipseModelIndex.class);
 
     private static final int CACHE_SIZE = 10;
 
@@ -235,7 +233,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
                 }
             });
         } catch (ExecutionException e) {
-            LOG.error("Exception occured while accessing model coordinates cache", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_ACCESS_MODEL_COORDINATES_CACHE, e);
             return absent();
         }
     }

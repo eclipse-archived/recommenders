@@ -92,8 +92,6 @@ import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
@@ -111,8 +109,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private static final int COMMIT_MESSAGE_FIRST_LINE_LENGTH = 65;
     private static final int COMMIT_MESSAGE_LINE_LENGTH = 70;
-
-    private static final Logger LOG = LoggerFactory.getLogger(EclipseGitSnippetRepository.class);
 
     private final EventBus bus;
 
@@ -172,16 +168,19 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                             return Status.OK_STATUS;
                         } catch (GitUpdateException e) {
                             changeStateToOpen();
-                            Status status = new Status(IStatus.WARNING, Constants.BUNDLE_ID, MessageFormat.format(
-                                    Messages.WARNING_FAILURE_TO_UPDATE_REPOSITORY, delegate.getRepositoryLocation(),
-                                    e.getMessage()), e);
+                            Status status = new Status(IStatus.WARNING, Constants.BUNDLE_ID,
+                                    MessageFormat.format(Messages.WARNING_FAILURE_TO_UPDATE_REPOSITORY,
+                                            delegate.getRepositoryLocation(), e.getMessage()),
+                                    e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.OK_STATUS;
                         } catch (final GitNoCurrentFormatBranchException e) {
                             changeStateToOpen();
-                            Status status = new Status(IStatus.WARNING, Constants.BUNDLE_ID, MessageFormat.format(
-                                    Messages.WARNING_FAILURE_TO_CHECKOUT_CURRENT_BRANCH, Snippet.FORMAT_VERSION,
-                                    delegate.getRepositoryLocation(), e.getCheckoutVersion(), e.getMessage()), e);
+                            Status status = new Status(IStatus.WARNING, Constants.BUNDLE_ID,
+                                    MessageFormat.format(Messages.WARNING_FAILURE_TO_CHECKOUT_CURRENT_BRANCH,
+                                            Snippet.FORMAT_VERSION, delegate.getRepositoryLocation(),
+                                            e.getCheckoutVersion(), e.getMessage()),
+                                    e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
 
                             final Display display = Display.getDefault();
@@ -190,8 +189,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                                 @Override
                                 public void run() {
 
-                                    BranchCheckoutFailureDialog dialog = new BranchCheckoutFailureDialog(display
-                                            .getActiveShell(), delegate.getRepositoryLocation(),
+                                    BranchCheckoutFailureDialog dialog = new BranchCheckoutFailureDialog(
+                                            display.getActiveShell(), delegate.getRepositoryLocation(),
                                             Snippet.FORMAT_VERSION, e.getCheckoutVersion());
                                     dialog.open();
                                 }
@@ -199,10 +198,12 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
                             return Status.OK_STATUS;
                         } catch (final GitNoFormatBranchException e) {
-                            LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
-                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat.format(
-                                    Messages.ERROR_NO_FORMAT_BRANCH, Snippet.FORMAT_VERSION,
-                                    delegate.getRepositoryLocation(), e.getMessage()), e);
+                            Logs.log(LogMessages.ERROR_FAILED_TO_OPEN_GIT_SNIPPET_REPOSITORY, e);
+
+                            Status status = new Status(IStatus.ERROR,
+                                    Constants.BUNDLE_ID, MessageFormat.format(Messages.ERROR_NO_FORMAT_BRANCH,
+                                            Snippet.FORMAT_VERSION, delegate.getRepositoryLocation(), e.getMessage()),
+                                    e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
 
                             final Display display = Display.getDefault();
@@ -211,18 +212,21 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                                 @Override
                                 public void run() {
 
-                                    BranchCheckoutFailureDialog dialog = new BranchCheckoutFailureDialog(display
-                                            .getActiveShell(), delegate.getRepositoryLocation(), Snippet.FORMAT_VERSION);
+                                    BranchCheckoutFailureDialog dialog = new BranchCheckoutFailureDialog(
+                                            display.getActiveShell(), delegate.getRepositoryLocation(),
+                                            Snippet.FORMAT_VERSION);
                                     dialog.open();
                                 }
                             });
 
                             return Status.CANCEL_STATUS;
                         } catch (IOException e) {
-                            LOG.error("Exception while opening repository.", e); //$NON-NLS-1$
-                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat.format(
-                                    Messages.ERROR_FAILURE_TO_CLONE_REPOSITORY, delegate.getRepositoryLocation(),
-                                    timesOpened, e.getMessage()), e);
+                            Logs.log(LogMessages.ERROR_FAILED_TO_OPEN_GIT_SNIPPET_REPOSITORY, e);
+
+                            Status status = new Status(IStatus.ERROR, Constants.BUNDLE_ID,
+                                    MessageFormat.format(Messages.ERROR_FAILURE_TO_CLONE_REPOSITORY,
+                                            delegate.getRepositoryLocation(), timesOpened, e.getMessage()),
+                                    e);
                             Platform.getLog(Platform.getBundle(Constants.BUNDLE_ID)).log(status);
                             return Status.CANCEL_STATUS;
                         } finally {
@@ -258,7 +262,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                         openJob.join();
                         openJob = null;
                     } catch (InterruptedException e) {
-                        LOG.error("Failed to join open job", e); //$NON-NLS-1$
+                        Logs.log(LogMessages.ERROR_FAILED_TO_JOIN_OPEN_JOB, e);
                     }
                 }
                 delegate.close();
@@ -406,7 +410,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                 delegate.delete();
                 return true;
             } catch (IOException e) {
-                LOG.error("Exception while deleting files on disk.", e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK, e);
                 return false;
             }
 
@@ -510,8 +514,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         return doCommit(commitDialog);
     }
 
-    private IndexDiff buildIndexHeadDiffList(Repository repo, IProgressMonitor monitor) throws IOException,
-            OperationCanceledException {
+    private IndexDiff buildIndexHeadDiffList(Repository repo, IProgressMonitor monitor)
+            throws IOException, OperationCanceledException {
         monitor.beginTask(Messages.MONITOR_CALCULATING_DIFF, 1000);
         try {
             WorkingTreeIterator it = IteratorService.createInitialIterator(repo);
@@ -567,8 +571,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
             public boolean apply(ISnippet input) {
                 UUID uuid = input.getUuid();
                 for (String preselectedFile : preselectedFiles) {
-                    if (preselectedFile.substring(SNIPPETS_DIR.length(),
-                            preselectedFile.length() - EXT_JSON.length() - 1).equals(uuid.toString())) {
+                    if (preselectedFile
+                            .substring(SNIPPETS_DIR.length(), preselectedFile.length() - EXT_JSON.length() - 1)
+                            .equals(uuid.toString())) {
                         return true;
                     }
                 }
@@ -582,9 +587,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         String header = ""; //$NON-NLS-1$
         if (snippets.size() == 1) {
             ISnippet snippet = snippets.iterator().next();
-            header = format("Snippet contribution: {0} - {1}", snippet.getName(), snippet.getDescription()); //$NON-NLS-1$
+            header = format("Snippet contribution: {0} - {1}", snippet.getName(), snippet.getDescription());
         } else {
-            header = format("This contributes {0} snippets", snippets.size()); //$NON-NLS-1$
+            header = format("This contributes {0} snippets", snippets.size());
         }
         sb.append(abbreviate(header, COMMIT_MESSAGE_FIRST_LINE_LENGTH));
         sb.append(LINE_SEPARATOR);
@@ -668,8 +673,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
                         if (errorMessage == null) {
                             return Status.OK_STATUS;
                         } else {
-                            return new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat.format(
-                                    Messages.ERROR_FAILURE_TO_PUSH_SNIPPETS_TO_REMOTE_GIT_REPO, errorMessage));
+                            return new Status(IStatus.ERROR, Constants.BUNDLE_ID, MessageFormat
+                                    .format(Messages.ERROR_FAILURE_TO_PUSH_SNIPPETS_TO_REMOTE_GIT_REPO, errorMessage));
                         }
                     }
                     return Status.OK_STATUS;

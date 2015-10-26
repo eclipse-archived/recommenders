@@ -55,7 +55,7 @@ class ChainCompletionScenariosTest {
                 	Iterator it = $
                 }
             ''')
-        var expected = w(
+        var wanted =
             newArrayList(
                 "list iterator",
                 "list listIterator",
@@ -63,8 +63,12 @@ class ChainCompletionScenariosTest {
                 "list subList iterator",
                 "list subList listIterator",
                 "list subList listIterator"
-            ))
-        exercise(code, expected);
+            )
+        if (SystemUtils::JAVA_SPECIFICATION_VERSION.startsWith("1.8")) {
+            wanted.add("list parallelStream iterator")
+            wanted.add("list stream iterator")
+        }
+        exercise(code, w(wanted));
     }
 
     @Test
@@ -442,7 +446,7 @@ class ChainCompletionScenariosTest {
                 	return new LinkedList<AtomicLong>();
                 }
             ''')
-        var expected = w(
+        var wanted =
             newArrayList(
                 "getList iterator",
                 "getList listIterator",
@@ -450,8 +454,12 @@ class ChainCompletionScenariosTest {
                 "getList subList iterator",
                 "getList subList listIterator",
                 "getList subList listIterator"
-            ))
-        exercise(code, expected);
+            )
+        if (SystemUtils::JAVA_SPECIFICATION_VERSION.startsWith("1.8")) {
+            wanted.add("getList parallelStream iterator")
+            wanted.add("getList stream iterator")
+        }
+        exercise(code, w(wanted));
     }
 
     @Test
@@ -646,7 +654,13 @@ class ChainCompletionScenariosTest {
                 "bigInt nextProbablePrime divideAndRemainder",
                 "bigInt not divideAndRemainder",
                 "bigInt or divideAndRemainder",
-                "bigInt pow divideAndRemainder"
+                "bigInt pow divideAndRemainder",
+                "bigInt remainder divideAndRemainder",
+                "bigInt setBit divideAndRemainder",
+                "bigInt shiftLeft divideAndRemainder",
+                "bigInt shiftRight divideAndRemainder",
+                "bigInt subtract divideAndRemainder",
+                "bigInt xor divideAndRemainder"
             ))
         exercise(code, expected);
     }
@@ -682,18 +696,7 @@ class ChainCompletionScenariosTest {
                 "pool invokeAll set",
                 "pool invokeAll get",
                 "pool invokeAll remove",
-                "pool invokeAll set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll subList get",
-                "pool invokeAll subList remove",
-                "pool invokeAll subList set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous"
+                "pool invokeAll set"
             ))
         exercise(code, expected);
     }
@@ -736,18 +739,7 @@ class ChainCompletionScenariosTest {
                 "pool invokeAll set",
                 "pool invokeAll get",
                 "pool invokeAll remove",
-                "pool invokeAll set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll subList get",
-                "pool invokeAll subList remove",
-                "pool invokeAll subList set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous"
+                "pool invokeAll set"
             ))
         exercise(code, expected);
     }
@@ -773,18 +765,7 @@ class ChainCompletionScenariosTest {
                 "pool invokeAll set",
                 "pool invokeAll get",
                 "pool invokeAll remove",
-                "pool invokeAll set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll subList get",
-                "pool invokeAll subList remove",
-                "pool invokeAll subList set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous"
+                "pool invokeAll set"
             ))
         exercise(code, expected);
     }
@@ -810,18 +791,7 @@ class ChainCompletionScenariosTest {
                 "pool invokeAll set",
                 "pool invokeAll get",
                 "pool invokeAll remove",
-                "pool invokeAll set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous",
-                "pool invokeAll subList get",
-                "pool invokeAll subList remove",
-                "pool invokeAll subList set",
-                "pool invokeAll iterator next",
-                "pool invokeAll listIterator next",
-                "pool invokeAll listIterator previous"
+                "pool invokeAll set"
             ))
         exercise(code, expected);
     }
@@ -891,34 +861,252 @@ class ChainCompletionScenariosTest {
         val code = CodeBuilder::method('''Iterator<String> l = Collections.$''')
 
         val wanted = newArrayList(
+            "EMPTY_LIST iterator",
+            "EMPTY_LIST listIterator",
+            "EMPTY_LIST listIterator",
+            "EMPTY_LIST subList iterator",
+            "EMPTY_LIST subList listIterator",
+            "EMPTY_LIST subList listIterator",
+            "EMPTY_MAP entrySet iterator",
+            "EMPTY_MAP keySet iterator",
+            "EMPTY_MAP values iterator",
+            "EMPTY_SET iterator",
             "asLifoQueue iterator",
             "checkedCollection iterator",
             "checkedList iterator",
             "checkedList listIterator",
             "checkedList listIterator",
+            "checkedList subList iterator",
+            "checkedList subList listIterator",
+            "checkedList subList listIterator",
+            "checkedMap entrySet iterator",
+            "checkedMap keySet iterator",
+            "checkedMap values iterator",
             "checkedSet iterator",
+            "checkedSortedMap entrySet iterator",
+            "checkedSortedMap keySet iterator",
+            "checkedSortedMap values iterator",
+            "checkedSortedSet headSet iterator",
             "checkedSortedSet iterator",
+            "checkedSortedSet subSet iterator",
+            "checkedSortedSet tailSet iterator",
+            "emptyIterator",
             "emptyList iterator",
             "emptyList listIterator",
             "emptyList listIterator",
+            "emptyList subList iterator",
+            "emptyList subList listIterator",
+            "emptyList subList listIterator",
+            "emptyListIterator",
+            "emptyMap entrySet iterator",
+            "emptyMap keySet iterator",
+            "emptyMap values iterator",
             "emptySet iterator",
             "list iterator",
             "list listIterator",
             "list listIterator",
-            "singleton iterator",
-            "singletonList iterator",
+            "list subList iterator",
+            "list subList listIterator",
+            "list subList listIterator",
             "nCopies iterator",
             "nCopies listIterator",
             "nCopies listIterator",
-            "newSetFromMap iterator"
+            "nCopies subList iterator",
+            "nCopies subList listIterator",
+            "nCopies subList listIterator",
+            "newSetFromMap iterator",
+            "singleton iterator",
+            "singletonList iterator",
+            "singletonList listIterator",
+            "singletonList listIterator",
+            "singletonList subList iterator",
+            "singletonList subList listIterator",
+            "singletonList subList listIterator",
+            "singletonMap entrySet iterator",
+            "singletonMap keySet iterator",
+            "singletonMap values iterator",
+            "synchronizedCollection iterator",
+            "synchronizedList iterator",
+            "synchronizedList listIterator",
+            "synchronizedList listIterator",
+            "synchronizedList subList iterator",
+            "synchronizedList subList listIterator",
+            "synchronizedList subList listIterator",
+            "synchronizedMap entrySet iterator",
+            "synchronizedMap keySet iterator",
+            "synchronizedMap values iterator",
+            "synchronizedSet iterator",
+            "synchronizedSortedMap entrySet iterator",
+            "synchronizedSortedMap keySet iterator",
+            "synchronizedSortedMap values iterator",
+            "synchronizedSortedSet headSet iterator",
+            "synchronizedSortedSet iterator",
+            "synchronizedSortedSet subSet iterator",
+            "synchronizedSortedSet tailSet iterator",
+            "unmodifiableCollection iterator",
+            "unmodifiableList iterator",
+            "unmodifiableList listIterator",
+            "unmodifiableList listIterator",
+            "unmodifiableList subList iterator",
+            "unmodifiableList subList listIterator",
+            "unmodifiableList subList listIterator",
+            "unmodifiableMap entrySet iterator",
+            "unmodifiableMap keySet iterator",
+            "unmodifiableMap values iterator",
+            "unmodifiableSet iterator",
+            "unmodifiableSortedMap entrySet iterator",
+            "unmodifiableSortedMap keySet iterator",
+            "unmodifiableSortedMap values iterator",
+            "unmodifiableSortedSet headSet iterator",
+            "unmodifiableSortedSet iterator",
+            "unmodifiableSortedSet subSet iterator",
+            "unmodifiableSortedSet tailSet iterator"
         )
-        if (SystemUtils::IS_JAVA_1_7) {
-            wanted.add("emptyIterator")
-            wanted.add("emptyListIterator")
-
-            // limit to 20 proposals?
-            wanted.remove("singleton iterator")
-            wanted.remove("singletonList iterator")
+        if (SystemUtils::JAVA_SPECIFICATION_VERSION.startsWith("1.8")) {
+            wanted.add("EMPTY_LIST parallelStream iterator")
+            wanted.add("EMPTY_LIST stream iterator")
+            wanted.add("EMPTY_SET parallelStream iterator")
+            wanted.add("EMPTY_SET stream iterator")
+            wanted.add("asLifoQueue parallelStream iterator")
+            wanted.add("asLifoQueue stream iterator")
+            wanted.add("checkedCollection parallelStream iterator")
+            wanted.add("checkedCollection stream iterator")
+            wanted.add("checkedList parallelStream iterator")
+            wanted.add("checkedList stream iterator")
+            wanted.add("checkedNavigableMap descendingKeySet descendingIterator")
+            wanted.add("checkedNavigableMap descendingKeySet iterator")
+            wanted.add("checkedNavigableMap entrySet iterator")
+            wanted.add("checkedNavigableMap keySet iterator")
+            wanted.add("checkedNavigableMap navigableKeySet descendingIterator")
+            wanted.add("checkedNavigableMap navigableKeySet iterator")
+            wanted.add("checkedNavigableMap values iterator")
+            wanted.add("checkedNavigableSet descendingIterator")
+            wanted.add("checkedNavigableSet descendingSet descendingIterator")
+            wanted.add("checkedNavigableSet descendingSet iterator")
+            wanted.add("checkedNavigableSet headSet descendingIterator")
+            wanted.add("checkedNavigableSet headSet iterator")
+            wanted.add("checkedNavigableSet headSet iterator")
+            wanted.add("checkedNavigableSet iterator")
+            wanted.add("checkedNavigableSet parallelStream iterator")
+            wanted.add("checkedNavigableSet stream iterator")
+            wanted.add("checkedNavigableSet subSet descendingIterator")
+            wanted.add("checkedNavigableSet subSet iterator")
+            wanted.add("checkedNavigableSet subSet iterator")
+            wanted.add("checkedNavigableSet tailSet descendingIterator")
+            wanted.add("checkedNavigableSet tailSet iterator")
+            wanted.add("checkedNavigableSet tailSet iterator")
+            wanted.add("checkedQueue iterator")
+            wanted.add("checkedQueue parallelStream iterator")
+            wanted.add("checkedQueue stream iterator")
+            wanted.add("checkedSet parallelStream iterator")
+            wanted.add("checkedSet stream iterator")
+            wanted.add("checkedSortedSet parallelStream iterator")
+            wanted.add("checkedSortedSet stream iterator")
+            wanted.add("emptyList parallelStream iterator")
+            wanted.add("emptyList stream iterator")
+            wanted.add("emptyNavigableMap descendingKeySet descendingIterator")
+            wanted.add("emptyNavigableMap descendingKeySet iterator")
+            wanted.add("emptyNavigableMap entrySet iterator")
+            wanted.add("emptyNavigableMap keySet iterator")
+            wanted.add("emptyNavigableMap navigableKeySet descendingIterator")
+            wanted.add("emptyNavigableMap navigableKeySet iterator")
+            wanted.add("emptyNavigableMap values iterator")
+            wanted.add("emptyNavigableSet descendingIterator")
+            wanted.add("emptyNavigableSet descendingSet descendingIterator")
+            wanted.add("emptyNavigableSet descendingSet iterator")
+            wanted.add("emptyNavigableSet headSet descendingIterator")
+            wanted.add("emptyNavigableSet headSet iterator")
+            wanted.add("emptyNavigableSet headSet iterator")
+            wanted.add("emptyNavigableSet iterator")
+            wanted.add("emptyNavigableSet parallelStream iterator")
+            wanted.add("emptyNavigableSet stream iterator")
+            wanted.add("emptyNavigableSet subSet descendingIterator")
+            wanted.add("emptyNavigableSet subSet iterator")
+            wanted.add("emptyNavigableSet subSet iterator")
+            wanted.add("emptyNavigableSet tailSet descendingIterator")
+            wanted.add("emptyNavigableSet tailSet iterator")
+            wanted.add("emptyNavigableSet tailSet iterator")
+            wanted.add("emptySet parallelStream iterator")
+            wanted.add("emptySet stream iterator")
+            wanted.add("emptySortedMap entrySet iterator")
+            wanted.add("emptySortedMap keySet iterator")
+            wanted.add("emptySortedMap values iterator")
+            wanted.add("emptySortedSet headSet iterator")
+            wanted.add("emptySortedSet iterator")
+            wanted.add("emptySortedSet parallelStream iterator")
+            wanted.add("emptySortedSet stream iterator")
+            wanted.add("emptySortedSet subSet iterator")
+            wanted.add("emptySortedSet tailSet iterator")
+            wanted.add("list parallelStream iterator")
+            wanted.add("list stream iterator")
+            wanted.add("nCopies parallelStream iterator")
+            wanted.add("nCopies stream iterator")
+            wanted.add("newSetFromMap parallelStream iterator")
+            wanted.add("newSetFromMap stream iterator")
+            wanted.add("singleton parallelStream iterator")
+            wanted.add("singleton stream iterator")
+            wanted.add("singletonList parallelStream iterator")
+            wanted.add("singletonList stream iterator")
+            wanted.add("synchronizedCollection parallelStream iterator")
+            wanted.add("synchronizedCollection stream iterator")
+            wanted.add("synchronizedList parallelStream iterator")
+            wanted.add("synchronizedList stream iterator")
+            wanted.add("synchronizedNavigableMap descendingKeySet descendingIterator")
+            wanted.add("synchronizedNavigableMap descendingKeySet iterator")
+            wanted.add("synchronizedNavigableMap entrySet iterator")
+            wanted.add("synchronizedNavigableMap keySet iterator")
+            wanted.add("synchronizedNavigableMap navigableKeySet descendingIterator")
+            wanted.add("synchronizedNavigableMap navigableKeySet iterator")
+            wanted.add("synchronizedNavigableMap values iterator")
+            wanted.add("synchronizedNavigableSet descendingIterator")
+            wanted.add("synchronizedNavigableSet descendingSet descendingIterator")
+            wanted.add("synchronizedNavigableSet descendingSet iterator")
+            wanted.add("synchronizedNavigableSet headSet descendingIterator")
+            wanted.add("synchronizedNavigableSet headSet iterator")
+            wanted.add("synchronizedNavigableSet headSet iterator")
+            wanted.add("synchronizedNavigableSet iterator")
+            wanted.add("synchronizedNavigableSet parallelStream iterator")
+            wanted.add("synchronizedNavigableSet stream iterator")
+            wanted.add("synchronizedNavigableSet subSet descendingIterator")
+            wanted.add("synchronizedNavigableSet subSet iterator")
+            wanted.add("synchronizedNavigableSet subSet iterator")
+            wanted.add("synchronizedNavigableSet tailSet descendingIterator")
+            wanted.add("synchronizedNavigableSet tailSet iterator")
+            wanted.add("synchronizedNavigableSet tailSet iterator")
+            wanted.add("synchronizedSet parallelStream iterator")
+            wanted.add("synchronizedSet stream iterator")
+            wanted.add("synchronizedSortedSet parallelStream iterator")
+            wanted.add("synchronizedSortedSet stream iterator")
+            wanted.add("unmodifiableCollection parallelStream iterator")
+            wanted.add("unmodifiableCollection stream iterator")
+            wanted.add("unmodifiableList parallelStream iterator")
+            wanted.add("unmodifiableList stream iterator")
+            wanted.add("unmodifiableNavigableMap descendingKeySet descendingIterator")
+            wanted.add("unmodifiableNavigableMap descendingKeySet iterator")
+            wanted.add("unmodifiableNavigableMap entrySet iterator")
+            wanted.add("unmodifiableNavigableMap keySet iterator")
+            wanted.add("unmodifiableNavigableMap navigableKeySet descendingIterator")
+            wanted.add("unmodifiableNavigableMap navigableKeySet iterator")
+            wanted.add("unmodifiableNavigableMap values iterator")
+            wanted.add("unmodifiableNavigableSet descendingIterator")
+            wanted.add("unmodifiableNavigableSet descendingSet descendingIterator")
+            wanted.add("unmodifiableNavigableSet descendingSet iterator")
+            wanted.add("unmodifiableNavigableSet headSet descendingIterator")
+            wanted.add("unmodifiableNavigableSet headSet iterator")
+            wanted.add("unmodifiableNavigableSet headSet iterator")
+            wanted.add("unmodifiableNavigableSet iterator")
+            wanted.add("unmodifiableNavigableSet parallelStream iterator")
+            wanted.add("unmodifiableNavigableSet stream iterator")
+            wanted.add("unmodifiableNavigableSet subSet descendingIterator")
+            wanted.add("unmodifiableNavigableSet subSet iterator")
+            wanted.add("unmodifiableNavigableSet subSet iterator")
+            wanted.add("unmodifiableNavigableSet tailSet descendingIterator")
+            wanted.add("unmodifiableNavigableSet tailSet iterator")
+            wanted.add("unmodifiableNavigableSet tailSet iterator")
+            wanted.add("unmodifiableSet parallelStream iterator")
+            wanted.add("unmodifiableSet stream iterator")
+            wanted.add("unmodifiableSortedSet parallelStream iterator")
+            wanted.add("unmodifiableSortedSet stream iterator")
         }
 
         // need to def expectations
@@ -938,7 +1126,7 @@ class ChainCompletionScenariosTest {
         }'''
 
         // need to def expectations
-        var expected = w(
+        var wanted =
             newArrayList(
                 "m",
                 "l iterator",
@@ -947,8 +1135,12 @@ class ChainCompletionScenariosTest {
                 "l subList iterator",
                 "l subList listIterator",
                 "l subList listIterator"
-            ))
-        exercise(code, expected);
+            )
+        if (SystemUtils::JAVA_SPECIFICATION_VERSION.startsWith("1.8")) {
+            wanted.add("l stream iterator")
+            wanted.add("l parallelStream iterator")
+        }
+        exercise(code, w(wanted));
     }
 
     @Test
@@ -1195,8 +1387,8 @@ public class ChainPreferenceStoreMock {
 
     static def IPreferenceStore create() {
         val store = Mockito.mock(IPreferenceStore);
-        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAINS)).thenReturn(20);
-        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAIN_LENGTH)).thenReturn(4);
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAINS)).thenReturn(Integer::MAX_VALUE);
+        Mockito.when(store.getInt(ChainsPreferencePage.PREF_MAX_CHAIN_LENGTH)).thenReturn(3);
         Mockito.when(store.getInt(ChainsPreferencePage.PREF_TIMEOUT)).thenReturn(3);
         Mockito.when(store.getInt(ChainsPreferencePage.PREF_MIN_CHAIN_LENGTH)).thenReturn(1);
         Mockito.when(store.getString(ChainsPreferencePage.PREF_IGNORED_TYPES)).thenReturn(

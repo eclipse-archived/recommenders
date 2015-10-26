@@ -14,7 +14,7 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.ui.JavaElementLabels.*;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
-import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.FAILED_TO_DETERMINE_STATIC_MEMBERS;
+import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.Logs.log;
 
@@ -252,7 +252,7 @@ public class StaticHooksProvider extends ApidocProvider {
                 }
             }
         } catch (final Exception x) {
-            log(FAILED_TO_DETERMINE_STATIC_MEMBERS, x, root.getElementName());
+            log(ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS, x, root.getElementName());
         }
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
     }
@@ -266,7 +266,7 @@ public class StaticHooksProvider extends ApidocProvider {
         try {
             findStaticHooks(pkg, index);
         } catch (final Exception e) {
-            log(FAILED_TO_DETERMINE_STATIC_MEMBERS, e, pkg.getElementName());
+            log(ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS, e, pkg.getElementName());
         }
 
         runSyncInUiThread(new HooksRendererRunnable(index, parent));

@@ -43,9 +43,11 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
+import org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.apidocs.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.rcp.utils.PartListener2Adapter;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -65,8 +67,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -75,8 +75,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ApidocsView extends ViewPart {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApidocsView.class);
 
     public static final String ID = "org.eclipse.recommenders.apidocs.rcp.views.apidocs"; //$NON-NLS-1$
 
@@ -370,7 +368,7 @@ public class ApidocsView extends ViewPart {
                 runProvider(selection);
                 refreshAndEnableDrawContentArea();
             } catch (Exception e) {
-                LOG.error("Exception during view update." + selection, e); //$NON-NLS-1$
+                Logs.log(LogMessages.ERROR_FAILED_TO_UPDATE_VIEW, e, selection);
             }
         }
     }

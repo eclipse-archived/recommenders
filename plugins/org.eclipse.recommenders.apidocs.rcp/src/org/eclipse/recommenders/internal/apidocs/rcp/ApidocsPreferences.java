@@ -69,7 +69,7 @@ public class ApidocsPreferences {
         try {
             keys = node.keys();
         } catch (BackingStoreException e) {
-            log(FAILED_TO_READ_PREFERENCES, e, node);
+            log(ERROR_FAILED_TO_READ_PREFERENCES, e, node);
         }
         return keys;
     }
@@ -79,7 +79,7 @@ public class ApidocsPreferences {
             prefs.clear();
             return true;
         } catch (BackingStoreException e) {
-            log(FAILED_TO_CLEAR_PREFERENCES, e, prefs.absolutePath());
+            log(ERROR_FAILED_TO_CLEAR_PREFERENCES, e, prefs.absolutePath());
             return false;
         }
     }

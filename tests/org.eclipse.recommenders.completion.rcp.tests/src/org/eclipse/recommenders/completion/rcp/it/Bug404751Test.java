@@ -3,6 +3,7 @@ package org.eclipse.recommenders.completion.rcp.it;
 import static org.eclipse.recommenders.testing.CodeBuilder.classDeclaration;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,17 +31,19 @@ public class Bug404751Test {
     @ClassRule
     public static final TemporaryWorkspace WORKSPACE = new TemporaryWorkspace();
 
+    private final boolean ignore;
     private final String expectedType;
     private final String typeParameters;
     private final String typeArguments;
 
-    public Bug404751Test(String expectedType, String typeParameters, String typeArguments) {
+    public Bug404751Test(boolean ignore, String expectedType, String typeParameters, String typeArguments) {
+        this.ignore = ignore;
         this.expectedType = expectedType;
         this.typeParameters = typeParameters;
         this.typeArguments = typeArguments;
     }
 
-    @Parameters
+    @Parameters(name = "{index}")
     public static Collection<Object[]> scenarios() {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
 
@@ -58,23 +61,33 @@ public class Bug404751Test {
         scenarios.add(scenario("ArrayList", "List<?>", "ArrayList<?>"));
         scenarios.add(scenario("List", "List<T>", null));
 
-        scenarios.add(scenario("List", "List & Closeable", null));
-        scenarios.add(scenario("Closeable", "Closeable & List", null));
-
-        scenarios.add(scenario("Number", "Number & List", null));
-        scenarios.add(scenario("Number", "Number & List & Closeable", null));
+        // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=461562>
+        scenarios.add(ignoredScenario("List", "List & Closeable", null));
+        scenarios.add(ignoredScenario("Closeable", "Closeable & List", null));
+        scenarios.add(ignoredScenario("Number", "Number & List", null));
+        scenarios.add(ignoredScenario("Number", "Number & List & Closeable", null));
 
         return scenarios;
     }
 
     private static Object[] scenario(String expectedType, String tExtends, String t) {
+        return scenario(false, expectedType, tExtends, t);
+    }
+
+    private static Object[] ignoredScenario(String expectedType, String tExtends, String t) {
+        return scenario(true, expectedType, tExtends, t);
+    }
+
+    private static Object[] scenario(boolean ignore, String expectedType, String tExtends, String t) {
         String typeParameters = tExtends == null ? "<T>" : "<T extends " + tExtends + ">";
         String typeArguments = t == null ? "" : "<" + t + ">";
-        return new Object[] { expectedType, typeParameters, typeArguments };
+        return new Object[] { ignore, expectedType, typeParameters, typeArguments };
     }
 
     @Test
     public void testReceiverTypeOfInstanceMethod() throws Exception {
+        assumeThat(ignore, is(equalTo(false)));
+
         String producerMethod = "T produce() { return null; }";
         String consumerMethod = "static void consume() { new TestClass" + typeArguments + "().produce().$; }";
         CharSequence code = classDeclaration("class TestClass" + typeParameters, producerMethod + consumerMethod);
@@ -87,6 +100,8 @@ public class Bug404751Test {
 
     @Test
     public void testReceiverTypeOfStaticMethod() throws Exception {
+        assumeThat(ignore, is(equalTo(false)));
+
         String producerMethod = "static " + typeParameters + " T produce() { return null; }";
         String consumerMethod = "static void consume() { TestClass." + typeArguments + "produce().$; }";
         CharSequence code = classDeclaration("class TestClass", producerMethod + consumerMethod);

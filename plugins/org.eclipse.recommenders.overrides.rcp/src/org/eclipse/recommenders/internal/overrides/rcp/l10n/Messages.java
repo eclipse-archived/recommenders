@@ -26,6 +26,8 @@ public final class Messages extends NLS {
     public static String FIELD_LABEL_MIN_PROPOSAL_PERCENTAGE;
     public static String FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE;
 
+    public static String LOG_ERROR_FAILED_TO_COMPUTE_OVERRIDE_RECOMMENDATIONS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

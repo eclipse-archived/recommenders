@@ -23,18 +23,22 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages FAILED_TO_DETERMINE_STATIC_MEMBERS = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS);
     public static final LogMessages ERROR_DURING_JAVADOC_SELECTION = new LogMessages(ERROR,
             Messages.LOG_ERROR_DURING_JAVADOC_SELECTION);
-    public static final ILogMessage FAILED_TO_INSTANTIATE_PROVIDER = new LogMessages(ERROR,
+    public static final ILogMessage ERROR_FAILED_TO_CLEAR_PREFERENCES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_CLEAR_PREFERENCES);
+    public static final LogMessages ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_DETERMINE_STATIC_MEMBERS);
+    public static final ILogMessage ERROR_FAILED_TO_INSTANTIATE_PROVIDER = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_INSTANTIATE_PROVIDER);
-    public static final ILogMessage FAILED_TO_CLEAR_PREFERENCES = new LogMessages(ERROR,
-            Messages.LOG_ERROR_CLEAR_PREFERENCES);
-    public static final ILogMessage FAILED_TO_READ_PREFERENCES = new LogMessages(ERROR,
-            Messages.LOG_ERROR_READ_PREFERENCES);
+    public static final ILogMessage ERROR_FAILED_TO_PERFORM_DRAG_AND_DROP = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_PERFORM_DRAG_AND_DROP);
+    public static final ILogMessage ERROR_FAILED_TO_READ_PREFERENCES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_READ_PREFERENCES);
     public static final ILogMessage FAILED_TO_SAVE_PREFERENCES = new LogMessages(ERROR,
-            Messages.LOG_ERROR_SAVE_PREFERENCES);
+            Messages.LOG_ERROR_FAILED_TO_SAVE_PREFERENCES);
+    public static final ILogMessage ERROR_FAILED_TO_UPDATE_VIEW = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_UPDATE_VIEW);
 
     public static final ILogMessage NO_SUCH_ENTRY = new LogMessages(WARNING, Messages.LOG_WARNING_NO_SUCH_ENTRY);
 

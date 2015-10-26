@@ -106,22 +106,6 @@
 							</rules>
 						</configuration>
 					</execution>
-					<execution>
-						<!-- (Transitive) dependencies must meet our execution environment 
-							compatibility requirements -->
-						<id>enforce-bytecode-version</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<inherited>true</inherited>
-						<configuration>
-							<rules>
-								<enforceBytecodeVersion>
-									<maxJdkVersion>${javaVersion}</maxJdkVersion>
-								</enforceBytecodeVersion>
-							</rules>
-						</configuration>
-					</execution>
 				</executions>
 				<dependencies>
 					<dependency>

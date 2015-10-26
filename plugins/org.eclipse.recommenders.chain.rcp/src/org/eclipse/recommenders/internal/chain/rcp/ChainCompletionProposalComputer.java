@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.chain.rcp;
 
 import static org.eclipse.recommenders.internal.chain.rcp.TypeBindingAnalyzer.*;
+import static org.eclipse.recommenders.internal.chain.rcp.l10n.LogMessages.WARNING_CANNOT_HANDLE_FOR_FINDING_ENTRY_POINTS;
+import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,8 +55,6 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.chain.rcp.ChainRcpModule.ChainCompletion;
 import org.eclipse.recommenders.rcp.IAstProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -67,7 +67,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
     public static final String CATEGORY_ID = "org.eclipse.recommenders.chain.rcp.proposalCategory.chain"; //$NON-NLS-1$
 
-    private Logger log = LoggerFactory.getLogger(getClass());
     private IRecommendersCompletionContext ctx;
     private List<ChainElement> entrypoints;
     private String error;
@@ -172,7 +171,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             addPublicInstanceMembersToEntrypoints(((VariableBinding) b).type);
             break;
         default:
-            log.warn("Can't handle %s as source for finding entrypoints.", b); //$NON-NLS-1$
+            log(WARNING_CANNOT_HANDLE_FOR_FINDING_ENTRY_POINTS, b);
         }
     }
 

@@ -23,14 +23,28 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
-            Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
+    public static final LogMessages ERROR_COMPLETION_FAILURE_DURING_DEBUG_MODE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_COMPLETION_FAILURE_DURING_DEBUG_MODE);
     public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION);
     public static final LogMessages ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_DURING_CODE_COMPLETION_AT_OFFSET);
     public static final LogMessages ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT = new LogMessages(ERROR,
             Messages.LOG_ERROR_EXCEPTION_WHILE_COMPUTING_LOOKUP_ENVIRONMENT);
+    public static final LogMessages ERROR_FAILED_TO_FLUSH_PREFERENCES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_FLUSH_PREFERENCES);
+    public static final LogMessages ERROR_FAILED_TO_INSTANTIATE_COMPLETION_TIP = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_INSTANTIATE_COMPLETION_TIP);
+    public static final LogMessages ERROR_FAILED_TO_LOAD_COMPLETION_PROPOSAL_CLASS = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_LOAD_COMPLETION_PROPOSAL_CLASS);
+    public static final LogMessages ERROR_FAILED_TO_PARSE_TYPE_NAME = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_PARSE_TYPE_NAME);
+    public static final LogMessages ERROR_FAILED_TO_SET_PROPOSAL_INFO = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_SET_PROPOSAL_INFO);
+    public static final LogMessages ERROR_FAILED_TO_WRAP_JDT_PROPOSAL = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_WRAP_JDT_PROPOSAL);
+    public static final LogMessages ERROR_SESSION_PROCESSOR_FAILED = new LogMessages(ERROR,
+            Messages.LOG_ERROR_SESSION_PROCESSOR_FAILED);
     public static final LogMessages ERROR_SYNTATICALLY_INCORRECT_METHOD_NAME = new LogMessages(ERROR,
             Messages.LOG_ERROR_SYNTATICALLY_INCORRECT_METHOD_NAME);
     public static final ILogMessage ERROR_UNEXPECTED_PROPOSAL_KIND = new LogMessages(ERROR,

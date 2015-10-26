@@ -63,6 +63,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories.SnippetRepositoryConfigurationChangedEvent;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.SharedImages;
@@ -82,6 +83,7 @@ import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryClosedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryContentChangedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.SWT;
@@ -100,8 +102,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -122,8 +122,6 @@ public class SnippetsView extends ViewPart implements IRcpService {
     public static final String SEARCH_FIELD = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.searchfield"; //$NON-NLS-1$
     public static final String TREE = "org.eclipse.recommenders.snipmatch.rcp.snippetsview.tree"; //$NON-NLS-1$
     public static final String SWT_ID = "org.eclipse.swtbot.widget.key"; //$NON-NLS-1$
-
-    private static final Logger LOG = LoggerFactory.getLogger(SnippetsView.class);
 
     private Text txtSearch;
     private TreeViewer treeViewer;
@@ -524,8 +522,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
         ensureIsTrue(selectionContainsOnlyOneElementOf(SnippetRepositoryConfiguration.class));
 
         SnippetRepositoryConfiguration oldConfiguration = cast(selection.get(0));
-        List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(
-                WizardDescriptors.loadAvailableWizards(), oldConfiguration);
+        List<WizardDescriptor> suitableWizardDescriptors = WizardDescriptors
+                .filterApplicableWizardDescriptors(WizardDescriptors.loadAvailableWizards(), oldConfiguration);
         if (!suitableWizardDescriptors.isEmpty()) {
 
             ISnippetRepositoryWizard wizard;
@@ -572,7 +570,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 } catch (Exception e) {
                     // Snipmatch's default repositories cannot throw an
                     // IOException here
-                    LOG.error(e.getMessage(), e);
+                    Logs.log(LogMessages.ERROR_FAILED_TO_RELOAD_REPOSITORIES, e);
                 }
                 PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
                     @Override
@@ -594,8 +592,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
                     Collections.<String>emptyList(), "", Location.NONE); //$NON-NLS-1$
 
             final SnippetEditorInput input = new SnippetEditorInput(snippet, repo);
-            SnippetEditor editor = cast(page
-                    .openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet")); //$NON-NLS-1$
+            SnippetEditor editor = cast(
+                    page.openEditor(input, "org.eclipse.recommenders.snipmatch.rcp.editors.snippet")); //$NON-NLS-1$
             // mark the editor dirty when opening a newly created snippet
             editor.markDirtyUponSnippetCreation();
         } catch (Exception e) {
@@ -714,14 +712,13 @@ public class SnippetsView extends ViewPart implements IRcpService {
                 if (guessedConfiguration != null) {
                     final ISnippetRepository repo = repos.getRepository(guessedConfiguration.getId()).orNull();
                     if (repo != null) {
-                        addAction(
-                                format(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY,
-                                        guessedConfiguration.getName()), ELCL_ADD_SNIPPET, manager, new Action() {
-                                    @Override
-                                    public void run() {
-                                        addSnippet(repo);
-                                    }
-                                });
+                        addAction(format(Messages.SNIPPETS_VIEW_MENUITEM_ADD_SNIPPET_TO_REPOSITORY,
+                                guessedConfiguration.getName()), ELCL_ADD_SNIPPET, manager, new Action() {
+                            @Override
+                            public void run() {
+                                addSnippet(repo);
+                            }
+                        });
                         addedAddSnippetToRepoAction = true;
                     }
                 }

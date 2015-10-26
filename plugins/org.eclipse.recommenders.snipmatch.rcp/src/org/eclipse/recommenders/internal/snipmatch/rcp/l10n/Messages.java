@@ -98,14 +98,22 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_CREATING_SNIPPET_PROPOSAL_FAILED;
     public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
     public static String LOG_ERROR_CANNOT_COMPUTE_LOCATION;
+    public static String LOG_ERROR_FAILED_TO_BIND_FILE;
+    public static String LOG_ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK;
+    public static String LOG_ERROR_FAILED_TO_JOIN_OPEN_JOB;
     public static String LOG_ERROR_FAILED_TO_LOAD_EDITOR_PAGES;
+    public static String LOG_ERROR_FAILED_TO_OPEN_EDITOR;
+    public static String LOG_ERROR_FAILED_TO_OPEN_GIT_SNIPPET_REPOSITORY;
+    public static String LOG_ERROR_FAILED_TO_OPEN_WIZARD_WITH_ZERO_HEIGHT_LIST;
+    public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_POINT;
+    public static String LOG_ERROR_FAILED_TO_RELOAD_REPOSITORIES;
+    public static String LOG_ERROR_FAILED_TO_STORE_SNIPPET;
 
     public static String ERROR_COMMIT_FAILED;
     public static String ERROR_FAILURE_TO_CLONE_REPOSITORY;
     public static String ERROR_NO_FORMAT_BRANCH;
     public static String ERROR_SNIPPET_NAME_CANNOT_BE_EMPTY;
     public static String ERROR_SNIPPET_LOCATION_CANNOT_BE_EMPTY;
-    public static String ERROR_WHILE_OPENING_EDITOR;
     public static String ERROR_NO_EDITABLE_REPO_FOUND;
     public static String ERROR_NO_EDITABLE_REPO_FOUND_HINT;
     public static String ERROR_REPOSITORY_NOT_OPEN_YET;

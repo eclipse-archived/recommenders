@@ -22,14 +22,14 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -46,8 +46,6 @@ public class SnipmatchRcpModule extends AbstractModule {
     public static final String SNIPPET_REPOSITORY_PROVIDERS = "SNIPPET_REPOSITORY_PROVIDERS"; //$NON-NLS-1$
     public static final String REPOSITORY_CONFIGURATION_FILE = "REPOSITORY_CONFIGURATION_FILE"; //$NON-NLS-1$
     private static final String SNIPMATCH_ROOT_FOLDER = "SNIPMATCH_ROOT_FOLDER"; //$NON-NLS-1$
-
-    private static final Logger LOG = LoggerFactory.getLogger(SnipmatchRcpModule.class);
 
     @Override
     protected void configure() {
@@ -71,7 +69,7 @@ public class SnipmatchRcpModule extends AbstractModule {
         try {
             Files.createParentDirs(snippetRepositoryBasedir);
         } catch (IOException e) {
-            LOG.error("Failed to bind file name {}.", snippetRepositoryBasedir, e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_BIND_FILE, e, snippetRepositoryBasedir);
         }
         return snippetRepositoryBasedir;
     }

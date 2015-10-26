@@ -84,20 +84,21 @@ public class GitSnippetRepository extends FileSnippetRepository {
                 Git git = fetch();
                 String checkoutBranch = getCheckoutBranch(git);
                 if (isNullOrEmpty(checkoutBranch)) {
-                    throw new GitNoFormatBranchException(MessageFormat.format("Could not locate branch \"{0}\"",
-                            FORMAT_VERSION), null);
+                    throw new GitNoFormatBranchException(
+                            MessageFormat.format("Could not locate branch \"{0}\"", FORMAT_VERSION), null);
                 }
                 configureGitBranch(checkoutBranch);
                 pullSnippets(git, checkoutBranch);
                 if (!checkoutBranch.equals(FORMAT_VERSION)) {
-                    throw new GitNoCurrentFormatBranchException(checkoutBranch, MessageFormat.format(
-                            "Could not locate branch \"{0}\", working with older branch \"{1}\".", FORMAT_VERSION,
-                            checkoutBranch), null);
+                    throw new GitNoCurrentFormatBranchException(checkoutBranch,
+                            MessageFormat.format("Could not locate branch \"{0}\", working with older branch \"{1}\".",
+                                    FORMAT_VERSION, checkoutBranch),
+                            null);
                 }
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
-                throw createException(updatePossible, MessageFormat.format(
-                        "Invalid remote repository \"{0}\". Check the repository's URL.", fetchUrl), e);
+                throw createException(updatePossible, MessageFormat
+                        .format("Invalid remote repository \"{0}\". Check the repository's URL.", fetchUrl), e);
             } catch (TransportException e) {
                 LOG.error("Transport operation failed.", e);
                 throw createException(updatePossible,
@@ -226,8 +227,8 @@ public class GitSnippetRepository extends FileSnippetRepository {
         config.save();
     }
 
-    private void pullSnippets(Git git, String checkoutBranch) throws IOException, InvalidRemoteException,
-            TransportException, GitAPIException, CoreException {
+    private void pullSnippets(Git git, String checkoutBranch)
+            throws IOException, InvalidRemoteException, TransportException, GitAPIException, CoreException {
         CheckoutCommand checkout = git.checkout();
         checkout.setName(checkoutBranch);
         checkout.setStartPoint("origin/" + checkoutBranch);

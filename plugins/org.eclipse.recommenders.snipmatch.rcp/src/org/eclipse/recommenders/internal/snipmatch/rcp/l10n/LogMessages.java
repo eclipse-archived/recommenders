@@ -29,8 +29,26 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED);
     public static final LogMessages ERROR_CANNOT_COMPUTE_LOCATION = new LogMessages(ERROR,
             Messages.LOG_ERROR_CANNOT_COMPUTE_LOCATION);
+    public static final LogMessages ERROR_FAILED_TO_BIND_FILE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_BIND_FILE);
+    public static final LogMessages ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK);
+    public static final LogMessages ERROR_FAILED_TO_JOIN_OPEN_JOB = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_JOIN_OPEN_JOB);
     public static final LogMessages ERROR_FAILED_TO_LOAD_EDITOR_PAGE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_LOAD_EDITOR_PAGES);
+    public static final LogMessages ERROR_FAILED_TO_OPEN_GIT_SNIPPET_REPOSITORY = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_OPEN_GIT_SNIPPET_REPOSITORY);
+    public static final LogMessages ERROR_FAILED_TO_OPEN_EDITOR = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_OPEN_EDITOR);
+    public static final LogMessages ERROR_FAILED_TO_OPEN_WIZARD_WITH_ZERO_HEIGHT_LIST = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_OPEN_WIZARD_WITH_ZERO_HEIGHT_LIST);
+    public static final LogMessages ERROR_FAILED_TO_READ_EXTENSION_POINT = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_POINT);
+    public static final LogMessages ERROR_FAILED_TO_RELOAD_REPOSITORIES = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_RELOAD_REPOSITORIES);
+    public static final LogMessages ERROR_FAILED_TO_STORE_SNIPPET = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_STORE_SNIPPET);
 
     public static final ILogMessage ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID = new LogMessages(ERROR,
             Messages.LOG_ERROR_DEFAULT_REPO_CONFIGURATION_WITHOUT_ID);

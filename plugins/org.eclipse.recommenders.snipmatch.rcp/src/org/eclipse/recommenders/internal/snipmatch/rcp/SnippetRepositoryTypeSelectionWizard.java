@@ -17,10 +17,12 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -31,12 +33,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SnippetRepositoryTypeSelectionWizard extends Wizard implements ISnippetRepositoryWizard {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SnippetRepositoryTypeSelectionWizard.class);
 
     private java.util.List<WizardDescriptor> availableWizards;
     private ISnippetRepositoryWizard selectedWizard;
@@ -174,7 +172,7 @@ public class SnippetRepositoryTypeSelectionWizard extends Wizard implements ISni
                             }
                         }
                     } catch (ArithmeticException ae) {
-                        LOG.error("Open wizard on double click failed because height of list items is zero.", ae); //$NON-NLS-1$
+                        Logs.log(LogMessages.ERROR_FAILED_TO_OPEN_WIZARD_WITH_ZERO_HEIGHT_LIST, ae);
                     }
                 }
 

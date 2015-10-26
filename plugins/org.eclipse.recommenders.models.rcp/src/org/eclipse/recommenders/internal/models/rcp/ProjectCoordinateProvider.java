@@ -39,17 +39,17 @@ import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.coordinates.rcp.DependencyInfos;
+import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.models.UniqueMethodName;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -58,8 +58,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 
 public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IRcpService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProjectCoordinateProvider.class);
 
     private final JavaElementResolver javaElementResolver;
     private final IProjectCoordinateAdvisorService pcAdvisorService;
@@ -173,7 +171,7 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
                 }
             }
         } catch (JavaModelException e) {
-            LOG.error("Failed to traverse project dependencies of {}.", e); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_TRAVERSE_PROJECT_DEPENDENCIES, e, javaProject);
         }
         return false;
     }

@@ -31,6 +31,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.templates.SnippetCodeBuilder;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -39,19 +40,16 @@ import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.recommenders.snipmatch.rcp.util.DependencyExtractor;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class CreateSnippetHandler extends AbstractHandler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CreateSnippetHandler.class);
 
     private ExecutionEvent event;
 
@@ -73,16 +71,16 @@ public class CreateSnippetHandler extends AbstractHandler {
         IDocument doc = viewer.getDocument();
         ITextSelection textSelection = cast(viewer.getSelectionProvider().getSelection());
 
-        IProjectCoordinateProvider pcProvider = InjectionService.getInstance().requestInstance(
-                IProjectCoordinateProvider.class);
+        IProjectCoordinateProvider pcProvider = InjectionService.getInstance()
+                .requestInstance(IProjectCoordinateProvider.class);
 
         String code = new SnippetCodeBuilder(ast, doc, new Region(textSelection.getOffset(), textSelection.getLength()))
-        .build();
+                .build();
         Set<ProjectCoordinate> dependencies = new DependencyExtractor(ast, textSelection, pcProvider)
                 .extractDependencies();
 
-        return new Snippet(UUID.randomUUID(),
-                "", "", Lists.<String>newArrayList(), Lists.<String>newArrayList(), code, Location.NONE, dependencies); //$NON-NLS-1$ //$NON-NLS-2$
+        return new Snippet(UUID.randomUUID(), "", "", Lists.<String>newArrayList(), Lists.<String>newArrayList(), code, //$NON-NLS-1$ //$NON-NLS-2$
+                Location.NONE, dependencies);
     }
 
     private void openSnippetInEditor(Snippet snippet) {
@@ -93,7 +91,8 @@ public class CreateSnippetHandler extends AbstractHandler {
             SnippetEditor ed = cast(page.openEditor(input, EDITOR_ID));
             ed.markDirtyUponSnippetCreation();
         } catch (PartInitException e) {
-            LOG.error(Messages.ERROR_WHILE_OPENING_EDITOR, e);
+            Logs.log(LogMessages.ERROR_FAILED_TO_OPEN_EDITOR, e);
+
             openError(HandlerUtil.getActiveShell(event), Messages.ERROR_NO_EDITABLE_REPO_FOUND,
                     Messages.ERROR_NO_EDITABLE_REPO_FOUND_HINT);
         }

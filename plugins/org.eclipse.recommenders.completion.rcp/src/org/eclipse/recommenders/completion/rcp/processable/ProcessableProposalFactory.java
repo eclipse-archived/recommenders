@@ -43,11 +43,11 @@ import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposa
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.recommenders.utils.Throws;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
@@ -56,8 +56,6 @@ import com.google.common.base.Throwables;
  */
 @SuppressWarnings("restriction")
 public class ProcessableProposalFactory implements IProcessableProposalFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessableProposalFactory.class);
 
     private static Class<JavaMethodCompletionProposal> javaMethodCompletionProposalClass;
     private static Class<JavaFieldWithCastedReceiverCompletionProposal> javaFieldWithCastedReceiverCompletionProposalClass;
@@ -163,7 +161,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     }
 
     private static void logWarning(NoClassDefFoundError e) {
-        LOG.warn("Error while loading completion proposal class", e); //$NON-NLS-1$
+        Logs.log(LogMessages.ERROR_FAILED_TO_LOAD_COMPLETION_PROPOSAL_CLASS, e);
     }
 
     public ProcessableProposalFactory() {
@@ -256,8 +254,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             log(ERROR_UNEXPECTED_PROPOSAL_KIND, c, uiProposal.getDisplayString());
             return uiProposal;
         } catch (final Exception e) {
-            LOG.warn("Wrapping JDT proposal '{}' ('{}') failed. Returning original proposal instead.", c, //$NON-NLS-1$
-                    uiProposal.getDisplayString(), e);
+            Logs.log(LogMessages.ERROR_FAILED_TO_WRAP_JDT_PROPOSAL, e, c, uiProposal.getDisplayString());
             return uiProposal;
         }
     }
@@ -271,7 +268,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             ProposalInfo info = (ProposalInfo) proposalInfoMethod.invoke(uiProposal);
             crProposal.setProposalInfo(info);
         } catch (Exception e) {
-            LOG.warn("Failed to set proposal info to '{}'). Returning proposal without additional info.", crProposal); //$NON-NLS-1$
+            Logs.log(LogMessages.ERROR_FAILED_TO_SET_PROPOSAL_INFO, e, crProposal);
         }
     }
 
