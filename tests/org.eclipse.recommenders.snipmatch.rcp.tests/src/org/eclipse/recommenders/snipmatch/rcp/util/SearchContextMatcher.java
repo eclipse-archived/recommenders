@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.snipmatch.rcp.util;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
@@ -10,8 +11,6 @@ import org.eclipse.recommenders.snipmatch.Location;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import com.google.common.base.Preconditions;
-
 public final class SearchContextMatcher extends TypeSafeMatcher<ISearchContext> {
 
     private final String searchTerm;
@@ -19,15 +18,13 @@ public final class SearchContextMatcher extends TypeSafeMatcher<ISearchContext> 
     private final Set<ProjectCoordinate> dependencies;
 
     private SearchContextMatcher(String searchTerm, Location location, Set<ProjectCoordinate> dependencies) {
-        Preconditions.checkNotNull(searchTerm);
-        Preconditions.checkNotNull(location);
-        Preconditions.checkNotNull(dependencies);
-        this.searchTerm = searchTerm;
-        this.location = location;
-        this.dependencies = dependencies;
+        this.searchTerm = requireNonNull(searchTerm);
+        this.location = requireNonNull(location);
+        this.dependencies = requireNonNull(dependencies);
     }
 
-    public static SearchContextMatcher context(String searchTerm, Location location, Set<ProjectCoordinate> dependencies) {
+    public static SearchContextMatcher context(String searchTerm, Location location,
+            Set<ProjectCoordinate> dependencies) {
         return new SearchContextMatcher(searchTerm, location, dependencies);
     }
 

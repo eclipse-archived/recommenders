@@ -20,6 +20,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,6 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.gson.OptionalJsonTypeAdapter;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -168,7 +168,7 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
 
         Map<DependencyInfo, Optional<ProjectCoordinate>> deserializedCache;
         try {
-            String json = Files.toString(persistenceFile, Charsets.UTF_8);
+            String json = Files.toString(persistenceFile, StandardCharsets.UTF_8);
             deserializedCache = cacheGson.fromJson(json, CACHE_TYPE_TOKEN);
         } catch (IOException | JsonParseException e) {
             Logs.log(ERROR_FAILED_TO_READ_CACHED_COORDINATES, e, persistenceFile);
@@ -217,7 +217,7 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     protected void shutDown() {
         try {
             String json = cacheGson.toJson(projectCoordinateCache.asMap(), CACHE_TYPE_TOKEN);
-            Files.write(json, persistenceFile, Charsets.UTF_8);
+            Files.write(json, persistenceFile, StandardCharsets.UTF_8);
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_FAILED_TO_WRITE_CACHED_COORDINATES, e, persistenceFile);
 

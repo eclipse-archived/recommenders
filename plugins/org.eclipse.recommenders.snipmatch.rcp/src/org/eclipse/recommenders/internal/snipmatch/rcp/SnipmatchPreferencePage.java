@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
@@ -62,8 +65,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class SnipmatchPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 

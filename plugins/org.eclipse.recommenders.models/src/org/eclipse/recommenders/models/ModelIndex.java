@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -62,8 +64,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * The RecommendersModelIndex index is the default implementation for of an {@link IModelArchiveCoordinateAdvisor}. It
@@ -119,7 +119,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
             if (indexdir != null) {
                 index = FSDirectory.open(indexdir);
             }
-            Analyzer analyzer = new StandardAnalyzer(org.apache.lucene.util.Version.LUCENE_35, Sets.newHashSet());
+            Analyzer analyzer = new StandardAnalyzer(org.apache.lucene.util.Version.LUCENE_35, new HashSet<>());
             IndexWriterConfig config = new IndexWriterConfig(org.apache.lucene.util.Version.LUCENE_35, analyzer);
             writer = new IndexWriter(index, config);
             reader = IndexReader.open(writer, true);
@@ -224,7 +224,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
             TopDocs matches = searcher.search(query, MAX_DOCUMENTS_SEARCHED);
             searcher.close();
 
-            Set<String> results = Sets.newHashSet();
+            Set<String> results = new HashSet<>();
             for (ScoreDoc scoreDoc : matches.scoreDocs) {
                 Document doc = reader.document(scoreDoc.doc);
                 String modelcoord = doc.get(modelClassifier);
@@ -254,7 +254,7 @@ public class ModelIndex implements IModelArchiveCoordinateAdvisor, IModelIndex {
     }
 
     private List<Artifact> findModelArchiveCoordinatesByClassifier(String classifier) {
-        List<Artifact> res = Lists.newLinkedList();
+        List<Artifact> res = new LinkedList<>();
         try {
             Term t = new Term(F_CLASSIFIER, classifier);
             IndexSearcher searcher = new IndexSearcher(reader);
