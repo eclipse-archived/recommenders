@@ -28,11 +28,13 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescr
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsRcpPreferences;
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor;
+import org.eclipse.recommenders.testing.RetainSystemProperties;
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
 import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.ui.IEditorPart;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -46,6 +48,9 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
 public class SubwordsCompletionProposalComputerIntegrationTest {
+
+    @Rule
+    public final RetainSystemProperties retainSystemProperties = new RetainSystemProperties();
 
     private static final int MIN_SUBWORDS_MATCH_RELEVANCE = Integer.MIN_VALUE;
     private static final int MAX_SUBWORDS_MATCH_RELEVANCE = -1;
@@ -148,8 +153,6 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
     @Test
     public void test() throws Exception {
-        warmup(code, preferences);
-
         List<IJavaCompletionProposal> proposals = exercise(code, preferences);
         int lastRelevance = Integer.MAX_VALUE;
         for (String expectedProposal : expectedProposals) {
@@ -182,11 +185,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
     @Before
     public void setUp() throws CoreException {
+        System.setProperty("org.eclipse.jdt.ui.codeAssistTimeout", "30000");
         fixture.clear();
-    }
-
-    private void warmup(CharSequence code, SubwordsRcpPreferences preferences) throws CoreException {
-        exercise(code, preferences);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
