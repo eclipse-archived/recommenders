@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static java.lang.Math.min;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
@@ -73,7 +73,10 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class SubwordsSessionProcessor extends SessionProcessor {
 
-    private static final long COMPLETION_TIME_OUT = SECONDS.toMillis(5);
+    /**
+     * Use the timeout set by {@link JavaCompletionProposalComputer#JAVA_CODE_ASSIST_TIMEOUT}.
+     */
+    private static final long COMPLETION_TIME_OUT = Long.getLong("org.eclipse.jdt.ui.codeAssistTimeout", 5000); //$NON-NLS-1$
 
     private static final int JAVADOC_TYPE_REF_HIGHLIGHT_ADJUSTMENT = "{@link ".length(); //$NON-NLS-1$
 
