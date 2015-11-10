@@ -20,7 +20,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.recommenders.rcp.feature" version="2.2.4" match="equivalent"/>
+      <import feature="org.eclipse.recommenders.rcp.feature" version="2.2.5" match="equivalent"/>
    </requires>
 
    <plugin
