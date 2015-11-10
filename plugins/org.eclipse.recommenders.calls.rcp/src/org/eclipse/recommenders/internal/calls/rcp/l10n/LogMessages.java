@@ -36,6 +36,9 @@ public final class LogMessages extends DefaultLogMessage {
     public static final ILogMessage ERROR_RECEIVER_TYPE_LOOKUP_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_RECEIVER_TYPE_LOOKUP_FAILED);
 
+    public static final ILogMessage WARNING_FAILED_TO_RESOLVE_SUPER_TYPE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_RESOLVE_SUPER_TYPE);
+
     private LogMessages(int severity, String message) {
         super(severity, code++, message);
     }
