@@ -376,14 +376,14 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             } else if (enclosingElement instanceof IMethod) {
                 type = ((IMethod) enclosingElement).getDeclaringType();
             }
-            if (type != null) {
-                return postConstruct(ProcessableMethodDeclarationCompletionProposal.newProposal(coreProposal, type,
-                        uiProposal.getRelevance()), uiProposal);
+            if (type == null) {
+                throw Throws.throwIllegalArgumentException("No type found for enclosing element %s", enclosingElement); //$NON-NLS-1$
             }
+            return postConstruct(ProcessableMethodDeclarationCompletionProposal.newProposal(coreProposal, type,
+                    uiProposal.getRelevance()), uiProposal);
         } catch (CoreException e) {
             throw Throwables.propagate(e);
         }
-        throw Throws.throwIllegalArgumentException("No type found"); //$NON-NLS-1$
     }
 
     @Override
