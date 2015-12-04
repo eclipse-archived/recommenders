@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
@@ -34,7 +35,6 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractIdleService;
-import com.google.inject.Inject;
 
 public class Repositories extends AbstractIdleService implements IRcpService, Openable, Closeable {
 

@@ -15,8 +15,8 @@ import static org.eclipse.recommenders.utils.Checks.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -67,7 +67,7 @@ public final class Fingerprints {
 
     private static String hashString(final String message, final HashFunction hashFunction) {
         ensureIsNotNull(message);
-        HashCode hash = hashFunction.hashString(message, Charsets.UTF_8);
+        HashCode hash = hashFunction.hashString(message, StandardCharsets.UTF_8);
         return hash.toString();
     }
 

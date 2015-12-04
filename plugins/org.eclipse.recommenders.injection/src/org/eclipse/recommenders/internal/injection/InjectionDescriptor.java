@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.injection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -21,7 +22,6 @@ import org.eclipse.core.runtime.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Module;
 
 public class InjectionDescriptor {
@@ -33,7 +33,7 @@ public class InjectionDescriptor {
     public static List<InjectionDescriptor> getDescriptors() {
         final IExtensionRegistry registry = Platform.getExtensionRegistry();
         final IExtensionPoint extpoint = registry.getExtensionPoint(EXT_POINT_ID);
-        final List<InjectionDescriptor> descriptors = Lists.newArrayList();
+        final List<InjectionDescriptor> descriptors = new ArrayList<>();
         for (final IExtension ext : extpoint.getExtensions()) {
             for (final IConfigurationElement config : ext.getConfigurationElements()) {
                 final InjectionDescriptor desc = new InjectionDescriptor(config);
@@ -44,7 +44,7 @@ public class InjectionDescriptor {
     }
 
     public static List<Module> createModules() {
-        final List<Module> engines = Lists.newArrayList();
+        final List<Module> engines = new ArrayList<>();
         for (final InjectionDescriptor desc : getDescriptors()) {
             try {
                 engines.add(desc.createInstance());

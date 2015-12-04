@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.coordinates.maven;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.eclipse.recommenders.coordinates.DependencyType.PROJECT;
 import static org.junit.Assert.*;
 
@@ -27,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 
 public class MavenPomXmlAdvisorTest {
@@ -44,7 +44,7 @@ public class MavenPomXmlAdvisorTest {
 
     @Test
     public void testProjectCoordinateExtractedFromSimplePom() throws IOException {
-        writePomFile(folder.newFile("pom.xml"), Charsets.UTF_8, "org.example", "artifact", "1.0.0-SNAPSHOT");
+        writePomFile(folder.newFile("pom.xml"), UTF_8, "org.example", "artifact", "1.0.0-SNAPSHOT");
 
         IProjectCoordinateAdvisor sut = new MavenPomXmlAdvisor();
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
@@ -55,7 +55,7 @@ public class MavenPomXmlAdvisorTest {
 
     @Test
     public void testProjectCoordinateExtractedFromSimplePomInUtf16() throws IOException {
-        writePomFile(folder.newFile("pom.xml"), Charsets.UTF_16, "org.example", "artifact", "1.0.0-SNAPSHOT");
+        writePomFile(folder.newFile("pom.xml"), UTF_16, "org.example", "artifact", "1.0.0-SNAPSHOT");
 
         IProjectCoordinateAdvisor sut = new MavenPomXmlAdvisor();
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
@@ -66,7 +66,7 @@ public class MavenPomXmlAdvisorTest {
 
     @Test
     public void testVariablesInPomResultInAbsent() throws IOException {
-        writePomFile(folder.newFile("pom.xml"), Charsets.UTF_8, "${groupId}", "${artifactId}", "${version}");
+        writePomFile(folder.newFile("pom.xml"), UTF_8, "${groupId}", "${artifactId}", "${version}");
 
         IProjectCoordinateAdvisor sut = new MavenPomXmlAdvisor();
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
@@ -76,7 +76,7 @@ public class MavenPomXmlAdvisorTest {
 
     @Test
     public void testMissingValuesInPomWithoutParentResultInAbsent() throws IOException {
-        writePomFile(folder.newFile("pom.xml"), Charsets.UTF_8, null, "artifact", null);
+        writePomFile(folder.newFile("pom.xml"), UTF_8, null, "artifact", null);
 
         IProjectCoordinateAdvisor sut = new MavenPomXmlAdvisor();
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
@@ -86,7 +86,7 @@ public class MavenPomXmlAdvisorTest {
 
     @Test
     public void testMissingValuesAreTakenFromParent() throws IOException {
-        writePomFile(folder.newFile("pom.xml"), Charsets.UTF_8, null, "artifact", null, "org.example", "parent",
+        writePomFile(folder.newFile("pom.xml"), UTF_8, null, "artifact", null, "org.example", "parent",
                 "1.0.0-SNAPSHOT");
 
         IProjectCoordinateAdvisor sut = new MavenPomXmlAdvisor();

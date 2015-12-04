@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 import static org.eclipse.recommenders.utils.Result.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +54,6 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 
 public class ConstructorCompletionSessionProcessor extends SessionProcessor {
@@ -112,7 +112,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
             }
 
             Map<IJavaCompletionProposal, CompletionProposal> proposals = context.getProposals();
-            final Map<CompletionProposal, IMethodName> foundConstructors = Maps.newHashMap();
+            final Map<CompletionProposal, IMethodName> foundConstructors = new HashMap<>();
             int runningTotal = 0;
             for (Entry<IJavaCompletionProposal, CompletionProposal> entry : proposals.entrySet()) {
                 CompletionProposal coreProposal = entry.getValue();

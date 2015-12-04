@@ -157,7 +157,7 @@ public class BundleResolutionFailureDialog extends MessageDialogWithToggle {
             return null;
         }
 
-        StringBuffer result = new StringBuffer(512);
+        StringBuilder result = new StringBuilder(512);
         result.append(property);
         result.append(NEW_LINE);
 

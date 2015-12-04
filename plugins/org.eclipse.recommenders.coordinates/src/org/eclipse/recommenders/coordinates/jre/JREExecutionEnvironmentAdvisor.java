@@ -12,6 +12,7 @@ package org.eclipse.recommenders.coordinates.jre;
 
 import static com.google.common.base.Optional.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.recommenders.coordinates.AbstractProjectCoordinateAdvisor;
@@ -20,7 +21,6 @@ import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdvisor {
 
@@ -40,7 +40,7 @@ public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdv
     }
 
     private static Map<String, ProjectCoordinate> createLookUpTable() {
-        Map<String, ProjectCoordinate> result = Maps.newHashMap();
+        Map<String, ProjectCoordinate> result = new HashMap<>();
 
         result.put("JRE-1.1", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.1.0"));
         result.put("J2SE-1.2", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.2.0"));

@@ -26,7 +26,9 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -42,7 +44,6 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
@@ -109,7 +110,7 @@ public class GsonUtil {
         ensureIsNotNull(classOfT);
         Reader reader = null;
         try {
-            reader = new InputStreamReader(jsonStream, "UTF-8");
+            reader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
             return getInstance().fromJson(reader, classOfT);
         } catch (final Exception e) {
             throw throwUnhandledException(e);
@@ -168,7 +169,7 @@ public class GsonUtil {
         ensureIsNotNull(out);
         Writer writer = null;
         try {
-            writer = new OutputStreamWriter(out, "UTF-8");
+            writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
             getInstance().toJson(obj, writer);
         } catch (final Exception e) {
             throw throwUnhandledException(e);
@@ -178,8 +179,7 @@ public class GsonUtil {
     }
 
     public static <T> List<T> deserializeZip(File zip, Class<T> classOfT) throws IOException {
-
-        List<T> res = Lists.newLinkedList();
+        List<T> res = new LinkedList<>();
         ZipInputStream zis = null;
         try {
             InputSupplier<FileInputStream> fis = Files.newInputStreamSupplier(zip);

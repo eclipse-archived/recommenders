@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Files.append;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.eclipse.recommenders.coordinates.DependencyType.JAR;
 import static org.eclipse.recommenders.testing.FolderUtils.dir;
 import static org.hamcrest.CoreMatchers.*;
@@ -45,8 +45,8 @@ public class SharedManualMappingsAdvisorTest {
     public void setUp() throws IOException {
         mappingsFile = temp.newFile();
         IModelRepository repository = mock(IModelRepository.class);
-        when(repository.resolve(eq(SharedManualMappingsAdvisor.MAPPINGS), anyBoolean())).thenReturn(
-                Optional.of(mappingsFile));
+        when(repository.resolve(eq(SharedManualMappingsAdvisor.MAPPINGS), anyBoolean()))
+                .thenReturn(Optional.of(mappingsFile));
 
         sut = new SharedManualMappingsAdvisor(repository);
     }
@@ -55,8 +55,8 @@ public class SharedManualMappingsAdvisorTest {
     public void testEmptyMappingsFile() throws IOException {
         appendLine("");
 
-        Optional<ProjectCoordinate> suggestion = sut.doSuggest(jarDependency(dir("home", "user", "workspace",
-                "project", "lib", "example.jar")));
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
 
         assertThat(suggestion.isPresent(), is(false));
     }
@@ -65,8 +65,8 @@ public class SharedManualMappingsAdvisorTest {
     public void testSingleEntryMappingsFile() throws IOException {
         appendLine("example.jar=org.example:example:1.0.0");
 
-        Optional<ProjectCoordinate> suggestion = sut.doSuggest(jarDependency(dir("home", "user", "workspace",
-                "project", "lib", "example.jar")));
+        Optional<ProjectCoordinate> suggestion = sut
+                .doSuggest(jarDependency(dir("home", "user", "workspace", "project", "lib", "example.jar")));
 
         assertThat(suggestion.get(), is(equalTo(ProjectCoordinate.valueOf("org.example:example:1.0.0"))));
     }

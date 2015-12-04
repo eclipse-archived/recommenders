@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +32,6 @@ import org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Logs;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -82,7 +82,7 @@ public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor
             return;
         }
         try {
-            String json = Files.toString(persistenceFile, Charsets.UTF_8);
+            String json = Files.toString(persistenceFile, StandardCharsets.UTF_8);
             Map<DependencyInfo, ProjectCoordinate> deserialized = gson.fromJson(json, MANUAL_MAPPINGS_TYPE_TOKEN);
             if (deserialized != null) {
                 manualMappings = deserialized;
@@ -97,7 +97,7 @@ public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor
     public void close() throws IOException {
         try {
             String json = gson.toJson(manualMappings, MANUAL_MAPPINGS_TYPE_TOKEN);
-            Files.write(json, persistenceFile, Charsets.UTF_8);
+            Files.write(json, persistenceFile, StandardCharsets.UTF_8);
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_FAILED_TO_WRITE_MANUAL_MAPPINGS, e, persistenceFile);
 

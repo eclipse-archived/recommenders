@@ -11,9 +11,8 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static com.google.common.collect.Lists.newLinkedList;
-
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +40,7 @@ public final class Versions {
 
     private static Collection<Version> closestCandidates(Collection<Version> candidates,
             Function<Version, Integer> metric) {
-        Collection<Version> closestCandidatesByMajorVersion = newLinkedList();
+        Collection<Version> closestCandidatesByMajorVersion = new LinkedList<>();
         int closestDistance = Integer.MAX_VALUE;
         for (Version candidate : candidates) {
             int distance = metric.apply(candidate);

@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.recommenders.utils.rcp.preferences.AbstractLinkContributionPage.COMMAND_HREF_ID;
 
 import org.eclipse.core.commands.Command;
@@ -38,9 +38,9 @@ public class ContributionLink implements Comparable<ContributionLink> {
     private final Image icon;
 
     public ContributionLink(String text, String commandId, int priority, Image icon) {
-        this.text = checkNotNull(text);
-        this.commandId = checkNotNull(commandId);
-        this.priority = checkNotNull(priority);
+        this.text = requireNonNull(text);
+        this.commandId = requireNonNull(commandId);
+        this.priority = requireNonNull(priority);
         this.icon = icon;
     }
 

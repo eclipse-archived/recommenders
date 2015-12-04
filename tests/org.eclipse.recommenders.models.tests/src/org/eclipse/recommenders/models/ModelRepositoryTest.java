@@ -1,6 +1,6 @@
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Charsets.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.eclipse.recommenders.utils.Fingerprints.*;
 import static org.hamcrest.Matchers.*;
@@ -49,15 +49,20 @@ import com.google.common.io.Files;
 
 public class ModelRepositoryTest {
 
-    private static final ModelCoordinate COORDINATE = new ModelCoordinate("org.example", "example", "model", "zip", "1.0.0");
+    private static final ModelCoordinate COORDINATE = new ModelCoordinate("org.example", "example", "model", "zip",
+            "1.0.0");
 
     private static final URI METADATA_XML = asUri("org/example/example/1.0.0-SNAPSHOT/maven-metadata.xml");
     private static final URI METADATA_XML_SHA1 = asUri("org/example/example/1.0.0-SNAPSHOT/maven-metadata.xml.sha1");
     private static final URI METADATA_XML_MD5 = asUri("org/example/example/1.0.0-SNAPSHOT/maven-metadata.xml.md5");
-    private static final URI EXAMPLE_MODEL_ZIP = asUri("org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip");
-    private static final URI EXAMPLE_MODEL_FALLBACK_ZIP = asUri("org/example/example/1.0.0-SNAPSHOT/example-1.0.0-SNAPSHOT-model.zip");
-    private static final URI EXAMPLE_MODEL_ZIP_SHA1 = asUri("org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip.sha1");
-    private static final URI EXAMPLE_MODEL_ZIP_MD5 = asUri("org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip.md5");
+    private static final URI EXAMPLE_MODEL_ZIP = asUri(
+            "org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip");
+    private static final URI EXAMPLE_MODEL_FALLBACK_ZIP = asUri(
+            "org/example/example/1.0.0-SNAPSHOT/example-1.0.0-SNAPSHOT-model.zip");
+    private static final URI EXAMPLE_MODEL_ZIP_SHA1 = asUri(
+            "org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip.sha1");
+    private static final URI EXAMPLE_MODEL_ZIP_MD5 = asUri(
+            "org/example/example/1.0.0-SNAPSHOT/example-1.0.0-20140625.000000-1-model.zip.md5");
 
     private static final String REPO_URL = "http://www.example.org/repo";
 
@@ -391,9 +396,8 @@ public class ModelRepositoryTest {
 
         locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
         TransporterFactory transporterFactory = mock(TransporterFactory.class);
-        when(
-                transporterFactory.newInstance(Mockito.any(RepositorySystemSession.class),
-                        Mockito.any(RemoteRepository.class))).thenReturn(transporter);
+        when(transporterFactory.newInstance(Mockito.any(RepositorySystemSession.class),
+                Mockito.any(RemoteRepository.class))).thenReturn(transporter);
         locator.setServices(TransporterFactory.class, transporterFactory);
 
         return locator.getService(RepositorySystem.class);

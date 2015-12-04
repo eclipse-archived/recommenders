@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaElement;
@@ -44,8 +45,6 @@ import org.eclipse.recommenders.utils.Nullable;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * @see <a href=
@@ -59,10 +58,10 @@ public class SnippetCodeBuilder {
     private final IDocument doc;
     private final IRegion textSelection;
 
-    private final Set<String> imports = Sets.newTreeSet();
-    private final Set<String> importStatics = Sets.newTreeSet();
-    private final HashMap<IVariableBinding, String> vars = Maps.newHashMap();
-    private final HashMap<String, Integer> lastVarIndex = Maps.newHashMap();
+    private final Set<String> imports = new TreeSet<>();
+    private final Set<String> importStatics = new TreeSet<>();
+    private final HashMap<IVariableBinding, String> vars = new HashMap<>();
+    private final HashMap<String, Integer> lastVarIndex = new HashMap<>();
     private final StringBuilder sb = new StringBuilder();
 
     public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc, @Nonnull IRegion textSelection) {

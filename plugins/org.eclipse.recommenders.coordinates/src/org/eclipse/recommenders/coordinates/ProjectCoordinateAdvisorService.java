@@ -13,17 +13,17 @@ package org.eclipse.recommenders.coordinates;
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.recommenders.utils.Result;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 public class ProjectCoordinateAdvisorService implements IProjectCoordinateAdvisorService {
 
-    private List<IProjectCoordinateAdvisor> advisors = Lists.newArrayList();
+    private List<IProjectCoordinateAdvisor> advisors = new ArrayList<>();
 
     @Override
     public ImmutableList<IProjectCoordinateAdvisor> getAdvisors() {
