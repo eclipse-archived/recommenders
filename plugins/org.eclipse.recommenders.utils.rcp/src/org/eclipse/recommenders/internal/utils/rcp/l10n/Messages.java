@@ -19,8 +19,17 @@ public final class Messages extends NLS {
     public static String PREFPAGE_LINKS_DESCRIPTION;
 
     public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
-    public static String LOG_ERROR_FAILED_TO_OPEN_BROWSER;
+    public static String LOG_ERROR_FAILED_TO_OPEN_DEFAULT_BROWSER;
+    public static String LOG_ERROR_FAILED_TO_OPEN_DIALOG_BROWSER;
+    public static String LOG_ERROR_FAILED_TO_OPEN_EXTERNAL_BROWSER;
+    public static String LOG_ERROR_FAILED_TO_OPEN_OS_BROWSER;
     public static String LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
+    public static String LOG_ERROR_MALFORMED_URI;
+
+    public static String LOG_INFO_SUCESSFULLY_OPENED_DEFAULT_BROWSER;
+    public static String LOG_INFO_SUCESSFULLY_OPENED_DIALOG_BROWSER;
+    public static String LOG_INFO_SUCESSFULLY_OPENED_EXTERNAL_BROWSER;
+    public static String LOG_INFO_SUCESSFULLY_OPENED_OS_BROWSER;
 
     static {
         // initialize resource bundle

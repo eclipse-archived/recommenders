@@ -25,8 +25,8 @@ public final class LogMessages extends DefaultLogMessage {
 
     public static final ILogMessage ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND);
-    public static final ILogMessage ERROR_FAILED_TO_OPEN_BROWSER = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_OPEN_BROWSER);
+    public static final ILogMessage ERROR_MALFORMED_URI = new LogMessages(ERROR,
+            Messages.LOG_ERROR_MALFORMED_URI);
     public static final ILogMessage ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE);
 

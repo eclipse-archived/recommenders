@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.utils.rcp.preferences;
 
 import static org.eclipse.recommenders.internal.utils.rcp.l10n.LogMessages.ERROR_FAILED_TO_READ_EXTENSION_ATTRIBUTE;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
 public final class ContributionsReader {
@@ -53,7 +53,7 @@ public final class ContributionsReader {
     @VisibleForTesting
     static List<ContributionLink> readContributionLinks(String preferencePageId,
             @Nullable IConfigurationElement... configurationElements) {
-        List<ContributionLink> links = Lists.newArrayList();
+        List<ContributionLink> links = new ArrayList<>();
 
         if (configurationElements == null) {
             return ImmutableList.of();

@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.coordinates.rcp;
 
-import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Optional.*;
 import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Sets.newHashSet;
@@ -27,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -62,8 +62,8 @@ import org.eclipse.recommenders.coordinates.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.coordinates.rcp.CoordinateEvents.AdvisorConfigurationChangedEvent;
 import org.eclipse.recommenders.coordinates.rcp.CoordinateEvents.ProjectCoordinateChangeEvent;
-import org.eclipse.recommenders.internal.coordinates.rcp.l10n.Messages;
 import org.eclipse.recommenders.coordinates.rcp.EclipseProjectCoordinateAdvisorService;
+import org.eclipse.recommenders.internal.coordinates.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.TableSortConfigurator;
 import org.eclipse.swt.SWT;
@@ -362,7 +362,7 @@ public class ProjectCoordinatesView extends ViewPart {
                     value = ((CCombo) editor.getControl()).getText();
                 }
             }
-            if (equal(value, formerValue)) {
+            if (Objects.equals(value, formerValue)) {
                 return;
             }
             if (element instanceof Entry) {

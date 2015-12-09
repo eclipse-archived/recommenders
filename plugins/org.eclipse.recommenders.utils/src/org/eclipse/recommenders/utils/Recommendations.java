@@ -13,6 +13,8 @@ package org.eclipse.recommenders.utils;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +23,6 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 @Beta
@@ -144,7 +144,7 @@ public final class Recommendations {
      * @see Recommendation#getProposal()
      */
     public static <R extends Recommendation<T>, T> List<T> getProposals(final Iterable<R> recommendations) {
-        List<T> res = Lists.newLinkedList();
+        List<T> res = new LinkedList<>();
         for (Recommendation<T> rec : recommendations) {
             res.add(rec.getProposal());
         }
@@ -155,7 +155,7 @@ public final class Recommendations {
      * Returns the given recommendations as map.
      */
     public static <R extends Recommendation<T>, T> Map<T, Double> asMap(final Iterable<R> recommendations) {
-        Map<T, Double> res = Maps.newHashMap();
+        Map<T, Double> res = new HashMap<>();
         for (Recommendation<T> rec : recommendations) {
             res.put(rec.getProposal(), rec.getRelevance());
         }

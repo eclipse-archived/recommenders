@@ -22,7 +22,7 @@ class CommonImages {
 
     private static final URL BASE_URL = FrameworkUtil.getBundle(CommonImages.class).getEntry("/icons/"); //$NON-NLS-1$
 
-    private static final String T_EVIEW = "eview16"; //$NON-NLS-1$s
+    private static final String T_EVIEW = "eview16"; //$NON-NLS-1$ s
 
     public static final ImageDescriptor NOTIFICATION_CLOSE = create(T_EVIEW, "notification-close.gif"); //$NON-NLS-1$
 
@@ -41,9 +41,9 @@ class CommonImages {
             throw new MalformedURLException();
         }
 
-        StringBuffer buffer = new StringBuffer(prefix);
-        buffer.append('/');
-        buffer.append(name);
-        return new URL(BASE_URL, buffer.toString());
+        StringBuilder builder = new StringBuilder(prefix);
+        builder.append('/');
+        builder.append(name);
+        return new URL(BASE_URL, builder.toString());
     }
 }

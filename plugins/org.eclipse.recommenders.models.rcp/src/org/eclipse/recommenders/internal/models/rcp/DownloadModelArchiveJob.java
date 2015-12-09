@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -45,7 +46,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 
-import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 
 public class DownloadModelArchiveJob extends Job {
@@ -116,10 +116,10 @@ public class DownloadModelArchiveJob extends Job {
     }
 
     private boolean isIndex(ModelCoordinate mc) {
-        return Objects.equal(INDEX.getGroupId(), mc.getGroupId())
-                && Objects.equal(INDEX.getArtifactId(), mc.getArtifactId())
-                && Objects.equal(INDEX.getClassifier(), mc.getClassifier())
-                && Objects.equal(INDEX.getExtension(), mc.getExtension());
+        return Objects.equals(INDEX.getGroupId(), mc.getGroupId())
+                && Objects.equals(INDEX.getArtifactId(), mc.getArtifactId())
+                && Objects.equals(INDEX.getClassifier(), mc.getClassifier())
+                && Objects.equals(INDEX.getExtension(), mc.getExtension());
     }
 
     private static final class IndexDownloadFailureDialog extends MessageDialogWithToggle {

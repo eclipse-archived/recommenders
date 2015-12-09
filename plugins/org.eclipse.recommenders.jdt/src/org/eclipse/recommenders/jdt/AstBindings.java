@@ -14,6 +14,7 @@ import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.internal.jdt.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.IBinding;
@@ -34,7 +35,6 @@ import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public final class AstBindings {
 
@@ -92,7 +92,7 @@ public final class AstBindings {
     }
 
     public static List<ITypeName> toTypeNames(final ITypeBinding[] interfaces) {
-        final List<ITypeName> res = Lists.newLinkedList();
+        final List<ITypeName> res = new LinkedList<>();
         for (final ITypeBinding b : interfaces) {
             final Optional<ITypeName> opt = toTypeName(b);
             if (opt.isPresent()) {
@@ -198,7 +198,7 @@ public final class AstBindings {
     }
 
     public static List<IPackageName> toPackageNames(final ITypeBinding[] types) {
-        final List<IPackageName> res = Lists.newLinkedList();
+        final List<IPackageName> res = new LinkedList<>();
         for (final ITypeBinding b : types) {
             final Optional<IPackageName> opt = toPackageName(b);
             if (opt.isPresent()) {

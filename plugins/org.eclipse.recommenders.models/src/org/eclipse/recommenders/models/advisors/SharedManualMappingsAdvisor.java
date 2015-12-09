@@ -13,7 +13,9 @@ package org.eclipse.recommenders.models.advisors;
 import static org.apache.commons.lang3.StringUtils.isWhitespace;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +29,7 @@ import org.eclipse.recommenders.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 public class SharedManualMappingsAdvisor extends AbstractProjectCoordinateAdvisor {
@@ -81,8 +81,8 @@ public class SharedManualMappingsAdvisor extends AbstractProjectCoordinateAdviso
 
     private List<Pair<String, ProjectCoordinate>> readMappingFile(File mappingFile) {
         try {
-            List<Pair<String, ProjectCoordinate>> result = Lists.newLinkedList();
-            List<String> lines = Files.readLines(mappingFile, Charsets.UTF_8);
+            List<Pair<String, ProjectCoordinate>> result = new LinkedList<>();
+            List<String> lines = Files.readLines(mappingFile, StandardCharsets.UTF_8);
             for (String line : lines) {
                 if (isWhitespace(line) || isComment(line)) {
                     continue;

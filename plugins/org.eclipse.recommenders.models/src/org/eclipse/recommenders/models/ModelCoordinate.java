@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.coordinates.Coordinates.isValidId;
 import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Versions.isValidVersion;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,7 +26,6 @@ import org.eclipse.recommenders.utils.Versions;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 /**
  * Represents a Maven-like artifact coordinate which consists of "group-id:artifact-id:classifier:extension:version".
@@ -48,14 +48,14 @@ public final class ModelCoordinate {
     private final String classifier;
     private final String extension;
 
-    private Map<String, String> hints = Maps.newHashMap();
+    private Map<String, String> hints = new HashMap<>();
 
     /**
      * Creates a new coordinate.
-     * 
+     *
      * @throws IllegalArgumentException
      *             If the entered strings have an invalid format.
-     * 
+     *
      * @see Versions#isValidVersion(String)
      * @see Coordinates#isValidId(String)
      */
@@ -72,10 +72,10 @@ public final class ModelCoordinate {
 
     /**
      * Creates a new coordinate.
-     * 
+     *
      * @throws IllegalArgumentException
      *             If the entered strings have an invalid format.
-     * 
+     *
      * @see Versions#isValidVersion(String)
      * @see Coordinates#isValidId(String)
      */

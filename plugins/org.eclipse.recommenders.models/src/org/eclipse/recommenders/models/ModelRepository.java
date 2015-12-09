@@ -21,6 +21,7 @@ import static org.eclipse.aether.resolution.ResolutionErrorPolicy.*;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -56,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 /**
  * This class is thread-safe.
@@ -134,7 +134,7 @@ public class ModelRepository implements IModelRepository {
      * This makes it possible to immediately answer offline resolution requests while an online request is overwriting,
      * e.g., the <code>maven-metadata.xml</code>.
      */
-    private final Map<ModelCoordinate, Optional<File>> inProgressResolutions = Maps.newHashMap();
+    private final Map<ModelCoordinate, Optional<File>> inProgressResolutions = new HashMap<>();
 
     /**
      * {@inheritDoc}

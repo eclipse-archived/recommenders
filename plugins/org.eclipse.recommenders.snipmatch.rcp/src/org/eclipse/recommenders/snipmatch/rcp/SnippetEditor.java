@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -51,7 +53,6 @@ import org.eclipse.ui.forms.editor.IFormPage;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.google.inject.Inject;
 
 public class SnippetEditor extends FormEditor implements IResourceChangeListener {
 

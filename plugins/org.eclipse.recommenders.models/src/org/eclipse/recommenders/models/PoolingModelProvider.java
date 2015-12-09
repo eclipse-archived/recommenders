@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 /**
  * A model provider implementation that pools recommendation models to further improve performance. Note that models
@@ -37,7 +36,7 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
 
     // which models are currently borrowed to someone?
     // we need this mapping for implementing releaseModel properly so that clients don't have to submit their keys too.
-    private final IdentityHashMap<M, K> borrowedModels = Maps.newIdentityHashMap();
+    private final IdentityHashMap<M, K> borrowedModels = new IdentityHashMap<>();
     // model pool
     // REVIEW: we may want to make pool creation configurable later?
     private GenericKeyedObjectPool<K, M> pool = createModelPool();

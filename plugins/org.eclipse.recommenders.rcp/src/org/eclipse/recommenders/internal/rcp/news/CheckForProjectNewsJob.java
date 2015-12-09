@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Urls.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,6 @@ import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
@@ -142,6 +142,6 @@ public class CheckForProjectNewsJob extends Job {
             return Optional.absent();
         }
         HttpEntity entity = httpResponse.getEntity();
-        return Optional.of(IOUtils.toString(entity.getContent(), Charsets.UTF_8.name()));
+        return Optional.of(IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8.name()));
     }
 }
