@@ -4,6 +4,7 @@
       label="%label"
       version="2.3.0.qualifier"
       provider-name="%provider-name"
+      plugin="org.eclipse.recommenders.snipmatch.rcp"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
 
