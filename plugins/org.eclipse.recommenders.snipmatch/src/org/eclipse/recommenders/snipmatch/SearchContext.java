@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.recommenders.snipmatch.Location.NONE;
 
 import java.util.Set;
@@ -18,26 +19,22 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
-import com.google.common.collect.Sets;
-
 public class SearchContext implements ISearchContext {
 
     private final String searchText;
     private final Location location;
-    private final Set<ProjectCoordinate> pcs;
+    private final Set<ProjectCoordinate> availableDependencies;
 
-    public SearchContext(String searchText, Location location, Set<ProjectCoordinate> pcs) {
-        this.searchText = searchText;
-        this.location = location;
-        this.pcs = pcs;
-    }
-
-    public SearchContext(String searchText, Location location) {
-        this(searchText, location, Sets.<ProjectCoordinate>newHashSet());
+    public SearchContext(String searchText, Location location, Set<ProjectCoordinate> availableDependencies) {
+        this.searchText = requireNonNull(searchText);
+        this.location = requireNonNull(location);
+        this.availableDependencies = requireNonNull(availableDependencies);
     }
 
     public SearchContext(String searchText) {
-        this(searchText, NONE);
+        this.searchText = requireNonNull(searchText);
+        this.location = NONE;
+        this.availableDependencies = null;
     }
 
     @Override
@@ -51,8 +48,13 @@ public class SearchContext implements ISearchContext {
     }
 
     @Override
+    public boolean isRestrictedByDependencies() {
+        return availableDependencies != null;
+    }
+
+    @Override
     public Set<ProjectCoordinate> getDependencies() {
-        return pcs;
+        return availableDependencies;
     }
 
     @Override

@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
 
@@ -27,7 +27,7 @@ import org.eclipse.jdt.internal.corext.template.java.VarResolver;
 import org.eclipse.jface.text.templates.TemplateContextType;
 
 @SuppressWarnings("restriction")
-public class SnipmatchTemplateContextType {
+public class JavaTemplateContextType {
 
     private static TemplateContextType instance;
 
@@ -90,5 +90,4 @@ public class SnipmatchTemplateContextType {
 
         return contextType;
     }
-
 }

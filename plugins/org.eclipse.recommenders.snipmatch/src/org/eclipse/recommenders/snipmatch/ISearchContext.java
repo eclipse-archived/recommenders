@@ -20,5 +20,7 @@ public interface ISearchContext {
 
     Location getLocation();
 
+    boolean isRestrictedByDependencies();
+
     Set<ProjectCoordinate> getDependencies();
 }

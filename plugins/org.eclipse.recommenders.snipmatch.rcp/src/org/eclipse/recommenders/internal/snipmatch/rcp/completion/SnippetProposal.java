@@ -8,9 +8,8 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
@@ -31,6 +30,7 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetProposals;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -49,8 +49,8 @@ public final class SnippetProposal extends TemplateProposal implements ICompleti
     private Boolean valid = null;
 
     public static SnippetProposal newSnippetProposal(Recommendation<ISnippet> recommendation, int repositoryRelevance,
-            Template template, TemplateContext context, IRegion region, Image image) throws BadLocationException,
-            TemplateException {
+            Template template, TemplateContext context, IRegion region, Image image)
+                    throws BadLocationException, TemplateException {
         int relevance = (int) (recommendation.getRelevance() * 100);
         return new SnippetProposal(recommendation.getProposal(), relevance, repositoryRelevance, template, context,
                 region, image);
@@ -126,7 +126,7 @@ public final class SnippetProposal extends TemplateProposal implements ICompleti
     @Override
     public StyledString getStyledDisplayString() {
         StyledString styledString = new StyledString();
-        styledString.append(createDisplayString(snippet));
+        styledString.append(SnippetProposals.createDisplayString(snippet));
         if (!snippet.getTags().isEmpty()) {
             styledString.append(" - ", StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
             styledString.append(Joiner.on(", ").join(Ordering.natural().sortedCopy(snippet.getTags())), //$NON-NLS-1$
@@ -138,14 +138,6 @@ public final class SnippetProposal extends TemplateProposal implements ICompleti
     @Override
     public String getDisplayString() {
         return getStyledDisplayString().getString();
-    }
-
-    public static String createDisplayString(ISnippet snippet) {
-        if (isNullOrEmpty(snippet.getDescription())) {
-            return snippet.getName();
-        } else {
-            return format(Messages.SEARCH_DISPLAY_STRING, snippet.getName(), snippet.getDescription());
-        }
     }
 
     public ISnippet getSnippet() {

@@ -1,7 +1,7 @@
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
 import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
-import static org.eclipse.recommenders.snipmatch.rcp.util.RepositoryProposalMatcher.repository;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.completion.RepositoryProposalMatcher.repository;
 import static org.eclipse.recommenders.snipmatch.rcp.util.SearchContextMatcher.context;
 import static org.eclipse.recommenders.snipmatch.rcp.util.SnippetProposalMatcher.snippet;
 import static org.hamcrest.Matchers.*;
@@ -28,6 +28,7 @@ import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.IDependencyListener;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -48,7 +49,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-public class SnipmatchContentAssistProcessorTest {
+public class JavaContentAssistProcessorTest {
 
     private static final String REPO_NAME_1 = "my repo 1";
     private static final String REPO_NAME_2 = "my repo 2";
@@ -75,7 +76,7 @@ public class SnipmatchContentAssistProcessorTest {
 
     private SnippetRepositoryConfigurations configs;
     private Repositories repos;
-    private SnipmatchContentAssistProcessor sut;
+    private JavaContentAssistProcessor sut;
     private ITextViewer viewer;
 
     public void setUp(Document document, Point selectedRange, ImmutableSet<DependencyInfo> dependencies) {
@@ -105,7 +106,7 @@ public class SnipmatchContentAssistProcessorTest {
                 new JavaContentAssistInvocationContext(viewer, 0, mock(IEditorPart.class)));
         doReturn(compilationUnit).when(context).getCompilationUnit();
 
-        sut = new SnipmatchContentAssistProcessor(configs, repos, pcProvider, dependencyListener, new SharedImages());
+        sut = new JavaContentAssistProcessor(configs, repos, pcProvider, dependencyListener, new SharedImages());
 
         sut.setContext(context);
     }
@@ -114,7 +115,7 @@ public class SnipmatchContentAssistProcessorTest {
     public void testEmptySearchText() {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
-        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, ANY_SEARCH_TERM, Location.FILE,
+        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, ANY_SEARCH_TERM, Location.JAVA_FILE,
                 NO_PROJECT_COORDINATES, "snippet");
 
         sut.setTerms("");
@@ -128,14 +129,14 @@ public class SnipmatchContentAssistProcessorTest {
     public void testSnippetIsFound() {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
-        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet");
+        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet");
 
         sut.setTerms(SEARCH_TERM);
 
         List<ICompletionProposal> result = Arrays.asList(sut.computeCompletionProposals(viewer, 0));
 
-        verify(repo).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
+        verify(repo).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
         assertThat(result, hasItem(repository(REPO_NAME_1, 1, 0)));
         assertThat(result, hasItem(snippet("snippet", 0, NO_SELECTION)));
         assertThat(result.size(), is(2));
@@ -145,14 +146,14 @@ public class SnipmatchContentAssistProcessorTest {
     public void testSnippetsAreFound() {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
-        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet1", "snippet2");
+        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet1", "snippet2");
 
         sut.setTerms(SEARCH_TERM);
 
         List<ICompletionProposal> result = Arrays.asList(sut.computeCompletionProposals(viewer, 0));
 
-        verify(repo).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
+        verify(repo).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
         assertThat(result, hasItem(repository(REPO_NAME_1, 2, 0)));
         assertThat(result, hasItem(snippet("snippet1", 0, NO_SELECTION)));
         assertThat(result, hasItem(snippet("snippet2", 0, NO_SELECTION)));
@@ -163,17 +164,17 @@ public class SnipmatchContentAssistProcessorTest {
     public void testSnippetsInTwoRepos() {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
-        ISnippetRepository repo1 = mockRepository(REPO_NAME_1, 20, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet1");
-        ISnippetRepository repo2 = mockRepository(REPO_NAME_2, 10, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet2");
+        ISnippetRepository repo1 = mockRepository(REPO_NAME_1, 20, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet1");
+        ISnippetRepository repo2 = mockRepository(REPO_NAME_2, 10, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet2");
 
         sut.setTerms(SEARCH_TERM);
 
         List<ICompletionProposal> result = Arrays.asList(sut.computeCompletionProposals(viewer, 0));
 
-        verify(repo1).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
-        verify(repo2).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
+        verify(repo1).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
+        verify(repo2).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
         assertThat(result, hasItem(repository(REPO_NAME_1, 1, 1)));
         assertThat(result, hasItem(snippet("snippet1", 1, NO_SELECTION)));
         assertThat(result, hasItem(repository(REPO_NAME_2, 1, 0)));
@@ -187,15 +188,15 @@ public class SnipmatchContentAssistProcessorTest {
 
         ISnippetRepository repo1 = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVADOC,
                 NO_PROJECT_COORDINATES, "snippet1");
-        ISnippetRepository repo2 = mockRepository(REPO_NAME_2, 20, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet2");
+        ISnippetRepository repo2 = mockRepository(REPO_NAME_2, 20, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet2");
 
         sut.setTerms(SEARCH_TERM);
 
         List<ICompletionProposal> result = Arrays.asList(sut.computeCompletionProposals(viewer, 0));
 
-        verify(repo1).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
-        verify(repo2).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
+        verify(repo1).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
+        verify(repo2).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
         assertThat(result, hasItem(repository(REPO_NAME_2, 1, 1)));
         assertThat(result, hasItem(snippet("snippet2", 1, NO_SELECTION)));
         assertThat(result.size(), is(2));
@@ -205,14 +206,14 @@ public class SnipmatchContentAssistProcessorTest {
     public void testSelection() {
         setUp(DOCUMENT, new Point(2, 2), NO_DEPENDENCIES);
 
-        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES,
-                "snippet");
+        ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
+                NO_PROJECT_COORDINATES, "snippet");
 
         sut.setTerms(SEARCH_TERM);
 
         List<ICompletionProposal> result = Arrays.asList(sut.computeCompletionProposals(viewer, 0));
 
-        verify(repo).search(argThat(context(SEARCH_TERM, Location.FILE, NO_PROJECT_COORDINATES)));
+        verify(repo).search(argThat(context(SEARCH_TERM, Location.JAVA_FILE, NO_PROJECT_COORDINATES)));
         assertThat(result, hasItem(repository(REPO_NAME_1, 1, 0)));
         assertThat(result, hasItem(snippet("snippet", 0, "cu")));
         assertThat(result.size(), is(2));
@@ -262,7 +263,7 @@ public class SnipmatchContentAssistProcessorTest {
 
     private Recommendation<ISnippet> createRecommendation(String name) {
         ISnippet snippet = new Snippet(UUID.randomUUID(), name, ANY_SEARCH_TERM, NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                SNIPPET_CODE, Location.FILE);
+                SNIPPET_CODE, Location.JAVA_FILE);
         return Recommendation.newRecommendation(snippet, 1.0);
     }
 }

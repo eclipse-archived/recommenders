@@ -119,6 +119,7 @@ public final class Messages extends NLS {
     public static String ERROR_REPOSITORY_NOT_OPEN_YET;
     public static String ERROR_EXCEPTION_WHILE_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
     public static String ERROR_FAILURE_TO_PUSH_SNIPPETS_TO_REMOTE_GIT_REPO;
+    public static String ERROR_UNABLE_TO_DETERMINE_SOURCE_VIEWER;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;

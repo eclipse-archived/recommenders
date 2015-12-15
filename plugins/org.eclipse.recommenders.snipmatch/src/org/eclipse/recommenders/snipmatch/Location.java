@@ -12,11 +12,38 @@ package org.eclipse.recommenders.snipmatch;
 
 public enum Location {
 
+    /**
+     * Nowhere. Used as a placeholder.
+     */
     NONE,
+
+    /**
+     * Everywhere in a file.
+     */
     FILE,
+
+    /**
+     * Everywhere in a Java source file.
+     */
+    JAVA_FILE,
+
+    /**
+     * Everywhere a Java statement or Java type member (field, method, nested type, etc.) is allowed.
+     */
     JAVA,
+
+    /**
+     * Everywhere a Java statement is allowed.
+     */
     JAVA_STATEMENTS,
+
+    /**
+     * Everywhere a Java type member (field, method, nested type, etc.) is allowed.
+     */
     JAVA_TYPE_MEMBERS,
-    JAVADOC,
-    UNKNOWN;
+
+    /**
+     * Everywhere in a Javadoc comment.
+     */
+    JAVADOC;
 }

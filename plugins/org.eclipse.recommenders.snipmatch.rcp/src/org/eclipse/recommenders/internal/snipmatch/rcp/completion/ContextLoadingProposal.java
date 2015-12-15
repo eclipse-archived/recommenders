@@ -8,7 +8,9 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
+
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -24,17 +26,15 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-import com.google.common.collect.ImmutableSet;
-
 public class ContextLoadingProposal extends Job implements ICompletionProposal, ICompletionProposalExtension {
 
     private final IProjectCoordinateProvider pcProvider;
-    private final ImmutableSet<DependencyInfo> dependencies;
+    private final Set<DependencyInfo> dependencies;
     private final Image image;
 
     private boolean resolutionJobDone = false;
 
-    public ContextLoadingProposal(IProjectCoordinateProvider pcProvider, ImmutableSet<DependencyInfo> dependencies,
+    public ContextLoadingProposal(IProjectCoordinateProvider pcProvider, Set<DependencyInfo> dependencies,
             Image image) {
         super(Messages.JOB_NAME_IDENTIFYING_PROJECT_DEPENDENCIES);
         this.pcProvider = pcProvider;

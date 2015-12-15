@@ -8,7 +8,7 @@
  * Contributors:
  *    Simon Laffoy - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch.rcp;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
 import java.text.MessageFormat;
 

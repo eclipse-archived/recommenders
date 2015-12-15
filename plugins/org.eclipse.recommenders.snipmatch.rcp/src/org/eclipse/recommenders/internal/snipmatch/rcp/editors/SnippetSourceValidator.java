@@ -19,7 +19,7 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchTemplateContextType;
+import org.eclipse.recommenders.internal.snipmatch.rcp.completion.JavaTemplateContextType;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 
 @SuppressWarnings("restriction")
@@ -32,7 +32,7 @@ public final class SnippetSourceValidator {
     }
 
     public static String isSourceValid(String source) {
-        TemplateContextType contextType = SnipmatchTemplateContextType.getInstance();
+        TemplateContextType contextType = JavaTemplateContextType.getInstance();
         Template template = new Template("name", "description", SNIPMATCH_CONTEXT_ID, source, true); //$NON-NLS-1$ //$NON-NLS-2$
         JavaContext context = new JavaContext(contextType, new Document(), new Position(0), null);
         context.setForceEvaluation(true);

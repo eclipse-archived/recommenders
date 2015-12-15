@@ -1,8 +1,7 @@
-package org.eclipse.recommenders.snipmatch.rcp.util;
+package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
 import static java.lang.String.format;
 
-import org.eclipse.recommenders.internal.snipmatch.rcp.RepositoryProposal;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
