@@ -91,7 +91,7 @@ public class ConfigureContentAssistInformationControl extends AbstractInformatio
                 dispose();
                 String url = e.text;
                 if (StringUtils.startsWith(url, HTTP) || StringUtils.startsWith(url, HTTPS)) {
-                    Browsers.openInExternalBrowser(url);
+                    Browsers.tryOpenInExternalBrowser(url);
                 } else if (StringUtils.startsWith(url, X_PREFERENCES)) {
                     createPreferenceDialogOn(getActiveWorkbenchShell(), StringUtils.substringAfter(url, X_PREFERENCES),
                             null, null).open();

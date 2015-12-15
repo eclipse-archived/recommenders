@@ -142,7 +142,7 @@ public class DownloadModelArchiveJob extends Job {
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent event) {
-                    Browsers.openInExternalBrowser(event.text);
+                    Browsers.tryOpenInExternalBrowser(event.text);
                 }
             });
             return link;

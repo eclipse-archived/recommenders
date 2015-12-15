@@ -54,34 +54,40 @@ public final class Browsers {
      * <li>An external web browser, as determined by the OS</li>
      * <li>A web browser embedded in a dialog</li>
      * </ol>
+     *
+     * @return {@code true} if any browser could be opened successfully, {@code false} if not.
+     *
+     * @since 2.2.6
      */
-    public static void openInDefaultBrowser(URL url) {
+    public static boolean tryOpenInDefaultBrowser(URL url) {
         MultiStatus multiStatus = new MultiStatus(BUNDLE_SYMBOLIC_NAME, 0,
                 MessageFormat.format(Messages.LOG_ERROR_FAILED_TO_OPEN_DEFAULT_BROWSER, url), null);
         try {
-            Status defaultBrowserStatus = openInDefaultBrowserImpl(url);
+            Status defaultBrowserStatus = doOpenInDefaultBrowser(url);
             multiStatus.add(defaultBrowserStatus);
             if (defaultBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status externalBrowserStatus = openInExternalBrowserImpl(url);
+            Status externalBrowserStatus = doOpenInExternalBrowser(url);
             multiStatus.add(externalBrowserStatus);
             if (externalBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status osBrowserStatus = openInOsBrowserImpl(url);
+            Status osBrowserStatus = doOpenInOsBrowser(url);
             multiStatus.add(osBrowserStatus);
             if (osBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status dialogBrowserStatus = openInDialogBrowserImpl(url, SWT.DEFAULT, SWT.DEFAULT);
+            Status dialogBrowserStatus = doOpenInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
             multiStatus.add(dialogBrowserStatus);
             if (dialogBrowserStatus.isOK()) {
-                return;
+                return true;
             }
+
+            return false;
         } finally {
             if (!multiStatus.isOK()) {
                 Platform.getLog(BUNDLE).log(multiStatus);
@@ -89,12 +95,29 @@ public final class Browsers {
         }
     }
 
-    public static void openInDefaultBrowser(String url) {
+    /**
+     * @deprecated Use {@link #tryOpenInDefaultBrowser(URL)} instead
+     */
+    @Deprecated
+    public static void openInDefaultBrowser(URL url) {
+        tryOpenInDefaultBrowser(url);
+    }
+
+    public static boolean tryOpenInDefaultBrowser(String url) {
         try {
-            openInDefaultBrowser(new URL(url));
+            return tryOpenInDefaultBrowser(new URL(url));
         } catch (MalformedURLException e) {
             Logs.log(LogMessages.ERROR_MALFORMED_URI, e, url);
+            return false;
         }
+    }
+
+    /**
+     * @deprecated Use {@link #tryOpenInDefaultBrowser(String)} instead
+     */
+    @Deprecated
+    public static void openInDefaultBrowser(String url) {
+        tryOpenInDefaultBrowser(url);
     }
 
     /**
@@ -107,34 +130,40 @@ public final class Browsers {
      * <li>The default web browser, as configured in the Eclipse preferences</li>
      * <li>A web browser embedded in a dialog</li>
      * </ol>
+     *
+     * @return {@code true} if any browser could be opened successfully, {@code false} if not.
+     *
+     * @since 2.2.6
      */
-    public static void openInExternalBrowser(URL url) {
+    public static boolean tryOpenInExternalBrowser(URL url) {
         MultiStatus multiStatus = new MultiStatus(BUNDLE_SYMBOLIC_NAME, 0,
                 MessageFormat.format(Messages.LOG_ERROR_FAILED_TO_OPEN_EXTERNAL_BROWSER, url), null);
         try {
-            Status externalBrowserStatus = openInExternalBrowserImpl(url);
+            Status externalBrowserStatus = doOpenInExternalBrowser(url);
             multiStatus.add(externalBrowserStatus);
             if (externalBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status osBrowserStatus = openInOsBrowserImpl(url);
+            Status osBrowserStatus = doOpenInOsBrowser(url);
             multiStatus.add(osBrowserStatus);
             if (osBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status defaultBrowserStatus = openInDefaultBrowserImpl(url);
+            Status defaultBrowserStatus = doOpenInDefaultBrowser(url);
             multiStatus.add(defaultBrowserStatus);
             if (defaultBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status dialogBrowserStatus = openInDialogBrowserImpl(url, SWT.DEFAULT, SWT.DEFAULT);
+            Status dialogBrowserStatus = doOpenInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
             multiStatus.add(dialogBrowserStatus);
             if (dialogBrowserStatus.isOK()) {
-                return;
+                return true;
             }
+
+            return false;
         } finally {
             if (!multiStatus.isOK()) {
                 Platform.getLog(BUNDLE).log(multiStatus);
@@ -142,12 +171,29 @@ public final class Browsers {
         }
     }
 
-    public static void openInExternalBrowser(String url) {
+    /**
+     * @deprecated Use {@link #tryOpenInExternalBrowser(URL)} instead
+     */
+    @Deprecated
+    public static void openInExternalBrowser(URL url) {
+        tryOpenInExternalBrowser(url);
+    }
+
+    public static boolean tryOpenInExternalBrowser(String url) {
         try {
-            openInExternalBrowser(new URL(url));
+            return tryOpenInExternalBrowser(new URL(url));
         } catch (MalformedURLException e) {
             Logs.log(LogMessages.ERROR_MALFORMED_URI, e, url);
+            return false;
         }
+    }
+
+    /**
+     * @deprecated Use {@link #tryOpenInExternalBrowser(String)} instead
+     */
+    @Deprecated
+    public static void openInExternalBrowser(String url) {
+        tryOpenInExternalBrowser(url);
     }
 
     /**
@@ -159,34 +205,40 @@ public final class Browsers {
      * <li>An external web browser, as determined by the OS</li>
      * <li>The default web browser, as configured in the Eclipse preferences</li>
      * </ol>
+     *
+     * @return {@code true} if any browser could be opened successfully, {@code false} if not.
+     *
+     * @since 2.2.6
      */
-    public static void openInDialogBrowser(URL url, int width, int height) {
+    public static boolean tryOpenInDialogBrowser(URL url, int width, int height) {
         MultiStatus multiStatus = new MultiStatus(BUNDLE_SYMBOLIC_NAME, 0,
                 MessageFormat.format(Messages.LOG_ERROR_FAILED_TO_OPEN_DIALOG_BROWSER, url), null);
         try {
-            Status dialogBrowserStatus = openInDialogBrowserImpl(url, width, height);
+            Status dialogBrowserStatus = doOpenInDialogBrowser(url, width, height);
             multiStatus.add(dialogBrowserStatus);
             if (dialogBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status externalBrowserStatus = openInExternalBrowserImpl(url);
+            Status externalBrowserStatus = doOpenInExternalBrowser(url);
             multiStatus.add(externalBrowserStatus);
             if (externalBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status osBrowserStatus = openInOsBrowserImpl(url);
+            Status osBrowserStatus = doOpenInOsBrowser(url);
             multiStatus.add(osBrowserStatus);
             if (osBrowserStatus.isOK()) {
-                return;
+                return true;
             }
 
-            Status defaultBrowserStatus = openInDefaultBrowserImpl(url);
+            Status defaultBrowserStatus = doOpenInDefaultBrowser(url);
             multiStatus.add(defaultBrowserStatus);
             if (defaultBrowserStatus.isOK()) {
-                return;
+                return true;
             }
+
+            return false;
         } finally {
             if (!multiStatus.isOK()) {
                 Platform.getLog(BUNDLE).log(multiStatus);
@@ -194,23 +246,56 @@ public final class Browsers {
         }
     }
 
+    /**
+     * @deprecated Use {@link #tryOpenInDialogBrowser(URL, int, int)} instead
+     */
+    @Deprecated
+    public static void openInDialogBrowser(URL url, int width, int height) {
+        tryOpenInDialogBrowser(url, width, height);
+    }
+
+    public static boolean tryOpenInDialogBrowser(URL url) {
+        return tryOpenInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
+    }
+
+    /**
+     * @deprecated Use {@link #tryOpenInDialogBrowser(URL)} instead
+     */
+    @Deprecated
     public static void openInDialogBrowser(URL url) {
-        openInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
+        tryOpenInDialogBrowser(url);
     }
 
+    public static boolean tryOpenInDialogBrowser(String url) {
+        return tryOpenInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
+    }
+
+    /**
+     * @deprecated Use {@link #tryOpenInDialogBrowser(String)} instead
+     */
+    @Deprecated
     public static void openInDialogBrowser(String url) {
-        openInDialogBrowser(url, SWT.DEFAULT, SWT.DEFAULT);
+        tryOpenInDialogBrowser(url);
     }
 
-    public static void openInDialogBrowser(String url, int width, int height) {
+    public static boolean tryOpenInDialogBrowser(String url, int width, int height) {
         try {
-            openInDialogBrowser(new URL(url), width, height);
+            return tryOpenInDialogBrowser(new URL(url), width, height);
         } catch (MalformedURLException e) {
             Logs.log(LogMessages.ERROR_MALFORMED_URI, e, url);
+            return false;
         }
     }
 
-    private static Status openInDefaultBrowserImpl(URL url) {
+    /**
+     * @deprecated Use {@link #tryOpenInDialogBrowser(String, int, int)} instead
+     */
+    @Deprecated
+    public static void openInDialogBrowser(String url, int width, int height) {
+        tryOpenInDialogBrowser(url, width, height);
+    }
+
+    private static Status doOpenInDefaultBrowser(URL url) {
         try {
             IWebBrowser defaultBrowser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser(null);
             defaultBrowser.openURL(url);
@@ -222,7 +307,7 @@ public final class Browsers {
         }
     }
 
-    private static Status openInExternalBrowserImpl(URL url) {
+    private static Status doOpenInExternalBrowser(URL url) {
         try {
             IWebBrowser externalBrowser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
             externalBrowser.openURL(url);
@@ -234,7 +319,7 @@ public final class Browsers {
         }
     }
 
-    private static Status openInOsBrowserImpl(URL url) {
+    private static Status doOpenInOsBrowser(URL url) {
         boolean success = Program.launch(url.toExternalForm());
         if (success) {
             return new Status(Status.OK, BUNDLE_SYMBOLIC_NAME,
@@ -245,7 +330,7 @@ public final class Browsers {
         }
     }
 
-    private static Status openInDialogBrowserImpl(URL url, int width, int height) {
+    private static Status doOpenInDialogBrowser(URL url, int width, int height) {
         try {
             Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
             BrowserDialog browserDialog;
@@ -272,7 +357,7 @@ public final class Browsers {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                openInExternalBrowser(event.text);
+                tryOpenInExternalBrowser(event.text);
             }
         });
     }

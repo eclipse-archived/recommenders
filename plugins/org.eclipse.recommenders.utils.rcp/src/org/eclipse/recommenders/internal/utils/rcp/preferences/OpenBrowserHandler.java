@@ -21,7 +21,7 @@ public class OpenBrowserHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        Browsers.openInExternalBrowser(event.getParameter(COMMAND_HREF_ID));
+        Browsers.tryOpenInExternalBrowser(event.getParameter(COMMAND_HREF_ID));
         return null;
     }
 }
