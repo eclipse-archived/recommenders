@@ -58,6 +58,8 @@ public class JavaContentAssistProcessorTest {
     private static final String SEARCH_TERM = "searchTerm";
     private static final List<String> NO_EXTRA_SEARCH_TERMS = Collections.emptyList();
     private static final List<String> NO_TAGS = Collections.emptyList();
+    private static final List<String> NO_FILE_EXTENSIONS = Collections.emptyList();
+    private static final ImmutableSet<DependencyInfo> NO_DEPENDENCIES = ImmutableSet.of();
     private static final String NO_SELECTION = null;
 
     private static final Document DOCUMENT = new Document("Document");
@@ -72,7 +74,6 @@ public class JavaContentAssistProcessorTest {
             ImmutableMap.of(PROJECT_NAME, "example"));
 
     private static final ImmutableSet<DependencyInfo> DEPENDENCIES = ImmutableSet.of(PROJECT_INFO);
-    private static final ImmutableSet<DependencyInfo> NO_DEPENDENCIES = ImmutableSet.of();
 
     private SnippetRepositoryConfigurations configs;
     private Repositories repos;
@@ -263,7 +264,7 @@ public class JavaContentAssistProcessorTest {
 
     private Recommendation<ISnippet> createRecommendation(String name) {
         ISnippet snippet = new Snippet(UUID.randomUUID(), name, ANY_SEARCH_TERM, NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                SNIPPET_CODE, Location.JAVA_FILE);
+                SNIPPET_CODE, Location.JAVA_FILE, NO_FILE_EXTENSIONS, Collections.<ProjectCoordinate>emptySet());
         return Recommendation.newRecommendation(snippet, 1.0);
     }
 }

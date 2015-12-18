@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.snipmatch;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Arrays.asList;
+import static java.util.UUID.randomUUID;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.testing.RecommendationMatchers.recommendation;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +36,7 @@ import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,14 +50,9 @@ import com.google.common.collect.Iterables;
 public class FileSnippetRepositoryTest {
 
     private static final Set<ProjectCoordinate> EMPTY_CLASSPATH = Collections.<ProjectCoordinate>emptySet();
-    private static final List<String> NO_EXTRA_SEARCH_TERMS = Collections.emptyList();
-    private static final List<String> NO_TAGS = Collections.emptyList();
 
-    private static final UUID A_UUID = UUID.randomUUID();
-    private static final UUID ANOTHER_UUID = UUID.randomUUID();
-    private static final UUID THIRD_UUID = UUID.randomUUID();
-
-    private static final String SNIPPET_NAME = "snippet";
+    private static final UUID A_UUID = randomUUID();
+    private static final UUID ANOTHER_UUID = randomUUID();
 
     @Rule
     public final TemporaryFolder tmp = new TemporaryFolder();
@@ -73,11 +71,10 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testDeleteSnippetFoundInRepository() throws Exception {
-        Snippet snippet = new Snippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
-        File snippetFile = storeSnippet(snippet);
+        File snippetFile = storeSnippet(createSnippet(A_UUID, "name"));
         sut.open();
 
-        boolean wasDeleted = sut.delete(snippet.getUuid());
+        boolean wasDeleted = sut.delete(A_UUID);
         List<Recommendation<ISnippet>> searchByName = sut.search(new SearchContext("name"));
         List<Recommendation<ISnippet>> blanketSearch = sut.search(new SearchContext(""));
 
@@ -91,7 +88,7 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testDeleteSnippetNotFoundInRepository() throws Exception {
-        ISnippet snippet = new Snippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
+        ISnippet snippet = createSnippet(A_UUID, "name");
         File snippetFile = storeSnippet(snippet);
         sut.open();
 
@@ -109,15 +106,12 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testDeleteSnippetInRepositoryWithAnotherSnippetToKeep() throws Exception {
-        ISnippet snippetToDelete = new Snippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code",
-                FILE);
-        ISnippet snippetToKeep = new Snippet(ANOTHER_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                "code", FILE);
-        File snippetFileToDelete = storeSnippet(snippetToDelete);
+        File snippetFileToDelete = storeSnippet(createSnippet(A_UUID, "name"));
+        ISnippet snippetToKeep = createSnippet(ANOTHER_UUID, "name");
         File snippetFileToKeep = storeSnippet(snippetToKeep);
         sut.open();
 
-        boolean wasDeleted = sut.delete(snippetToDelete.getUuid());
+        boolean wasDeleted = sut.delete(A_UUID);
         List<Recommendation<ISnippet>> searchByName = sut.search(new SearchContext("name"));
         List<Recommendation<ISnippet>> blanketSearch = sut.search(new SearchContext(""));
 
@@ -132,7 +126,7 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testHasSnippetFoundInRepository() throws Exception {
-        createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
+        storeSnippet(createSnippet(A_UUID, "name"));
         sut.open();
 
         boolean hasSnippet = sut.hasSnippet(A_UUID);
@@ -155,9 +149,9 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testHasSnippetNotFoundInRepositoryWithAnotherSnippet() throws Exception {
-        createAndStoreSnippet(ANOTHER_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
+        storeSnippet(createSnippet(A_UUID, "name"));
         sut.open();
-        boolean hasSnippet = sut.hasSnippet(A_UUID);
+        boolean hasSnippet = sut.hasSnippet(ANOTHER_UUID);
 
         assertThat(hasSnippet, is(false));
 
@@ -168,14 +162,14 @@ public class FileSnippetRepositoryTest {
     public void testHasSnippetWhenRepositoryClosed() throws Exception {
         assertThat(sut.isOpen(), is(false));
 
-        sut.hasSnippet(UUID.randomUUID());
+        sut.hasSnippet(randomUUID());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testDeleteWhenRepositoryClosed() throws Exception {
         assertThat(sut.isOpen(), is(false));
 
-        sut.delete(UUID.randomUUID());
+        sut.delete(randomUUID());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -231,7 +225,7 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testImportSnippet() throws Exception {
-        ISnippet snippet = new Snippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
+        ISnippet snippet = createSnippet(A_UUID, "name");
         sut.open();
 
         sut.importSnippet(snippet);
@@ -246,12 +240,13 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testImportSnippetWhenSnippetWithSameNameAlreadyInRepository() throws Exception {
-        createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code", FILE);
-        ISnippet otherSnippet = new Snippet(ANOTHER_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code",
-                FILE);
+        storeSnippet(createSnippet(A_UUID, "name"));
+
+        ISnippet snippetB = createSnippet(ANOTHER_UUID, "name");
+
         sut.open();
 
-        sut.importSnippet(otherSnippet);
+        sut.importSnippet(snippetB);
         List<Recommendation<ISnippet>> searchByName = sut.search(new SearchContext("name"));
         List<Recommendation<ISnippet>> blanketSearch = sut.search(new SearchContext(""));
 
@@ -263,13 +258,16 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testImportSnippetWithModifiedMetaData() throws Exception {
-        ISnippet originalSnippet = createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                "code", FILE);
+        ISnippet originalSnippet = createSnippet(A_UUID, "name");
+        storeSnippet(originalSnippet);
+
         sut.open();
 
         Snippet modifiedSnippet = Snippet.copy(originalSnippet);
         modifiedSnippet.setExtraSearchTerms(asList("term1", "term2"));
+
         sut.importSnippet(modifiedSnippet);
+
         List<Recommendation<ISnippet>> searchByName = sut.search(new SearchContext("name"));
         List<Recommendation<ISnippet>> blanketSearch = sut.search(new SearchContext(""));
 
@@ -281,14 +279,17 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testImportSnippetWithModifiedCodeUnderDifferentUuid() throws Exception {
-        ISnippet originalSnippet = createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                "code", FILE);
+        ISnippet originalSnippet = createSnippet(A_UUID, "name");
+        storeSnippet(originalSnippet);
+
         sut.open();
 
         Snippet modifiedSnippet = Snippet.copy(originalSnippet);
-        modifiedSnippet.setUUID(ANOTHER_UUID);
+        modifiedSnippet.setUuid(ANOTHER_UUID);
         modifiedSnippet.setCode("modified code");
+
         sut.importSnippet(modifiedSnippet);
+
         List<Recommendation<ISnippet>> searchByName = sut.search(new SearchContext("name"));
         List<Recommendation<ISnippet>> blanketSearch = sut.search(new SearchContext(""));
 
@@ -300,8 +301,9 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testSearchByName() throws Exception {
-        ISnippet snippet = createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code",
-                FILE);
+        ISnippet snippet = createSnippet(A_UUID, "name");
+        storeSnippet(snippet);
+
         sut.open();
 
         assertThat(getOnlyElement(sut.search(new SearchContext("name:n"))).getProposal(), is(snippet));
@@ -314,8 +316,8 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testSearchByDescription() throws Exception {
-        ISnippet snippet = createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "code",
-                FILE);
+        ISnippet snippet = createSnippetWithDescription(A_UUID, "name", "description");
+        storeSnippet(snippet);
         sut.open();
 
         assertThat(getOnlyElement(sut.search(new SearchContext("description:d"))).getProposal(), is(snippet));
@@ -328,48 +330,47 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testSearchByExtraSearchTerm() throws Exception {
-        List<String> extraSearchTerms = ImmutableList.of("term1", "term2");
-        ISnippet snippet = createAndStoreSnippet(A_UUID, "name", "description", extraSearchTerms, NO_TAGS, "", FILE);
+        ISnippet snippet = createSnippetWithExtraSearchTerms(A_UUID, "name", "term1", "term2");
+        storeSnippet(snippet);
         sut.open();
 
-        assertThat(getOnlyElement(sut.search(new SearchContext("extra:term"))).getProposal(), is(snippet));
         assertThat(getOnlyElement(sut.search(new SearchContext("extra:term1"))).getProposal(), is(snippet));
         assertThat(getOnlyElement(sut.search(new SearchContext("extra:term2"))).getProposal(), is(snippet));
         assertThat(sut.search(new SearchContext("extra:name")).isEmpty(), is(true));
-        assertThat(sut.search(new SearchContext("extra:description")).isEmpty(), is(true));
 
         sut.close();
     }
 
     @Test
     public void testSearchByTag() throws Exception {
-        List<String> tags = ImmutableList.of("tag1", "tag2");
-        ISnippet snippet = createAndStoreSnippet(A_UUID, "name", "description", NO_EXTRA_SEARCH_TERMS, tags, "", FILE);
+        ISnippet snippet = createSnippetWithTags(A_UUID, "name", "tag1", "tag2");
+        storeSnippet(snippet);
         sut.open();
 
         assertThat(sut.search(new SearchContext("tag:tag")).isEmpty(), is(true));
         assertThat(getOnlyElement(sut.search(new SearchContext("tag:tag1"))).getProposal(), is(snippet));
         assertThat(getOnlyElement(sut.search(new SearchContext("tag:tag2"))).getProposal(), is(snippet));
         assertThat(sut.search(new SearchContext("tag:name")).isEmpty(), is(true));
-        assertThat(sut.search(new SearchContext("tag:description")).isEmpty(), is(true));
 
         sut.close();
     }
 
     @Test
     public void testSearchByLocation() throws Exception {
-        ISnippet fileSnippet = createAndStoreSnippet(UUID.randomUUID(), "file snippet", "", NO_EXTRA_SEARCH_TERMS,
-                NO_TAGS, "", FILE);
-        ISnippet javaFileSnippet = createAndStoreSnippet(UUID.randomUUID(), "java file snippet", "",
-                NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", JAVA_FILE);
-        ISnippet javaSnippet = createAndStoreSnippet(UUID.randomUUID(), "java snippet", "", NO_EXTRA_SEARCH_TERMS,
-                NO_TAGS, "", JAVA);
-        ISnippet javaStatementsSnippet = createAndStoreSnippet(UUID.randomUUID(), "statement snippet", "",
-                NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", JAVA_STATEMENTS);
-        ISnippet javaTypeMembersSnippet = createAndStoreSnippet(UUID.randomUUID(), "type member snippet", "",
-                NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", JAVA_TYPE_MEMBERS);
-        ISnippet javadocSnippet = createAndStoreSnippet(UUID.randomUUID(), "javadoc snippet", "", NO_EXTRA_SEARCH_TERMS,
-                NO_TAGS, "", JAVADOC);
+        ISnippet fileSnippet = createSnippetWithLocation(randomUUID(), "file snippet", FILE);
+        storeSnippet(fileSnippet);
+        ISnippet javaFileSnippet = createSnippetWithLocation(randomUUID(), "java file snippet", JAVA_FILE);
+        storeSnippet(javaFileSnippet);
+        ISnippet javaSnippet = createSnippetWithLocation(randomUUID(), "java snippet", JAVA);
+        storeSnippet(javaSnippet);
+        ISnippet javaStatementsSnippet = createSnippetWithLocation(randomUUID(), "java statements snippet",
+                JAVA_STATEMENTS);
+        storeSnippet(javaStatementsSnippet);
+        ISnippet javaTypeMembersSnippet = createSnippetWithLocation(randomUUID(), "java type member snippet",
+                JAVA_TYPE_MEMBERS);
+        storeSnippet(javaTypeMembersSnippet);
+        ISnippet javadocSnippet = createSnippetWithLocation(randomUUID(), "javadoc snippet", JAVADOC);
+        storeSnippet(javadocSnippet);
         sut.open();
 
         List<Recommendation<ISnippet>> noneSearch = sut.search(new SearchContext("snippet", NONE, EMPTY_CLASSPATH));
@@ -425,8 +426,8 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testPreferNameMatchesOverDescription() throws Exception {
-        createAndStoreSnippet(A_UUID, "first", "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, "second", "first", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
+        storeSnippet(createSnippet(A_UUID, "first"));
+        storeSnippet(createSnippetWithDescription(ANOTHER_UUID, "second", "first"));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("first"));
@@ -440,8 +441,8 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testNoPreferenceBetweenDescriptionAndExtraSearchTerms() throws Exception {
-        createAndStoreSnippet(A_UUID, "first", "searchword", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, "second", "", ImmutableList.of("searchword"), NO_TAGS, "", FILE);
+        storeSnippet(createSnippetWithDescription(A_UUID, "first", "searchword"));
+        storeSnippet(createSnippetWithExtraSearchTerms(ANOTHER_UUID, "second", "searchword"));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
@@ -455,44 +456,42 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testPreferDescriptionMatchesOverTags() throws Exception {
-        createAndStoreSnippet(A_UUID, "addlistener", "add a listener to a Widget", NO_EXTRA_SEARCH_TERMS,
-                ImmutableList.of("eclipse", "swt", "ui"), "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, "Browser", "new Browser", NO_EXTRA_SEARCH_TERMS,
-                ImmutableList.of("eclipse", "swt", "widget"), "", FILE);
-        createAndStoreSnippet(THIRD_UUID, "Third", "something", NO_EXTRA_SEARCH_TERMS,
-                ImmutableList.of("eclipse", "swt", "widget"), "", FILE);
+        storeSnippet(createSnippetWithDescription(A_UUID, "first", "searchword"));
+        storeSnippet(createSnippetWithTags(ANOTHER_UUID, "second", "searchword"));
+
         sut.open();
 
-        List<Recommendation<ISnippet>> result = sut.search(new SearchContext("widget"));
+        List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
 
         Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
         Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
-        Recommendation<ISnippet> forThird = Iterables.tryFind(result, new UuidPredicate(THIRD_UUID)).get();
         assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
-        assertThat(forFirst.getRelevance(), is(greaterThan(forThird.getRelevance())));
 
         sut.close();
     }
 
     @Test
     public void testRelevanceDoesntExceedOne() throws Exception {
-        createAndStoreSnippet(A_UUID, "searchword", "searchword", ImmutableList.of("searchword"),
-                ImmutableList.of("searchword"), "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, "searchword", "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
+        storeSnippet(createSnippet(A_UUID, "searchword"));
+        storeSnippet(new Snippet(ANOTHER_UUID, "searchword", "searchWord", ImmutableList.of("searchword"),
+                ImmutableList.of("searchword"), "searchWord", Location.FILE, ImmutableList.of("searchword"),
+                Collections.<ProjectCoordinate>emptySet()));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
         Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
         Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
-        assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
+
+        assertThat(forSecond.getRelevance(), is(Matchers.lessThanOrEqualTo(1.0)));
+        assertThat(forSecond.getRelevance(), is(greaterThan(forFirst.getRelevance())));
 
         sut.close();
     }
 
     @Test
     public void testEmptyQueryReturnsAllSnippetsOnOneParameterSearch() throws Exception {
-        createAndStoreSnippet(A_UUID, SNIPPET_NAME, "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, SNIPPET_NAME, "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
+        storeSnippet(createSnippet(A_UUID, "first"));
+        storeSnippet(createSnippet(ANOTHER_UUID, "second"));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext(""));
@@ -507,8 +506,8 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testEmptyQueryReturnsAllSnippetsOnTwoParametersSearch() throws Exception {
-        createAndStoreSnippet(A_UUID, SNIPPET_NAME, "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, SNIPPET_NAME, "", NO_EXTRA_SEARCH_TERMS, NO_TAGS, "", FILE);
+        storeSnippet(createSnippet(A_UUID, "first"));
+        storeSnippet(createSnippet(ANOTHER_UUID, "second"));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("", FILE, EMPTY_CLASSPATH), 2);
@@ -523,9 +522,8 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testNumberOfTagsDoesntAffectRelevance() throws Exception {
-        createAndStoreSnippet(A_UUID, "first", "", NO_EXTRA_SEARCH_TERMS, ImmutableList.of("tag1"), "", FILE);
-        createAndStoreSnippet(ANOTHER_UUID, "second", "", NO_EXTRA_SEARCH_TERMS, ImmutableList.of("tag1", "tag2"), "",
-                FILE);
+        storeSnippet(createSnippetWithTags(A_UUID, "first", "tag1"));
+        storeSnippet(createSnippetWithTags(ANOTHER_UUID, "second", "tag1", "tag2"));
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("tag:tag1"));
@@ -537,11 +535,28 @@ public class FileSnippetRepositoryTest {
         sut.close();
     }
 
-    private ISnippet createAndStoreSnippet(UUID uuid, String name, String description, List<String> extraSearchTerms,
-            List<String> tags, String code, Location locationConstraint) throws Exception {
-        Snippet snippet = new Snippet(uuid, name, description, extraSearchTerms, tags, code, locationConstraint);
-        storeSnippet(snippet);
-        return snippet;
+    private Snippet createSnippet(UUID uuid, String name) {
+        return createSnippetWithLocation(uuid, name, Location.FILE);
+    }
+
+    private Snippet createSnippetWithDescription(UUID uuid, String name, String description) {
+        return new Snippet(uuid, name, description, Collections.<String>emptyList(), Collections.<String>emptyList(),
+                "code", Location.FILE, Collections.<String>emptyList(), Collections.<ProjectCoordinate>emptySet());
+    }
+
+    private Snippet createSnippetWithExtraSearchTerms(UUID uuid, String name, String... extraSearchTerms) {
+        return new Snippet(uuid, name, "", Arrays.asList(extraSearchTerms), Collections.<String>emptyList(), "code",
+                Location.FILE, Collections.<String>emptyList(), Collections.<ProjectCoordinate>emptySet());
+    }
+
+    private Snippet createSnippetWithTags(UUID uuid, String name, String... tags) {
+        return new Snippet(uuid, name, "", Collections.<String>emptyList(), Arrays.asList(tags), "code", Location.FILE,
+                Collections.<String>emptyList(), Collections.<ProjectCoordinate>emptySet());
+    }
+
+    private Snippet createSnippetWithLocation(UUID uuid, String name, Location location) {
+        return new Snippet(uuid, name, "", Collections.<String>emptyList(), Collections.<String>emptyList(), "code",
+                location, Collections.<String>emptyList(), Collections.<ProjectCoordinate>emptySet());
     }
 
     private File storeSnippet(ISnippet snippet) throws Exception {

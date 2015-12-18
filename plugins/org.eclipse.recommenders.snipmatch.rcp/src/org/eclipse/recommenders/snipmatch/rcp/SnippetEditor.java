@@ -178,7 +178,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
             if (status == 1) {
                 // Store as new
-                snippet.setUUID(randomUUID());
+                snippet.setUuid(randomUUID());
                 setInputWithNotify(new SnippetEditorInput(snippet, input.getRepository()));
             }
 

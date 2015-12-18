@@ -49,5 +49,11 @@ public interface ISnippet extends Uuidable {
 
     Location getLocation();
 
+    /**
+     * @return a list of extensions indicating into which file types the snippet can be applied. Empty if all extensions
+     *         are valid.
+     */
+    List<String> getFileExtensionRestrictions();
+
     Set<ProjectCoordinate> getNeededDependencies();
 }

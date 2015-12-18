@@ -10,40 +10,42 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum Location {
 
     /**
      * Nowhere. Used as a placeholder.
      */
-    NONE,
+    @SerializedName("NONE") NONE,
 
     /**
      * Everywhere in a file.
      */
-    FILE,
+    @SerializedName("GENERIC_FILE") FILE,
 
     /**
      * Everywhere in a Java source file.
      */
-    JAVA_FILE,
+    @SerializedName("FILE") JAVA_FILE,
 
     /**
      * Everywhere a Java statement or Java type member (field, method, nested type, etc.) is allowed.
      */
-    JAVA,
+    @SerializedName("JAVA") JAVA,
 
     /**
      * Everywhere a Java statement is allowed.
      */
-    JAVA_STATEMENTS,
+    @SerializedName("JAVA_STATEMENTS") JAVA_STATEMENTS,
 
     /**
      * Everywhere a Java type member (field, method, nested type, etc.) is allowed.
      */
-    JAVA_TYPE_MEMBERS,
+    @SerializedName("JAVA_TYPE_MEMBERS") JAVA_TYPE_MEMBERS,
 
     /**
      * Everywhere in a Javadoc comment.
      */
-    JAVADOC;
+    @SerializedName("JAVADOC") JAVADOC;
 }
