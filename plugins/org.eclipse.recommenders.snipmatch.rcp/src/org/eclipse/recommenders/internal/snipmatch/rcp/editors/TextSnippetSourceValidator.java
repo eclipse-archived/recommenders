@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Codetrails GmbH.
+ * Copyright (c) 2015 Codetrails GmbH.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,28 +14,26 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATC
 
 import java.text.MessageFormat;
 
-import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.internal.snipmatch.rcp.completion.JavaTemplateContextType;
+import org.eclipse.recommenders.internal.snipmatch.rcp.completion.TextTemplateContextType;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 
-@SuppressWarnings("restriction")
-public final class SnippetSourceValidator {
+public final class TextSnippetSourceValidator {
 
     private static final String VALID_SNIPPET = ""; //$NON-NLS-1$
 
-    private SnippetSourceValidator() {
+    private TextSnippetSourceValidator() {
         // Not meant to be instantiated
     }
 
     public static String isSourceValid(String source) {
-        TemplateContextType contextType = JavaTemplateContextType.getInstance();
+        TemplateContextType contextType = TextTemplateContextType.getInstance();
         Template template = new Template("name", "description", SNIPMATCH_CONTEXT_ID, source, true); //$NON-NLS-1$ //$NON-NLS-2$
-        JavaContext context = new JavaContext(contextType, new Document(), new Position(0), null);
-        context.setForceEvaluation(true);
+        DocumentTemplateContext context = new DocumentTemplateContext(contextType, new Document(), new Position(0));
         try {
             context.evaluate(template);
         } catch (Exception e) {

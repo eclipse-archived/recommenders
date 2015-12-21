@@ -29,13 +29,12 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 @SuppressWarnings("restriction")
 public class JavaTemplateContextType {
 
-    private static TemplateContextType instance;
+    private static class Holder {
+        static final TemplateContextType INSTANCE = createContextType();
+    }
 
     public static TemplateContextType getInstance() {
-        if (instance == null) {
-            instance = createContextType();
-        }
-        return instance;
+        return Holder.INSTANCE;
     }
 
     private static TemplateContextType createContextType() {

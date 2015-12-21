@@ -34,7 +34,7 @@ public class TextContentAssistProcessor extends AbstractContentAssistProcessor<T
     @Inject
     public TextContentAssistProcessor(SnippetRepositoryConfigurations configs, Repositories repos,
             IProjectCoordinateProvider pcProvider, IDependencyListener dependencyListener, SharedImages images) {
-        super(JavaTemplateContextType.getInstance(), configs, repos, pcProvider, dependencyListener, images);
+        super(TextTemplateContextType.getInstance(), configs, repos, pcProvider, dependencyListener, images);
     }
 
     @Override
