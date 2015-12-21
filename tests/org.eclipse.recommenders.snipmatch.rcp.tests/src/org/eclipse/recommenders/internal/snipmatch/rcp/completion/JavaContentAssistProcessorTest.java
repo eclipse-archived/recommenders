@@ -58,7 +58,7 @@ public class JavaContentAssistProcessorTest {
     private static final String SEARCH_TERM = "searchTerm";
     private static final List<String> NO_EXTRA_SEARCH_TERMS = Collections.emptyList();
     private static final List<String> NO_TAGS = Collections.emptyList();
-    private static final List<String> NO_FILE_EXTENSIONS = Collections.emptyList();
+    private static final List<String> NO_FILENAME_RESTRICTIONS = Collections.emptyList();
     private static final ImmutableSet<DependencyInfo> NO_DEPENDENCIES = ImmutableSet.of();
     private static final String NO_SELECTION = null;
 
@@ -108,6 +108,7 @@ public class JavaContentAssistProcessorTest {
         doReturn(compilationUnit).when(context).getCompilationUnit();
 
         sut = new JavaContentAssistProcessor(configs, repos, pcProvider, dependencyListener, new SharedImages());
+        sut.setFilename("Test.java");
 
         sut.setContext(context);
     }
@@ -264,7 +265,7 @@ public class JavaContentAssistProcessorTest {
 
     private Recommendation<ISnippet> createRecommendation(String name) {
         ISnippet snippet = new Snippet(UUID.randomUUID(), name, ANY_SEARCH_TERM, NO_EXTRA_SEARCH_TERMS, NO_TAGS,
-                SNIPPET_CODE, Location.JAVA_FILE, NO_FILE_EXTENSIONS, Collections.<ProjectCoordinate>emptySet());
+                SNIPPET_CODE, Location.JAVA_FILE, NO_FILENAME_RESTRICTIONS, Collections.<ProjectCoordinate>emptySet());
         return Recommendation.newRecommendation(snippet, 1.0);
     }
 }

@@ -21,6 +21,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.SnippetEditorDisco
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -125,25 +126,25 @@ public class SnippetMetadataPage extends FormPage {
     private ComboViewer comboLocation;
     private Text txtUuid;
 
-    private ListViewer listViewerFileExtensions;
+    private ListViewer listViewerFilenameRestrictions;
     private ListViewer listViewerExtraSearchTerms;
     private ListViewer listViewerTags;
     private ListViewer listViewerDependencies;
 
-    private Composite fileExtensionsButtonContainer;
+    private Composite filenameRestrictionsButtonContainer;
     private Composite extraSearchTermsButtonContainer;
     private Composite tagsButtonContainer;
     private Composite dependenciesButtonContainer;
 
-    private Button btnAddFileExtension;
-    private Button btnRemoveFileExtension;
+    private Button btnAddFilenameRestriction;
+    private Button btnRemoveFilenameRestriction;
     private Button btnRemoveExtraSearchTerm;
     private Button btnRemoveTag;
     private Button btnRemoveDependency;
 
     private IObservableSet ppDependencies;
     private IObservableList ppExtraSearchTerms;
-    private IObservableList ppFileExtensions;
+    private IObservableList ppFilenameRestrictions;
     private IObservableList ppTags;
     private DataBindingContext context;
 
@@ -254,27 +255,27 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 comboLocation.setSelection(new StructuredSelection(snippet.getLocation()));
 
-                createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_FILE_EXTENSIONS);
-                listViewerFileExtensions = createListViewer(managedForm, horizontalIndent);
-                createDecoration(listViewerFileExtensions.getList(), Messages.EDITOR_DESCRIPTION_FILE_EXTENSIONS,
+                createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_FILENAME_RESTRICTIONS);
+                listViewerFilenameRestrictions = createListViewer(managedForm, horizontalIndent);
+                createDecoration(listViewerFilenameRestrictions.getList(), Messages.EDITOR_DESCRIPTION_FILENAME_RESTRICTIONS,
                         infoDecorationImage, SWT.TOP | SWT.LEFT);
 
-                fileExtensionsButtonContainer = createButtonContainer(managedForm);
-                btnAddFileExtension = createButton(managedForm, fileExtensionsButtonContainer,
-                        Messages.EDITOR_BUTTON_ADD, new SelectionAdapter() {
+                filenameRestrictionsButtonContainer = createButtonContainer(managedForm);
+                btnAddFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer, Messages.EDITOR_BUTTON_ADD,
+                        new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        createFileExtensionInputDialog(fileExtensionsButtonContainer.getShell()).open();
+                        createFilenameRestrictionInputDialog(filenameRestrictionsButtonContainer.getShell()).open();
                     }
                 });
-                btnAddFileExtension.setEnabled(snippet.getLocation() == Location.FILE);
-                btnRemoveFileExtension = createButton(managedForm, fileExtensionsButtonContainer,
-                        Messages.EDITOR_BUTTON_REMOVE, new SelectionAdapter() {
+                btnAddFilenameRestriction.setEnabled(snippet.getLocation() == Location.FILE);
+                btnRemoveFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer, Messages.EDITOR_BUTTON_REMOVE,
+                        new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        Optional<String> o = Selections.getFirstSelected(listViewerFileExtensions);
+                        Optional<String> o = Selections.getFirstSelected(listViewerFilenameRestrictions);
                         if (o.isPresent()) {
-                            ppFileExtensions.remove(o.get());
+                            ppFilenameRestrictions.remove(o.get());
                         }
                     }
                 });
@@ -413,8 +414,8 @@ public class SnippetMetadataPage extends FormPage {
 
             private ListViewer createListViewer(IManagedForm managedForm, int horizontalIndent) {
                 ListViewer listViewer = new ListViewer(managedForm.getForm().getBody(), SWT.BORDER | SWT.V_SCROLL);
-                List lstFileExtensions = listViewer.getList();
-                lstFileExtensions.setLayoutData(
+                List lstFilenames = listViewer.getList();
+                lstFilenames.setLayoutData(
                         GridDataFactory.fillDefaults().grab(true, true).indent(horizontalIndent, 0).create());
                 return listViewer;
             }
@@ -501,28 +502,32 @@ public class SnippetMetadataPage extends FormPage {
         return result;
     }
 
-    private InputDialog createFileExtensionInputDialog(Shell shell) {
+    private InputDialog createFilenameRestrictionInputDialog(Shell shell) {
         IInputValidator validator = new IInputValidator() {
 
             @Override
             public String isValid(String newText) {
-                if (isNullOrEmpty(newText)) {
+                if (newText == null) {
                     return ""; //$NON-NLS-1$
                 }
-                if (!StringUtils.isAlphanumeric(newText)) {
-                    return Messages.DIALOG_VALIDATOR_FILE_EXTENSION_CONTAINS_ILLEGAL_CHARACTER;
+                if (StringUtils.isBlank(newText)) {
+                    return ""; //$NON-NLS-1$
                 }
-                if (snippet.getFileExtensionRestrictions().contains(newText)) {
-                    return Messages.DIALOG_VALIDATOR_FILE_EXTENSION_ALREADY_ADDED;
+                if (newText.contains("*")) { //$NON-NLS-1$
+                    return MessageFormat.format(Messages.DIALOG_VALIDATOR_FILENAME_RESTRICTION_CONTAINS_ILLEGAL_CHARACTER,
+                            "*"); //$NON-NLS-1$
+                }
+                if (snippet.getFilenameRestrictions().contains(newText.trim().toLowerCase())) {
+                    return Messages.DIALOG_VALIDATOR_FILENAME_RESTRICTION_ALREADY_ADDED;
                 }
                 return null;
             }
         };
-        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_FILE_EXTENSION,
-                Messages.DIALOG_MESSAGE_ENTER_NEW_FILE_EXTENSION, "", validator) { //$NON-NLS-1$
+        return new InputDialog(shell, Messages.DIALOG_TITLE_ENTER_NEW_FILENAME_RESTRICTION,
+                Messages.DIALOG_MESSAGE_ENTER_NEW_FILENAME_RESTRICTION, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
-                ppFileExtensions.add(getValue());
+                ppFilenameRestrictions.add(getValue().toLowerCase());
                 super.okPressed();
             }
         };
@@ -598,11 +603,11 @@ public class SnippetMetadataPage extends FormPage {
         context.bindValue(wpTxtLocation, ppLocation);
         ppLocation.addChangeListener(new ContentsPartDirtyListener());
 
-        // File extensions
-        ppFileExtensions = BeanProperties.list(Snippet.class, "fileExtensionRestrictions", String.class) //$NON-NLS-1$
+        // Filenames
+        ppFilenameRestrictions = BeanProperties.list(Snippet.class, "filenameRestrictions", String.class) //$NON-NLS-1$
                 .observe(snippet);
-        ViewerSupport.bind(listViewerFileExtensions, ppFileExtensions, new SelfValueProperty(String.class));
-        ppFileExtensions.addChangeListener(new ContentsPartDirtyListener());
+        ppFilenameRestrictions.addChangeListener(new ContentsPartDirtyListener());
+        ViewerSupport.bind(listViewerFilenameRestrictions, ppFilenameRestrictions, new FilenameRestrictionLabelProperty());
 
         // Extra search terms
         ppExtraSearchTerms = BeanProperties.list(Snippet.class, "extraSearchTerms", String.class).observe(snippet); //$NON-NLS-1$
@@ -659,30 +664,30 @@ public class SnippetMetadataPage extends FormPage {
         UpdateValueStrategy strategy = new UpdateValueStrategy();
         strategy.setConverter(new ObjectToBooleanConverter());
 
-        final IObservableValue vpFileExtensionsSelection = singleSelection().observe(listViewerFileExtensions);
-        IObservableValue wpBtnRemoveFileExtensionsEnable = enabled().observe(btnRemoveFileExtension);
+        final IObservableValue vpFilenamesSelection = singleSelection().observe(listViewerFilenameRestrictions);
+        IObservableValue wpBtnRemoveFilenamesEnable = enabled().observe(btnRemoveFilenameRestriction);
 
         IObservableValue vpLocationSelection = ViewersObservables.observeSingleSelection(comboLocation);
-        IObservableValue wpListViewerFileExtensionsEnabled = enabled().observe(listViewerFileExtensions.getControl());
-        final IObservableValue wpBtnAddFileExtensionsEnabled = enabled().observe(btnAddFileExtension);
+        IObservableValue wpListViewerFilenamesEnabled = enabled().observe(listViewerFilenameRestrictions.getControl());
+        final IObservableValue wpBtnAddFilenamesEnabled = enabled().observe(btnAddFilenameRestriction);
 
         UpdateValueStrategy locationEnablementStrategy = new UpdateValueStrategy();
         EnumToBooleanConverter<Location> locationToBooleanConverter = new EnumToBooleanConverter<Location>(
                 Location.FILE);
         locationEnablementStrategy.setConverter(locationToBooleanConverter);
 
-        context.bindValue(vpLocationSelection, wpListViewerFileExtensionsEnabled, locationEnablementStrategy, null);
-        context.bindValue(vpLocationSelection, wpBtnAddFileExtensionsEnabled, locationEnablementStrategy, null);
+        context.bindValue(vpLocationSelection, wpListViewerFilenamesEnabled, locationEnablementStrategy, null);
+        context.bindValue(vpLocationSelection, wpBtnAddFilenamesEnabled, locationEnablementStrategy, null);
 
         ComputedValue computedRemoveButtonEnablement = new ComputedValue() {
 
             @Override
             protected Object calculate() {
-                boolean addButtonEnabled = (boolean) wpBtnAddFileExtensionsEnabled.getValue();
-                return vpFileExtensionsSelection.getValue() != null && addButtonEnabled;
+                boolean addButtonEnabled = (boolean) wpBtnAddFilenamesEnabled.getValue();
+                return vpFilenamesSelection.getValue() != null && addButtonEnabled;
             }
         };
-        context.bindValue(wpBtnRemoveFileExtensionsEnable, computedRemoveButtonEnablement);
+        context.bindValue(wpBtnRemoveFilenamesEnable, computedRemoveButtonEnablement);
 
         IObservableValue vpExtraSearchTermsSelection = singleSelection().observe(listViewerExtraSearchTerms);
         IObservableValue wpBtnRemoveExtraSearchTermEnable = enabled().observe(btnRemoveExtraSearchTerm);
@@ -743,5 +748,31 @@ public class SnippetMetadataPage extends FormPage {
     public void dispose() {
         context.dispose();
         super.dispose();
+    }
+
+    private final class FilenameRestrictionLabelProperty extends SimpleValueProperty {
+        @Override
+        public Object getValueType() {
+            return String.class;
+        }
+
+        @Override
+        protected Object doGetValue(Object source) {
+            String text = (String) source;
+            if (text.startsWith(".")) {
+                return "*" + text; //$NON-NLS-1$
+            } else {
+                return text;
+            }
+        }
+
+        @Override
+        protected void doSetValue(Object source, Object value) {
+        }
+
+        @Override
+        public INativePropertyListener adaptListener(ISimplePropertyListener listener) {
+            return null;
+        }
     }
 }

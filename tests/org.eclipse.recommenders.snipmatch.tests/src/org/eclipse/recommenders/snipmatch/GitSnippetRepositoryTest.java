@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch;
+package org.eclipse.recommenders.snipmatch;
 
 import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.recommenders.snipmatch.GitSnippetRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -65,6 +65,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.snipmatch.Filenames;
 import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -86,6 +87,8 @@ import com.google.common.collect.Maps;
 
 public class FileSnippetRepository implements ISnippetRepository {
 
+    public static final String NO_FILENAME_RESTRICTION = "*no filename restriction*";
+
     private static final int MAX_SEARCH_RESULTS = 100;
     private static final int CACHE_SIZE = 200;
 
@@ -99,12 +102,14 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_UUID = "uuid";
     private static final String F_LOCATION = "location";
     private static final String F_DEPENDENCY = "dependency";
+    private static final String F_FILENAME_RESTRICTION = "filenameRestriction";
 
     private static final float NAME_BOOST = 4.0f;
     private static final float DESCRIPTION_BOOST = 2.0f;
     private static final float EXTRA_SEARCH_TERM_BOOST = DESCRIPTION_BOOST;
     private static final float TAG_BOOST = 1.0f;
     private static final float DEPENDENCY_BOOST = 1.0f;
+    private static final float NO_RESTRICTION_BOOST = 0.5f;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -261,6 +266,13 @@ public class FileSnippetRepository implements ISnippetRepository {
             doc.add(new Field(F_DEPENDENCY, getDependencyString(dependency), Store.YES, Index.ANALYZED));
         }
 
+        if (snippet.getFilenameRestrictions().isEmpty()) {
+            doc.add(new Field(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION, Store.NO, Index.NOT_ANALYZED));
+        }
+        for (String restriction : snippet.getFilenameRestrictions()) {
+            doc.add(new Field(F_FILENAME_RESTRICTION, restriction.toLowerCase(), Store.NO, Index.NOT_ANALYZED));
+        }
+
         writer.addDocument(doc);
     }
 
@@ -333,6 +345,24 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
             if (context.getLocation() != NONE) {
                 query.add(new TermQuery(new Term(F_LOCATION, getIndexString(context.getLocation()))), Occur.MUST);
+            }
+
+            String filename = context.getFilename();
+            if (context.getLocation() == Location.FILE && filename != null) {
+                BooleanQuery filenameRestrictionsQuery = new BooleanQuery();
+                TermQuery noRestrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION));
+                noRestrictionQuery.setBoost(NO_RESTRICTION_BOOST);
+                filenameRestrictionsQuery.add(noRestrictionQuery, Occur.SHOULD);
+
+                int i = 1;
+                for (String restriction : Filenames.getFilenameRestrictions(filename)) {
+                    TermQuery restrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, restriction));
+                    float boost = (float) (0.5f + Math.pow(0.5, i));
+                    restrictionQuery.setBoost(boost);
+                    filenameRestrictionsQuery.add(restrictionQuery, Occur.SHOULD);
+                    i++;
+                }
+                query.add(filenameRestrictionsQuery, Occur.MUST);
             }
 
             searcher = new IndexSearcher(reader);

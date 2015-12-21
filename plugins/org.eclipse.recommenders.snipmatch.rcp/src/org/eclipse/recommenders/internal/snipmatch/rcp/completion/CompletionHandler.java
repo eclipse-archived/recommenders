@@ -29,6 +29,8 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -46,7 +48,8 @@ public class CompletionHandler extends AbstractHandler {
         IEditorPart editor = HandlerUtil.getActiveEditor(event);
 
         IEditorInput input = editor.getEditorInput();
-        if (input.getPersistable() == null) {
+        IPersistableElement persistable = input.getPersistable();
+        if (persistable == null) {
             return null;
         }
 
@@ -69,35 +72,42 @@ public class CompletionHandler extends AbstractHandler {
 
         int offset = viewer.getSelectedRange().x;
 
+        String filename = null;
+        if (persistable instanceof IPathEditorInput) {
+            IPathEditorInput editorInput = (IPathEditorInput) persistable;
+            filename = editorInput.getPath().toFile().getName();
+        }
+
         SnipmatchCompletionEngine<? extends ContentAssistInvocationContext> engine;
         if (editor instanceof JavaEditor) {
-            engine = createCompletionEngineForJava(editor, viewer, offset);
+            engine = createCompletionEngineForJava(editor, viewer, offset, filename);
         } else {
-            engine = createCompletionEngineForText(input, viewer, offset);
+            engine = createCompletionEngineForText(input, viewer, offset, filename);
         }
+
         engine.show();
 
         return null;
     }
 
     private SnipmatchCompletionEngine<? extends ContentAssistInvocationContext> createCompletionEngineForJava(
-            IEditorPart editor, ISourceViewer viewer, int offset) {
+            IEditorPart editor, ISourceViewer viewer, int offset, String filename) {
         JavaContentAssistInvocationContext context = new JavaContentAssistInvocationContext(viewer, offset, editor);
         JavaContentAssistProcessor processor = request(JavaContentAssistProcessor.class);
 
-        return new SnipmatchCompletionEngine<JavaContentAssistInvocationContext>(context, processor,
+        return new SnipmatchCompletionEngine<JavaContentAssistInvocationContext>(context, processor, filename,
                 request(EventBus.class), request(ColorRegistry.class), request(FontRegistry.class));
     }
 
     private SnipmatchCompletionEngine<? extends ContentAssistInvocationContext> createCompletionEngineForText(
-            IEditorInput input, ISourceViewer viewer, int offset) {
+            IEditorInput input, ISourceViewer viewer, int offset, String filename) {
         IJavaProject javaProject = EditorUtility.getJavaProject(input);
 
         TextContentAssistInvocationContext context = new TextContentAssistInvocationContext(viewer, offset,
                 javaProject);
         TextContentAssistProcessor processor = request(TextContentAssistProcessor.class);
 
-        return new SnipmatchCompletionEngine<TextContentAssistInvocationContext>(context, processor,
+        return new SnipmatchCompletionEngine<TextContentAssistInvocationContext>(context, processor, filename,
                 request(EventBus.class), request(ColorRegistry.class), request(FontRegistry.class));
     }
 }
