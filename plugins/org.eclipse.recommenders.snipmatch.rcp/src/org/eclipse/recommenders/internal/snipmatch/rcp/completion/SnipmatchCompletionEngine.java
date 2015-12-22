@@ -25,6 +25,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetAppliedEvent;
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
@@ -63,6 +64,7 @@ public class SnipmatchCompletionEngine<T extends ContentAssistInvocationContext>
 
     private final T context;
     private final AbstractContentAssistProcessor<T> processor;
+    private final String filename;
     private final EventBus bus;
     private final ColorRegistry colorRegistry;
     private final FontRegistry fontRegistry;
@@ -73,10 +75,11 @@ public class SnipmatchCompletionEngine<T extends ContentAssistInvocationContext>
     private StyledText searchText;
     private AssistantControlState state;
 
-    public SnipmatchCompletionEngine(T context, AbstractContentAssistProcessor<T> processor, EventBus bus,
-            ColorRegistry colorRegistry, FontRegistry fontRegistry) {
+    public SnipmatchCompletionEngine(T context, AbstractContentAssistProcessor<T> processor, @Nullable String filename,
+            EventBus bus, ColorRegistry colorRegistry, FontRegistry fontRegistry) {
         this.context = context;
         this.processor = processor;
+        this.filename = filename;
         this.bus = bus;
         this.colorRegistry = colorRegistry;
         this.fontRegistry = fontRegistry;
@@ -137,6 +140,7 @@ public class SnipmatchCompletionEngine<T extends ContentAssistInvocationContext>
 
     public void show() {
         processor.setContext(context);
+        processor.setFilename(filename);
         assistant.install(context.getViewer());
         state = AssistantControlState.KEEP_OPEN;
         createSearchPopup();

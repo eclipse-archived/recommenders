@@ -8,11 +8,12 @@
  * Contributors:
  *    Johannes Dorn - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.snipmatch;
+package org.eclipse.recommenders.snipmatch;
 
-import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.google.common.collect.Iterables.*;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
+import static org.eclipse.recommenders.snipmatch.FileSnippetRepository.NO_FILENAME_RESTRICTION;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.testing.RecommendationMatchers.recommendation;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
@@ -23,17 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
-import org.eclipse.recommenders.snipmatch.FileSnippetRepository;
-import org.eclipse.recommenders.snipmatch.ISnippet;
-import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.Location;
-import org.eclipse.recommenders.snipmatch.SearchContext;
-import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.hamcrest.Matchers;
@@ -42,17 +38,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 public class FileSnippetRepositoryTest {
 
     private static final Set<ProjectCoordinate> EMPTY_CLASSPATH = Collections.<ProjectCoordinate>emptySet();
+    private static final String FILENAME = "Test.java";
 
     private static final UUID A_UUID = randomUUID();
     private static final UUID ANOTHER_UUID = randomUUID();
+    private static final UUID THIRD_UUID = randomUUID();
 
     @Rule
     public final TemporaryFolder tmp = new TemporaryFolder();
@@ -373,7 +369,8 @@ public class FileSnippetRepositoryTest {
         storeSnippet(javadocSnippet);
         sut.open();
 
-        List<Recommendation<ISnippet>> noneSearch = sut.search(new SearchContext("snippet", NONE, EMPTY_CLASSPATH));
+        List<Recommendation<ISnippet>> noneSearch = sut
+                .search(new SearchContext("snippet", NONE, FILENAME, EMPTY_CLASSPATH));
         assertThat(noneSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(noneSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(noneSearch, hasItem(recommendation(javaSnippet, 1.0)));
@@ -382,24 +379,26 @@ public class FileSnippetRepositoryTest {
         assertThat(noneSearch, hasItem(recommendation(javadocSnippet, 1.0)));
         assertThat(noneSearch.size(), is(6));
 
-        List<Recommendation<ISnippet>> fileSearch = sut.search(new SearchContext("snippet", FILE, EMPTY_CLASSPATH));
+        List<Recommendation<ISnippet>> fileSearch = sut
+                .search(new SearchContext("snippet", FILE, FILENAME, EMPTY_CLASSPATH));
         assertThat(fileSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(fileSearch.size(), is(1));
 
         List<Recommendation<ISnippet>> javaFileSearch = sut
-                .search(new SearchContext("snippet", JAVA_FILE, EMPTY_CLASSPATH));
+                .search(new SearchContext("snippet", JAVA_FILE, FILENAME, EMPTY_CLASSPATH));
         assertThat(fileSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(javaFileSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(javaFileSearch.size(), is(2));
 
-        List<Recommendation<ISnippet>> javaSearch = sut.search(new SearchContext("snippet", JAVA, EMPTY_CLASSPATH));
+        List<Recommendation<ISnippet>> javaSearch = sut
+                .search(new SearchContext("snippet", JAVA, FILENAME, EMPTY_CLASSPATH));
         assertThat(javaSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(javaFileSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(javaSearch, hasItem(recommendation(javaSnippet, 1.0)));
         assertThat(javaSearch.size(), is(3));
 
         List<Recommendation<ISnippet>> javaStatementsSearch = sut
-                .search(new SearchContext("snippet", JAVA_STATEMENTS, EMPTY_CLASSPATH));
+                .search(new SearchContext("snippet", JAVA_STATEMENTS, FILENAME, EMPTY_CLASSPATH));
         assertThat(javaStatementsSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(javaFileSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(javaStatementsSearch, hasItem(recommendation(javaSnippet, 1.0)));
@@ -407,7 +406,7 @@ public class FileSnippetRepositoryTest {
         assertThat(javaStatementsSearch.size(), is(4));
 
         List<Recommendation<ISnippet>> javaTypeMembersSearch = sut
-                .search(new SearchContext("snippet", JAVA_TYPE_MEMBERS, EMPTY_CLASSPATH));
+                .search(new SearchContext("snippet", JAVA_TYPE_MEMBERS, FILENAME, EMPTY_CLASSPATH));
         assertThat(javaTypeMembersSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(javaFileSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(javaTypeMembersSearch, hasItem(recommendation(javaSnippet, 1.0)));
@@ -415,11 +414,49 @@ public class FileSnippetRepositoryTest {
         assertThat(javaTypeMembersSearch.size(), is(4));
 
         List<Recommendation<ISnippet>> javadocSearch = sut
-                .search(new SearchContext("snippet", JAVADOC, EMPTY_CLASSPATH));
+                .search(new SearchContext("snippet", JAVADOC, FILENAME, EMPTY_CLASSPATH));
         assertThat(javadocSearch, hasItem(recommendation(fileSnippet, 1.0)));
         assertThat(javaFileSearch, hasItem(recommendation(javaFileSnippet, 1.0)));
         assertThat(javadocSearch, hasItem(recommendation(javadocSnippet, 1.0)));
         assertThat(javadocSearch.size(), is(3));
+
+        sut.close();
+    }
+
+    @Test
+    public void testSearchWithFilenameRestriction() throws Exception {
+        ISnippet exactNameMatchSnippet = createSnippetWithFilenameRestrictions(A_UUID, "searchword", "pom.xml");
+        storeSnippet(exactNameMatchSnippet);
+        ISnippet extensionMatchSnippet = createSnippetWithFilenameRestrictions(ANOTHER_UUID, "searchword", ".xml");
+        storeSnippet(extensionMatchSnippet);
+        ISnippet unrestrictedSnippet = createSnippet(THIRD_UUID, "searchword");
+        storeSnippet(unrestrictedSnippet);
+        sut.open();
+
+        List<Recommendation<ISnippet>> searchWithExactMatch = sut
+                .search(new SearchContext("searchword", Location.FILE, "pom.xml", EMPTY_CLASSPATH));
+
+        Recommendation<ISnippet> exactNameRecommendation = find(searchWithExactMatch, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> extensionRecommendation = find(searchWithExactMatch, new UuidPredicate(ANOTHER_UUID));
+        Recommendation<ISnippet> unrestrictedRecommendation = find(searchWithExactMatch, new UuidPredicate(THIRD_UUID));
+
+        assertThat(exactNameRecommendation.getProposal(), is(equalTo(exactNameMatchSnippet)));
+        assertThat(extensionRecommendation.getProposal(), is(equalTo(extensionMatchSnippet)));
+        assertThat(unrestrictedRecommendation.getProposal(), is(equalTo(unrestrictedSnippet)));
+        assertThat(exactNameRecommendation.getRelevance(), is(greaterThan(extensionRecommendation.getRelevance())));
+        assertThat(extensionRecommendation.getRelevance(), is(greaterThan(unrestrictedRecommendation.getRelevance())));
+        assertThat(searchWithExactMatch.size(), is(3));
+
+        List<Recommendation<ISnippet>> searchWithExtensionMatch = sut
+                .search(new SearchContext("searchword", Location.FILE, "foo.xml", EMPTY_CLASSPATH));
+
+        extensionRecommendation = find(searchWithExtensionMatch, new UuidPredicate(ANOTHER_UUID));
+        unrestrictedRecommendation = find(searchWithExtensionMatch, new UuidPredicate(THIRD_UUID));
+
+        assertThat(extensionRecommendation.getProposal(), is(equalTo(extensionMatchSnippet)));
+        assertThat(unrestrictedRecommendation.getProposal(), is(equalTo(unrestrictedSnippet)));
+        assertThat(extensionRecommendation.getRelevance(), is(greaterThan(unrestrictedRecommendation.getRelevance())));
+        assertThat(searchWithExtensionMatch.size(), is(2));
 
         sut.close();
     }
@@ -432,8 +469,8 @@ public class FileSnippetRepositoryTest {
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("first"));
 
-        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
-        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
         assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
 
         sut.close();
@@ -447,8 +484,8 @@ public class FileSnippetRepositoryTest {
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
 
-        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
-        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
         assertThat(forFirst.getRelevance(), is(equalTo(forSecond.getRelevance())));
 
         sut.close();
@@ -463,8 +500,8 @@ public class FileSnippetRepositoryTest {
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
 
-        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
-        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
         assertThat(forFirst.getRelevance(), is(greaterThan(forSecond.getRelevance())));
 
         sut.close();
@@ -479,8 +516,8 @@ public class FileSnippetRepositoryTest {
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("searchword"));
-        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
-        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
 
         assertThat(forSecond.getRelevance(), is(Matchers.lessThanOrEqualTo(1.0)));
         assertThat(forSecond.getRelevance(), is(greaterThan(forFirst.getRelevance())));
@@ -490,32 +527,19 @@ public class FileSnippetRepositoryTest {
 
     @Test
     public void testEmptyQueryReturnsAllSnippetsOnOneParameterSearch() throws Exception {
-        storeSnippet(createSnippet(A_UUID, "first"));
-        storeSnippet(createSnippet(ANOTHER_UUID, "second"));
+        ISnippet firstSnippet = createSnippet(A_UUID, "first");
+        ISnippet secondSnippet = createSnippet(ANOTHER_UUID, "second");
+        storeSnippet(firstSnippet);
+        storeSnippet(secondSnippet);
         sut.open();
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext(""));
-        Optional<Recommendation<ISnippet>> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID));
-        Optional<Recommendation<ISnippet>> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID));
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
 
-        assertThat(forFirst.isPresent(), is(true));
-        assertThat(forSecond.isPresent(), is(true));
-
-        sut.close();
-    }
-
-    @Test
-    public void testEmptyQueryReturnsAllSnippetsOnTwoParametersSearch() throws Exception {
-        storeSnippet(createSnippet(A_UUID, "first"));
-        storeSnippet(createSnippet(ANOTHER_UUID, "second"));
-        sut.open();
-
-        List<Recommendation<ISnippet>> result = sut.search(new SearchContext("", FILE, EMPTY_CLASSPATH), 2);
-        Optional<Recommendation<ISnippet>> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID));
-        Optional<Recommendation<ISnippet>> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID));
-
-        assertThat(forFirst.isPresent(), is(false));
-        assertThat(forSecond.isPresent(), is(false));
+        assertThat(forFirst.getProposal(), is(equalTo(firstSnippet)));
+        assertThat(forSecond.getProposal(), is(equalTo(secondSnippet)));
+        assertThat(result.size(), is(2));
 
         sut.close();
     }
@@ -528,8 +552,8 @@ public class FileSnippetRepositoryTest {
 
         List<Recommendation<ISnippet>> result = sut.search(new SearchContext("tag:tag1"));
 
-        Recommendation<ISnippet> forFirst = Iterables.tryFind(result, new UuidPredicate(A_UUID)).get();
-        Recommendation<ISnippet> forSecond = Iterables.tryFind(result, new UuidPredicate(ANOTHER_UUID)).get();
+        Recommendation<ISnippet> forFirst = find(result, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> forSecond = find(result, new UuidPredicate(ANOTHER_UUID));
         assertThat(forFirst.getRelevance(), is(closeTo(forSecond.getRelevance(), 0.01)));
 
         sut.close();
@@ -555,8 +579,16 @@ public class FileSnippetRepositoryTest {
     }
 
     private Snippet createSnippetWithLocation(UUID uuid, String name, Location location) {
+        List<String> filenameRestrictions = new LinkedList<>();
+        filenameRestrictions.add(NO_FILENAME_RESTRICTION);
         return new Snippet(uuid, name, "", Collections.<String>emptyList(), Collections.<String>emptyList(), "code",
-                location, Collections.<String>emptyList(), Collections.<ProjectCoordinate>emptySet());
+                location, filenameRestrictions, Collections.<ProjectCoordinate>emptySet());
+    }
+
+    private Snippet createSnippetWithFilenameRestrictions(UUID uuid, String name, String... filenameRestrictions) {
+        return new Snippet(uuid, name, "", Collections.<String>emptyList(), Collections.<String>emptyList(), "code",
+                Location.FILE, new LinkedList<>(Arrays.asList(filenameRestrictions)),
+                Collections.<ProjectCoordinate>emptySet());
     }
 
     private File storeSnippet(ISnippet snippet) throws Exception {

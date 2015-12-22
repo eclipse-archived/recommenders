@@ -74,6 +74,7 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
     protected Set<DependencyInfo> availableDependencies;
     private String terms;
     private ContextLoadingProposal contextLoadingProposal;
+    private String filename;
 
     @Inject
     public AbstractContentAssistProcessor(TemplateContextType templateContextType,
@@ -97,6 +98,10 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
         }
     }
 
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     protected abstract Set<DependencyInfo> calculateAvailableDependencies(T context);
 
     public void setTerms(String terms) {
@@ -112,7 +117,7 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
 
         Set<ProjectCoordinate> projectCoordinates = tryResolve(pcProvider, availableDependencies);
 
-        SearchContext searchContext = new SearchContext(terms, getLocation(), projectCoordinates);
+        SearchContext searchContext = new SearchContext(terms, getLocation(), filename, projectCoordinates);
 
         LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
 

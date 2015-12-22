@@ -23,17 +23,21 @@ public class SearchContext implements ISearchContext {
 
     private final String searchText;
     private final Location location;
+    private final String filename;
     private final Set<ProjectCoordinate> availableDependencies;
 
-    public SearchContext(String searchText, Location location, Set<ProjectCoordinate> availableDependencies) {
+    public SearchContext(String searchText, Location location, String filename,
+            Set<ProjectCoordinate> availableDependencies) {
         this.searchText = requireNonNull(searchText);
         this.location = requireNonNull(location);
+        this.filename = requireNonNull(filename);
         this.availableDependencies = requireNonNull(availableDependencies);
     }
 
     public SearchContext(String searchText) {
         this.searchText = requireNonNull(searchText);
         this.location = NONE;
+        this.filename = null;
         this.availableDependencies = null;
     }
 
@@ -45,6 +49,11 @@ public class SearchContext implements ISearchContext {
     @Override
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public String getFilename() {
+        return filename;
     }
 
     @Override

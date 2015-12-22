@@ -56,8 +56,8 @@ public class Snippet implements ISnippet {
     private String code;
     @SerializedName("location")
     private Location location = FILE;
-    @SerializedName("fileExtensions")
-    private List<String> fileExtensionRestrictions = Lists.newArrayList();
+    @SerializedName("filenameRestrictions")
+    private List<String> filenameRestrictions = Lists.newArrayList();
     @SerializedName("dependencies")
     private Set<ProjectCoordinate> neededDependencies = Sets.newHashSet();
 
@@ -72,7 +72,7 @@ public class Snippet implements ISnippet {
     }
 
     public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
-            String code, Location location, List<String> fileExtensions, Set<ProjectCoordinate> neededDependencies) {
+            String code, Location location, List<String> filenameRestrictions, Set<ProjectCoordinate> neededDependencies) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
@@ -88,7 +88,7 @@ public class Snippet implements ISnippet {
         this.tags = tags;
         this.code = code;
         this.location = location;
-        this.fileExtensionRestrictions = fileExtensions;
+        this.filenameRestrictions = filenameRestrictions;
         this.neededDependencies = neededDependencies;
     }
 
@@ -128,8 +128,8 @@ public class Snippet implements ISnippet {
     }
 
     @Override
-    public List<String> getFileExtensionRestrictions() {
-        return fileExtensionRestrictions;
+    public List<String> getFilenameRestrictions() {
+        return filenameRestrictions;
     }
 
     @Override
@@ -157,9 +157,9 @@ public class Snippet implements ISnippet {
         firePropertyChange("location", this.location, this.location = location);
     }
 
-    public void setFileExtensionRestrictions(List<String> fileExtensionRestrictions) {
-        firePropertyChange("fileExtensionRestrictions", this.fileExtensionRestrictions,
-                this.fileExtensionRestrictions = fileExtensionRestrictions);
+    public void setFilenameRestrictions(List<String> filenameRestrictions) {
+        firePropertyChange("filenameRestrictions", this.filenameRestrictions,
+                this.filenameRestrictions = filenameRestrictions);
     }
 
     public void setExtraSearchTerms(List<String> extraSearchTerms) {
@@ -188,7 +188,7 @@ public class Snippet implements ISnippet {
     public static Snippet copy(ISnippet snippet) {
         return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(),
                 snippet.getExtraSearchTerms(), snippet.getTags(), snippet.getCode(),
-                snippet.getLocation() != null ? snippet.getLocation() : FILE, snippet.getFileExtensionRestrictions(),
+                snippet.getLocation() != null ? snippet.getLocation() : FILE, snippet.getFilenameRestrictions(),
                 snippet.getNeededDependencies());
     }
 
