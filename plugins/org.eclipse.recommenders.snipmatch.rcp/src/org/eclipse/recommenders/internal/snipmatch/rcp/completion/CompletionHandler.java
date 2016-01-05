@@ -31,9 +31,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
@@ -52,8 +54,16 @@ public class CompletionHandler extends AbstractHandler {
             return null;
         }
 
-        IEditorInput input = editor.getEditorInput();
-        IPersistableElement persistable = input.getPersistable();
+        if (!(editor instanceof ITextEditor)) {
+            return null;
+        }
+
+        ITextEditor textEditor = (ITextEditor) editor;
+        if (!textEditor.isEditable()) {
+            return null;
+        }
+
+        IPersistableElement persistable = textEditor.getEditorInput().getPersistable();
         if (persistable == null) {
             return null;
         }
@@ -66,7 +76,7 @@ public class CompletionHandler extends AbstractHandler {
 
         ISourceViewer viewer;
         try {
-            viewer = (ISourceViewer) getSourceViewerMethod.invoke(editor);
+            viewer = (ISourceViewer) getSourceViewerMethod.invoke(textEditor);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new ExecutionException(Messages.ERROR_UNABLE_TO_DETERMINE_SOURCE_VIEWER, e);
         }
@@ -80,10 +90,10 @@ public class CompletionHandler extends AbstractHandler {
         }
 
         SnipmatchCompletionEngine<? extends ContentAssistInvocationContext> engine;
-        if (editor instanceof JavaEditor) {
-            engine = createCompletionEngineForJava(editor, viewer, offset, filename);
+        if (textEditor instanceof JavaEditor) {
+            engine = createCompletionEngineForJava(textEditor, viewer, offset, filename);
         } else {
-            engine = createCompletionEngineForText(input, viewer, offset, filename);
+            engine = createCompletionEngineForText(textEditor.getEditorInput(), viewer, offset, filename);
         }
 
         engine.show();
@@ -93,22 +103,19 @@ public class CompletionHandler extends AbstractHandler {
 
     private Optional<IEditorPart> getActiveEditor(ExecutionEvent event) {
         IEditorPart editor = HandlerUtil.getActiveEditor(event);
-        if (editor == null) {
-            return Optional.absent();
-        }
-
-        if (editor instanceof MultiPageEditorPart) {
-            MultiPageEditorPart mp = (MultiPageEditorPart) editor;
-            Object selectedPage = mp.getSelectedPage();
+        if (editor instanceof FormEditor) {
+            FormEditor formEditor = (FormEditor) editor;
+            return Optional.fromNullable(formEditor.getActiveEditor());
+        } else if (editor instanceof MultiPageEditorPart) {
+            MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) editor;
+            Object selectedPage = multiPageEditorPart.getSelectedPage();
             if (selectedPage instanceof IEditorPart) {
-                editor = (IEditorPart) selectedPage;
+                return Optional.fromNullable((IEditorPart) selectedPage);
+            } else {
+                return Optional.absent();
             }
-        }
-
-        if (editor instanceof AbstractTextEditor) {
-            return Optional.of(editor);
         } else {
-            return Optional.absent();
+            return Optional.fromNullable(editor);
         }
     }
 
@@ -125,7 +132,8 @@ public class CompletionHandler extends AbstractHandler {
             IEditorInput input, ISourceViewer viewer, int offset, String filename) {
         IJavaProject javaProject = EditorUtility.getJavaProject(input);
 
-        TextContentAssistInvocationContext context = new TextContentAssistInvocationContext(viewer, offset, javaProject);
+        TextContentAssistInvocationContext context = new TextContentAssistInvocationContext(viewer, offset,
+                javaProject);
         TextContentAssistProcessor processor = request(TextContentAssistProcessor.class);
 
         return new SnipmatchCompletionEngine<TextContentAssistInvocationContext>(context, processor, filename,
