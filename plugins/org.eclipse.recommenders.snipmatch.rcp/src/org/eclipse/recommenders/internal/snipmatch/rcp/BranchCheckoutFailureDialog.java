@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class BranchCheckoutFailureDialog extends MessageDialog {
 
-    private static final String RECOMMENDERS_FAQ_URL = "http://www.eclipse.org/recommenders/manual/#snippet-repository-update-guide"; //$NON-NLS-1$
+    private static final String RECOMMENDERS_FAQ_URL = "https://www.eclipse.org/recommenders/manual/#snippet-repository-update-guide"; //$NON-NLS-1$
 
     public BranchCheckoutFailureDialog(Shell parentShell, String repository, String failedVersion,
             String substituteVersion) {

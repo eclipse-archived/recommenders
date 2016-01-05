@@ -10,12 +10,12 @@
 
 	<organization>
 		<name>Eclipse Foundation</name>
-		<url>http://www.eclipse.org/</url>
+		<url>https://www.eclipse.org/</url>
 	</organization>
 	<licenses>
 		<license>
 			<name>Eclipse Public License</name>
-			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+			<url>https://www.eclipse.org/legal/epl-v10.html</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -24,7 +24,7 @@
 		<mailingList>
 			<name>Developer Mailing List</name>
 			<post>recommenders-dev@eclipse.org</post>
-			<archive>http://dev.eclipse.org/mhonarc/lists/recommenders-dev</archive>
+			<archive>https://dev.eclipse.org/mhonarc/lists/recommenders-dev</archive>
 		</mailingList>
 	</mailingLists>
 
@@ -70,7 +70,7 @@
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>neon</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
-		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
+		<tycho.scmUrl>scm:git:https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
