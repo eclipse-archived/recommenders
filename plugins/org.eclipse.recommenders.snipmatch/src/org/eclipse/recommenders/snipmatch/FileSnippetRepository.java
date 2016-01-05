@@ -266,11 +266,15 @@ public class FileSnippetRepository implements ISnippetRepository {
             doc.add(new Field(F_DEPENDENCY, getDependencyString(dependency), Store.YES, Index.ANALYZED));
         }
 
-        if (snippet.getFilenameRestrictions().isEmpty()) {
+        if (snippet.getLocation() == Location.FILE) {
+            if (snippet.getFilenameRestrictions().isEmpty()) {
+                doc.add(new Field(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION, Store.NO, Index.NOT_ANALYZED));
+            }
+            for (String restriction : snippet.getFilenameRestrictions()) {
+                doc.add(new Field(F_FILENAME_RESTRICTION, restriction.toLowerCase(), Store.NO, Index.NOT_ANALYZED));
+            }
+        } else {
             doc.add(new Field(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION, Store.NO, Index.NOT_ANALYZED));
-        }
-        for (String restriction : snippet.getFilenameRestrictions()) {
-            doc.add(new Field(F_FILENAME_RESTRICTION, restriction.toLowerCase(), Store.NO, Index.NOT_ANALYZED));
         }
 
         writer.addDocument(doc);
@@ -348,7 +352,7 @@ public class FileSnippetRepository implements ISnippetRepository {
             }
 
             String filename = context.getFilename();
-            if (context.getLocation() == Location.FILE && filename != null) {
+            if (filename != null) {
                 BooleanQuery filenameRestrictionsQuery = new BooleanQuery();
                 TermQuery noRestrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION));
                 noRestrictionQuery.setBoost(NO_RESTRICTION_BOOST);

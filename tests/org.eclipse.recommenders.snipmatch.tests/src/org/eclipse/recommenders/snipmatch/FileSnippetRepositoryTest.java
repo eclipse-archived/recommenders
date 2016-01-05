@@ -500,6 +500,31 @@ public class FileSnippetRepositoryTest {
     }
 
     @Test
+    public void testSearchWithFilenameRestrictionInJavaFile() throws Exception {
+        ISnippet nonMatchingSnippet = createSnippetWithFilenameRestrictions(A_UUID, "searchword", ".xml");
+        storeSnippet(nonMatchingSnippet);
+        ISnippet extensionMatchSnippet = createSnippetWithFilenameRestrictions(ANOTHER_UUID, "searchword", ".java");
+        storeSnippet(extensionMatchSnippet);
+        Snippet javaSnippetWithUnusedFileRestriction = createSnippetWithFilenameRestrictions(THIRD_UUID, "searchword",
+                ".xml");
+        javaSnippetWithUnusedFileRestriction.setLocation(JAVA_STATEMENTS);
+        storeSnippet(javaSnippetWithUnusedFileRestriction);
+        sut.open();
+
+        List<Recommendation<ISnippet>> searchWithExactMatch = sut
+                .search(new SearchContext("searchword", JAVA_STATEMENTS, "Example.java", EMPTY_CLASSPATH));
+
+        Recommendation<ISnippet> extensionRecommendation = find(searchWithExactMatch, new UuidPredicate(ANOTHER_UUID));
+        Recommendation<ISnippet> javaRecommendation = find(searchWithExactMatch, new UuidPredicate(THIRD_UUID));
+
+        assertThat(extensionRecommendation.getProposal(), is(equalTo(extensionMatchSnippet)));
+        assertThat(javaRecommendation.getProposal(), is(equalTo((ISnippet) javaSnippetWithUnusedFileRestriction)));
+        assertThat(searchWithExactMatch.size(), is(2));
+
+        sut.close();
+    }
+
+    @Test
     public void testPreferNameMatchesOverDescription() throws Exception {
         storeSnippet(createSnippet(A_UUID, "first"));
         storeSnippet(createSnippetWithDescription(ANOTHER_UUID, "second", "first"));
