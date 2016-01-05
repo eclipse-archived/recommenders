@@ -462,6 +462,44 @@ public class FileSnippetRepositoryTest {
     }
 
     @Test
+    public void testSearchWithFilenameRestrictionInUppercaseFile() throws Exception {
+        ISnippet exactNameMatchSnippet = createSnippetWithFilenameRestrictions(A_UUID, "searchword", "manifest.mf");
+        storeSnippet(exactNameMatchSnippet);
+        ISnippet extensionMatchSnippet = createSnippetWithFilenameRestrictions(ANOTHER_UUID, "searchword", ".mf");
+        storeSnippet(extensionMatchSnippet);
+        ISnippet unrestrictedSnippet = createSnippet(THIRD_UUID, "searchword");
+        storeSnippet(unrestrictedSnippet);
+        sut.open();
+
+        List<Recommendation<ISnippet>> searchWithExactMatch = sut
+                .search(new SearchContext("searchword", Location.FILE, "MANIFEST.MF", EMPTY_CLASSPATH));
+
+        Recommendation<ISnippet> exactNameRecommendation = find(searchWithExactMatch, new UuidPredicate(A_UUID));
+        Recommendation<ISnippet> extensionRecommendation = find(searchWithExactMatch, new UuidPredicate(ANOTHER_UUID));
+        Recommendation<ISnippet> unrestrictedRecommendation = find(searchWithExactMatch, new UuidPredicate(THIRD_UUID));
+
+        assertThat(exactNameRecommendation.getProposal(), is(equalTo(exactNameMatchSnippet)));
+        assertThat(extensionRecommendation.getProposal(), is(equalTo(extensionMatchSnippet)));
+        assertThat(unrestrictedRecommendation.getProposal(), is(equalTo(unrestrictedSnippet)));
+        assertThat(exactNameRecommendation.getRelevance(), is(greaterThan(extensionRecommendation.getRelevance())));
+        assertThat(extensionRecommendation.getRelevance(), is(greaterThan(unrestrictedRecommendation.getRelevance())));
+        assertThat(searchWithExactMatch.size(), is(3));
+
+        List<Recommendation<ISnippet>> searchWithExtensionMatch = sut
+                .search(new SearchContext("searchword", Location.FILE, "Foo.MF", EMPTY_CLASSPATH));
+
+        extensionRecommendation = find(searchWithExtensionMatch, new UuidPredicate(ANOTHER_UUID));
+        unrestrictedRecommendation = find(searchWithExtensionMatch, new UuidPredicate(THIRD_UUID));
+
+        assertThat(extensionRecommendation.getProposal(), is(equalTo(extensionMatchSnippet)));
+        assertThat(unrestrictedRecommendation.getProposal(), is(equalTo(unrestrictedSnippet)));
+        assertThat(extensionRecommendation.getRelevance(), is(greaterThan(unrestrictedRecommendation.getRelevance())));
+        assertThat(searchWithExtensionMatch.size(), is(2));
+
+        sut.close();
+    }
+
+    @Test
     public void testPreferNameMatchesOverDescription() throws Exception {
         storeSnippet(createSnippet(A_UUID, "first"));
         storeSnippet(createSnippetWithDescription(ANOTHER_UUID, "second", "first"));

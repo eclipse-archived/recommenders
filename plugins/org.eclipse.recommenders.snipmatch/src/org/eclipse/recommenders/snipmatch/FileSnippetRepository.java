@@ -356,7 +356,8 @@ public class FileSnippetRepository implements ISnippetRepository {
 
                 int i = 1;
                 for (String restriction : Filenames.getFilenameRestrictions(filename)) {
-                    TermQuery restrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, restriction));
+                    TermQuery restrictionQuery = new TermQuery(
+                            new Term(F_FILENAME_RESTRICTION, restriction.toLowerCase()));
                     float boost = (float) (0.5f + Math.pow(0.5, i));
                     restrictionQuery.setBoost(boost);
                     filenameRestrictionsQuery.add(restrictionQuery, Occur.SHOULD);
