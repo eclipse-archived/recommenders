@@ -10,10 +10,10 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>main</artifactId>
+	<artifactId>stable</artifactId>
 	<packaging>eclipse-repository</packaging>
 
-	<name>Code Recommenders Main Update Site</name>
+	<name>Code Recommenders Stable Update Site</name>
 
 	<profiles>
 		<profile>

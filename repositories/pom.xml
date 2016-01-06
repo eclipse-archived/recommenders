@@ -16,14 +16,19 @@
 	<name>Update Sites</name>
 
 	<modules>
-		<module>main</module>
+		<module>head</module>
+		<module>milestones</module>
+		<module>simrel</module>
+		<module>stable</module>
 		<!-- Composite update sites referring to Code Recommenders Incubator projects. -->
 		<module>incubators-head</module>
 		<module>incubators-milestones</module>
 	</modules>
 
 	<properties>
-		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>
+		<!-- Override as appropriate in child projects. -->
+		<downloadPath>/recommenders/updates/${project.artifactId}</downloadPath>
+		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=${downloadPath}&amp;format=xml</p2MirrorsURL>
 		<p2StatsURL>http://download.eclipse.org/stats/recommenders/${project.artifactId}</p2StatsURL>
 		<!-- At the moment, this list of features needs to be maintained manually. -->
 		<statsTrackedArtifacts>org.eclipse.recommenders.3rd.feature,org.eclipse.recommenders.feature.rcp,org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.mylyn.rcp.feature,org.eclipse.recommenders.news.rcp.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.snipmatch.rcp.feature,org.eclipse.recommenders.testing.rcp.feature</statsTrackedArtifacts>
