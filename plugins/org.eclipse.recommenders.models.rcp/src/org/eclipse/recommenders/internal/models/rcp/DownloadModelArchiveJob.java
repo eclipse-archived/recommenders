@@ -137,12 +137,12 @@ public class DownloadModelArchiveJob extends Job {
         protected Control createCustomArea(Composite parent) {
             Link link = new Link(parent, SWT.BEGINNING);
             link.setText(MessageFormat.format(Messages.DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE_SUGGESTIONS,
-                    "http://eclipse.org/recommenders/faq/", //$NON-NLS-1$
+                    "https://eclipse.org/recommenders/faq/", //$NON-NLS-1$
                     "https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders")); //$NON-NLS-1$
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent event) {
-                    Browsers.openInExternalBrowser(event.text);
+                    Browsers.tryOpenInExternalBrowser(event.text);
                 }
             });
             return link;

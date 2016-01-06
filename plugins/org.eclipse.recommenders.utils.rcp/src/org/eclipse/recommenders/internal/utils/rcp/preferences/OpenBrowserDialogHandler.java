@@ -26,7 +26,7 @@ public class OpenBrowserDialogHandler extends AbstractHandler {
 
             @Override
             public void run() {
-                Browsers.openInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
+                Browsers.tryOpenInDialogBrowser(event.getParameter(COMMAND_HREF_ID));
             }
         });
         return null;

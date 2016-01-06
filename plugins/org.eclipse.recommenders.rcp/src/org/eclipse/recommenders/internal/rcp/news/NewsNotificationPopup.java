@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.rcp.RcpPlugin;
 import org.eclipse.recommenders.internal.rcp.l10n.Messages;
-import org.eclipse.recommenders.rcp.utils.Shells;
 import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,7 +48,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Browsers.openInExternalBrowser(e.text);
+                Browsers.tryOpenInExternalBrowser(e.text);
             }
         });
 

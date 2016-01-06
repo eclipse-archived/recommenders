@@ -472,7 +472,7 @@ public class SnippetMetadataPage extends FormPage {
                 sharedImages.getDescriptor(SharedImages.Images.ELCL_HELP)) {
             @Override
             public void run() {
-                Browsers.openInExternalBrowser(HELP_URL);
+                Browsers.tryOpenInExternalBrowser(HELP_URL);
             };
         };
         EditorUtils.addActionToForm(form, showHelpAction, Messages.EDITOR_TOOLBAR_ITEM_HELP);

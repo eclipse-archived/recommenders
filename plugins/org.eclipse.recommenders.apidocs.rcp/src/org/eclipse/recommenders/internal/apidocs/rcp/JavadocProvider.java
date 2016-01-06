@@ -163,7 +163,7 @@ public final class JavadocProvider extends ApidocProvider {
                                 }
 
                             } else {
-                                Browsers.openInDefaultBrowser(url);
+                                Browsers.tryOpenInDefaultBrowser(url);
                             }
                         } catch (final Exception e) {
                             log(ERROR_DURING_JAVADOC_SELECTION, e, url);
