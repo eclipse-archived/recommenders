@@ -165,8 +165,7 @@ public class MessageUtils {
                 }
             }
             if (message.getDate() != null
-                    && (message.getDate().before(getPeriodStartDate(MessageAge.OLDER, today, locale))
-                            || message.getDate().equals(getPeriodStartDate(MessageAge.OLDER, today, locale)))) {
+                    && message.getDate().before(getPeriodStartDate(MessageAge.OLDER, today, locale))) {
                 result.get(MessageAge.OLDER.getIndex()).add(message);
             }
         }
@@ -199,8 +198,8 @@ public class MessageUtils {
             calendar.set(Calendar.DAY_OF_MONTH, 1);
         } else if (messageAge == MessageAge.OLDER) {
             calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
-            calendar.set(Calendar.MONTH, 11);
-            calendar.set(Calendar.DAY_OF_MONTH, 31);
+            calendar.set(Calendar.MONTH, 0);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
         }
         return calendar.getTime();
     }

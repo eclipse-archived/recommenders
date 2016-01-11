@@ -43,6 +43,9 @@ public class MessageUtilsSplitMessageByAgeTest {
     private static final Date MONDAY_2015_06_01 = getDate(2015, Calendar.JUNE, 1);
     private static final Date TUESDAY_2015_06_02 = getDate(2015, Calendar.JUNE, 2);
     private static final Date WEDNESDAY_2015_06_03 = getDate(2015, Calendar.JUNE, 3);
+    private static final Date MONDAY_2016_01_04 = getDate(2016, Calendar.JANUARY, 4);
+    private static final Date WEDNESDAY_2015_12_23 = getDate(2015, Calendar.DECEMBER, 23);
+    private static final Date FRIDAY_2015_11_20 = getDate(2015, Calendar.NOVEMBER, 20);
 
     private final Date today;
     private final List<Date> inputDates;
@@ -124,6 +127,14 @@ public class MessageUtilsSplitMessageByAgeTest {
         scenarios.add(new Object[] { on(SUNDAY_2015_05_31), messagesFrom(TUESDAY_2015_03_31, WEDNESDAY_2014_12_24),
                 expectedGroupings(today(), yesterday(), thisWeek(), lastWeek(), thisMonth(), lastMonth(),
                         thisYear(TUESDAY_2015_03_31), older(WEDNESDAY_2014_12_24)),
+                Locale.US });
+
+        // Bug 485115 fixed
+        scenarios.add(new Object[] { on(MONDAY_2016_01_04),
+                messagesFrom(WEDNESDAY_2015_12_23, FRIDAY_2015_11_20, TUESDAY_2015_03_31, WEDNESDAY_2014_12_24),
+                expectedGroupings(today(), yesterday(), thisWeek(), lastWeek(), thisMonth(),
+                        lastMonth(WEDNESDAY_2015_12_23), thisYear(),
+                        older(FRIDAY_2015_11_20, TUESDAY_2015_03_31, WEDNESDAY_2014_12_24)),
                 Locale.US });
 
         return scenarios;
