@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -51,8 +52,6 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.utils.Pair;
-
-import com.google.common.collect.Sets;
 
 public class JavaProjectFixture {
 
@@ -119,16 +118,17 @@ public class JavaProjectFixture {
      * @return the package name or "" if no package declaration was found
      */
     public static String findPackageName(final CharSequence source) {
-        Pattern p = Pattern.compile(".*" // any characters at the beginning
-                + "package\\s+" // package declaration
-                + "(" // beginning of the package name group
-                + JAVA_IDENTIFIER_REGEX // the first part of the package
-                + "{1}" // must occur one time
-                + "([.]{1}" // the following parts of the package must begin with a dot
-                + JAVA_IDENTIFIER_REGEX // followed by a java identifier
-                + ")*" // the (.identifier) group can occur multiple times or not at all
-                + ")" // closing of the package name group
-                + "[;]+.*", // the following ; and the rest of the source code
+        Pattern p = Pattern.compile(
+                ".*" // any characters at the beginning
+                        + "package\\s+" // package declaration
+                        + "(" // beginning of the package name group
+                        + JAVA_IDENTIFIER_REGEX // the first part of the package
+                        + "{1}" // must occur one time
+                        + "([.]{1}" // the following parts of the package must begin with a dot
+                        + JAVA_IDENTIFIER_REGEX // followed by a java identifier
+                        + ")*" // the (.identifier) group can occur multiple times or not at all
+                        + ")" // closing of the package name group
+                        + "[;]+.*", // the following ; and the rest of the source code
                 Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         if (matcher.matches()) {
@@ -209,20 +209,20 @@ public class JavaProjectFixture {
         parser.setResolveBindings(true);
     }
 
-    public Pair<CompilationUnit, Set<Integer>> parseWithMarkers(final String content) {
-        final Pair<String, Set<Integer>> contentMarkersPair = findMarkers(content);
+    public Pair<CompilationUnit, List<Integer>> parseWithMarkers(final String content) {
+        final Pair<String, List<Integer>> contentMarkersPair = findMarkers(content);
         final String contentWoMarkers = contentMarkersPair.getFirst();
-        final Set<Integer> markers = contentMarkersPair.getSecond();
+        final List<Integer> markers = contentMarkersPair.getSecond();
         final CompilationUnit cu = parse(contentWoMarkers);
         return newPair(cu, markers);
     }
 
-    public Pair<String, Set<Integer>> findMarkers(final CharSequence content) {
+    public Pair<String, List<Integer>> findMarkers(final CharSequence content) {
         return findMarkers(content, MARKER);
     }
 
-    public Pair<String, Set<Integer>> findMarkers(final CharSequence content, String marker) {
-        final Set<Integer> markers = Sets.newTreeSet();
+    public Pair<String, List<Integer>> findMarkers(final CharSequence content, String marker) {
+        final List<Integer> markers = new ArrayList<>();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
         while ((pos = sb.indexOf(marker, pos)) != -1) {
@@ -250,14 +250,14 @@ public class JavaProjectFixture {
      * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
      * @throws CoreException
      */
-    public Pair<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
+    public Pair<ICompilationUnit, List<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
             throws CoreException {
         return createFileAndParseWithMarkers(contentWithMarkers, MARKER);
     }
 
-    public Pair<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers,
+    public Pair<ICompilationUnit, List<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers,
             String marker) throws CoreException {
-        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers, marker);
+        final Pair<String, List<Integer>> content = findMarkers(contentWithMarkers, marker);
 
         final ICompilationUnit cu = createFile(content.getFirst(), false);
         refreshAndBuildProject();
@@ -274,9 +274,9 @@ public class JavaProjectFixture {
      * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
      * @throws CoreException
      */
-    public Pair<ICompilationUnit, Set<Integer>> createFileAndPackageAndParseWithMarkers(
+    public Pair<ICompilationUnit, List<Integer>> createFileAndPackageAndParseWithMarkers(
             final CharSequence contentWithMarkers) throws CoreException {
-        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+        final Pair<String, List<Integer>> content = findMarkers(contentWithMarkers);
 
         createPackage(content.getFirst());
         final ICompilationUnit cu = createFile(content.getFirst(), true);

@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.dom.AST;
@@ -34,7 +34,7 @@ public class CompilerBindingsTestUtils {
 
     public static org.eclipse.jdt.internal.compiler.ast.ASTNode getCompilerAstNode(CharSequence code) throws Exception {
         JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Pair<CompilationUnit, Set<Integer>> parseResult = fixture.parseWithMarkers(code.toString());
+        Pair<CompilationUnit, List<Integer>> parseResult = fixture.parseWithMarkers(code.toString());
         CompilationUnit cu = parseResult.getFirst();
         int start = Iterables.getOnlyElement(parseResult.getSecond());
 

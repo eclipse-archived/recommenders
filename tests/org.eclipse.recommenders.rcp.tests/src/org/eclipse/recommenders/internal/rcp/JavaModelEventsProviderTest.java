@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -51,7 +50,7 @@ public class JavaModelEventsProviderTest {
         project.close();
         project.open(null);
 
-        Pair<ICompilationUnit, Set<Integer>> m = f.createFileAndParseWithMarkers("public class C {}");
+        Pair<ICompilationUnit, List<Integer>> m = f.createFileAndParseWithMarkers("public class C {}");
         ICompilationUnit cu = m.getFirst();
 
         cu.getBuffer().append("// COMMENT");
