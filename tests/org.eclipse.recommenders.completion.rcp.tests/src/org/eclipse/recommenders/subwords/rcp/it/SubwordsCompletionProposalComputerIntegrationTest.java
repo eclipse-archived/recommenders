@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -192,7 +191,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private List<IJavaCompletionProposal> exercise(CharSequence code, SubwordsRcpPreferences preferences)
             throws CoreException {
-        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
+        Pair<ICompilationUnit, List<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
         ICompilationUnit cu = struct.getFirst();
         JavaUI.openInEditor(cu);
 

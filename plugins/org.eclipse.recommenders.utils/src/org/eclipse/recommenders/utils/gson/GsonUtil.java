@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.utils.gson;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.io.BufferedInputStream;
@@ -53,6 +53,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class GsonUtil {
+
     public static final Type T_LIST_STRING = new TypeToken<List<String>>() {
     }.getType();
 
@@ -96,8 +97,8 @@ public class GsonUtil {
     }
 
     public static <T> T deserialize(final String json, final Type classOfT) {
-        ensureIsNotNull(json);
-        ensureIsNotNull(classOfT);
+        requireNonNull(json);
+        requireNonNull(classOfT);
         try {
             return getInstance().fromJson(json, classOfT);
         } catch (final Exception e) {
@@ -105,23 +106,9 @@ public class GsonUtil {
         }
     }
 
-    public static <T> T deserialize(final InputStream jsonStream, final Type classOfT) {
-        ensureIsNotNull(jsonStream);
-        ensureIsNotNull(classOfT);
-        Reader reader = null;
-        try {
-            reader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
-            return getInstance().fromJson(reader, classOfT);
-        } catch (final Exception e) {
-            throw throwUnhandledException(e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
-    }
-
     public static <T> T deserialize(final File jsonFile, final Type classOfT) {
-        ensureIsNotNull(jsonFile);
-        ensureIsNotNull(classOfT);
+        requireNonNull(jsonFile);
+        requireNonNull(classOfT);
         InputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(jsonFile));
@@ -133,16 +120,30 @@ public class GsonUtil {
         }
     }
 
+    public static <T> T deserialize(final InputStream jsonStream, final Type classOfT) {
+        requireNonNull(jsonStream);
+        requireNonNull(classOfT);
+        Reader reader = null;
+        try {
+            reader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
+            return getInstance().fromJson(reader, classOfT);
+        } catch (final Exception e) {
+            throw throwUnhandledException(e);
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+    }
+
     public static String serialize(final Object obj) {
-        ensureIsNotNull(obj);
+        requireNonNull(obj);
         final StringBuilder sb = new StringBuilder();
         serialize(obj, sb);
         return sb.toString();
     }
 
     public static void serialize(final Object obj, final Appendable writer) {
-        ensureIsNotNull(obj);
-        ensureIsNotNull(writer);
+        requireNonNull(obj);
+        requireNonNull(writer);
         try {
             getInstance().toJson(obj, writer);
         } catch (final Exception e) {
@@ -151,8 +152,8 @@ public class GsonUtil {
     }
 
     public static void serialize(final Object obj, final File jsonFile) {
-        ensureIsNotNull(obj);
-        ensureIsNotNull(jsonFile);
+        requireNonNull(obj);
+        requireNonNull(jsonFile);
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(new FileOutputStream(jsonFile));
@@ -165,8 +166,8 @@ public class GsonUtil {
     }
 
     public static void serialize(final Object obj, final OutputStream out) {
-        ensureIsNotNull(obj);
-        ensureIsNotNull(out);
+        requireNonNull(obj);
+        requireNonNull(out);
         Writer writer = null;
         try {
             writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);

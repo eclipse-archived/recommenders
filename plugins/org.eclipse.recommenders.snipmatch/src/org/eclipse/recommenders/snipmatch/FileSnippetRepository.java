@@ -20,7 +20,6 @@ import static org.eclipse.recommenders.utils.Urls.mangle;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.OverlappingFileLockException;
 import java.text.MessageFormat;
@@ -135,19 +134,19 @@ public class FileSnippetRepository implements ISnippetRepository {
 
                 @Override
                 public Snippet load(File file) throws Exception {
-                    Snippet snippet;
-                    snippet = GsonUtil.deserialize(file, Snippet.class);
+                    Snippet snippet = GsonUtil.deserialize(file, Snippet.class);
                     return snippet;
                 }
             });
 
     public FileSnippetRepository(String id, File basedir) {
+        Preconditions.checkArgument(basedir.isAbsolute());
         Preconditions.checkArgument(CACHE_SIZE > MAX_SEARCH_RESULTS,
                 "The cache size needs to be larger than the maximum number of search results.");
         this.id = id;
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
-        repoUrl = mangle(basedir.getAbsolutePath());
+        repoUrl = mangle(basedir.getPath());
 
         analyzer = createAnalyzer();
         parser = createParser();
@@ -534,10 +533,7 @@ public class FileSnippetRepository implements ISnippetRepository {
                 file = Iterables.getOnlyElement(snippetFiles.keySet());
             }
 
-            FileWriter writer = new FileWriter(file);
-            writer.write(GsonUtil.serialize(importSnippet));
-            writer.flush();
-            writer.close();
+            GsonUtil.serialize(importSnippet, file);
 
             index();
         } finally {
