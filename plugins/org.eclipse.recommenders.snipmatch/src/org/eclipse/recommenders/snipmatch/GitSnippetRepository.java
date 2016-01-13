@@ -50,9 +50,9 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     private final File basedir;
     private final String fetchUrl;
-    private final File gitFile;
     private final String pushUrl;
     private final String pushBranchPrefix;
+    private final File gitFile;
 
     private Repository localRepo;
 
@@ -62,7 +62,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         this.fetchUrl = fetchUrl;
         this.pushUrl = pushUrl;
         this.pushBranchPrefix = pushBranchPrefix;
-        gitFile = new File(basedir.getAbsolutePath() + "/.git");
+        this.gitFile = new File(basedir, ".git");
     }
 
     @Override
