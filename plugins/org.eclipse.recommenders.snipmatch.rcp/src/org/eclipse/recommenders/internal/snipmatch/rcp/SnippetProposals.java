@@ -16,7 +16,7 @@ import static java.text.MessageFormat.format;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 
-public class SnippetProposals {
+public final class SnippetProposals {
 
     private SnippetProposals() {
         // Not meant to be instantiated

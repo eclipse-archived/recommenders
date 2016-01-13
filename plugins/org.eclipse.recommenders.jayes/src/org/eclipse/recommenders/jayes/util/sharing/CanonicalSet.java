@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
@@ -14,16 +14,17 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Set to support managing canonical, shared instances. These instances should be immutable while in the set. Call
  * get(T) to get a canonical instance for the specified key.
- * 
+ *
  * @param <T>
  */
 public abstract class CanonicalSet<T> extends AbstractSet<T> {
 
-    private final HashMap<Entry<T>, T> set = new HashMap<Entry<T>, T>();
+    private final Map<Entry<T>, T> set = new HashMap<>();
 
     public T get(final T example) {
         final Entry<T> entry = createEntry(example);

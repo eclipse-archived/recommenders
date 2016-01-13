@@ -257,20 +257,20 @@ public class SnippetMetadataPage extends FormPage {
 
                 createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_FILENAME_RESTRICTIONS);
                 listViewerFilenameRestrictions = createListViewer(managedForm, horizontalIndent);
-                createDecoration(listViewerFilenameRestrictions.getList(), Messages.EDITOR_DESCRIPTION_FILENAME_RESTRICTIONS,
-                        infoDecorationImage, SWT.TOP | SWT.LEFT);
+                createDecoration(listViewerFilenameRestrictions.getList(),
+                        Messages.EDITOR_DESCRIPTION_FILENAME_RESTRICTIONS, infoDecorationImage, SWT.TOP | SWT.LEFT);
 
                 filenameRestrictionsButtonContainer = createButtonContainer(managedForm);
-                btnAddFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer, Messages.EDITOR_BUTTON_ADD,
-                        new SelectionAdapter() {
+                btnAddFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer,
+                        Messages.EDITOR_BUTTON_ADD, new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         createFilenameRestrictionInputDialog(filenameRestrictionsButtonContainer.getShell()).open();
                     }
                 });
                 btnAddFilenameRestriction.setEnabled(snippet.getLocation() == Location.FILE);
-                btnRemoveFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer, Messages.EDITOR_BUTTON_REMOVE,
-                        new SelectionAdapter() {
+                btnRemoveFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer,
+                        Messages.EDITOR_BUTTON_REMOVE, new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         Optional<String> o = Selections.getFirstSelected(listViewerFilenameRestrictions);
@@ -514,8 +514,8 @@ public class SnippetMetadataPage extends FormPage {
                     return ""; //$NON-NLS-1$
                 }
                 if (newText.contains("*")) { //$NON-NLS-1$
-                    return MessageFormat.format(Messages.DIALOG_VALIDATOR_FILENAME_RESTRICTION_CONTAINS_ILLEGAL_CHARACTER,
-                            "*"); //$NON-NLS-1$
+                    return MessageFormat
+                            .format(Messages.DIALOG_VALIDATOR_FILENAME_RESTRICTION_CONTAINS_ILLEGAL_CHARACTER, "*"); //$NON-NLS-1$
                 }
                 if (snippet.getFilenameRestrictions().contains(newText.trim().toLowerCase())) {
                     return Messages.DIALOG_VALIDATOR_FILENAME_RESTRICTION_ALREADY_ADDED;
@@ -607,7 +607,8 @@ public class SnippetMetadataPage extends FormPage {
         ppFilenameRestrictions = BeanProperties.list(Snippet.class, "filenameRestrictions", String.class) //$NON-NLS-1$
                 .observe(snippet);
         ppFilenameRestrictions.addChangeListener(new ContentsPartDirtyListener());
-        ViewerSupport.bind(listViewerFilenameRestrictions, ppFilenameRestrictions, new FilenameRestrictionLabelProperty());
+        ViewerSupport.bind(listViewerFilenameRestrictions, ppFilenameRestrictions,
+                new FilenameRestrictionLabelProperty());
 
         // Extra search terms
         ppExtraSearchTerms = BeanProperties.list(Snippet.class, "extraSearchTerms", String.class).observe(snippet); //$NON-NLS-1$
@@ -750,7 +751,8 @@ public class SnippetMetadataPage extends FormPage {
         super.dispose();
     }
 
-    private final class FilenameRestrictionLabelProperty extends SimpleValueProperty {
+    private static class FilenameRestrictionLabelProperty extends SimpleValueProperty {
+
         @Override
         public Object getValueType() {
             return String.class;

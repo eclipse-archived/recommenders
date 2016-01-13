@@ -52,7 +52,7 @@ public class NewsService implements INewsService {
     private final IJobFacade jobFacade;
     private final EventBus bus;
     private final INotificationFacade notificationFacade;
-    private final HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
+    private final Map<FeedDescriptor, IPollingResult> groupedMessages = new HashMap<>();
 
     @VisibleForTesting
     public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsProperties newsFeedProperties,

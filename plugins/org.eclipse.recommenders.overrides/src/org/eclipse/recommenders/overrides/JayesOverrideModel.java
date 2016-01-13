@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
@@ -51,7 +52,7 @@ public class JayesOverrideModel implements IOverrideModel {
     private JunctionTreeAlgorithm junctionTreeAlgorithm;
     private ITypeName typeName;
     private BayesNode patternNode;
-    private HashMap<IMethodName, BayesNode> methodNodes;
+    private Map<IMethodName, BayesNode> methodNodes;
 
     protected JayesOverrideModel(final ITypeName typeName, final BayesNet network, final BayesNode patternNode,
             final List<BayesNode> methodNodes) {

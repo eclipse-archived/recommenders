@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,8 +61,8 @@ public class SnippetCodeBuilder {
 
     private final Set<String> imports = new TreeSet<>();
     private final Set<String> importStatics = new TreeSet<>();
-    private final HashMap<IVariableBinding, String> vars = new HashMap<>();
-    private final HashMap<String, Integer> lastVarIndex = new HashMap<>();
+    private final Map<IVariableBinding, String> vars = new HashMap<>();
+    private final Map<String, Integer> lastVarIndex = new HashMap<>();
     private final StringBuilder sb = new StringBuilder();
 
     public SnippetCodeBuilder(@Nonnull CompilationUnit ast, @Nonnull IDocument doc, @Nonnull IRegion textSelection) {

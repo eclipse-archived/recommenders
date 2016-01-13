@@ -195,7 +195,7 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         }
     }
 
-    class MutexRule implements ISchedulingRule {
+    private static class MutexRule implements ISchedulingRule {
 
         @Override
         public boolean contains(ISchedulingRule rule) {
@@ -206,6 +206,5 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         public boolean isConflicting(ISchedulingRule rule) {
             return rule == this;
         }
-
     }
 }

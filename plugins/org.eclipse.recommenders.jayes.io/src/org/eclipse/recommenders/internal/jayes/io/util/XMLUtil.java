@@ -23,11 +23,10 @@ public final class XMLUtil {
     }
 
     /**
-     * this method expects the attributes in pairwise name, value form e.g.
-     * </br> attributes = [ "id", "12345", "size", "15" ]
+     * this method expects the attributes in pairwise name, value form e.g. </br>
+     * attributes = [ "id", "12345", "size", "15" ]
      */
-    public static void surround(int offset, StringBuilder bldr,
-            String surroundingTag, String... attributes) {
+    public static void surround(int offset, StringBuilder bldr, String surroundingTag, String... attributes) {
         // TODO addTab
         bldr.insert(offset, '>');
 
@@ -50,7 +49,7 @@ public final class XMLUtil {
 
     /**
      * adds a tab to every line
-     * 
+     *
      * @param text
      * @return
      */
@@ -58,8 +57,7 @@ public final class XMLUtil {
         return text.replaceAll("\n", "\n\t");
     }
 
-    public static void emptyTag(StringBuilder stringBuilder, String tagname,
-            String... attributes) {
+    public static void emptyTag(StringBuilder stringBuilder, String tagname, String... attributes) {
         stringBuilder.append('<');
         stringBuilder.append(tagname);
         stringBuilder.append(' ');
@@ -97,7 +95,7 @@ public final class XMLUtil {
             }
             return bldr.toString();
         } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 encoding unsupported");
+            throw new AssertionError("UTF-8 encoding unsupported", e);
         }
     }
 
@@ -113,7 +111,7 @@ public final class XMLUtil {
             try {
                 replacement = URLDecoder.decode(percentEncoded, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                throw new AssertionError("UTF-8 encoding unsupported");
+                throw new AssertionError("UTF-8 encoding unsupported", e);
             }
             m.appendReplacement(buf, Matcher.quoteReplacement(replacement));
         }

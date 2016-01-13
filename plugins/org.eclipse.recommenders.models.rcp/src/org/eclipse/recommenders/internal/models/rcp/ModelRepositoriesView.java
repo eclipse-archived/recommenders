@@ -687,7 +687,7 @@ public class ModelRepositoriesView extends ViewPart {
         storeRepositories(newRemotes);
     }
 
-    private void storeRepositories(ArrayList<String> newRemotes) {
+    private void storeRepositories(List<String> newRemotes) {
         try {
             IEclipsePreferences s = InstanceScope.INSTANCE.getNode(BUNDLE_ID);
             s.put(PREF_REPOSITORY_URL_LIST, ModelsRcpPreferences.joinRemoteRepositoriesToString(newRemotes));

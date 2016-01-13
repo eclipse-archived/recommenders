@@ -13,7 +13,7 @@ package org.eclipse.recommenders.overrides;
 import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,9 +41,10 @@ public class JayesOverrideModelBuilder {
 
     private BayesNode patternNode;
 
-    private LinkedList<BayesNode> methodNodes;
+    private List<BayesNode> methodNodes;
 
-    public JayesOverrideModelBuilder(final ITypeName typeName, final Collection<OverrideObservation> overriddenMethods) {
+    public JayesOverrideModelBuilder(final ITypeName typeName,
+            final Collection<OverrideObservation> overriddenMethods) {
         this.typeName = typeName;
         this.overriddenMethods = overriddenMethods;
         // filterInfrequentOverridingPatterns();

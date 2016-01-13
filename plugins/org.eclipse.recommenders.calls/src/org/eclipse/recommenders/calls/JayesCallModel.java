@@ -122,7 +122,7 @@ public class JayesCallModel implements ICallModel {
     private final JunctionTreeAlgorithm junctionTree;
 
     private final ITypeName typeName;
-    private final HashMap<IMethodName, BayesNode> callNodes;
+    private final Map<IMethodName, BayesNode> callNodes;
 
     private static final List<String> SPECIAL_NODES = Arrays.asList(N_NODEID_CONTEXT, N_NODEID_CALL_GROUPS,
             N_NODEID_DEF_KIND, N_NODEID_DEF);
@@ -201,8 +201,8 @@ public class JayesCallModel implements ICallModel {
             BayesNode node = pair.getValue();
             IMethodName method = pair.getKey();
             if (evidence.containsKey(node) && evidence.get(node).equals(Constants.N_STATE_TRUE)
-                    // remove the NULL that may have been introduced by
-                    // res.add(compute...)
+            // remove the NULL that may have been introduced by
+            // res.add(compute...)
                     && !VmMethodName.NULL.equals(method)) {
                 builder.add(method);
             }

@@ -15,10 +15,15 @@ import static org.mockito.Matchers.argThat;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.mockito.ArgumentMatcher;
 
-public class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimpleProposalProcessor> {
+public final class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimpleProposalProcessor> {
 
     private final int boost;
     private final String label;
+
+    private SimpleProposalProcessorMatcher(Integer boost, String label) {
+        this.boost = boost;
+        this.label = label;
+    }
 
     public static SimpleProposalProcessor processorWithBoost(int boost) {
         return argThat(new SimpleProposalProcessorMatcher(boost, null));
@@ -26,11 +31,6 @@ public class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimplePropos
 
     public static SimpleProposalProcessor processorWithBoostAndLabel(int boost, String label) {
         return argThat(new SimpleProposalProcessorMatcher(boost, label));
-    }
-
-    private SimpleProposalProcessorMatcher(Integer boost, String label) {
-        this.boost = boost;
-        this.label = label;
     }
 
     @Override
