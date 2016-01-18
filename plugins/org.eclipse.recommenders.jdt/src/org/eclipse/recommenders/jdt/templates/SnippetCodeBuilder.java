@@ -251,7 +251,11 @@ public class SnippetCodeBuilder {
         if (packageBinding.getName().equals("java.lang")) { //$NON-NLS-1$
             return;
         }
-        imports.add(binding.getErasure().getQualifiedName());
+        ITypeBinding erasure = binding.getErasure();
+        if (erasure.isRecovered()) {
+            return;
+        }
+        imports.add(erasure.getQualifiedName());
     }
 
     private void rememberStaticImport(@Nonnull IMethodBinding method) {
@@ -328,6 +332,9 @@ public class SnippetCodeBuilder {
         }
         ITypeBinding erasure = type.getErasure();
         if (erasure == null) {
+            return false;
+        }
+        if (erasure.isRecovered()) {
             return false;
         }
         sb.append('$').append('{').append(name).append(':').append(kind).append('(');
