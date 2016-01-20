@@ -74,6 +74,10 @@ public class JavaProjectFixture {
             p = Pattern.compile(".*interface\\s+" + JAVA_IDENTIFIER_REGEX + ".*", Pattern.DOTALL);
             matcher = p.matcher(source);
         }
+        if (!matcher.matches()) {
+            p = Pattern.compile(".*enum\\s+" + JAVA_IDENTIFIER_REGEX + ".*", Pattern.DOTALL);
+            matcher = p.matcher(source);
+        }
         assertTrue(matcher.matches());
         return matcher.group(1);
     }
@@ -82,7 +86,7 @@ public class JavaProjectFixture {
         String declaringType = findClassName(source);
         List<String> names = newArrayList();
 
-        Pattern p = Pattern.compile("(class|interface)\\s+" + JAVA_IDENTIFIER_REGEX, Pattern.DOTALL);
+        Pattern p = Pattern.compile("(class|interface|enum)\\s+" + JAVA_IDENTIFIER_REGEX, Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         while (matcher.find()) {
             final String name = matcher.group(2);

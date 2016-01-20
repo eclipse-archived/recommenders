@@ -87,6 +87,31 @@ public class JavaProjectFixtureTest {
     }
 
     @Test
+    public void extractNameFromEnum() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("public enum Enum1 {");
+        sb.append("     FOO;");
+        sb.append("}");
+
+        String actual = findClassName(sb);
+        String expected = "Enum1";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void extractNameFromAnnotation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("public @interface Annotation {");
+        sb.append("}");
+
+        String actual = findClassName(sb);
+        String expected = "Annotation";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void extractNameWithInnerClass() {
         StringBuilder sb = new StringBuilder();
         sb.append("public class Class1 {");
