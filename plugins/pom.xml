@@ -26,6 +26,8 @@
 		<module>org.eclipse.recommenders.constructors.rcp</module>
 		<module>org.eclipse.recommenders.coordinates</module>
 		<module>org.eclipse.recommenders.coordinates.rcp</module>
+		<module>org.eclipse.recommenders.discovery</module>
+		<module>org.eclipse.recommenders.discovery.content</module>
 		<module>org.eclipse.recommenders.injection</module>
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.io</module>
@@ -40,6 +42,7 @@
 		<module>org.eclipse.recommenders.overrides.rcp</module>
 		<module>org.eclipse.recommenders.rcp</module>
 		<module>org.eclipse.recommenders.snipmatch</module>
+		<module>org.eclipse.recommenders.snipmatch.discovery.content</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp</module>
 		<module>org.eclipse.recommenders.subwords.rcp</module>
 		<module>org.eclipse.recommenders.testing</module>
