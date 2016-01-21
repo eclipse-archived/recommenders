@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
+import static org.eclipse.recommenders.completion.rcp.PreferenceConstants.*;
 
 import javax.inject.Inject;
 
