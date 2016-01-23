@@ -128,10 +128,16 @@ public class NewsMenuListener implements IMenuListener {
                     eventBus.post(createFeedMessageReadEvent(message.getId()));
                 }
             };
+            String title = message.getTitle();
+            // this is fix for bug 486086
+            // @see org.eclipse.jface.action.IAction#setText(java.lang.String)
+            if (message.getTitle().contains("@")) {
+                title += "@";
+            }
             if (!message.isRead()) {
-                action.setText(MessageFormat.format(Messages.UNREAD_MESSAGE, message.getTitle()));
+                action.setText(MessageFormat.format(Messages.UNREAD_MESSAGE, title));
             } else {
-                action.setText(MessageFormat.format(Messages.READ_MESSAGE_OR_FEED, message.getTitle()));
+                action.setText(MessageFormat.format(Messages.READ_MESSAGE_OR_FEED, title));
             }
             menu.add(action);
         }
