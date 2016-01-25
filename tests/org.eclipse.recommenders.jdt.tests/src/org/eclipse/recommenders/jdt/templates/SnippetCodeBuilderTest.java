@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class SnippetCodeBuilderTest {
     private JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), getClass().getName());
 
     private final CharSequence code;
-    private final String marker;
+    private final String customMarker;
     private final String expectedResult;
     private final List<String> nodeNames;
 
@@ -54,10 +55,10 @@ public class SnippetCodeBuilderTest {
 
     private static int testCount;
 
-    public SnippetCodeBuilderTest(String description, CharSequence code, String marker, List<String> nodeNames,
+    public SnippetCodeBuilderTest(String description, CharSequence code, String customMarker, List<String> nodeNames,
             String expectedResult) {
         this.code = code;
-        this.marker = marker;
+        this.customMarker = customMarker;
         this.expectedResult = expectedResult;
         this.nodeNames = nodeNames;
     }
@@ -269,6 +270,43 @@ public class SnippetCodeBuilderTest {
                 multiLine("${var_name:var(java.lang.String)} = ${var_name1:var(java.lang.String)};",
                           "${cursor}")));
 
+        scenarios.add(scenario("Badly formatted code",
+                multiLine("class Example {",
+                          "    void m() {",
+                          "    $    int var;",
+                          "        var = 1;",
+                          "            var = 2;",
+                          "     var = 3;    $",
+                          "    }",
+                          "}"),
+                multiLine("    int ${var:newName(int)};",
+                          "${var} = 1;",
+                          "    ${var} = 2;",
+                          "     ${var} = 3;    ",
+                          "${cursor}")));
+
+        scenarios.add(scenario("Line break within node",
+                multiLine("class Example {",
+                          "    void m() {",
+                          "        $new Example()",
+                          "                       .m();$",
+                          "    }",
+                          "}"),
+                multiLine("new Example()",
+                          "               .m();",
+                          "${cursor}")));
+        scenarios.add(scenario("Line break within node: non-whitespace before selection",
+                multiLine("class Example {",
+                          "    int m() {",
+                          "        int result = $new Example()",
+                          "                .m();$",
+                          "        return result;",
+                          "    }",
+                          "}"),
+                multiLine("new Example()",
+                          "        .m();",
+                          "${cursor}")));
+
         scenarios.add(scenario("Single line file selected",
                 "$class Example { }$",
                 multiLine("class Example { }",
@@ -353,6 +391,17 @@ public class SnippetCodeBuilderTest {
                 multiLine("int ${x:newName(int)} = ${y:var(int)};",
                           "int ${y1:newName(int)} = 1;",
                           "${cursor}")));
+        scenarios.add(scenario("Line break after replaced node",
+                multiLine("class Example {",
+                          "    void m() {",
+                          "        $$new Example()$",
+                          "                       .m();$",
+                          "    }",
+                          "}"),
+                asList("example"),
+                multiLine("${example:var(Example)}",
+                          "               .m();",
+                          "${cursor}")));
         // @formatter:on
 
         return scenarios;
@@ -380,12 +429,12 @@ public class SnippetCodeBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(),
-                SnippetCodeBuilderTest.class.getName() + testCount++);
+        fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), SnippetCodeBuilderTest.class.getName()
+                + testCount++);
 
         Pair<ICompilationUnit, List<Integer>> struct;
-        if (marker != null) {
-            struct = fixture.createFileAndParseWithMarkers(code, marker);
+        if (customMarker != null) {
+            struct = fixture.createFileAndParseWithMarkers(code, customMarker);
         } else {
             struct = fixture.createFileAndPackageAndParseWithMarkers(code);
         }
