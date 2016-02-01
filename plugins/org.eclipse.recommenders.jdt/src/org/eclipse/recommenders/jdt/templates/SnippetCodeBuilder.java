@@ -258,13 +258,13 @@ public class SnippetCodeBuilder {
 
         code.append('\n');
 
+        replaceLeadingWhitespaces();
+
         appendImportTemplateVariable();
 
         appendImportStaticTemplateVariable();
 
         appendCursorTemplateVariable();
-
-        replaceLeadingWhitespaces();
 
         return code.toString();
 
@@ -480,7 +480,7 @@ public class SnippetCodeBuilder {
     }
 
     private void appendCursorTemplateVariable() {
-        code.append("${cursor}"); //$NON-NLS-1$
+        code.append("${cursor}").append(LINE_SEPARATOR); //$NON-NLS-1$
     }
 
     private void replaceLeadingWhitespaces() {
