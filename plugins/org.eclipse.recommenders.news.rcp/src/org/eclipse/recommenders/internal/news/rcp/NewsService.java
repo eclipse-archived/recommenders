@@ -17,19 +17,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.AllReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IJobFacade;
-import org.eclipse.recommenders.news.rcp.INewsFeedProperties;
+import org.eclipse.recommenders.news.rcp.INewsProperties;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.recommenders.news.rcp.INotificationFacade;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
@@ -38,17 +42,20 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+@Creatable
+@Singleton
 public class NewsService implements INewsService {
 
     private final NewsRcpPreferences preferences;
-    private final INewsFeedProperties newsFeedProperties;
+    private final INewsProperties newsFeedProperties;
     private final Set<String> readIds;
     private final IJobFacade jobFacade;
     private final EventBus bus;
     private final INotificationFacade notificationFacade;
-    private final HashMap<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+    private final Map<FeedDescriptor, IPollingResult> groupedMessages = new HashMap<>();
 
-    public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsFeedProperties newsFeedProperties,
+    @VisibleForTesting
+    public NewsService(NewsRcpPreferences preferences, EventBus bus, INewsProperties newsFeedProperties,
             IJobFacade jobFacade, INotificationFacade notificationFacade) {
         this.preferences = preferences;
         bus.register(this);
@@ -57,6 +64,12 @@ public class NewsService implements INewsService {
         this.newsFeedProperties = newsFeedProperties;
         this.jobFacade = jobFacade;
         this.notificationFacade = notificationFacade;
+    }
+
+    @Inject
+    public NewsService(NewsRcpPreferences preferences, INewsProperties newsProperties, IJobFacade jobFacade,
+            INotificationFacade notificationFacade) {
+        this(preferences, NewsRcpModule.EVENT_BUS, newsProperties, jobFacade, notificationFacade);
     }
 
     @Override
@@ -76,32 +89,23 @@ public class NewsService implements INewsService {
     }
 
     @Override
-    public Map<FeedDescriptor, List<IFeedMessage>> getMessages(final int countPerFeed) {
-        Map<FeedDescriptor, List<IFeedMessage>> transformedMap = Maps.transformValues(groupedMessages,
-                new Function<List<IFeedMessage>, List<IFeedMessage>>() {
+    public Map<FeedDescriptor, IPollingResult> getMessages(final int countPerFeed) {
+        Map<FeedDescriptor, IPollingResult> transformedMap = Maps.transformValues(groupedMessages,
+                new Function<IPollingResult, IPollingResult>() {
 
                     @Override
-                    public List<IFeedMessage> apply(List<IFeedMessage> input) {
-                        ImmutableList<IFeedMessage> list = FluentIterable.from(input).limit(countPerFeed).toList();
+                    public PollingResult apply(IPollingResult input) {
+                        ImmutableList<IFeedMessage> list = FluentIterable.from(input.getMessages()).limit(countPerFeed)
+                                .toList();
                         for (IFeedMessage message : list) {
                             if (readIds.contains(message.getId())) {
                                 message.setRead(true);
                             }
                         }
-                        return list;
+                        return new PollingResult(input.getStatus(), list);
                     }
                 });
-        return Maps.filterValues(transformedMap, new Predicate<List<IFeedMessage>>() {
-
-            @Override
-            public boolean apply(List<IFeedMessage> input) {
-                if (input == null) {
-                    return false;
-                }
-                return !input.isEmpty();
-            }
-
-        });
+        return transformedMap;
     }
 
     @Subscribe
@@ -116,7 +120,7 @@ public class NewsService implements INewsService {
     @Subscribe
     @Override
     public void handleFeedRead(FeedReadEvent event) {
-        List<IFeedMessage> messages = groupedMessages.get(event.getFeed());
+        List<IFeedMessage> messages = groupedMessages.get(event.getFeed()).getMessages();
         for (IFeedMessage message : messages) {
             readIds.add(message.getId());
         }
@@ -126,8 +130,8 @@ public class NewsService implements INewsService {
     @Subscribe
     @Override
     public void handleAllRead(AllReadEvent event) {
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : groupedMessages.entrySet()) {
-            for (IFeedMessage message : entry.getValue()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : groupedMessages.entrySet()) {
+            for (IFeedMessage message : entry.getValue().getMessages()) {
                 readIds.add(message.getId());
             }
         }
@@ -137,21 +141,22 @@ public class NewsService implements INewsService {
     @Override
     public void jobDone(IPollFeedJob job) {
         boolean newMessage = false;
-        Map<FeedDescriptor, List<IFeedMessage>> messages = job.getMessages();
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
+        Map<FeedDescriptor, IPollingResult> messages = job.getMessages();
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             if (!groupedMessages.containsKey(entry.getKey())) {
                 groupedMessages.put(entry.getKey(), entry.getValue());
-                if (!entry.getValue().isEmpty()) {
+                if (!entry.getValue().getMessages().isEmpty()) {
                     newMessage = true;
                 }
             }
-
-            for (IFeedMessage message : entry.getValue()) {
-                if (!groupedMessages.get(entry.getKey()).contains(message)) {
-                    groupedMessages.get(entry.getKey()).add(message);
+            List<IFeedMessage> feedMessages = groupedMessages.get(entry.getKey()).getMessages();
+            for (IFeedMessage message : entry.getValue().getMessages()) {
+                if (!feedMessages.contains(message)) {
+                    feedMessages.add(message);
                     newMessage = true;
                 }
             }
+            groupedMessages.put(entry.getKey(), new PollingResult(entry.getValue().getStatus(), feedMessages));
         }
         if (!groupedMessages.isEmpty() && newMessage) {
             bus.post(createNewFeedItemsEvent());
@@ -215,16 +220,11 @@ public class NewsService implements INewsService {
         jobFacade.cancelPollFeeds();
     }
 
-    @Override
-    public void updateFeedDates(Map<FeedDescriptor, Date> map) {
-        newsFeedProperties.writeDates(map, Constants.FILENAME_FEED_DATES);
-    }
-
     private void updateReadIds() {
         Set<String> result = Sets.newHashSet();
         Set<String> allMessages = Sets.newHashSet();
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : groupedMessages.entrySet()) {
-            for (IFeedMessage message : entry.getValue()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : groupedMessages.entrySet()) {
+            for (IFeedMessage message : entry.getValue().getMessages()) {
                 allMessages.add(message.getId());
             }
         }
@@ -239,16 +239,15 @@ public class NewsService implements INewsService {
 
     @Override
     public void displayNotification() {
-        Map<FeedDescriptor, List<IFeedMessage>> messages = MessageUtils
+        Map<FeedDescriptor, IPollingResult> messages = MessageUtils
                 .getLatestMessages(getMessages(Constants.COUNT_PER_FEED));
-        if (preferences.isNotificationEnabled() && !messages.isEmpty()) {
+        if (!messages.isEmpty()) {
             notificationFacade.displayNotification(messages, bus);
             Map<FeedDescriptor, Date> feedDates = Maps.newHashMap();
-            for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
-                Date date = new Date();
-                feedDates.put(entry.getKey(), date);
+            for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
+                feedDates.put(entry.getKey(), Calendar.getInstance().getTime());
             }
-            updateFeedDates(feedDates);
+            newsFeedProperties.writeDates(feedDates, Constants.FILENAME_FEED_DATES);
         }
     }
 

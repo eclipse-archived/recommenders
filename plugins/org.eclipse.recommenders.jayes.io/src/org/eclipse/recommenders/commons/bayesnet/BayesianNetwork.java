@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Deprecated
 public class BayesianNetwork implements Serializable {
@@ -26,7 +27,7 @@ public class BayesianNetwork implements Serializable {
 
     private final Collection<Node> nodes = new LinkedList<Node>();
     private transient boolean initialized = false;
-    private transient HashMap<String, Node> nodeById = new HashMap<String, Node>();
+    private transient Map<String, Node> nodeById = new HashMap<>();
 
     public void addNode(final Node node) {
         initialize();

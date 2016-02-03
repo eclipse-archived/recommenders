@@ -49,7 +49,6 @@ public final class JdtMockUtils {
     private static <T extends IJavaElement> T mockJavaElement(final Class<T> clazz, final int elementType) {
         final T mock = mock(clazz);
         when(mock.getElementType()).thenReturn(elementType);
-        // when(mock.equals(mock)).thenReturn(true);
         return mock;
     }
 }

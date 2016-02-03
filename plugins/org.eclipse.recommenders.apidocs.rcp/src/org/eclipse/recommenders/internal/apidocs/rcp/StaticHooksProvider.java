@@ -47,7 +47,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -82,7 +81,6 @@ public class StaticHooksProvider extends ApidocProvider {
             }
 
             final List<StyleRange> typeRanges = Lists.newLinkedList();
-            // final List<StyleRange> methodRanges = Lists.newLinkedList();
             final StringBuilder sb = new StringBuilder();
             for (final IType type : index.keySet()) {
                 final String typeLabel = type.getFullyQualifiedName();
@@ -110,7 +108,6 @@ public class StaticHooksProvider extends ApidocProvider {
                     methodStyleRange.data = method;
                     methodStyleRange.underline = true;
                     methodStyleRange.font = JFaceResources.getDialogFont();
-                    // methodStyleRange.fontStyle = SWT.BOLD;
                     methodStyleRange.foreground = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
                     typeRanges.add(methodStyleRange);
                     sb.append(IOUtils.LINE_SEPARATOR);
@@ -133,14 +130,12 @@ public class StaticHooksProvider extends ApidocProvider {
                 public void handleEvent(final Event event) {
                     // It is up to the application to determine when and how a link should be activated.
                     // In this snippet links are activated on mouse down when the control key is held down
-                    // if ((event.stateMask) != 0) {
                     final Optional<IMethod> opt = getSelectedMethod(event.x, event.y);
                     if (opt.isPresent()) {
                         final JavaElementSelectionEvent sEvent = new JavaElementSelectionEvent(opt.get(),
                                 METHOD_DECLARATION);
                         workspaceBus.post(sEvent);
                     }
-                    // }
                 }
             });
 
@@ -155,30 +150,6 @@ public class StaticHooksProvider extends ApidocProvider {
                         styledText.setCursor(c1);
                     }
 
-                }
-            });
-            styledText.addMouseTrackListener(new MouseTrackListener() {
-
-                @Override
-                public void mouseHover(final MouseEvent e) {
-                    //
-                    // final Optional<IMethod> opt = getSelectedMethod(e.x, e.y);
-                    // if (opt.isPresent()) {
-                    // styledText.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_HAND));
-                    // } else {
-                    // styledText.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_ARROW));
-                    // }
-
-                }
-
-                @Override
-                public void mouseExit(final MouseEvent e) {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void mouseEnter(final MouseEvent e) {
-                    // TODO Auto-generated method stub
                 }
             });
             styledText.setRedraw(true);

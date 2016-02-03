@@ -6,14 +6,12 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.testing.CodeBuilder;
 import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryProject;
 import org.eclipse.recommenders.testing.rcp.completion.rules.TemporaryWorkspace;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,7 +83,7 @@ public class ProjectTypesIndexTest {
         ProjectTypesIndex sut = createSut(project, dependency);
 
         sut.rebuild(PROGRESS);
-        ImmutableSet<String> subtypes = sut.doSubtypes(SUPER_CLASS_TYPE, "S");
+        ImmutableSet<String> subtypes = sut.doSubtypes(SUPER_CLASS_TYPE);
 
         assertThat(subtypes, containsInAnyOrder(SUPER_CLASS, SUB_CLASS));
         assertThat(subtypes, hasSize(2));
@@ -104,7 +102,7 @@ public class ProjectTypesIndexTest {
         ProjectTypesIndex sut = createSut(project, dependency);
 
         sut.rebuild(PROGRESS);
-        ImmutableSet<String> subtypes = sut.doSubtypes(SUPER_CLASS_TYPE, "S");
+        ImmutableSet<String> subtypes = sut.doSubtypes(SUPER_CLASS_TYPE);
 
         assertThat(subtypes, containsInAnyOrder(SUPER_CLASS, SUB_CLASS, SUB_SUB_CLASS));
         assertThat(subtypes, hasSize(3));
@@ -122,7 +120,7 @@ public class ProjectTypesIndexTest {
         ProjectTypesIndex sut = createSut(project, dependency);
 
         sut.rebuild(PROGRESS);
-        ImmutableSet<String> subtypes = sut.doSubtypes(INTERFACE_A_TYPE, "I");
+        ImmutableSet<String> subtypes = sut.doSubtypes(INTERFACE_A_TYPE);
 
         assertThat(subtypes, containsInAnyOrder(INTERFACE_A, IMPLEMENTATION));
         assertThat(subtypes, hasSize(2));
@@ -141,7 +139,7 @@ public class ProjectTypesIndexTest {
         ProjectTypesIndex sut = createSut(project, dependency);
 
         sut.rebuild(PROGRESS);
-        ImmutableSet<String> subtypes = sut.doSubtypes(INTERFACE_A_TYPE, "I");
+        ImmutableSet<String> subtypes = sut.doSubtypes(INTERFACE_A_TYPE);
 
         assertThat(subtypes, containsInAnyOrder(INTERFACE_A, INTERFACE_B, IMPLEMENTATION));
         assertThat(subtypes, hasSize(3));
@@ -160,12 +158,12 @@ public class ProjectTypesIndexTest {
         ProjectTypesIndex sut = createSut(project, dependency);
 
         sut.rebuild(PROGRESS);
-        ImmutableSet<String> subtypesOfInterfaceA = sut.doSubtypes(INTERFACE_A_TYPE, "I");
+        ImmutableSet<String> subtypesOfInterfaceA = sut.doSubtypes(INTERFACE_A_TYPE);
 
         assertThat(subtypesOfInterfaceA, containsInAnyOrder(INTERFACE_A, IMPLEMENTATION));
         assertThat(subtypesOfInterfaceA, hasSize(2));
 
-        ImmutableSet<String> subtypesOfInterfaceB = sut.doSubtypes(INTERFACE_B_TYPE, "I");
+        ImmutableSet<String> subtypesOfInterfaceB = sut.doSubtypes(INTERFACE_B_TYPE);
 
         assertThat(subtypesOfInterfaceB, containsInAnyOrder(INTERFACE_B, IMPLEMENTATION));
         assertThat(subtypesOfInterfaceB, hasSize(2));
@@ -200,14 +198,14 @@ public class ProjectTypesIndexTest {
 
         ProjectTypesIndex sut = createSut(project, dependency);
 
-        ImmutableSet<String> subtypes = sut.doSubtypes(null, "S");
+        ImmutableSet<String> subtypes = sut.doSubtypes(null);
 
         assertThat(subtypes, is(empty()));
     }
 
     private ProjectTypesIndex createSut(TemporaryProject project, TemporaryProject dependency) throws IOException {
-        ProjectTypesIndex sut = new ProjectTypesIndex(project.getJavaProject(), indexDir.newFolder(), new File(
-                dependency.getJarPath()));
+        ProjectTypesIndex sut = new ProjectTypesIndex(project.getJavaProject(), indexDir.newFolder(),
+                new File(dependency.getJarPath()));
         sut.initialize();
         return sut;
     }

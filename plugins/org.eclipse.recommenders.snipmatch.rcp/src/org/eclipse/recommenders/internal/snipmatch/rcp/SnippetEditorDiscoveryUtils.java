@@ -25,7 +25,7 @@ public final class SnippetEditorDiscoveryUtils {
         // Not meant to be instantiated
     }
 
-    private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/snipmatch/directory.xml"; //$NON-NLS-1$
+    private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.x/directories/snipmatch.xml"; //$NON-NLS-1$
 
     @SuppressWarnings("restriction")
     public static void openDiscoveryDialog() {

@@ -16,18 +16,16 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 
 @SuppressWarnings("restriction")
+@Creatable
 public class NewsRcpPreferences extends AbstractPreferenceInitializer {
 
     @Inject
     @Preference(Constants.PREF_NEWS_ENABLED)
     private boolean enabled;
-
-    @Inject
-    @Preference(Constants.PREF_NOTIFICATION_ENABLED)
-    private boolean notificationEnabled;
 
     @Inject
     @Preference(Constants.PREF_FEED_LIST_SORTED)
@@ -41,16 +39,20 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
     @Preference(Constants.PREF_POLLING_INTERVAL)
     private Long pollingInterval;
 
+    @Inject
+    @Preference(Constants.PREF_STARTUP_DELAY)
+    private Long startupDelay;
+
     public boolean isEnabled() {
         return enabled;
     }
 
-    public boolean isNotificationEnabled() {
-        return notificationEnabled;
-    }
-
     public Long getPollingInterval() {
         return pollingInterval;
+    }
+
+    public Long getStartupDelay() {
+        return startupDelay;
     }
 
     @Override
@@ -59,6 +61,7 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
         s.putBoolean(Constants.PREF_NOTIFICATION_ENABLED, false);
         s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
+        s.putLong(Constants.PREF_STARTUP_DELAY, Constants.DEFAULT_STARTUP_DELAY);
         s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.feedsToString(FeedDescriptors.getRegisteredFeeds()));
     }
 

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders</artifactId>
-		<version>2.2.6</version>
+		<version>2.3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -59,8 +59,11 @@
 							</goals>
 							<phase>package</phase>
 							<configuration>
-								<appArgLine>-application org.eclipse.wtp.releng.tools.addRepoProperties</appArgLine>
 								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2MirrorsURL=${p2MirrorsURL}</argLine>
+								<applicationsArgs>
+									<arg>-application</arg>
+									<arg>org.eclipse.wtp.releng.tools.addRepoProperties</arg>
+								</applicationsArgs>
 								<dependencies>
 									<dependency>
 										<artifactId>org.eclipse.wtp.releng.tools.feature</artifactId>
@@ -77,8 +80,11 @@
 							</goals>
 							<phase>package</phase>
 							<configuration>
-								<appArgLine>-application org.eclipse.wtp.releng.tools.addRepoProperties</appArgLine>
 								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2StatsURI=${p2StatsURL} -DstatsTrackedArtifacts=${statsTrackedArtifacts} -DstatsArtifactsSuffix=-${project.version}</argLine>
+								<applicationsArgs>
+									<arg>-application</arg>
+									<arg>org.eclipse.wtp.releng.tools.addRepoProperties</arg>
+								</applicationsArgs>
 								<dependencies>
 									<dependency>
 										<artifactId>org.eclipse.wtp.releng.tools.feature</artifactId>

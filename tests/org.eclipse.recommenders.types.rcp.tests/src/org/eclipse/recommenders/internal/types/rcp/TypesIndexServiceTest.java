@@ -3,7 +3,7 @@ package org.eclipse.recommenders.internal.types.rcp;
 import static com.google.common.base.Optional.of;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Set;
@@ -39,7 +39,7 @@ public class TypesIndexServiceTest {
         mockProspectiveIndex(project, provider);
 
         TypesIndexService sut = new TypesIndexService(provider);
-        Set<String> subtypes = sut.subtypes(JAVA_UTIL_LIST, "a", project);
+        Set<String> subtypes = sut.subtypes(JAVA_UTIL_LIST, project);
 
         assertThat(subtypes.isEmpty(), is(true));
     }
@@ -51,7 +51,7 @@ public class TypesIndexServiceTest {
         mockExistingIndex(project, provider, JAVA_UTIL_LIST_NAME);
 
         TypesIndexService sut = new TypesIndexService(provider);
-        Set<String> subtypes = sut.subtypes(JAVA_UTIL_LIST, "a", project);
+        Set<String> subtypes = sut.subtypes(JAVA_UTIL_LIST, project);
 
         assertThat(subtypes, Matchers.contains(JAVA_UTIL_LIST_NAME));
         assertThat(subtypes.size(), is(1));
@@ -181,7 +181,7 @@ public class TypesIndexServiceTest {
     public IProjectTypesIndex mockProspectiveIndex(IJavaProject newJavaProject, IIndexProvider provider,
             String... subtypes) {
         IProjectTypesIndex index = mock(IProjectTypesIndex.class);
-        when(index.subtypes(any(ITypeName.class), anyString())).thenReturn(ImmutableSet.copyOf(subtypes));
+        when(index.subtypes(any(ITypeName.class))).thenReturn(ImmutableSet.copyOf(subtypes));
         when(provider.findIndex(newJavaProject)).thenReturn(NO_INDEX);
         when(provider.findOrCreateIndex(newJavaProject)).thenReturn(index);
         return index;
@@ -190,7 +190,7 @@ public class TypesIndexServiceTest {
     public IProjectTypesIndex mockExistingIndex(IJavaProject newJavaProject, IIndexProvider provider,
             String... subtypes) {
         IProjectTypesIndex index = mock(IProjectTypesIndex.class);
-        when(index.subtypes(any(ITypeName.class), anyString())).thenReturn(ImmutableSet.copyOf(subtypes));
+        when(index.subtypes(any(ITypeName.class))).thenReturn(ImmutableSet.copyOf(subtypes));
         when(provider.findIndex(newJavaProject)).thenReturn(of(index));
         when(provider.findOrCreateIndex(newJavaProject)).thenReturn(index);
         return index;

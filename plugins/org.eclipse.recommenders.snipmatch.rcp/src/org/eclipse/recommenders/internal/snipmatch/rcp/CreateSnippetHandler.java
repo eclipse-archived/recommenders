@@ -16,7 +16,6 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.ui.handlers.HandlerUtil.getActiveWorkbenchWindow;
 
 import java.util.Set;
-import java.util.UUID;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -35,7 +34,6 @@ import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.templates.SnippetCodeBuilder;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
-import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
@@ -46,7 +44,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class CreateSnippetHandler extends AbstractHandler {
@@ -79,8 +76,7 @@ public class CreateSnippetHandler extends AbstractHandler {
         Set<ProjectCoordinate> dependencies = new DependencyExtractor(ast, textSelection, pcProvider)
                 .extractDependencies();
 
-        return new Snippet(UUID.randomUUID(), "", "", Lists.<String>newArrayList(), Lists.<String>newArrayList(), code, //$NON-NLS-1$ //$NON-NLS-2$
-                Location.NONE, dependencies);
+        return new Snippet(code, dependencies);
     }
 
     private void openSnippetInEditor(Snippet snippet) {

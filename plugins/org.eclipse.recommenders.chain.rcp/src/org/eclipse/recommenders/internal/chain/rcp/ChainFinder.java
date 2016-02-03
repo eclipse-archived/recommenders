@@ -65,7 +65,8 @@ public class ChainFinder {
                     expectedDimension = ((ArrayBinding) expectedType).dimensions();
                     expectedType = TypeBindingAnalyzer.removeArrayWrapper(expectedType);
                 }
-                searchChainsForExpectedType(expectedType, expectedDimension, entrypoints, maxChains, minDepth, maxDepth);
+                searchChainsForExpectedType(expectedType, expectedDimension, entrypoints, maxChains, minDepth,
+                        maxDepth);
             }
         }
     }

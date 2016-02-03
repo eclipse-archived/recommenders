@@ -20,5 +20,9 @@ public interface ISearchContext {
 
     Location getLocation();
 
+    String getFilename();
+
+    boolean isRestrictedByDependencies();
+
     Set<ProjectCoordinate> getDependencies();
 }

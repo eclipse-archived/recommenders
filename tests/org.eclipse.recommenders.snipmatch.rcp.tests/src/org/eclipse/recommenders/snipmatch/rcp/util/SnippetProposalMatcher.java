@@ -3,7 +3,7 @@ package org.eclipse.recommenders.snipmatch.rcp.util;
 import static java.lang.String.format;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetProposal;
+import org.eclipse.recommenders.internal.snipmatch.rcp.completion.SnippetProposal;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 

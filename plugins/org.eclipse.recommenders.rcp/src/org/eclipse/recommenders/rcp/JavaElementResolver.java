@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -51,7 +52,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
@@ -63,12 +63,12 @@ public class JavaElementResolver {
     }
 
     private final BiMap<IName, IJavaElement> cache = HashBiMap.create();
-    public HashSet<IMethodName> failedRecMethods = Sets.newHashSet();
-    public HashSet<ITypeName> failedRecTypes = Sets.newHashSet();
+    public Set<IMethodName> failedRecMethods = new HashSet<>();
+    public Set<ITypeName> failedRecTypes = new HashSet<>();
 
     public Optional<IType> toJdtType(final ITypeName recType) {
         ensureIsNotNull(recType);
-        // failedRecTypes.clear()
+
         if (failedRecTypes.contains(recType)) {
             return absent();
         }
@@ -127,18 +127,14 @@ public class JavaElementResolver {
                             return fromNullable(nested);
                         }
                     }
-                    // int count = 0;
+
                     for (final IMethod m : parent.getMethods()) {
                         for (final IJavaElement children : m.getChildren()) {
                             if (children instanceof IType) {
                                 final IType nested = (IType) children;
-                                // count++;
                                 if (nested.getKey().endsWith(simpleName + ';')) {
                                     return of(nested);
                                 }
-                                // if (String.valueOf(count).equals(simpleName)) {
-                                // return of(nested);
-                                // }
 
                                 final String key = nested.getKey();
                                 if (key.equals(recType.getIdentifier() + ';')) {
@@ -148,8 +144,6 @@ public class JavaElementResolver {
                         }
                     }
                 } catch (final Exception x) {
-                    // final IType type =
-                    // parent.getType(recType.getClassName());
                     return absent();
                 }
             }
@@ -284,8 +278,9 @@ public class JavaElementResolver {
             }
         }
 
-        String resolvedType = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(toResolve,
-                jdtDeclaringType).or(Signature.SIG_VOID);
+        String resolvedType = JdtUtils
+                .resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(toResolve, jdtDeclaringType)
+                .or(Signature.SIG_VOID);
         resolvedType = resolvedType + StringUtils.repeat("[]", arrayCount); //$NON-NLS-1$
         return resolvedType;
     }

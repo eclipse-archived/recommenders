@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-import static org.eclipse.recommenders.internal.overrides.rcp.Constants.*;
+import static org.eclipse.recommenders.completion.rcp.PreferenceConstants.*;
+import static org.eclipse.recommenders.internal.overrides.rcp.Constants.BUNDLE_NAME;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;

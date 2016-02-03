@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
@@ -37,7 +38,17 @@ public class TestUtils {
         return new FeedDescriptor(config, false);
     }
 
-    public static List<IFeedMessage> mockMessages(boolean... readMessages) {
+    public static PollingResult mockMessages(boolean... readMessages) {
+        List<IFeedMessage> feedMessages = Lists.newArrayList();
+        for (boolean isRead : readMessages) {
+            IFeedMessage message = mock(IFeedMessage.class);
+            when(message.isRead()).thenReturn(isRead);
+            feedMessages.add(message);
+        }
+        return new PollingResult(Status.OK, feedMessages);
+    }
+
+    public static List<IFeedMessage> mockMessagesAsList(boolean... readMessages) {
         List<IFeedMessage> feedMessages = Lists.newArrayList();
         for (boolean isRead : readMessages) {
             IFeedMessage message = mock(IFeedMessage.class);

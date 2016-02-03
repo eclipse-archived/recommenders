@@ -7,8 +7,7 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
-import static org.eclipse.recommenders.utils.Checks.cast;
-
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,6 +26,10 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.INewsService;
@@ -47,35 +50,41 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class NewsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    private final INewsService service;
-    private final NewsRcpPreferences newsRcpPreferences;
+    @Inject
+    private INewsService service;
+    @Inject
+    private NewsRcpPreferences newsRcpPreferences;
     private BooleanFieldEditor enabledEditor;
     private FeedEditor feedEditor;
-    private IntegerFieldEditor pollingIntervalEditor;
+    private IntegerFieldEditor startupEditor;
 
-    @Inject
+    @VisibleForTesting
     public NewsPreferencePage(INewsService service, NewsRcpPreferences newsRcpPreferences) {
         super(GRID);
         this.service = service;
         this.newsRcpPreferences = newsRcpPreferences;
     }
 
+    public NewsPreferencePage() {
+        super(GRID);
+    }
+
     @Override
     protected void createFieldEditors() {
         enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED, 0,
                 getFieldEditorParent());
-        addField(new BooleanFieldEditor(Constants.PREF_NOTIFICATION_ENABLED, Messages.FIELD_LABEL_NOTIFICATION_ENABLED,
-                getFieldEditorParent()));
         addField(enabledEditor);
-        pollingIntervalEditor = new IntegerFieldEditor(Constants.PREF_POLLING_INTERVAL,
-                Messages.FIELD_LABEL_POLLING_INTERVAL, getFieldEditorParent(), 4);
-        addField(pollingIntervalEditor);
+        startupEditor = new IntegerFieldEditor(Constants.PREF_STARTUP_DELAY, Messages.FIELD_LABEL_STARTUP_DELAY,
+                getFieldEditorParent(), 4);
+        addField(startupEditor);
 
         final Composite bottomGroup = new Composite(getFieldEditorParent(), SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(bottomGroup);
@@ -83,6 +92,12 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
         feedEditor = new FeedEditor(Constants.PREF_FEED_LIST_SORTED, Messages.FIELD_LABEL_FEEDS, bottomGroup);
         addField(feedEditor);
+
+        addField(new LinkEditor(Messages.PREFPAGE_NOTIFICATION_ENABLEMENT,
+                "org.eclipse.mylyn.commons.notifications.preferencePages.Notifications", //$NON-NLS-1$
+                getFieldEditorParent()));
+        addField(new LinkEditor(Messages.PREFPAGE_WEB_BROWSER_SETTINGS, "org.eclipse.ui.browser.preferencePage", //$NON-NLS-1$
+                getFieldEditorParent()));
     }
 
     @Override
@@ -90,19 +105,18 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.PLUGIN_ID));
         setMessage(Messages.PREFPAGE_TITLE);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
+        NewsRcpModule.initiateContext(this);
     }
 
     @Override
     public boolean performOk() {
         IPreferenceStore store = getPreferenceStore();
-        boolean result = super.performOk();
-        doPerformOK(store.getBoolean(Constants.PREF_NEWS_ENABLED), enabledEditor.getBooleanValue(),
+        return doPerformOK(store.getBoolean(Constants.PREF_NEWS_ENABLED), enabledEditor.getBooleanValue(),
                 newsRcpPreferences.getFeedDescriptors(), feedEditor.getValue());
-        return result;
     }
 
     @VisibleForTesting
-    void doPerformOK(boolean oldEnabledValue, boolean newEnabledValue, List<FeedDescriptor> oldFeedValue,
+    boolean doPerformOK(boolean oldEnabledValue, boolean newEnabledValue, List<FeedDescriptor> oldFeedValue,
             List<FeedDescriptor> newFeedValue) {
         boolean forceStop = false;
         boolean forceStart = false;
@@ -113,6 +127,22 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             forceStop = true;
         }
 
+        forceStart = chceckFeedsConsistency(oldFeedValue, newFeedValue, forceStart);
+
+        boolean result = super.performOk();
+
+        if (forceStart) {
+            service.start();
+        }
+        if (forceStop) {
+            service.forceStop();
+        }
+
+        return result;
+    }
+
+    private boolean chceckFeedsConsistency(List<FeedDescriptor> oldFeedValue, List<FeedDescriptor> newFeedValue,
+            boolean forceStart) {
         for (FeedDescriptor oldFeed : oldFeedValue) {
             if (!newFeedValue.contains(oldFeed)) {
                 service.removeFeed(oldFeed);
@@ -125,19 +155,14 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
             if (oldFeed.isEnabled() && !newFeed.isEnabled()) {
                 service.removeFeed(newFeed);
             }
-            for (FeedDescriptor feed : newFeedValue) {
-                if (!oldFeedValue.contains(feed)) {
-                    forceStart = true;
-                }
-            }
         }
 
-        if (forceStart) {
-            service.start();
+        for (FeedDescriptor feed : newFeedValue) {
+            if (!oldFeedValue.contains(feed)) {
+                forceStart = true;
+            }
         }
-        if (forceStop) {
-            service.forceStop();
-        }
+        return forceStart;
     }
 
     private final class FeedEditor extends FieldEditor {
@@ -177,6 +202,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
                 @Override
                 public void mouseDoubleClick(MouseEvent e) {
+                    tableViewer.setSelection(new StructuredSelection(FeedDescriptor.class), true);
                     TableItem item = tableViewer.getTable().getItem(new Point(e.x, e.y));
                     if (item == null) {
                         return;
@@ -187,7 +213,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                     if (isClickOnCheckbox) {
                         return;
                     }
-                    FeedDescriptor feed = cast(item.getData());
+                    FeedDescriptor feed = (FeedDescriptor) item.getData();
                     if (!feed.isDefaultRepository()) {
                         editFeed(feed);
                     }
@@ -254,12 +280,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         private FeedDescriptor getSelectedFeed() {
-            List<FeedDescriptor> tableInput = getTableInput();
-            int index = tableViewer.getTable().getSelectionIndex();
-            if (index != -1) {
-                return tableInput.get(index);
-            }
-            return null;
+            IStructuredSelection selected = (IStructuredSelection) tableViewer.getSelection();
+            return (FeedDescriptor) selected.getFirstElement();
         }
 
         protected void removeFeed(FeedDescriptor feed) {
@@ -269,7 +291,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         protected void editFeed(FeedDescriptor oldFeed) {
-            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            @SuppressWarnings("unchecked")
+            List<FeedDescriptor> descriptors = (List<FeedDescriptor>) tableViewer.getInput();
             FeedDialog dialog = new FeedDialog(getShell(), oldFeed, descriptors);
             List<FeedDescriptor> feeds = getTableInput();
             if (dialog.open() == Window.OK) {
@@ -281,7 +304,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         private List<FeedDescriptor> getTableInput() {
-            List<FeedDescriptor> configurations = cast(tableViewer.getInput());
+            @SuppressWarnings("unchecked")
+            List<FeedDescriptor> configurations = (List<FeedDescriptor>) tableViewer.getInput();
             if (configurations == null) {
                 return Lists.newArrayList();
             }
@@ -289,7 +313,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         protected void addNewFeed() {
-            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            @SuppressWarnings("unchecked")
+            List<FeedDescriptor> descriptors = (List<FeedDescriptor>) tableViewer.getInput();
             FeedDialog dialog = new FeedDialog(getShell(), descriptors);
             List<FeedDescriptor> feeds = getTableInput();
             if (dialog.open() == Window.OK) {
@@ -316,15 +341,16 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
                 @Override
                 public String getText(Object element) {
-                    FeedDescriptor descriptor = cast(element);
-                    return descriptor.getName();
+                    FeedDescriptor feed = (FeedDescriptor) element;
+                    return feed.getName();
                 }
 
                 @Override
                 public String getToolTipText(Object element) {
-                    FeedDescriptor descriptor = cast(element);
-                    return descriptor.getDescription();
+                    FeedDescriptor feed = (FeedDescriptor) element;
+                    return MessageFormat.format(Messages.FEED_TOOLTIP, feed.getUrl(), feed.getPollingInterval());
                 }
+
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new ArrayContentProvider());
@@ -344,13 +370,22 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                         .getFeeds(getPreferenceStore().getString(Constants.PREF_CUSTOM_FEED_LIST_SORTED)));
             }
             List<FeedDescriptor> checkedElements = Lists.newArrayList();
-            for (FeedDescriptor descriptor : input) {
-                if (descriptor.isEnabled()) {
-                    checkedElements.add(descriptor);
+            for (FeedDescriptor feed : input) {
+                if (feed.isEnabled()) {
+                    checkedElements.add(feed);
                 }
             }
 
             tableViewer.setInput(input);
+            tableViewer.setComparator(new ViewerComparator() {
+                @Override
+                public int compare(Viewer viewer, Object e1, Object e2) {
+                    String feedName = Strings.nullToEmpty(((FeedDescriptor) e1).getName());
+                    String otherFeedName = Strings.nullToEmpty(((FeedDescriptor) e2).getName());
+                    return ComparisonChain.start().compare(feedName, otherFeedName, String.CASE_INSENSITIVE_ORDER)
+                            .compare(feedName, otherFeedName).result();
+                }
+            });
             tableViewer.setCheckedElements(checkedElements.toArray());
         }
 
@@ -387,7 +422,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
         @Override
         protected void doStore() {
-            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
+            @SuppressWarnings("unchecked")
+            List<FeedDescriptor> descriptors = (List<FeedDescriptor>) tableViewer.getInput();
             for (FeedDescriptor descriptor : descriptors) {
                 descriptor.setEnabled(tableViewer.getChecked(descriptor));
             }
@@ -422,11 +458,12 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         public List<FeedDescriptor> getValue() {
-            List<FeedDescriptor> descriptors = cast(tableViewer.getInput());
-            for (FeedDescriptor descriptor : descriptors) {
-                descriptor.setEnabled(tableViewer.getChecked(descriptor));
+            @SuppressWarnings("unchecked")
+            List<FeedDescriptor> feeds = (List<FeedDescriptor>) tableViewer.getInput();
+            for (FeedDescriptor feed : feeds) {
+                feed.setEnabled(tableViewer.getChecked(feed));
             }
-            return descriptors;
+            return feeds;
         }
     }
 }

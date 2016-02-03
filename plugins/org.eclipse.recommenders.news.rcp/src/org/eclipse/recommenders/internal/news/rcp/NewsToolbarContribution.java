@@ -7,12 +7,16 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import static org.eclipse.recommenders.internal.news.rcp.MessageUtils.*;
+
 import java.text.MessageFormat;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -22,30 +26,39 @@ import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.menus.NewsMenuListener;
-import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.INewsService;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+@Creatable
 public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
 
-    private final INewsService service;
-    private final NewsMenuListener newsMenuListener;
+    @Inject
+    private INewsService service;
+    @Inject
+    private NewsRcpPreferences preferences;
+    private NewsMenuListener newsMenuListener;
     private UpdatingNewsAction updatingNewsAction;
     private MenuManager menuManager;
 
-    @Inject
-    public NewsToolbarContribution(INewsService service, EventBus eventBus) {
-        this.service = service;
-        eventBus.register(this);
-        newsMenuListener = new NewsMenuListener(eventBus);
+    public NewsToolbarContribution() {
+        NewsRcpModule.initiateContext(this);
+    }
+
+    @PostConstruct
+    public void init() {
+        NewsRcpModule.EVENT_BUS.register(this);
+        newsMenuListener = new NewsMenuListener(NewsRcpModule.EVENT_BUS, service);
     }
 
     @Override
@@ -60,7 +73,17 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
 
     @Subscribe
     public void handle(NewFeedItemsEvent event) {
-        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+        if (workbench.isClosing()) {
+            return;
+        }
+
+        final Display display = workbench.getDisplay();
+        if (display.isDisposed()) {
+            return;
+        }
+
+        display.asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -85,7 +108,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
     }
 
     private class UpdatingNewsAction extends Action {
-        Map<FeedDescriptor, List<IFeedMessage>> messages = Maps.newHashMap();
+        Map<FeedDescriptor, IPollingResult> messages = Maps.newHashMap();
 
         private UpdatingNewsAction() {
             setNoAvailableNews();
@@ -96,7 +119,7 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             setNoAvailableNews();
             messages = service.getMessages(Constants.COUNT_PER_FEED);
             menuManager.getMenu().setVisible(true);
-            if (!messages.isEmpty() && MessageUtils.containsUnreadMessages(messages)) {
+            if (!messages.isEmpty() || containsUnreadMessages(messages)) {
                 setAvailableNews();
             }
         }
@@ -105,21 +128,27 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             setImageDescriptor(CommonImages.RSS_INACTIVE);
             setToolTipText(Messages.TOOLTIP_NO_NEW_MESSAGES);
             clearMenu();
-            messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (!messages.isEmpty() && !MessageUtils.containsUnreadMessages(messages)) {
-                clearMenu();
-                setNewsMenu(messages);
+            HashMap<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
+            for (FeedDescriptor feed : preferences.getFeedDescriptors()) {
+                if (feed.isEnabled()) {
+                    groupedMessages.put(feed, new PollingResult(Status.FEEDS_NOT_POLLED_YET));
+                }
             }
+            newsMenuListener.setMessages(groupedMessages);
+            menuManager.addMenuListener(newsMenuListener);
         }
 
         private void setAvailableNews() {
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (messages.isEmpty() || !MessageUtils.containsUnreadMessages(messages)) {
-                return;
+
+            if (!containsUnreadMessages(messages)) {
+                setImageDescriptor(CommonImages.RSS_INACTIVE);
+            } else {
+                setImageDescriptor(CommonImages.RSS_ACTIVE);
             }
-            setImageDescriptor(CommonImages.RSS_ACTIVE);
+
             setToolTipText(MessageFormat.format(Messages.TOOLTIP_NEW_MESSAGES,
-                    MessageUtils.getUnreadMessagesNumber(MessageUtils.mergeMessages(messages))));
+                    getUnreadMessagesNumber(mergeMessages(messages))));
             clearMenu();
             setNewsMenu(messages);
         }
@@ -129,14 +158,14 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
             menuManager.removeMenuListener(newsMenuListener);
         }
 
-        private void setNewsMenu(Map<FeedDescriptor, List<IFeedMessage>> messages) {
+        private void setNewsMenu(Map<FeedDescriptor, IPollingResult> messages) {
             newsMenuListener.setMessages(messages);
             menuManager.addMenuListener(newsMenuListener);
         }
 
         public void checkForNews() {
             messages = service.getMessages(Constants.COUNT_PER_FEED);
-            if (messages.isEmpty() || !MessageUtils.containsUnreadMessages(messages)) {
+            if (messages.isEmpty() || !containsUnreadMessages(messages)) {
                 setNoAvailableNews();
             }
         }

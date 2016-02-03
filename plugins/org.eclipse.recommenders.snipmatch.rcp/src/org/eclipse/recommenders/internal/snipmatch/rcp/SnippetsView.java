@@ -20,7 +20,6 @@ import static org.eclipse.recommenders.utils.Checks.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -72,7 +71,6 @@ import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.Jobs;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
@@ -84,6 +82,7 @@ import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryContentChangedEve
 import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Logs;
+import org.eclipse.recommenders.utils.Nonnull;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.swt.SWT;
@@ -162,7 +161,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
 
         @Override
         public String apply(KnownSnippet input) {
-            return SnippetProposal.createDisplayString(input.snippet);
+            return SnippetProposals.createDisplayString(input.snippet);
         }
     };
 
@@ -588,8 +587,7 @@ public class SnippetsView extends ViewPart implements IRcpService {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
         try {
-            ISnippet snippet = new Snippet(UUID.randomUUID(), "", "", Collections.<String>emptyList(), //$NON-NLS-1$ //$NON-NLS-2$
-                    Collections.<String>emptyList(), "", Location.NONE); //$NON-NLS-1$
+            ISnippet snippet = new Snippet();
 
             final SnippetEditorInput input = new SnippetEditorInput(snippet, repo);
             SnippetEditor editor = cast(
@@ -922,18 +920,17 @@ public class SnippetsView extends ViewPart implements IRcpService {
         }
 
         @Override
-        public IStatus run(IProgressMonitor monitor) {
+        public IStatus run(@Nonnull IProgressMonitor monitor) {
+            SubMonitor progress = SubMonitor.convert(monitor, Messages.MONITOR_SEARCH_SNIPPETS, 3);
             try {
-                monitor.beginTask(Messages.MONITOR_SEARCH_SNIPPETS, 30);
-                snippetsGroupedByRepoName = searchSnippets("", new SubProgressMonitor(monitor, 10)); //$NON-NLS-1$
-                filteredSnippetsGroupedByRepoName = searchSnippets(query, new SubProgressMonitor(monitor, 10));
+                snippetsGroupedByRepoName = searchSnippets("", progress.newChild(1)); //$NON-NLS-1$
+                filteredSnippetsGroupedByRepoName = searchSnippets(query, progress.newChild(1));
                 availableRepositories = configs.getRepos();
-                monitor.worked(10);
+                progress.worked(1);
                 if (monitor.isCanceled()) {
                     return Status.CANCEL_STATUS;
-                } else {
-                    return Status.OK_STATUS;
                 }
+                return Status.OK_STATUS;
             } finally {
                 monitor.done();
             }

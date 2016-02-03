@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.internal.constructors.rcp;
 
-import static org.eclipse.recommenders.internal.constructors.rcp.Constants.*;
+import static org.eclipse.recommenders.completion.rcp.PreferenceConstants.*;
+import static org.eclipse.recommenders.internal.constructors.rcp.Constants.BUNDLE_ID;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;

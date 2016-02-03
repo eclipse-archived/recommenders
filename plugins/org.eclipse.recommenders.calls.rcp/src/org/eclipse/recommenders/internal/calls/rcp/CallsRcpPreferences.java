@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
-import static org.eclipse.recommenders.internal.calls.rcp.Constants.*;
+import static org.eclipse.recommenders.completion.rcp.PreferenceConstants.*;
+import static org.eclipse.recommenders.internal.calls.rcp.Constants.PREF_HIGHLIGHT_USED_PROPOSALS;
 
 import javax.inject.Inject;
 

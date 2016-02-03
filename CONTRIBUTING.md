@@ -123,61 +123,104 @@ Do not be alarmed if your change is not immediately merged; most changes require
 Releasing a New Version of Code Recommenders
 --------------------------------------------
 
-The following is of concern only to committers to Eclipse Code Recommenders.
+Note: The following is of concern only to committers to Eclipse Code Recommenders.
 
-### Code
+Depending on whether you are performing a new maintenance, minor, or major release, the following steps differ.
 
-To release a new version of Code Recommenders, perform the following steps:
+### Git (Maintenance Release)
 
-- `export RELEASE_VERSION=x.y.z`
+To release a new **maintenance version** (same major/minor version, different micro version) of Code Recommenders, perform the following steps:
+
+- `export MAINTENANCE_VERSION=x.y.z`
+- `git fetch`
+- `git checkout origin/maintenance`
 - `git clean -df`
 - `mvn clean -Dtycho.mode=maven`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${RELEASE_VERSION}`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${RELEASE_VERSION}-SNAPSHOT`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${MAINTENANCE_VERSION}`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MAINTENANCE_VERSION}-SNAPSHOT`
 - `mvn tidy:pom`
-- `git commit -a -m "[releng] ${RELEASE_VERSION}"`
+- `git commit -a -m "[releng] ${MAINTENANCE_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
-- `git push origin HEAD:refs/for/master`
+- `git push origin HEAD:refs/for/maintenance`
 
-Thereafter, switch to the next (SNAPSHOT) version:
+Thereafter, switch to the next (SNAPSHOT) version (**unless** this is going to be the last release with this major/minor version):
 
-- `export NEXT_VERSION=x.y.(z+1)`
+- `export NEXT_MAINTENANCE_VERSION=x.y.(z+1)`
 - `git checkout HEAD^ -- '*'`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${NEXT_VERSION}-SNAPSHOT`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${NEXT_MAINTENANCE_VERSION}-SNAPSHOT`
 
 The version numbers of the required `org.eclipse.recommenders.*` bundles will now have to be updated in the `META-INF/MANIFEST.MF` files of each project.
 To do this perform the following three steps:
 
-- `export SECOND_NEXT_VERSION=x.y.(z+2)`
-- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${RELEASE_VERSION},${NEXT_VERSION}\([)\"]*\)/\1${NEXT_VERSION},${SECOND_NEXT_VERSION}\2/"`
+- `export SECOND_NEXT_MAINTENANCE_VERSION=x.y.(z+2)`
+- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${MAINTENANCE_VERSION},${NEXT_MAINTENANCE_VERSION}\([)\"]*\)/\1${NEXT_MAINTENANCE_VERSION},${SECOND_NEXT_MAINTENANCE_VERSION}\2/"`
 - `find plugins -type f -iname "*.bak" | xargs rm`
 
 Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
 
-- `git commit -a -m "[releng] ${NEXT_VERSION}-SNAPSHOT"`
+- `git commit -a -m "[releng] ${NEXT_MAINTENANCE_VERSION}-SNAPSHOT"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
-- `git push origin HEAD:refs/for/master`
+- `git push origin HEAD:refs/for/maintenance`
 
 Wait till **both** commits have been built successfully by [Gerrit code review](https://git.eclipse.org/r/#/q/project:recommenders/org.eclipse.recommenders), only then submit the first one.
-Then wait till [the Hudson build](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) is successful, then check out the merge commit and tag it.
+Then wait till the [maintenance Hudson build](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/) is successful, then check out the merge commit and tag it.
 
 * `git fetch`
-* `git checkout origin/master`
-* `git tag v${RELEASE_VERSION}`
-* `git push origin v${RELEASE_VERSION}`
+* `git checkout origin/maintenance`
+* `git tag v${MAINTENANCE_VERSION}`
+* `git push origin v${MAINTENANCE_VERSION}`
 
 Submit the second change.
 
-After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/) have been successful, promote the release build to the [milestones](download.eclipse.org/recommenders/updates/milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
+After both [builds](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/) have been successful, promote the release build to the [maintenance-milestones](download.eclipse.org/recommenders/updates/maintenance-milestones/) and [stable](download.eclipse.org/recommenders/updates/stable/) update sites:
 
-- In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders/), select the release build.
-- Select *Promotion Status* and start the `milestones` jobs
-- Enter a `MILESTONES_VERSION` parameter of `v${RELEASE_VERSION}.R`
-- Select *Promotion Status* and start the `stable` jobs
-- Enter a `STABLE_VERSION` parameter of `v${RELEASE_VERSION}`
-- Select *Configure* and assign a *DisplayName* of v`$RECOMMENDERS_RELEASE`
+- In [Hudson](https://hudson.eclipse.org/recommenders/job/org.eclipse.recommenders-maintenance/), select the release build.
+- Select *Promotion Status* and start the `milestones` jobs.
+- Enter a `MILESTONES_VERSION` parameter of `v${MAINTENANCE_VERSION}.R`.
+- Select *Promotion Status* and start the `stable` jobs.
+- Enter a `STABLE_VERSION` parameter of `v${MAINTENANCE_VERSION}`.
+- Select *Configure* and assign a *DisplayName* of `v${MAINTENANCE_VERSION}`.
 
-The new version is now available for download.
+The new maintenance version is now available for download.
+
+### Git (Minor or Major Release)
+
+To release a new **minor or major version** (different major/minor version, micro version of zero) of Code Recommenders, perform the following steps:
+
+Make sure that the [head of the `maintenance` branch](https://git.eclipse.org/c/recommenders/org.eclipse.recommenders.git/log/?h=maintenance) is tagged with a release version; otherwise, the steps below may **lose** commits.
+
+- `export MASTER_VERSION=x.y.0`
+- `git fetch`
+- `git checkout origin/master`
+- `git clean -df`
+- `mvn clean -Dtycho.mode=maven`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${MASTER_VERSION}`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
+- `mvn tidy:pom`
+- `git commit -a -m "[releng] ${MASTER_VERSION}"`
+- Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
+- `git push --force origin HEAD:refs/for/maintenance`
+
+Thereafter, switch to the next minor or major (SNAPSHOT) version:
+
+- `export NEXT_MASTER_VERSION=x.(y+1).0`
+- `git checkout origin/master`
+- `git clean -df`
+- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${NEXT_MASTER_VERSION}-SNAPSHOT`
+
+The version numbers of the required `org.eclipse.recommenders.*` bundles will now have to be updated in the `META-INF/MANIFEST.MF` files of each project.
+To do this perform the following three steps:
+
+- `export MASTER_VERSION_MAINTENANCE=x.(y+1).1`
+- `export NEXT_MASTER_VERSION_MAINTENANCE=x.(y+1).1`
+- `find plugins -type f -iname "MANIFEST.MF" -print | xargs sed -i.bak "s/\(org.eclipse.recommenders.[a-zA-Z0-9.]*;bundle-version=[[)\"]*\)${MASTER_VERSION},${MASTER_VERSION_MAINTENANCE}\([)\"]*\)/\1${NEXT_MASTER_VERSION_MAINTENANCE},${NEXT_MASTER_VERSION_MAINTENANCE}\2/"`
+- `find plugins -type f -iname "*.bak" | xargs rm`
+
+Manually bump the version in the `feature/requires/import` elements of `features/*/feature.xml` to `${NEXT_MASTER_VERSION}` (except for `feature/org.eclipse.recommenders.feature.rcp/feature.xml`, where a version of 2.0.0.qualifier is intended).
+
+- `git commit -a -m "[releng] ${NEXT_MASTER_VERSION}-SNAPSHOT"`
+- Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
+- `git push origin HEAD:refs/for/master`
 
 ### Bugzilla
 

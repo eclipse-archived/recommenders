@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<directory>
+	<entry url="http://download.eclipse.org/recommenders/discovery/2.x/plugins/org.eclipse.recommenders.discovery.jar" permitCategories="true" />
+	<entry url="http://download.eclipse.org/recommenders/discovery/2.x/plugins/org.eclipse.recommenders.discovery.content.jar" permitCategories="false" />
+	<entry url="http://download.eclipse.org/recommenders/discovery/2.x/plugins/org.eclipse.recommenders.snipmatch.discovery.content.jar" permitCategories="false" />
+</directory>

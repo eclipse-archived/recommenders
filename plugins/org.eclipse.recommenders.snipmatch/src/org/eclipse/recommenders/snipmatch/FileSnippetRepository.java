@@ -11,9 +11,8 @@
  */
 package org.eclipse.recommenders.snipmatch;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
 import static java.util.Collections.emptySet;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
@@ -37,6 +36,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -49,17 +49,22 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.internal.snipmatch.Filenames;
 import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -73,15 +78,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class FileSnippetRepository implements ISnippetRepository {
+
+    public static final String NO_FILENAME_RESTRICTION = "*no filename restriction*";
 
     private static final int MAX_SEARCH_RESULTS = 100;
     private static final int CACHE_SIZE = 200;
@@ -96,12 +101,14 @@ public class FileSnippetRepository implements ISnippetRepository {
     private static final String F_UUID = "uuid";
     private static final String F_LOCATION = "location";
     private static final String F_DEPENDENCY = "dependency";
+    private static final String F_FILENAME_RESTRICTION = "filenameRestriction";
 
     private static final float NAME_BOOST = 4.0f;
     private static final float DESCRIPTION_BOOST = 2.0f;
     private static final float EXTRA_SEARCH_TERM_BOOST = DESCRIPTION_BOOST;
     private static final float TAG_BOOST = 1.0f;
     private static final float DEPENDENCY_BOOST = 1.0f;
+    private static final float NO_RESTRICTION_BOOST = 0.5f;
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -248,10 +255,25 @@ public class FileSnippetRepository implements ISnippetRepository {
             doc.add(new Field(F_EXTRA_SEARCH_TERM, extraSearchTerm, Store.YES, Index.ANALYZED));
         }
 
-        doc.add(new Field(F_LOCATION, getIndexString(snippet.getLocation()), Store.NO, Index.NOT_ANALYZED));
+        for (Location location : expandLocation(snippet.getLocation())) {
+            Field field = new Field(F_LOCATION, getIndexString(location), Store.NO, Index.NOT_ANALYZED);
+            field.setBoost(0);
+            doc.add(field);
+        }
 
-        for (ProjectCoordinate pc : snippet.getNeededDependencies()) {
-            doc.add(new Field(F_DEPENDENCY, getDependencyString(pc), Store.YES, Index.ANALYZED));
+        for (ProjectCoordinate dependency : snippet.getNeededDependencies()) {
+            doc.add(new Field(F_DEPENDENCY, getDependencyString(dependency), Store.YES, Index.ANALYZED));
+        }
+
+        if (snippet.getLocation() == Location.FILE) {
+            if (snippet.getFilenameRestrictions().isEmpty()) {
+                doc.add(new Field(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION, Store.NO, Index.NOT_ANALYZED));
+            }
+            for (String restriction : snippet.getFilenameRestrictions()) {
+                doc.add(new Field(F_FILENAME_RESTRICTION, restriction.toLowerCase(), Store.NO, Index.NOT_ANALYZED));
+            }
+        } else {
+            doc.add(new Field(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION, Store.NO, Index.NOT_ANALYZED));
         }
 
         writer.addDocument(doc);
@@ -270,25 +292,6 @@ public class FileSnippetRepository implements ISnippetRepository {
         return timesOpened > 0;
     }
 
-    private ImmutableSet<Recommendation<ISnippet>> getSnippets() {
-        readLock.lock();
-        try {
-            Preconditions.checkState(isOpen());
-            // TODO MB: this is a costly operation that works only well with
-            // small repos.
-            Set<Recommendation<ISnippet>> res = Sets.newHashSet();
-            for (File fSnippet : snippetsdir.listFiles((FileFilter) new SuffixFileFilter(DOT_JSON))) {
-                ISnippet snippet = getSnippet(fSnippet);
-                if (snippet != null) {
-                    res.add(Recommendation.newRecommendation(snippet, 0));
-                }
-            }
-            return copyOf(res);
-        } finally {
-            readLock.unlock();
-        }
-    }
-
     private ISnippet getSnippet(File snippetFile) {
         try {
             return snippetCache.get(snippetFile);
@@ -300,9 +303,6 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     @Override
     public List<Recommendation<ISnippet>> search(ISearchContext context) {
-        if (isBlank(context.getSearchText()) && context.getLocation() == NONE) {
-            return ImmutableList.copyOf(getSnippets());
-        }
         return doSearch(context, Integer.MAX_VALUE);
     }
 
@@ -318,9 +318,6 @@ public class FileSnippetRepository implements ISnippetRepository {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            if (context.getLocation() == UNKNOWN) {
-                return Collections.emptyList();
-            }
             List<Recommendation<ISnippet>> results = Lists.newLinkedList();
 
             try {
@@ -343,12 +340,40 @@ public class FileSnippetRepository implements ISnippetRepository {
         Map<File, Float> results = Maps.newLinkedHashMap();
         IndexSearcher searcher = null;
         try {
-            Query q = parser.parse(createLuceneQuery(context));
+            BooleanQuery query = new BooleanQuery();
+            if (StringUtils.isBlank(context.getSearchText())) {
+                query.add(new MatchAllDocsQuery(), Occur.MUST);
+            } else {
+                query.add(parser.parse(context.getSearchText()), Occur.MUST);
+            }
+            if (context.getLocation() != NONE) {
+                query.add(new TermQuery(new Term(F_LOCATION, getIndexString(context.getLocation()))), Occur.MUST);
+            }
+
+            String filename = context.getFilename();
+            if (filename != null) {
+                BooleanQuery filenameRestrictionsQuery = new BooleanQuery();
+                TermQuery noRestrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION));
+                noRestrictionQuery.setBoost(NO_RESTRICTION_BOOST);
+                filenameRestrictionsQuery.add(noRestrictionQuery, Occur.SHOULD);
+
+                int i = 1;
+                for (String restriction : Filenames.getFilenameRestrictions(filename)) {
+                    TermQuery restrictionQuery = new TermQuery(
+                            new Term(F_FILENAME_RESTRICTION, restriction.toLowerCase()));
+                    float boost = (float) (0.5f + Math.pow(0.5, i));
+                    restrictionQuery.setBoost(boost);
+                    filenameRestrictionsQuery.add(restrictionQuery, Occur.SHOULD);
+                    i++;
+                }
+                query.add(filenameRestrictionsQuery, Occur.MUST);
+            }
 
             searcher = new IndexSearcher(reader);
             searcher.setSimilarity(similarity);
             float maxScore = 0;
-            for (ScoreDoc hit : searcher.search(q, null, maxResults).scoreDocs) {
+            for (ScoreDoc hit : searcher.search(query, null, maxResults).scoreDocs) {
+
                 Document doc = searcher.doc(hit.doc);
                 if (!snippetApplicable(doc, context)) {
                     continue;
@@ -372,10 +397,9 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private boolean snippetApplicable(Document doc, ISearchContext context) {
-        if (context.getDependencies().isEmpty()) {
+        if (!context.isRestrictedByDependencies()) {
             return true;
         }
-
         String[] snippetDependencies = doc.getValues(F_DEPENDENCY);
         for (String snippetDependency : snippetDependencies) {
             boolean applicable = false;
@@ -398,45 +422,23 @@ public class FileSnippetRepository implements ISnippetRepository {
         return getDependencyString(pc).equals(dependency);
     }
 
-    private String createLuceneQuery(ISearchContext context) {
-        StringBuilder sb = new StringBuilder();
-
-        // Remove trailing 'OR' & 'NOT' to prevent pairing with location
-        // constraint
-        String userQuery = context.getSearchText().trim();
-        userQuery = removeEnd(userQuery, " OR");
-        userQuery = removeEnd(userQuery, " NOT");
-        // Remove trailing ':' to prevent invalid lucene syntax
-        userQuery = removeEnd(userQuery, ":");
-        sb.append(userQuery);
-
-        if (context.getLocation() == NONE) {
-            return sb.toString();
-        }
-
-        sb.append(" (");
-        sb.append(F_LOCATION);
-        sb.append(":");
-        sb.append(join(getLocation(context.getLocation()), " OR " + F_LOCATION + ":"));
-        sb.append(")");
-
-        return sb.toString();
-    }
-
-    private Collection<String> getLocation(Location location) {
-        Collection<String> result = Sets.newHashSet(getIndexString(location));
-
+    private Collection<Location> expandLocation(Location location) {
         switch (location) {
         case JAVA_STATEMENTS:
+            return ImmutableSet.of(JAVA_STATEMENTS);
         case JAVA_TYPE_MEMBERS:
-            result.add(getIndexString(JAVA));
-            // fall-through
-        case JAVA:
+            return ImmutableSet.of(JAVA_TYPE_MEMBERS);
         case JAVADOC:
-            result.add(getIndexString(FILE));
-            return result;
+            return ImmutableSet.of(JAVADOC);
+        case JAVA:
+            return ImmutableSet.of(JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS);
+        case JAVA_FILE:
+            return ImmutableSet.of(JAVA_FILE, JAVADOC, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS);
+        case FILE:
+            return ImmutableSet.of(FILE, JAVA_FILE, JAVADOC, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS);
+        case NONE:
         default:
-            return result;
+            throw new IllegalArgumentException(location.toString());
         }
     }
 
@@ -445,7 +447,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
             @Override
             public Float apply(Float input) {
-                return input / maxScore;
+                return maxScore == 0.0f ? 1.0f : input / maxScore;
             }
         });
     }

@@ -146,7 +146,7 @@ public class ASTStringUtils {
         sb.append(toQualifiedString(binding));
         final ITypeBinding superclass = binding.getSuperclass();
         if (superclass != null) {
-            sb.append(" extends " + toSimpleString(superclass)); //$NON-NLS-1$
+            sb.append(" extends ").append(toSimpleString(superclass)); //$NON-NLS-1$
         }
         return sb.toString();
     }

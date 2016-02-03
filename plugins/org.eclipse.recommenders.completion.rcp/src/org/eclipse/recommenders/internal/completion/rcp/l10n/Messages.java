@@ -37,6 +37,12 @@ public final class Messages extends NLS {
 
     public static String FIELD_TOOLTIP_ENABLE_COMPLETION;
 
+    public static String FIELD_LABEL_DECORATE_PROPOSAL_ICON;
+    public static String FIELD_LABEL_DECORATE_PROPOSAL_TEXT;
+    public static String FIELD_LABEL_MAX_NUMBER_OF_PROPOSALS;
+    public static String FIELD_LABEL_MIN_PROPOSAL_PERCENTAGE;
+    public static String FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE;
+
     public static String JOB_DISABLING_CONTENT_ASSIST_CATEGORY;
     public static String JOB_ENABLING_CONTENT_ASSIST_CATEGORY;
 

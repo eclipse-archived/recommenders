@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +34,10 @@ import com.google.common.collect.Lists;
 @RunWith(Parameterized.class)
 public class MessageUtilsMergeMessagesTest {
 
-    private Map<FeedDescriptor, List<IFeedMessage>> inputMap;
-    private List<IFeedMessage> expectedMessages;
+    private final Map<FeedDescriptor, IPollingResult> inputMap;
+    private final List<IFeedMessage> expectedMessages;
 
-    public MessageUtilsMergeMessagesTest(Map<FeedDescriptor, List<IFeedMessage>> inputMap,
+    public MessageUtilsMergeMessagesTest(Map<FeedDescriptor, IPollingResult> inputMap,
             List<IFeedMessage> expectedMessages) {
         this.inputMap = inputMap;
         this.expectedMessages = expectedMessages;
@@ -49,17 +51,17 @@ public class MessageUtilsMergeMessagesTest {
         IFeedMessage unreadMessage = mockMessage("unread", false);
 
         scenarios.add(new Object[] { null, Collections.emptyList() });
-        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("emptyFeed"), Collections.emptyList()),
-                Collections.emptyList() });
-        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("oneRead"), ImmutableList.of(readMessage)),
+        scenarios.add(
+                new Object[] { ImmutableMap.of(mockFeed("emptyFeed"), mockPollingResult()), Collections.emptyList() });
+        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("oneRead"), mockPollingResult(readMessage)),
                 ImmutableList.of(readMessage) });
-        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("oneUnread"), ImmutableList.of(unreadMessage)),
+        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("oneUnread"), mockPollingResult(unreadMessage)),
                 ImmutableList.of(unreadMessage) });
         scenarios.add(new Object[] {
-                ImmutableMap.of(mockFeed("oneUnreadOneRead"), ImmutableList.of(unreadMessage, readMessage)),
+                ImmutableMap.of(mockFeed("oneUnreadOneRead"), mockPollingResult(unreadMessage, readMessage)),
                 ImmutableList.of(unreadMessage, readMessage) });
-        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("unreadFeed"), ImmutableList.of(unreadMessage),
-                mockFeed("readFeed"), ImmutableList.of(readMessage)), ImmutableList.of(unreadMessage, readMessage) });
+        scenarios.add(new Object[] { ImmutableMap.of(mockFeed("unreadFeed"), mockPollingResult(unreadMessage),
+                mockFeed("readFeed"), mockPollingResult(readMessage)), ImmutableList.of(unreadMessage, readMessage) });
 
         return scenarios;
     }
@@ -76,5 +78,13 @@ public class MessageUtilsMergeMessagesTest {
         List<IFeedMessage> mergedMessages = MessageUtils.mergeMessages(inputMap);
         assertThat(mergedMessages, is(Matchers.equalTo(expectedMessages)));
         assertThat(mergedMessages, hasSize(expectedMessages.size()));
+    }
+
+    private static PollingResult mockPollingResult(IFeedMessage... messages) {
+        List<IFeedMessage> feedMessages = Lists.newArrayList();
+        for (IFeedMessage message : messages) {
+            feedMessages.add(message);
+        }
+        return new PollingResult(Status.OK, feedMessages);
     }
 }

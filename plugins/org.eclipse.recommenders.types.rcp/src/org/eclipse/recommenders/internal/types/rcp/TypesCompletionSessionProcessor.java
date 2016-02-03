@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.types.rcp;
 
-import static org.apache.commons.lang3.StringUtils.*;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 
@@ -19,6 +18,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
@@ -55,12 +55,18 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
             return false;
         }
 
-        Builder<String> b = ImmutableSet.builder();
-        for (ITypeName expected : expectedTypes) {
-            String oneCharPrefix = substring(context.getPrefix(), 0, 1);
-            b.addAll(service.subtypes(expected, oneCharPrefix, context.getProject()));
+        Builder<String> results = ImmutableSet.builder();
+        for (ITypeName expectedType : expectedTypes) {
+            if (expectedType.isPrimitiveType()) {
+                continue;
+            }
+            if (expectedType.isArrayType()) {
+                continue;
+            }
+            results.addAll(service.subtypes(expectedType, context.getProject()));
         }
-        subtypes = b.build();
+        subtypes = results.build();
+
         return !subtypes.isEmpty();
     }
 
@@ -69,29 +75,53 @@ public class TypesCompletionSessionProcessor extends SessionProcessor {
         if (subtypes == null || subtypes.isEmpty()) {
             return;
         }
+
         final CompletionProposal coreProposal = proposal.getCoreProposal().or(NULL_PROPOSAL);
         switch (coreProposal.getKind()) {
-        case CompletionProposal.TYPE_REF: {
-            char[] sig = coreProposal.getSignature();
-            handleProposal(proposal, sig);
+        case CompletionProposal.FIELD_REF:
+        case CompletionProposal.LOCAL_VARIABLE_REF:
+        case CompletionProposal.TYPE_REF:
+            handleProposal(proposal, coreProposal.getSignature());
             break;
-        }
         case CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION:
         case CompletionProposal.CONSTRUCTOR_INVOCATION:
-            char[] sig = coreProposal.getDeclarationSignature();
-            handleProposal(proposal, sig);
+            handleProposal(proposal, coreProposal.getDeclarationSignature());
+            break;
+        case CompletionProposal.METHOD_REF:
+            handleProposal(proposal, Signature.getReturnType(coreProposal.getSignature()));
+            break;
+        case CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER:
+        case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
+            handleProposal(proposal, coreProposal.getReceiverSignature());
+            break;
         }
     }
 
-    private void handleProposal(IProcessableProposal proposal, char[] signature) {
-        // parse the type name and remove Generics from the name
-        String name = new String(signature, 1, signature.length - 2);
-        name = substringBefore(name, "<"); //$NON-NLS-1$
-        if (subtypes.contains(name)) {
+    private void handleProposal(IProcessableProposal proposal, char[] typeSignature) {
+        if (isSubtype(typeSignature)) {
             proposal.setTag(RECOMMENDERS_SCORE, BOOST);
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
             mgr.addProcessor(new SimpleProposalProcessor(BOOST));
             mgr.addProcessor(overlayDecorator);
         }
+    }
+
+    private boolean isSubtype(char[] typeSignature) {
+        if (Signature.getArrayCount(typeSignature) > 0) {
+            // No support for the subtype relation amongst array types yet.
+            return false;
+        }
+        if (isPrimitiveOrVoid(typeSignature)) {
+            return false;
+        }
+
+        // No support for generics yet.
+        char[] erasedTypeSignature = Signature.getTypeErasure(typeSignature);
+        String type = new String(erasedTypeSignature, 1, erasedTypeSignature.length - 2);
+        return subtypes.contains(type);
+    }
+
+    private boolean isPrimitiveOrVoid(char[] typeSignature) {
+        return typeSignature.length == 1;
     }
 }

@@ -26,6 +26,7 @@ import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
+import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
 import org.eclipse.recommenders.utils.rcp.Browsers;
@@ -151,7 +152,12 @@ public class SnippetSourcePage extends FormPage {
     }
 
     private void updateMessage() {
-        String sourceValid = SnippetSourceValidator.isSourceValid(textWidget.getText());
+        final String sourceValid;
+        if (snippet.getLocation() == Location.FILE) {
+            sourceValid = TextSnippetSourceValidator.isSourceValid(textWidget.getText());
+        } else {
+            sourceValid = JavaSnippetSourceValidator.isSourceValid(textWidget.getText());
+        }
         if (sourceValid.isEmpty()) {
             form.setMessage(null, IMessageProvider.NONE);
         } else {

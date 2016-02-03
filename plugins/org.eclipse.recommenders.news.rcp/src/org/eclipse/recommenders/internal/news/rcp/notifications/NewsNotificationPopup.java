@@ -24,6 +24,7 @@ import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -40,10 +41,10 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     private static final int DELAY_CLOSE_MS = 4000;
     private static final int DEFAULT_NOTIFICATION_MESSAGES = 6;
 
-    private final Map<FeedDescriptor, List<IFeedMessage>> messages;
+    private final Map<FeedDescriptor, IPollingResult> messages;
     private final EventBus eventBus;
 
-    public NewsNotificationPopup(Display display, Map<FeedDescriptor, List<IFeedMessage>> messages, EventBus eventBus) {
+    public NewsNotificationPopup(Display display, Map<FeedDescriptor, IPollingResult> messages, EventBus eventBus) {
         super(display);
         this.messages = messages;
         this.eventBus = eventBus;
@@ -55,7 +56,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
     protected void createContentArea(Composite composite) {
         super.createContentArea(composite);
         composite.setLayout(new GridLayout(1, true));
-        Map<FeedDescriptor, List<IFeedMessage>> sortedMap = MessageUtils.sortByDate(messages);
+        Map<FeedDescriptor, IPollingResult> sortedMap = MessageUtils.sortByDate(messages);
 
         processNotificationData(composite, sortedMap);
 
@@ -64,11 +65,11 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         hint.setText(Messages.HINT_MORE_MESSAGES);
     }
 
-    private void processNotificationData(Composite composite, Map<FeedDescriptor, List<IFeedMessage>> sortedMap) {
+    private void processNotificationData(Composite composite, Map<FeedDescriptor, IPollingResult> sortedMap) {
         int feedCounter = 0;
         int messagesPerFeed = DEFAULT_NOTIFICATION_MESSAGES < sortedMap.size() ? 1
                 : DEFAULT_NOTIFICATION_MESSAGES / sortedMap.size();
-        for (Entry<FeedDescriptor, List<IFeedMessage>> entry : sortedMap.entrySet()) {
+        for (Entry<FeedDescriptor, IPollingResult> entry : sortedMap.entrySet()) {
             if (feedCounter < DEFAULT_NOTIFICATION_MESSAGES) {
                 Label feedTitle = new Label(composite, SWT.NONE);
                 GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
@@ -76,12 +77,14 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
                 feedTitle.setFont(CommonFonts.BOLD);
                 feedTitle.setText(entry.getKey().getName());
 
-                feedCounter = feedCounter + processMessages(composite, entry.getValue(), messagesPerFeed);
+                feedCounter = feedCounter
+                        + processMessages(composite, entry.getValue().getMessages(), messagesPerFeed, entry.getKey());
             }
         }
     }
 
-    private int processMessages(Composite composite, List<IFeedMessage> messages, int calculatedMessagesPerFeed) {
+    private int processMessages(Composite composite, List<IFeedMessage> messages, int calculatedMessagesPerFeed,
+            final FeedDescriptor feed) {
         int messagesPerFeed = 0;
         for (final IFeedMessage message : messages) {
             if (messagesPerFeed < calculatedMessagesPerFeed) {
@@ -91,7 +94,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
                 link.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        BrowserUtils.openInDefaultBrowser(message.getUrl());
+                        BrowserUtils.openInDefaultBrowser(message.getUrl(), feed.getParameters());
                         eventBus.post(createFeedMessageReadEvent(message.getId()));
                     }
                 });

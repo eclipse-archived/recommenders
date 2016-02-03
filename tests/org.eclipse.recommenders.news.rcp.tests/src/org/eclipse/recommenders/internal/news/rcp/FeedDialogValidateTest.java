@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
@@ -37,11 +38,11 @@ public class FeedDialogValidateTest {
     private static final String VALID_FEED_POLLING_INTERVAL = "23";
     private static final String NO_ERROR = null;
 
-    private FeedDescriptor feed;
-    private String name;
-    private String url;
-    private String pollingInterval;
-    private String expectedMessage;
+    private final FeedDescriptor feed;
+    private final String name;
+    private final String url;
+    private final String pollingInterval;
+    private final String expectedMessage;
 
     public FeedDialogValidateTest(FeedDescriptor feed, String name, String url, String pollingInterval,
             String expectedMessage) {
@@ -61,7 +62,8 @@ public class FeedDialogValidateTest {
         scenarios.add(new Object[] { null, VALID_FEED_NAME, EMPTY_STRING, EMPTY_STRING,
                 Messages.FEED_DIALOG_ERROR_EMPTY_URL });
         scenarios.add(new Object[] { null, VALID_FEED_NAME, INVALID_FEED_PROTOCOL, EMPTY_STRING,
-                MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, INVALID_FEED_PROTOCOL) });
+                MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, INVALID_FEED_PROTOCOL,
+                        Joiner.on(", ").join(FeedDialog.ACCEPTED_PROTOCOLS)) });
         scenarios.add(new Object[] { null, VALID_FEED_NAME, INVALID_FEED_URL, EMPTY_STRING,
                 Messages.FEED_DIALOG_ERROR_INVALID_URL });
         scenarios.add(new Object[] { null, VALID_FEED_NAME, DUPLICATE_FEED_URL, EMPTY_STRING,
@@ -71,6 +73,9 @@ public class FeedDialogValidateTest {
         scenarios.add(new Object[] { null, VALID_FEED_NAME, VALID_FEED_URL, VALID_FEED_POLLING_INTERVAL, NO_ERROR });
         scenarios.add(new Object[] { TestUtils.enabled(VALID_FEED_ID), VALID_FEED_NAME, VALID_FEED_URL,
                 VALID_FEED_POLLING_INTERVAL, NO_ERROR });
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=473757
+        scenarios.add(new Object[] { null, VALID_FEED_NAME, "http", VALID_FEED_POLLING_INTERVAL,
+                Messages.FEED_DIALOG_ERROR_INVALID_URL });
 
         return scenarios;
     }

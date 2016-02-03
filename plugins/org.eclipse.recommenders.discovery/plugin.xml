@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+		<connectorCategory id="org.eclipse.recommenders.discovery.connectorCategory.recommenders"
+				name="%connectorCategory.recommenders.name"
+				description="%connectorCategory.recommenders.description"
+				relevance="40">
+			<icon image48="icons/recommenders.png"/>
+		</connectorCategory>
+		<connectorCategory id="org.eclipse.recommenders.discovery.connectorCategory.3rd"
+				name="%connectorCategory.3rd.name"
+				description="%connectorCategory.3rd.description"
+				relevance="30">
+			<icon image48="icons/3rd.png"/>
+		</connectorCategory>
+		<connectorCategory id="org.eclipse.recommenders.discovery.connectorCategory.science"
+				name="%connectorCategory.science.name"
+				description="%connectorCategory.science.description"
+				relevance="20">
+			<icon image48="icons/science.png"/>
+		</connectorCategory>
+		<connectorCategory id="org.eclipse.recommenders.discovery.connectorCategory.incubator"
+				name="%connectorCategory.incubator.name"
+				description="%connectorCategory.incubator.description"
+				relevance="10">
+			<icon image48="icons/incubator.png"/>
+		</connectorCategory>
+	</extension>
+</plugin>

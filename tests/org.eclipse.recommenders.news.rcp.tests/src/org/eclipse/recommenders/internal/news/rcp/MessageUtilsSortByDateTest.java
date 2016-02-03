@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -32,7 +34,7 @@ public class MessageUtilsSortByDateTest {
 
     @Test
     public void testSortByDate() throws ParseException {
-        HashMap<FeedDescriptor, List<IFeedMessage>> messages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> messages = Maps.newHashMap();
         FeedDescriptor feed = enabled("rndm");
         List<IFeedMessage> iFeedMessages = Lists.newArrayList();
         FeedMessage messageA = mock(FeedMessage.class);
@@ -41,16 +43,16 @@ public class MessageUtilsSortByDateTest {
         when(messageB.getDate()).thenReturn(dateFormat.parse("10/06/1991 20:30:31"));
         iFeedMessages.add(messageA);
         iFeedMessages.add(messageB);
-        messages.put(feed, iFeedMessages);
+        messages.put(feed, new PollingResult(Status.OK, iFeedMessages));
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
+        Map<FeedDescriptor, IPollingResult> sut = MessageUtils.sortByDate(messages);
 
-        assertEquals(messageB.getDate(), sut.get(feed).get(0).getDate());
+        assertEquals(messageB.getDate(), sut.get(feed).getMessages().get(0).getDate());
     }
 
     @Test
     public void testSortByDateEqualDates() throws ParseException {
-        HashMap<FeedDescriptor, List<IFeedMessage>> messages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> messages = Maps.newHashMap();
         FeedDescriptor feed = enabled("rndm");
         List<IFeedMessage> iFeedMessages = Lists.newArrayList();
         FeedMessage messageA = mock(FeedMessage.class);
@@ -62,26 +64,26 @@ public class MessageUtilsSortByDateTest {
         iFeedMessages.add(messageC);
         iFeedMessages.add(messageA);
         iFeedMessages.add(messageB);
-        messages.put(feed, iFeedMessages);
+        messages.put(feed, new PollingResult(Status.OK, iFeedMessages));
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
+        Map<FeedDescriptor, IPollingResult> sut = MessageUtils.sortByDate(messages);
 
-        assertEquals(messageC.getDate(), sut.get(feed).get(2).getDate());
-        assertEquals(messageA.getDate(), sut.get(feed).get(0).getDate());
+        assertEquals(messageC.getDate(), sut.get(feed).getMessages().get(2).getDate());
+        assertEquals(messageA.getDate(), sut.get(feed).getMessages().get(0).getDate());
     }
 
     @Test
     public void testSortByDateEmptyMap() {
-        HashMap<FeedDescriptor, List<IFeedMessage>> messages = Maps.newHashMap();
+        HashMap<FeedDescriptor, IPollingResult> messages = Maps.newHashMap();
 
-        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(messages);
+        Map<FeedDescriptor, IPollingResult> sut = MessageUtils.sortByDate(messages);
 
         assertTrue(sut.isEmpty());
     }
 
     @Test
     public void testSortByDateNullMap() {
-        Map<FeedDescriptor, List<IFeedMessage>> sut = MessageUtils.sortByDate(null);
+        Map<FeedDescriptor, IPollingResult> sut = MessageUtils.sortByDate(null);
 
         assertTrue(sut.isEmpty());
     }

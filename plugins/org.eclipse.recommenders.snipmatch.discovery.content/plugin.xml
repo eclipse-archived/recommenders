@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
+		<connectorDescriptor id="org.eclipse.recommenders.snipmatch.discovery.content.connectorDescriptor.editor"
+				categoryId="org.eclipse.recommenders.discovery.connectorCategory.incubator"
+				name="%connectorDescriptor.editor.name"
+				description="%connectorDescriptor.editor.description"
+				provider="%connectorDescriptor.editor.provider"
+				license="%connectorDescriptor.editor.license"
+				siteUrl="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/milestones/">
+			<iu id="org.eclipse.recommenders.templates.snipmatch.rcp.feature.feature.group"/>
+		</connectorDescriptor>
+	</extension>
+</plugin>

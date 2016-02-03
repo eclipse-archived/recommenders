@@ -2,25 +2,27 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="org.eclipse.recommenders.news.rcp.feed" name="%extension-point.feed.name" schema="schema/feed.exsd"/>
-   <extension point="org.eclipse.recommenders.injection.modules">
-      <module class="org.eclipse.recommenders.internal.news.rcp.NewsRcpModule"/>
-   </extension>
    <extension point="org.eclipse.ui.startup">
-      <startup class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.Startup"/>
+      <startup class="org.eclipse.recommenders.internal.news.rcp.Startup"/>
    </extension>
    <extension point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ui.preferencePages.Workbench"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
+            class="org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
             id="org.eclipse.recommenders.news.rcp.preferencePage"
             name="%preferencePage.newsFeed.name">
-      </page>
+            <keywordReference id="org.eclipse.recommenders.news.rcp.keywords.news"/>
+        </page>
+    </extension>
+    <extension point="org.eclipse.ui.keywords">
+        <keyword id="org.eclipse.recommenders.news.rcp.keywords.news"
+            label="%keywords.news.label"/>
    </extension>
    <extension point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
             id="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             type="java.lang.Object"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
+            class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
             namespace="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
             properties="newsEnabled">
       </propertyTester>
@@ -28,7 +30,7 @@
    <extension point="org.eclipse.ui.menus">
       <menuContribution allPopups="true" locationURI="toolbar:org.eclipse.ui.trim.status">
          <toolbar id="org.eclipse.recommenders.trim.rcp.status.contributions">
-            <control class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.news.rcp.NewsToolbarContribution" id="org.eclipse.recommenders.rcp.toolbar.contributions.news">
+            <control class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContribution" id="org.eclipse.recommenders.rcp.toolbar.contributions.news">
                <visibleWhen checkEnabled="false">
                   <test
                      forcePluginActivation="true"
@@ -49,13 +51,37 @@
             id="org.eclipse.recommenders.news.rcp.planet.eclipse"
             name="%feed.planet.eclipse.name"
             url="http://planeteclipse.org/planet/rss20.xml"
-            pollingInterval="60">
+            pollingInterval="480">
       </feed>
       <feed
             id="org.eclipse.recommenders.news.rcp.marketplace"
             name="%feed.marketplace.name"
-            pollingInterval="2"
+            pollingInterval="480"
             url="http://marketplace.eclipse.org/rss.xml">
       </feed>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.commons.notifications.ui.notifications">
+      <category
+            icon="icons/eview16/rss-active.gif"
+            id="org.eclipse.recommenders.news"
+            label="%notifcations.category.name">
+      </category>
+      <event
+            categoryId="org.eclipse.recommenders.news"
+            id="org.eclipse.recommenders.news.rcp.NewMessages"
+            label="%notifcations.event.label">
+            <description>
+          %notification.description
+       </description>
+       <defaultHandler
+               sinkId="org.eclipse.recommenders.news.rcp.sink">
+         </defaultHandler>
+      </event>
+      <sink
+            class="org.eclipse.recommenders.internal.news.rcp.notifications.NewsPopupNotificationSink"
+            id="org.eclipse.recommenders.news.rcp.sink"
+            label="%notifcations.sink.name">
+      </sink>
    </extension>
 </plugin>

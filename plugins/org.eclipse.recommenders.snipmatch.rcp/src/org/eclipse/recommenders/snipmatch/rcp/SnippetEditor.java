@@ -13,7 +13,7 @@ package org.eclipse.recommenders.snipmatch.rcp;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
-import static org.eclipse.recommenders.snipmatch.Location.NONE;
+import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 
 import java.io.IOException;
@@ -33,7 +33,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Constants;
 import org.eclipse.recommenders.internal.snipmatch.rcp.Repositories;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SelectRepositoryDialog;
-import org.eclipse.recommenders.internal.snipmatch.rcp.editors.SnippetSourceValidator;
+import org.eclipse.recommenders.internal.snipmatch.rcp.editors.JavaSnippetSourceValidator;
+import org.eclipse.recommenders.internal.snipmatch.rcp.editors.TextSnippetSourceValidator;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
@@ -98,8 +99,8 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
     }
 
     private static List<IFormPage> readExtensionPoint(SnippetEditor editor) {
-        IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                .getConfigurationElementsFor(Constants.EXT_POINT_PAGE_FACTORIES);
+        IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+                Constants.EXT_POINT_PAGE_FACTORIES);
 
         List<IFormPage> pages = Lists.newLinkedList();
         for (final IConfigurationElement element : Ordering.natural()
@@ -149,7 +150,12 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
             return;
         }
 
-        String sourceValid = SnippetSourceValidator.isSourceValid(snippet.getCode());
+        final String sourceValid;
+        if (snippet.getLocation() == FILE) {
+            sourceValid = TextSnippetSourceValidator.isSourceValid(snippet.getCode());
+        } else {
+            sourceValid = JavaSnippetSourceValidator.isSourceValid(snippet.getCode());
+        }
         if (!sourceValid.isEmpty()) {
             MessageDialog.openError(getSite().getShell(), Messages.DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID,
                     MessageFormat.format(Messages.DIALOG_MESSAGE_ERROR_SNIPPET_SOURCE_INVALID, sourceValid));
@@ -171,14 +177,13 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
 
         if (!oldSnippet.getCode().isEmpty() && !snippet.getCode().equals(oldSnippet.getCode())) {
             int status = new MessageDialog(getSite().getShell(), Messages.DIALOG_TITLE_SAVE_SNIPPET, null,
-                    Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION,
-                    new String[] { Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
-                            Messages.DIALOG_OPTION_CANCEL },
-                    0).open();
+                    Messages.DIALOG_MESSAGE_SAVE_SNIPPET_WITH_MODIFIED_CODE, MessageDialog.QUESTION, new String[] {
+                            Messages.DIALOG_OPTION_SAVE, Messages.DIALOG_OPTION_SAVE_AS_NEW,
+                            Messages.DIALOG_OPTION_CANCEL }, 0).open();
 
             if (status == 1) {
                 // Store as new
-                snippet.setUUID(randomUUID());
+                snippet.setUuid(randomUUID());
                 setInputWithNotify(new SnippetEditorInput(snippet, input.getRepository()));
             }
 

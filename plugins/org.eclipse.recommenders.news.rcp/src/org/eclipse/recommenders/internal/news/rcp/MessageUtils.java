@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -27,22 +28,34 @@ import com.google.common.collect.Maps;
 
 public class MessageUtils {
 
-    public static final int TODAY = 0;
-    public static final int YESTERDAY = 1;
-    public static final int THIS_WEEK = 2;
-    public static final int LAST_WEEK = 3;
-    public static final int THIS_MONTH = 4;
-    public static final int LAST_MONTH = 5;
-    public static final int THIS_YEAR = 6;
-    public static final int OLDER = 7;
-    public static final int UNDETERMINED = 8;
+    public enum MessageAge {
+        TODAY(0),
+        YESTERDAY(1),
+        THIS_WEEK(2),
+        LAST_WEEK(3),
+        THIS_MONTH(4),
+        LAST_MONTH(5),
+        THIS_YEAR(6),
+        OLDER(7),
+        UNDETERMINED(8);
 
-    public static boolean containsUnreadMessages(Map<FeedDescriptor, List<IFeedMessage>> map) {
+        private final int index;
+
+        MessageAge(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
+    public static boolean containsUnreadMessages(Map<FeedDescriptor, IPollingResult> map) {
         if (map == null) {
             return false;
         }
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : map.entrySet()) {
-            for (IFeedMessage message : entry.getValue()) {
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : map.entrySet()) {
+            for (IFeedMessage message : entry.getValue().getMessages()) {
                 if (!message.isRead()) {
                     return true;
                 }
@@ -51,23 +64,22 @@ public class MessageUtils {
         return false;
     }
 
-    public static Map<FeedDescriptor, List<IFeedMessage>> getLatestMessages(
-            Map<FeedDescriptor, List<IFeedMessage>> messages) {
+    public static Map<FeedDescriptor, IPollingResult> getLatestMessages(Map<FeedDescriptor, IPollingResult> messages) {
         Preconditions.checkNotNull(messages);
-        Map<FeedDescriptor, List<IFeedMessage>> result = Maps.newHashMap();
-        for (Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
+        Map<FeedDescriptor, IPollingResult> result = Maps.newHashMap();
+        for (Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
             List<IFeedMessage> list = updateMessages(entry);
             if (!list.isEmpty()) {
-                result.put(entry.getKey(), list);
+                result.put(entry.getKey(), new PollingResult(entry.getValue().getStatus(), list));
             }
         }
         return sortByDate(result);
     }
 
-    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, List<IFeedMessage>> entry) {
-        NewsFeedProperties properties = new NewsFeedProperties();
+    public static List<IFeedMessage> updateMessages(Entry<FeedDescriptor, IPollingResult> entry) {
+        NewsProperties properties = new NewsProperties();
         List<IFeedMessage> feedMessages = Lists.newArrayList();
-        for (IFeedMessage message : entry.getValue()) {
+        for (IFeedMessage message : entry.getValue().getMessages()) {
             if (properties.getDates(Constants.FILENAME_FEED_DATES).get(entry.getKey().getId()) == null) {
                 feedMessages.add(message);
             } else if (message.getDate() != null && message.getDate()
@@ -91,23 +103,23 @@ public class MessageUtils {
         return counter;
     }
 
-    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, List<IFeedMessage>> messages) {
+    public static List<IFeedMessage> mergeMessages(Map<FeedDescriptor, IPollingResult> messages) {
         if (messages == null) {
             return Collections.emptyList();
         }
         List<IFeedMessage> result = Lists.newArrayList();
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : messages.entrySet()) {
-            result.addAll(entry.getValue());
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : messages.entrySet()) {
+            result.addAll(entry.getValue().getMessages());
         }
         return result;
     }
 
-    public static Map<FeedDescriptor, List<IFeedMessage>> sortByDate(Map<FeedDescriptor, List<IFeedMessage>> map) {
+    public static Map<FeedDescriptor, IPollingResult> sortByDate(Map<FeedDescriptor, IPollingResult> map) {
         if (map == null) {
             return Maps.newHashMap();
         }
-        for (Map.Entry<FeedDescriptor, List<IFeedMessage>> entry : map.entrySet()) {
-            List<IFeedMessage> list = entry.getValue();
+        for (Map.Entry<FeedDescriptor, IPollingResult> entry : map.entrySet()) {
+            List<IFeedMessage> list = entry.getValue().getMessages();
             Collections.sort(list, new Comparator<IFeedMessage>() {
                 @Override
                 public int compare(IFeedMessage lhs, IFeedMessage rhs) {
@@ -117,7 +129,7 @@ public class MessageUtils {
                     return rhs.getDate().compareTo(lhs.getDate());
                 }
             });
-            entry.setValue(list);
+            entry.setValue(new PollingResult(entry.getValue().getStatus(), list));
         }
         return map;
     }
@@ -131,62 +143,63 @@ public class MessageUtils {
     @VisibleForTesting
     public static List<List<IFeedMessage>> splitMessagesByAge(List<IFeedMessage> messages, Date now, Locale locale) {
         List<List<IFeedMessage>> result = Lists.newArrayList();
-        for (int i = 0; i <= UNDETERMINED; i++) {
+        for (int i = 0; i < MessageAge.values().length; i++) {
             List<IFeedMessage> list = Lists.newArrayList();
             result.add(list);
         }
+
         if (messages == null) {
             return result;
         }
         Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
         for (IFeedMessage message : messages) {
-            for (int i = 0; i <= OLDER; i++) {
+            for (MessageAge messageAge : MessageAge.values()) {
                 if (message.getDate() == null) {
-                    result.get(UNDETERMINED).add(message);
+                    result.get(MessageAge.UNDETERMINED.getIndex()).add(message);
                     break;
                 }
-                if (message.getDate().after(getPeriodStartDate(i, today, locale))
-                        || message.getDate().equals(getPeriodStartDate(i, today, locale))) {
-                    result.get(i).add(message);
+                if (message.getDate().after(getPeriodStartDate(messageAge, today, locale))
+                        || message.getDate().equals(getPeriodStartDate(messageAge, today, locale))) {
+                    result.get(messageAge.getIndex()).add(message);
                     break;
                 }
             }
-            if (message.getDate() != null && (message.getDate().before(getPeriodStartDate(OLDER, today, locale))
-                    || message.getDate().equals(getPeriodStartDate(OLDER, today, locale)))) {
-                result.get(OLDER).add(message);
+            if (message.getDate() != null
+                    && message.getDate().before(getPeriodStartDate(MessageAge.OLDER, today, locale))) {
+                result.get(MessageAge.OLDER.getIndex()).add(message);
             }
         }
         return result;
     }
 
-    public static Date getPeriodStartDate(int period, Date today, Locale locale) {
+    public static Date getPeriodStartDate(MessageAge messageAge, Date today, Locale locale) {
         Calendar calendar = GregorianCalendar.getInstance(locale);
         calendar.setTime(today);
-        if (period == TODAY) {
+        if (messageAge == MessageAge.TODAY) {
             return calendar.getTime();
-        } else if (period == YESTERDAY) {
+        } else if (messageAge == MessageAge.YESTERDAY) {
             calendar.add(Calendar.DATE, -1);
-        } else if (period == THIS_WEEK) {
+        } else if (messageAge == MessageAge.THIS_WEEK) {
             int firstDayOfWeek = calendar.getFirstDayOfWeek();
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-        } else if (period == LAST_WEEK) {
+        } else if (messageAge == MessageAge.LAST_WEEK) {
             int firstDayOfWeek = calendar.getFirstDayOfWeek();
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
             calendar.add(Calendar.DATE, -1);
             calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-        } else if (period == THIS_MONTH) {
+        } else if (messageAge == MessageAge.THIS_MONTH) {
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == LAST_MONTH) {
+        } else if (messageAge == MessageAge.LAST_MONTH) {
             calendar.set(Calendar.DAY_OF_MONTH, 1);
             calendar.add(Calendar.DATE, -1);
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == THIS_YEAR) {
+        } else if (messageAge == MessageAge.THIS_YEAR) {
             calendar.set(Calendar.MONTH, 0);
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == OLDER) {
+        } else if (messageAge == MessageAge.OLDER) {
             calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
-            calendar.set(Calendar.MONTH, 11);
-            calendar.set(Calendar.DAY_OF_MONTH, 31);
+            calendar.set(Calendar.MONTH, 0);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
         }
         return calendar.getTime();
     }

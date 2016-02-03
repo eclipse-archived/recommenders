@@ -30,6 +30,7 @@ public final class Messages extends NLS {
     public static String PROPOSAL_LABEL_IDENTIFYING_PROJECT_DEPENDENCIES;
 
     public static String DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM;
+    public static String DIALOG_MESSAGE_ENTER_NEW_FILENAME_RESTRICTION;
     public static String DIALOG_MESSAGE_ENTER_NEW_TAG;
     public static String DIALOG_MESSAGE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_MESSAGE_INVALID_SNIPPET_NAME;
@@ -48,6 +49,7 @@ public final class Messages extends NLS {
     public static String DIALOG_OPTION_SAVE_AS_NEW;
 
     public static String DIALOG_TITLE_ENTER_NEW_EXTRA_SEARCH_TERM;
+    public static String DIALOG_TITLE_ENTER_NEW_FILENAME_RESTRICTION;
     public static String DIALOG_TITLE_ENTER_NEW_TAG;
     public static String DIALOG_TITLE_ERROR_SNIPPET_SOURCE_INVALID;
     public static String DIALOG_TITLE_INAVLID_SNIPPET_NAME;
@@ -59,28 +61,29 @@ public final class Messages extends NLS {
     public static String DIALOG_TITLE_GIT_PUSH_SUCCESSFUL;
 
     public static String DIALOG_VALIDATOR_EXTRA_SEARCH_TERM_ALREADY_ADDED;
+    public static String DIALOG_VALIDATOR_FILENAME_RESTRICTION_ALREADY_ADDED;
+    public static String DIALOG_VALIDATOR_FILENAME_RESTRICTION_CONTAINS_ILLEGAL_CHARACTER;
     public static String DIALOG_VALIDATOR_TAG_ALREADY_ADDED;
 
-    public static String EDITOR_BUTTON_ADD_DEPENDENCY;
-    public static String EDITOR_BUTTON_ADD_EXTRASEARCH_TERM;
-    public static String EDITOR_BUTTON_ADD_TAGS;
-    public static String EDITOR_BUTTON_REMOVE_EXTRA_SEARCH_TERM;
-    public static String EDITOR_BUTTON_REMOVE_TAGS;
+    public static String EDITOR_BUTTON_ADD;
+    public static String EDITOR_BUTTON_REMOVE;
 
-    public static String EDITOR_LABEL_SNIPPET_DEPENENCIES;
     public static String EDITOR_EXTENSIONS_HEADER_EXT_LINK;
 
+    public static String EDITOR_LABEL_SNIPPET_EXTRA_SEARCH_TERMS;
+    public static String EDITOR_LABEL_SNIPPET_DEPENDENCIES;
     public static String EDITOR_LABEL_SNIPPET_DESCRIPTION;
-    public static String EDITOR_LABEL_SNIPPET_NAME;
-    public static String EDITOR_LABEL_SNIPPET_UUID;
-    public static String EDITOR_LABEL_SNIPPETS_EXTRA_SEARCH_TERMS;
-    public static String EDITOR_LABEL_SNIPPETS_TAG;
+    public static String EDITOR_LABEL_SNIPPET_FILENAME_RESTRICTIONS;
     public static String EDITOR_LABEL_SNIPPET_LOCATION;
+    public static String EDITOR_LABEL_SNIPPET_NAME;
+    public static String EDITOR_LABEL_SNIPPET_TAG;
+    public static String EDITOR_LABEL_SNIPPET_UUID;
 
     public static String EDITOR_TEXT_MESSAGE_SNIPPET_DESCRIPTION;
     public static String EDITOR_TEXT_MESSAGE_SNIPPET_NAME;
 
     public static String SNIPMATCH_LOCATION_FILE;
+    public static String SNIPMATCH_LOCATION_JAVA_FILE;
     public static String SNIPMATCH_LOCATION_JAVA;
     public static String SNIPMATCH_LOCATION_JAVA_STATEMENTS;
     public static String SNIPMATCH_LOCATION_JAVA_MEMBERS;
@@ -92,6 +95,7 @@ public final class Messages extends NLS {
 
     public static String EDITOR_DESCRIPTION_DEPENDENCIES;
     public static String EDITOR_DESCRIPTION_EXTRA_SEARCH_TERMS;
+    public static String EDITOR_DESCRIPTION_FILENAME_RESTRICTIONS;
     public static String EDITOR_DESCRIPTION_LOCATION;
     public static String EDITOR_DESCRIPTION_TAGS;
 
@@ -119,6 +123,7 @@ public final class Messages extends NLS {
     public static String ERROR_REPOSITORY_NOT_OPEN_YET;
     public static String ERROR_EXCEPTION_WHILE_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO;
     public static String ERROR_FAILURE_TO_PUSH_SNIPPETS_TO_REMOTE_GIT_REPO;
+    public static String ERROR_UNABLE_TO_DETERMINE_SOURCE_VIEWER;
 
     public static String SEARCH_PLACEHOLDER_SEARCH_TEXT;
     public static String SEARCH_DISPLAY_STRING;

@@ -18,12 +18,6 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_DESCRIPTION_CONSTRUCTORS;
 
-    public static String FIELD_LABEL_DECORATE_PROPOSAL_ICON;
-    public static String FIELD_LABEL_DECORATE_PROPOSAL_TEXT;
-    public static String FIELD_LABEL_MAX_NUMBER_OF_PROPOSALS;
-    public static String FIELD_LABEL_MIN_PROPOSAL_PERCENTAGE;
-    public static String FIELD_LABEL_UPDATE_PROPOSAL_RELEVANCE;
-
     public static String PROPOSAL_LABEL_PROMILLE;
     public static String PROPOSAL_LABEL_PERCENTAGE;
 

@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.recommenders.news.rcp" id="feed" name="News Feed"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows plug-ins to add RSS feeds that can be polled by News plug-in.
       </documentation>
    </annotation>
 
@@ -49,24 +49,27 @@
 
    <element name="feed">
       <complexType>
+         <choice minOccurs="0" maxOccurs="1">
+            <element ref="urlParameters"/>
+         </choice>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  feeds name
                </documentation>
             </annotation>
          </attribute>
          <attribute name="url" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  feeds url
                </documentation>
             </annotation>
          </attribute>
          <attribute name="pollingInterval" type="string">
             <annotation>
                <documentation>
-                  
+                  feeds polling interval - it determines how often feed will be polled, however not more often than plugins polling interval (exceptions: &apos;Poll Now&apos; button pressed or changes done via preference page
                </documentation>
             </annotation>
          </attribute>
@@ -83,10 +86,37 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
+                  feeds ID. It would be for the best if it&apos;s unique. You can follow the schema: YOUR_PLUGIN_ID.feed
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="urlParameter">
+      <complexType>
+         <attribute name="key" type="string">
+            <annotation>
+               <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="urlParameters">
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="urlParameter"/>
+         </sequence>
       </complexType>
    </element>
 
@@ -95,7 +125,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         2.3.0
       </documentation>
    </annotation>
 
@@ -104,7 +134,37 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Exmaple feed:
+&lt;p&gt;
+&lt;pre&gt;
+    &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
+      &lt;feed
+            id=&quot;org.eclipse.recommenders.news.rcp.planet.eclipse&quot;
+            name=&quot;Planet Eclipse&quot;
+            url=&quot;http://planeteclipse.org/planet/rss20.xml&quot;
+            pollingInterval=&quot;480&quot;&gt;
+      &lt;/feed&gt;
+   &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
+
+Example feed with URL parameters, which are optional:
+&lt;p&gt;
+&lt;pre&gt;
+    &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
+      &lt;feed
+            id=&quot;org.eclipse.recommenders.news.rcp.planet.eclipse&quot;
+            name=&quot;Planet Eclipse&quot;
+            url=&quot;http://planeteclipse.org/planet/rss20.xml&quot;
+            pollingInterval=&quot;480&quot;&gt;
+            &lt;urlParameters&gt;
+            &lt;urlParameter key=&quot;utm_medium&quot; value=&quot;ide&quot;/&gt;
+            &lt;urlParameter key=&quot;foo&quot; value=&quot;bar&quot;/&gt;
+            &lt;/urlParameters&gt;
+      &lt;/feed&gt;
+   &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
       </documentation>
    </annotation>
 
@@ -113,18 +173,29 @@
          <meta.section type="apiinfo"/>
       </appinfo>
       <documentation>
-         [Enter API information here.]
+         &lt;dl&gt;Feeds extension point attributes:
+&lt;dt&gt;&lt;code&gt;id&lt;/code&gt; - unique identificator for your extension point, for example your plug-in id or your plug-in id with suffix &apos;.feed./dt&gt;
+&lt;dt&gt;&lt;code&gt;name&lt;/code&gt; - human-readable value that is displayed to users (via News menu and Preference page)/dt&gt;
+&lt;dt&gt;&lt;code&gt;url&lt;/code&gt; - absolute URL of RSS feed/dt&gt;
+&lt;dt&gt;&lt;code&gt;pollingInterval&lt;/code&gt; - interval at which feed will be polled, however it&apos;s secondary to user&apos;s preference/dt&gt;
+&lt;dt&gt;&lt;code&gt;urlParameters&lt;/code&gt; - list of URL parameters (key-value pairs)/dt&gt;
+&lt;dt&gt;&lt;code&gt;urlParameter&lt;/code&gt; - key - value pair which represents URL parameter for example: &apos;foo=bar&apos; (whole URL: &apos;https://www.eclipse.org/home/index.php?foo=bar&apos;) would be &lt;code&gt;&lt;urlParameter&gt; key=&quot;foo&quot; value=&quot;bar&quot; /&gt;/dt&gt; &lt;/dl&gt;
       </documentation>
    </annotation>
+
 
    <annotation>
       <appinfo>
-         <meta.section type="implementation"/>
+         <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         Copyright (c) 2015 Pawel Nowak, Johannes Dorn, Marcel Bruch, 
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+&lt;a 
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
-
 
 </schema>

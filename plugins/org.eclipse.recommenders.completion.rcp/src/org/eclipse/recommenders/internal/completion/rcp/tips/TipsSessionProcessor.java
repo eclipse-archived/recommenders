@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.tips;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class TipsSessionProcessor extends SessionProcessor {
@@ -44,8 +43,8 @@ public class TipsSessionProcessor extends SessionProcessor {
     private static final String COMPLETION_TIP_ID = "id"; //$NON-NLS-1$
     private static final String COMPLETION_TIP_CLASS = "class"; //$NON-NLS-1$
 
-    private final Map<ICompletionTipProposal, String> unseenTips = Maps.newHashMap();
-    private final HashSet<String> seenTips;
+    private final Map<ICompletionTipProposal, String> unseenTips = new HashMap<>();
+    private final Set<String> seenTips;
 
     private IRecommendersCompletionContext context;
     private boolean tipsSeen;

@@ -10,7 +10,7 @@
 				<repository location="http://download.eclipse.org/recommenders.incubator/snipmatch/updates/head/"/>
 				<repository location="http://download.eclipse.org/recommenders.incubator/stats/updates/head/"/>
 				<!-- This update site hosts the Code Recommenders 1.x to 2.x Migration feature, which may be required during installation. -->
-				<repository location="http://download.eclipse.org/recommenders/updates/head/"/>
+				<repository location="http://download.eclipse.org/recommenders/updates/maintenance-head/"/>
 			</add>
 		</p2.composite.repository>
 	</target>

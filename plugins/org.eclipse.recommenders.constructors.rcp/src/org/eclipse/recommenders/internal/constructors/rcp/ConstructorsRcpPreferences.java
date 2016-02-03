@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.constructors.rcp;
 
-import static org.eclipse.recommenders.internal.constructors.rcp.Constants.*;
+import static org.eclipse.recommenders.completion.rcp.PreferenceConstants.*;
 
 import javax.inject.Inject;
 

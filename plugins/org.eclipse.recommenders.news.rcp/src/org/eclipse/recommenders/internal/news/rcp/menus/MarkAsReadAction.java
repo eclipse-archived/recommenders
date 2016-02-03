@@ -15,7 +15,8 @@ import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 
 import com.google.common.eventbus.EventBus;
 
-public class MarkAsReadAction extends Action {
+public final class MarkAsReadAction extends Action {
+
     private final EventBus eventBus;
     private final Boolean allFeeds;
     private final FeedDescriptor feed;

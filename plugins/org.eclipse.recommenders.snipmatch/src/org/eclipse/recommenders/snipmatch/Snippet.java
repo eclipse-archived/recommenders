@@ -17,6 +17,8 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -54,16 +56,23 @@ public class Snippet implements ISnippet {
     private String code;
     @SerializedName("location")
     private Location location = FILE;
+    @SerializedName("filenameRestrictions")
+    private List<String> filenameRestrictions = Lists.newArrayList();
     @SerializedName("dependencies")
     private Set<ProjectCoordinate> neededDependencies = Sets.newHashSet();
 
-    public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
-            String code, Location location) {
-        this(uuid, name, description, extraSearchTerms, tags, code, location, Sets.<ProjectCoordinate>newHashSet());
+    public Snippet() {
+        this(UUID.randomUUID(), "", "", new ArrayList<String>(), new ArrayList<String>(), "", Location.NONE,
+                new ArrayList<String>(), new HashSet<ProjectCoordinate>());
+    }
+
+    public Snippet(String code, Set<ProjectCoordinate> dependencies) {
+        this(UUID.randomUUID(), "", "", new ArrayList<String>(), new ArrayList<String>(), code, Location.NONE,
+                new ArrayList<String>(), dependencies);
     }
 
     public Snippet(UUID uuid, String name, String description, List<String> extraSearchTerms, List<String> tags,
-            String code, Location location, Set<ProjectCoordinate> neededDependencies) {
+            String code, Location location, List<String> filenameRestrictions, Set<ProjectCoordinate> neededDependencies) {
         ensureIsNotNull(uuid);
         ensureIsNotNull(name);
         ensureIsNotNull(description);
@@ -79,11 +88,8 @@ public class Snippet implements ISnippet {
         this.tags = tags;
         this.code = code;
         this.location = location;
+        this.filenameRestrictions = filenameRestrictions;
         this.neededDependencies = neededDependencies;
-    }
-
-    protected Snippet() {
-        this.location = FILE;
     }
 
     @Override
@@ -122,6 +128,11 @@ public class Snippet implements ISnippet {
     }
 
     @Override
+    public List<String> getFilenameRestrictions() {
+        return filenameRestrictions;
+    }
+
+    @Override
     public Set<ProjectCoordinate> getNeededDependencies() {
         return ImmutableSet.copyOf(neededDependencies);
     }
@@ -143,24 +154,24 @@ public class Snippet implements ISnippet {
     }
 
     public void setLocation(Location location) {
-        this.location = location;
+        firePropertyChange("location", this.location, this.location = location);
+    }
+
+    public void setFilenameRestrictions(List<String> filenameRestrictions) {
+        firePropertyChange("filenameRestrictions", this.filenameRestrictions,
+                this.filenameRestrictions = filenameRestrictions);
     }
 
     public void setExtraSearchTerms(List<String> extraSearchTerms) {
-        firePropertyChange("extraSearchTerms", this.extraSearchTerms, extraSearchTerms);
-        this.extraSearchTerms.clear();
-        this.extraSearchTerms.addAll(extraSearchTerms);
+        firePropertyChange("extraSearchTerms", this.extraSearchTerms, this.extraSearchTerms = extraSearchTerms);
 
     }
 
     public void setTags(List<String> tags) {
-
-        firePropertyChange("tags", this.tags, tags);
-        this.tags.clear();
-        this.tags.addAll(tags);
+        firePropertyChange("tags", this.tags, this.tags = tags);
     }
 
-    public void setUUID(UUID uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -175,9 +186,10 @@ public class Snippet implements ISnippet {
     }
 
     public static Snippet copy(ISnippet snippet) {
-        return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(), Lists.newArrayList(snippet
-                .getExtraSearchTerms()), Lists.newArrayList(snippet.getTags()), snippet.getCode(),
-                snippet.getLocation() != null ? snippet.getLocation() : FILE, snippet.getNeededDependencies());
+        return new Snippet(snippet.getUuid(), snippet.getName(), snippet.getDescription(),
+                snippet.getExtraSearchTerms(), snippet.getTags(), snippet.getCode(),
+                snippet.getLocation() != null ? snippet.getLocation() : FILE, snippet.getFilenameRestrictions(),
+                snippet.getNeededDependencies());
     }
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {

@@ -294,7 +294,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         return calls;
     }
 
-    private boolean containsCallWithMethodPrefix(TreeSet<IMethodName> calls) {
+    private boolean containsCallWithMethodPrefix(Set<IMethodName> calls) {
         for (IMethodName call : calls) {
             if (call.getName().startsWith(methodPrefix)) {
                 return true;

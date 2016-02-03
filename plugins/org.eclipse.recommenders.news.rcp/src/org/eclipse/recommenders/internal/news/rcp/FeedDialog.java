@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.swt.SWT;
@@ -27,12 +26,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 public class FeedDialog extends TitleAreaDialog {
-    private static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("http", "https"); //$NON-NLS-1$ , //$NON-NLS-2$
+
+    @VisibleForTesting
+    static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("http", "https"); //$NON-NLS-1$ , //$NON-NLS-2$
+
     private final List<FeedDescriptor> existingDescriptors;
     private FeedDescriptor feed;
     private Text nameValue;
@@ -86,53 +89,48 @@ public class FeedDialog extends TitleAreaDialog {
     }
 
     private void createFeed(Composite container) {
-        Label name = new Label(container, SWT.NONE);
-        name.setText(Messages.FIELD_LABEL_FEED_NAME);
         GridData gridData = new GridData();
         gridData.grabExcessHorizontalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
-        nameValue = new Text(container, SWT.BORDER);
+        String nameInputValue = ""; //$NON-NLS-1$
+        String urlInputValue = ""; //$NON-NLS-1$
+        String pollingIntervalInputValue = String.valueOf(Constants.DEFAULT_POLLING_INTERVAL);
         if (feed != null) {
-            nameValue.setText(feed.getName());
+            nameInputValue = feed.getName();
+            urlInputValue = feed.getUrl().toString();
+            pollingIntervalInputValue = feed.getPollingInterval();
         }
-        nameValue.setLayoutData(gridData);
-        Label url = new Label(container, SWT.NONE);
-        url.setText(Messages.FIELD_LABEL_URL);
-        urlValue = new Text(container, SWT.BORDER);
-        if (feed != null) {
-            urlValue.setText(feed.getUrl().toString());
-        }
-        urlValue.setLayoutData(gridData);
-        Label pollingInterval = new Label(container, SWT.NONE);
-        pollingInterval.setText(Messages.FIELD_LABEL_POLLING_INTERVAL);
-        pollingIntervalValue = new Text(container, SWT.BORDER);
+        nameValue = createLabelInputFieldPair(container, gridData, nameValue, Messages.FIELD_LABEL_FEED_NAME,
+                nameInputValue);
+        urlValue = createLabelInputFieldPair(container, gridData, urlValue, Messages.FIELD_LABEL_URL, urlInputValue);
+        pollingIntervalValue = createLabelInputFieldPair(container, gridData, pollingIntervalValue,
+                Messages.FIELD_LABEL_POLLING_INTERVAL, pollingIntervalInputValue);
         pollingIntervalValue.setTextLimit(4);
-        pollingIntervalValue.setText(Constants.DEFAULT_POLLING_INTERVAL.toString());
-        if (feed != null) {
-            pollingIntervalValue.setText(feed.getPollingInterval());
+        addModifyListeners(nameValue, urlValue, pollingIntervalValue);
+    }
+
+    private Text createLabelInputFieldPair(Composite container, GridData gridData, Text text, String labelText,
+            String inputValue) {
+        Label label = new Label(container, SWT.NONE);
+        label.setText(labelText);
+        text = new Text(container, SWT.BORDER);
+        text.setText(inputValue);
+        text.setLayoutData(gridData);
+        return text;
+    }
+
+    private void addModifyListeners(Text... texts) {
+        ModifyListener validateDialog = new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                updateDialog();
+            }
+
+        };
+        for (Text text : texts) {
+            text.addModifyListener(validateDialog);
         }
-        pollingIntervalValue.setLayoutData(gridData);
-        nameValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
-        urlValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
-        pollingIntervalValue.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateDialog();
-            }
-        });
     }
 
     @Override
@@ -164,14 +162,16 @@ public class FeedDialog extends TitleAreaDialog {
     static String validateFeedDialog(FeedDescriptor currentFeed, String name, String url, String pollingInterval,
             List<FeedDescriptor> existingDescriptors) {
         FeedDescriptor duplicateFeed = getFeedWithDuplicateUrl(url, currentFeed, existingDescriptors).orNull();
+        URI feedUri = parseUriQuietly(url).orNull();
         if (Strings.isNullOrEmpty(name)) {
             return Messages.FEED_DIALOG_ERROR_EMPTY_NAME;
         } else if (Strings.isNullOrEmpty(url)) {
             return Messages.FEED_DIALOG_ERROR_EMPTY_URL;
-        } else if (parseUriQuietly(url).orNull() == null) {
+        } else if (feedUri == null || !feedUri.isAbsolute()) {
             return Messages.FEED_DIALOG_ERROR_INVALID_URL;
-        } else if (!isUriProtocolSupported(parseUriQuietly(url).orNull(), ACCEPTED_PROTOCOLS)) {
-            return MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, url);
+        } else if (!isUriProtocolSupported(feedUri, ACCEPTED_PROTOCOLS)) {
+            return MessageFormat.format(Messages.FEED_DIALOG_ERROR_PROTOCOL_UNSUPPORTED, url,
+                    Joiner.on(", ").join(ACCEPTED_PROTOCOLS)); //$NON-NLS-1$
         } else if (duplicateFeed != null) {
             return MessageFormat.format(Messages.FEED_DIALOG_ERROR_DUPLICATE_FEED, duplicateFeed.getName());
         } else if (!pollingInterval.matches("[0-9]+")) { //$NON-NLS-1$
@@ -194,7 +194,7 @@ public class FeedDialog extends TitleAreaDialog {
             return false;
         }
         for (String protocol : protocols) {
-            if (StringUtils.equalsIgnoreCase(protocol, uri.getScheme())) {
+            if (protocol.equalsIgnoreCase(uri.getScheme()) || protocol.equalsIgnoreCase(uri.toString())) {
                 return true;
             }
         }

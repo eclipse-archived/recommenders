@@ -261,7 +261,7 @@ public class RcpModule extends AbstractModule implements Module {
         JavaElementSelectionService provider;
 
         @Inject
-        JavaModelEventsService JavaModelEventsService;
+        JavaModelEventsService javaModelEventsService;
     }
 
     static class Listener implements TypeListener {

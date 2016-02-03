@@ -9,8 +9,8 @@ package org.eclipse.recommenders.internal.news.rcp.l10n;
 
 import static org.eclipse.core.runtime.IStatus.*;
 
-import org.eclipse.recommenders.utils.Logs;
-import org.eclipse.recommenders.utils.Logs.DefaultLogMessage;
+import org.eclipse.recommenders.internal.news.rcp.Logs;
+import org.eclipse.recommenders.internal.news.rcp.Logs.DefaultLogMessage;
 import org.osgi.framework.Bundle;
 
 public final class LogMessages extends DefaultLogMessage {
@@ -24,7 +24,7 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages ERROR_WRITING_PROPERTIES = new LogMessages(ERROR,
             Messages.LOG_ERROR_WRITING_PROPERTIES);
 
-    public static final LogMessages ERROR_CONNECTING_URL = new LogMessages(ERROR, Messages.LOG_ERROR_CONNECTING_URL);
+    public static final LogMessages WARNING_CONNECTING_URL = new LogMessages(WARNING, Messages.LOG_WARNING_CONNECTING_URL);
 
     public static final LogMessages ERROR_FETCHING_MESSAGES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FETCHING_MESSAGES);
@@ -32,8 +32,13 @@ public final class LogMessages extends DefaultLogMessage {
     public static final LogMessages WARNING_DUPLICATE_FEED = new LogMessages(WARNING,
             Messages.LOG_WARNING_DUPLICATE_FEED);
 
-    public static final LogMessages ERROR_FEED_MALFORMED_URL = new LogMessages(WARNING,
+    public static final LogMessages ERROR_FEED_MALFORMED_URL = new LogMessages(ERROR,
             Messages.FEED_DESCRIPTOR_MALFORMED_URL);
+
+    public static final LogMessages ERROR_CONNECTING_URL_WITH_STATUS_CODE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_CONNECTING_URL_WITH_STATUS_CODE);
+
+    public static final LogMessages ERROR_URL_MALFORMED = new LogMessages(ERROR, Messages.LOG_ERROR_MALFORMED_URL);
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

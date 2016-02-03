@@ -7,11 +7,17 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import static org.eclipse.recommenders.internal.news.rcp.Proxies.*;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -19,9 +25,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.mylyn.commons.notifications.core.NotificationEnvironment;
@@ -31,11 +44,15 @@ import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.news.rcp.IFeedMessage;
 import org.eclipse.recommenders.news.rcp.IPollFeedJob;
-import org.eclipse.recommenders.utils.Logs;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.news.rcp.IPollingResult;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,7 +61,7 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class PollFeedJob extends Job implements IPollFeedJob {
     private final NotificationEnvironment environment;
-    private final Map<FeedDescriptor, List<IFeedMessage>> groupedMessages = Maps.newHashMap();
+    private final Map<FeedDescriptor, IPollingResult> groupedMessages = Maps.newHashMap();
     private final Set<FeedDescriptor> feeds = Sets.newHashSet();
     private final Map<FeedDescriptor, Date> pollDates = Maps.newHashMap();
 
@@ -53,35 +70,88 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         Preconditions.checkNotNull(feeds);
         this.environment = new NotificationEnvironment();
         this.feeds.addAll(feeds);
-        setSystem(true);
-        setPriority(DECORATE);
+        setPriority(Job.DECORATE);
         setRule(new MutexRule());
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        URL url = null;
-        for (FeedDescriptor feed : feeds) {
-            try {
-                if (monitor.isCanceled()) {
+        SubMonitor sub = SubMonitor.convert(monitor, feeds.size() * 100);
+        try {
+            Executor executor = Executor.newInstance();
+            for (FeedDescriptor feed : feeds) {
+                if (monitor.isCanceled() || FrameworkUtil.getBundle(this.getClass()).getState() != Bundle.ACTIVE) {
                     return Status.CANCEL_STATUS;
                 }
-                HttpURLConnection connection = (HttpURLConnection) feed.getUrl().openConnection();
-                url = connection.getURL();
-                connection.connect();
-                updateGroupedMessages(connection, monitor, feed);
-                connection.disconnect();
-                pollDates.put(feed, new Date());
-            } catch (IOException e) {
-                Logs.log(LogMessages.ERROR_CONNECTING_URL, e, url);
+                pollFeed(monitor, sub, executor, feed);
             }
+            return Status.OK_STATUS;
+        } finally {
+            monitor.done();
         }
-        return Status.OK_STATUS;
+    }
+
+    private void pollFeed(IProgressMonitor monitor, SubMonitor sub, Executor executor, FeedDescriptor feed) {
+        try {
+            URI feedUri = urlToUri(feed.getUrl()).orNull();
+            if (feedUri != null) {
+                Response response = connectToUrl(feed, executor, feedUri);
+                sub.worked(10);
+                updateGroupedMessages(response.returnResponse(), feed, sub.newChild(80));
+                pollDates.put(feed, new Date());
+                sub.worked(10);
+            } else {
+                Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
+                groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+            }
+        } catch (UnknownHostException e) {
+            // Do not log failures due to no Internet connectivity.
+            // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=474785>
+            groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+        } catch (IOException e) {
+            Logs.log(LogMessages.WARNING_CONNECTING_URL, feed.getUrl());
+            groupedMessages.put(feed, PollingResult.newConnectionErrorResult());
+        }
+    }
+
+    private Response connectToUrl(FeedDescriptor feed, Executor executor, URI feedUri)
+            throws ClientProtocolException, IOException {
+        Request request = Request.Get(feedUri).viaProxy(getProxyHost(feedUri).orNull())
+                .connectTimeout((int) Constants.CONNECTION_TIMEOUT).staleConnectionCheck(true)
+                .socketTimeout((int) Constants.SOCKET_TIMEOUT);
+        Response response = proxyAuthentication(executor, feedUri).execute(request);
+        return response;
     }
 
     @Override
     public boolean belongsTo(Object job) {
         return Objects.equals(Constants.POLL_FEED_JOB_FAMILY, job);
+    }
+
+    private void updateGroupedMessages(HttpResponse httpResponse, FeedDescriptor feed, IProgressMonitor monitor) {
+        monitor.subTask(MessageFormat.format(Messages.POLL_FEED_JOB_SUBTASK_POLLING_FEED, feed.getName()));
+        try {
+            if (monitor.isCanceled() || FrameworkUtil.getBundle(this.getClass()).getState() != Bundle.ACTIVE) {
+                return;
+            }
+            if (httpResponse.getStatusLine().getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+                Logs.log(LogMessages.ERROR_CONNECTING_URL_WITH_STATUS_CODE, feed.getUrl(),
+                        httpResponse.getStatusLine().getStatusCode());
+                return;
+            }
+            PollingResult.Status status = PollingResult.Status.OK;
+            try (InputStream in = new BufferedInputStream(httpResponse.getEntity().getContent())) {
+                List<IFeedMessage> messages = Lists.newArrayList(readMessages(in, monitor, feed.getId()));
+                if (messages.isEmpty()) {
+                    status = PollingResult.Status.FEED_NOT_FOUND_AT_URL;
+                }
+                groupedMessages.put(feed, new PollingResult(status, messages));
+            }
+        } catch (IOException e) {
+            Logs.log(LogMessages.ERROR_FETCHING_MESSAGES, e, feed.getUrl());
+        } finally {
+            monitor.done();
+        }
     }
 
     private List<? extends IFeedMessage> readMessages(InputStream in, IProgressMonitor monitor, String eventId)
@@ -93,13 +163,13 @@ public class PollFeedJob extends Job implements IPollFeedJob {
             @Override
             public IFeedMessage apply(FeedEntry entry) {
                 return new FeedMessage(entry.getId(), entry.getDate(), entry.getDescription(), entry.getTitle(),
-                        Urls.toUrl(entry.getUrl()));
+                        toUrl(entry.getUrl()));
             }
         }).toList();
     }
 
     @Override
-    public Map<FeedDescriptor, List<IFeedMessage>> getMessages() {
+    public Map<FeedDescriptor, IPollingResult> getMessages() {
         return groupedMessages;
     }
 
@@ -108,21 +178,24 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         return pollDates;
     }
 
-    private void updateGroupedMessages(HttpURLConnection connection, IProgressMonitor monitor, FeedDescriptor feed) {
+    private static Optional<URI> urlToUri(URL url) {
         try {
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK || monitor.isCanceled()) {
-                return;
-            }
-            try (InputStream in = new BufferedInputStream(connection.getInputStream())) {
-                List<IFeedMessage> messages = Lists.newArrayList(readMessages(in, monitor, feed.getId()));
-                groupedMessages.put(feed, messages);
-            }
-        } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_FETCHING_MESSAGES, e, feed.getUrl());
+            return Optional.of(url.toURI());
+        } catch (URISyntaxException e) {
+            return Optional.absent();
         }
     }
 
-    class MutexRule implements ISchedulingRule {
+    @VisibleForTesting
+    static URL toUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    private static class MutexRule implements ISchedulingRule {
 
         @Override
         public boolean contains(ISchedulingRule rule) {
@@ -133,6 +206,5 @@ public class PollFeedJob extends Job implements IPollFeedJob {
         public boolean isConflicting(ISchedulingRule rule) {
             return rule == this;
         }
-
     }
 }

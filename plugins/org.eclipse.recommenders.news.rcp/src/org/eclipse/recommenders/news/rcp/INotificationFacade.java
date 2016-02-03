@@ -7,7 +7,6 @@
  */
 package org.eclipse.recommenders.news.rcp;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
@@ -15,7 +14,14 @@ import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import com.google.common.eventbus.EventBus;
 
 public interface INotificationFacade {
-
-    void displayNotification(Map<FeedDescriptor, List<IFeedMessage>> messages, EventBus bus);
+    /**
+     * Displays notification.
+     *
+     * @param messages
+     *            Messages to display
+     * @param bus
+     *            EventBus that will handle message events
+     */
+    void displayNotification(Map<FeedDescriptor, IPollingResult> messages, EventBus bus);
 
 }

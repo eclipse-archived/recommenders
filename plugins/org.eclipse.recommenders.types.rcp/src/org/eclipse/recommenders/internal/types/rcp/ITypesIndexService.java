@@ -17,6 +17,9 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface ITypesIndexService {
 
-    Set<String> subtypes(ITypeName expected, String prefix, IJavaProject project);
-
+    /**
+     * @returns the subtypes of the expected type, in the following format: {@code java.lang.String},
+     *          {@code java.util.Map$Entry}
+     */
+    Set<String> subtypes(ITypeName expected, IJavaProject project);
 }

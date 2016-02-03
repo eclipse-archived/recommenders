@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>plugins</artifactId>
-		<version>2.2.6</version>
+		<version>2.3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -19,8 +19,16 @@
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-eclipserun-plugin</artifactId>
 				<configuration>
-					<!-- linebreaks not permitted in this arg line -->
-					<appArgLine>-data ${basedir}${file.separator}..${file.separator}workspace -application org.eclipse.emf.codegen.ecore.Generator -projects ${basedir}${file.separator}..${file.separator} -model ${basedir}${file.separator}model${file.separator}snipmatch.genmodel</appArgLine>
+					<applicationsArgs>
+						<arg>-application</arg>
+						<arg>org.eclipse.emf.codegen.ecore.Generator</arg>
+						<arg>-data</arg>
+						<arg>${basedir}${file.separator}..${file.separator}workspace</arg>
+						<arg>-projects</arg>
+						<arg>${basedir}${file.separator}..${file.separator}</arg>
+						<arg>-model</arg>
+						<arg>${basedir}${file.separator}model${file.separator}snipmatch.genmodel</arg>
+					</applicationsArgs>
 					<dependencies>
 						<dependency>
 							<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
@@ -47,5 +55,4 @@
 			</plugin>
 		</plugins>
 	</build>
-<version>2.2.6-SNAPSHOT</version>
 </project>
