@@ -352,7 +352,7 @@ public abstract class AbstractNotificationPopup extends Window {
         /* Outer Composite holding the controls */
         final Composite outerCircle = new Composite(parent, SWT.NO_FOCUS);
         outerCircle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        outerCircle.setBackgroundMode(SWT.INHERIT_FORCE);
+        outerCircle.setBackgroundMode(SWT.INHERIT_NONE);
 
         outerCircle.addControlListener(new ControlAdapter() {
 
@@ -504,8 +504,8 @@ public abstract class AbstractNotificationPopup extends Window {
         int width = Math.min(initialSize.x, MAX_WIDTH);
 
         Point size = new Point(width, height);
-        shell.setLocation(clArea.width + clArea.x - size.x - PADDING_EDGE, clArea.height + clArea.y - size.y
-                - PADDING_EDGE);
+        shell.setLocation(clArea.width + clArea.x - size.x - PADDING_EDGE,
+                clArea.height + clArea.y - size.y - PADDING_EDGE);
         shell.setSize(size);
     }
 
