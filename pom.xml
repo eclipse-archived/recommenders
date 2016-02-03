@@ -70,7 +70,7 @@
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>neon</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
-		<tycho.scmUrl>scm:git:https://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
+		<tycho.scmUrl>scm:git:https://git.eclipse.org/r/recommenders/org.eclipse.recommenders</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
