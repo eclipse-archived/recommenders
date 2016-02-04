@@ -63,7 +63,7 @@
    <extension
          point="org.eclipse.mylyn.commons.notifications.ui.notifications">
       <category
-            icon="icons/eview16/rss-active.gif"
+            icon="icons/eview16/rss-active.png"
             id="org.eclipse.recommenders.news"
             label="%notifcations.category.name">
       </category>
