@@ -69,7 +69,7 @@ public class NewsProperties implements INewsProperties {
         }
 
         try (FileOutputStream stream = new FileOutputStream(readMessagesFile)) {
-            properties.store(stream, "");
+            properties.store(stream, ""); //$NON-NLS-1$
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, e, FILENAME_READ_MESSAGES);
         }
@@ -155,7 +155,7 @@ public class NewsProperties implements INewsProperties {
             }
         }
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            properties.store(stream, "");
+            properties.store(stream, ""); //$NON-NLS-1$
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_WRITING_PROPERTIES, filename, e);
         }
