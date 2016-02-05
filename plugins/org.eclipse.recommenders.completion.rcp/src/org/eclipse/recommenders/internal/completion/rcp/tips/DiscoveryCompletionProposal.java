@@ -25,7 +25,6 @@ import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.Dialogs;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 
 @SuppressWarnings("restriction")
@@ -37,11 +36,10 @@ public class DiscoveryCompletionProposal extends AbstractCompletionTipProposal {
 
     @Inject
     public DiscoveryCompletionProposal(SharedImages images) {
-        Image image = images.getImage(Images.OBJ_LIGHTBULB);
-        setImage(image);
-        StyledString text = new StyledString(Messages.PROPOSAL_LABEL_DISCOVER_EXTENSIONS, DECORATIONS_STYLER);
-        setStyledDisplayString(text);
-        setSortString(text.getString());
+        setImage(images.getImage(Images.OBJ_LIGHTBULB));
+
+        setStyledDisplayString(new StyledString(Messages.PROPOSAL_LABEL_DISCOVER_EXTENSIONS, DECORATIONS_STYLER));
+
         suppressProposal(TIME_DELAY_IN_MINUTES, TimeUnit.MINUTES);
     }
 

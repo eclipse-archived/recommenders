@@ -43,17 +43,32 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
     private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLED_COMPLETION,
             PREFERENCE_PAGE_NAME, PREFERENCE_PAGE_LINK, HTTP_HOMEPAGE, HTTP_MANUAL);
 
-    // leave a bit space for other, maybe more important proposals
+    /**
+     * Don't sort this proposal based on its relevance or label, but always show it before all other proposals except
+     * {@link EmptyCompletionProposal}.
+     */
     public static final int RELEVANCE_STEP_SIZE = 10000;
     public static final int ENABLE_CODE_COMPLETION_RELEVANCE = Integer.MAX_VALUE - RELEVANCE_STEP_SIZE;
+    private static final String ENABLE_CODE_COMPLETION_SORT_STRING = "\u0000";
 
-    public EnabledCompletionProposal(SharedImages images, int offset) {
-        StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLED_COMPLETION, DECORATIONS_STYLER);
-        setStyledDisplayString(text);
-        setImage(images.getImage(Images.OBJ_LIGHTBULB));
-        setRelevance(ENABLE_CODE_COMPLETION_RELEVANCE);
-        setCursorPosition(offset);
+    /**
+     * @see {@linkplain org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal#JavaCompletionProposal(String, int, int, org.eclipse.swt.graphics.Image, StyledString, int, boolean, org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext)
+     *      The constructor of JavaCompletionProposal} for hints on the setters to call here.
+     */
+    public EnabledCompletionProposal(SharedImages images, int invocationOffset) {
+        setReplacementOffset(invocationOffset);
         setReplacementString(""); //$NON-NLS-1$
+        setReplacementLength(0);
+
+        setImage(images.getImage(Images.OBJ_LIGHTBULB));
+
+        setStyledDisplayString(new StyledString(Messages.PROPOSAL_LABEL_ENABLED_COMPLETION, DECORATIONS_STYLER));
+
+        setRelevance(ENABLE_CODE_COMPLETION_RELEVANCE);
+
+        setSortString(ENABLE_CODE_COMPLETION_SORT_STRING);
+
+        setCursorPosition(0);
     }
 
     @Override

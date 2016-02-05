@@ -24,19 +24,31 @@ public abstract class AbstractCompletionTipProposal extends AbstractJavaCompleti
     private static final Object DUMMY_INFO = new Object();
 
     /**
-     * Place this proposal at the bottom of the list.
+     * Don't sort this proposal based on its relevance or label, but always show it below all other proposals.
      *
      * We have to use -10001 as Integer.MIN_VALUE does not work (possibly due to underflow) and other proposals (e.g.,
      * Subwords matches) can have a relevance of -10000.
      */
     private static final int RELEVANCE = -10001;
+    private static final String SORT_STRING = "\uFFFF";
 
     private long suppressProposalDeadlineMillis = 0;
 
     public AbstractCompletionTipProposal() {
-        setRelevance(RELEVANCE);
-        setCursorPosition(0);
+        // setReplacementOffset called during setInvocationOffset below
         setReplacementString(""); //$NON-NLS-1$
+        setReplacementLength(0);
+
+        setRelevance(RELEVANCE);
+
+        setSortString(SORT_STRING);
+
+        setCursorPosition(0);
+    }
+
+    @Override
+    public void setInvocationOffset(int invocationOffset) {
+        setReplacementOffset(invocationOffset);
     }
 
     @Override
