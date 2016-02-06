@@ -103,6 +103,7 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_SNIPPET_COULD_NOT_BE_EVALUATED;
     public static String LOG_ERROR_CANNOT_COMPUTE_LOCATION;
     public static String LOG_ERROR_FAILED_TO_BIND_FILE;
+    public static String LOG_ERROR_FAILED_TO_EXECUTE_COMMAND;
     public static String LOG_ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK;
     public static String LOG_ERROR_FAILED_TO_JOIN_OPEN_JOB;
     public static String LOG_ERROR_FAILED_TO_LOAD_EDITOR_PAGES;
@@ -159,7 +160,6 @@ public final class Messages extends NLS {
     public static String PREFPAGE_BUTTON_REMOVE;
     public static String PREFPAGE_DESCRIPTION;
     public static String PREFPAGE_LABEL_REMOTE_SNIPPETS_REPOSITORY;
-    public static String PREFPAGE_EDITOR_EXTENSIONS_LINK;
 
     public static String WARNING_CANNOT_APPLY_SNIPPET;
     public static String WARNING_REPOSITION_CURSOR;
