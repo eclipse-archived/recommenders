@@ -235,6 +235,12 @@ public class NewsPreferencePageUITest {
         assertThat(treeWebBrowser.isSelected(), is(true));
     }
 
+    @Test
+    public void testFeedProvidedByExtensionPointContainsContributedBySuffix() {
+        assertThat(bot.table().getTableItem(0).getText()
+                .equals("Eclipse Marketplace (contributed by Code Recommenders News Feed UI)"), is(true));
+    }
+
     private static void openPreferencePage(SWTWorkbenchBot bot) {
         PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 

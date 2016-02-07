@@ -46,7 +46,8 @@ public class FeedDescriptors {
         final List<FeedDescriptor> feeds = Lists.newLinkedList();
         for (final IConfigurationElement element : elements) {
             boolean enabled = true;
-            FeedDescriptor feed = new FeedDescriptor(element, enabled);
+            FeedDescriptor feed = new FeedDescriptor(element, enabled, Platform
+                    .getBundle(element.getContributor().getName()).getHeaders().get(Constants.BUNDLE_HEADER_NAME));
             if (!feeds.contains(feed)) {
                 feeds.add(feed);
             } else {
