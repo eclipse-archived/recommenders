@@ -18,13 +18,11 @@ import org.eclipse.recommenders.news.rcp.INotificationFacade;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.eventbus.EventBus;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 
 @SuppressWarnings("restriction")
-public class NewsRcpModule extends AbstractModule {
+public class NewsRcpInjection {
 
-    public static final EventBus EVENT_BUS = Guice.createInjector(new NewsRcpModule()).getInstance(EventBus.class);
+    public static final EventBus EVENT_BUS = new EventBus();
 
     public static void initiateContext(Object object) {
         InjectorFactory.getDefault().addBinding(INewsService.class).implementedBy(NewsService.class);
@@ -36,10 +34,4 @@ public class NewsRcpModule extends AbstractModule {
         ContextInjectionFactory.inject(EVENT_BUS,
                 (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class));
     }
-
-    @Override
-    protected void configure() {
-        // no-op
-    }
-
 }

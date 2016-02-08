@@ -19,7 +19,7 @@ public class NewsToolbarContributionTester extends PropertyTester {
     private NewsRcpPreferences preferences;
 
     public NewsToolbarContributionTester() {
-        NewsRcpModule.initiateContext(this);
+        NewsRcpInjection.initiateContext(this);
     }
 
     @Override

@@ -52,13 +52,13 @@ public class NewsToolbarContribution extends WorkbenchWindowControlContribution 
     private MenuManager menuManager;
 
     public NewsToolbarContribution() {
-        NewsRcpModule.initiateContext(this);
+        NewsRcpInjection.initiateContext(this);
     }
 
     @PostConstruct
     public void init() {
-        NewsRcpModule.EVENT_BUS.register(this);
-        newsMenuListener = new NewsMenuListener(NewsRcpModule.EVENT_BUS, service);
+        NewsRcpInjection.EVENT_BUS.register(this);
+        newsMenuListener = new NewsMenuListener(NewsRcpInjection.EVENT_BUS, service);
     }
 
     @Override

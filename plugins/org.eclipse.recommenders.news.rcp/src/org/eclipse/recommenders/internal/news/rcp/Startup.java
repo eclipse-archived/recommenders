@@ -27,7 +27,7 @@ public class Startup implements IStartup {
     private NewsRcpPreferences preferences;
 
     public Startup() {
-        NewsRcpModule.initiateContext(this);
+        NewsRcpInjection.initiateContext(this);
     }
 
     @Override

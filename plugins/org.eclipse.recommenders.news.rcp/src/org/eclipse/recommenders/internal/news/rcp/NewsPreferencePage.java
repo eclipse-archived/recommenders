@@ -105,7 +105,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.PLUGIN_ID));
         setMessage(Messages.PREFPAGE_TITLE);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
-        NewsRcpModule.initiateContext(this);
+        NewsRcpInjection.initiateContext(this);
     }
 
     @Override

@@ -9,6 +9,8 @@ package org.eclipse.recommenders.internal.news.rcp;
 
 import java.util.Set;
 
+import javax.inject.Singleton;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,8 +23,6 @@ import org.eclipse.recommenders.news.rcp.IJobFacade;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-
-import com.google.inject.Singleton;
 
 @Creatable
 @Singleton
