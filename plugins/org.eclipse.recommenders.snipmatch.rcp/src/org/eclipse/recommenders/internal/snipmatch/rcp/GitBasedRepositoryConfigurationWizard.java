@@ -24,6 +24,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
+import org.eclipse.recommenders.internal.snipmatch.rcp.util.RepositoryUrlValidator;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
@@ -187,8 +188,8 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             });
 
             Label lblPushSettingsDescription = new Label(group, SWT.NONE);
-            lblPushSettingsDescription.setText(MessageFormat.format(
-                    Messages.WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION, Snippet.FORMAT_VERSION));
+            lblPushSettingsDescription.setText(MessageFormat
+                    .format(Messages.WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION, Snippet.FORMAT_VERSION));
             GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(lblPushSettingsDescription);
 
             Label lblPushBranchPrefix = new Label(group, SWT.NONE);
@@ -220,8 +221,8 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             } else if (Strings.isNullOrEmpty(txtFetchUri.getText())) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_FETCH_URL);
             } else if (fetchUri == null) {
-                setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL,
-                        txtFetchUri.getText()));
+                setErrorMessage(
+                        MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL, txtFetchUri.getText()));
             } else if (!fetchUri.isAbsolute()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_ABSOLUTE_URL_REQUIRED,
                         txtFetchUri.getText()));
@@ -231,8 +232,8 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             } else if (Strings.isNullOrEmpty(txtPushUri.getText())) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_PUSH_URL);
             } else if (pushUri == null) {
-                setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL,
-                        txtPushUri.getText()));
+                setErrorMessage(
+                        MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_URL, txtPushUri.getText()));
             } else if (!pushUri.isAbsolute()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_ABSOLUTE_URL_REQUIRED,
                         txtPushUri.getText()));
@@ -243,6 +244,10 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX);
             } else if (pushBranchPrefixValid != null) {
                 setErrorMessage(pushBranchPrefixValid);
+            } else if (!RepositoryUrlValidator.isValidUri(txtFetchUri.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_FETCH_URI);
+            } else if (!RepositoryUrlValidator.isValidUri(txtPushUri.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_PUSH_URI);
             }
 
             setPageComplete(getErrorMessage() == null);

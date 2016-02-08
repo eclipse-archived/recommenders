@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.snipmatch.rcp.util
+package org.eclipse.recommenders.internal.snipmatch.rcp.util
 
 import com.google.common.base.Optional
 import com.google.common.collect.ImmutableSet

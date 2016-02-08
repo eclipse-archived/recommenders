@@ -76,5 +76,4 @@ Export-Package: org.eclipse.recommenders.snipmatch.rcp;
    org.eclipse.emf.common.notify,
    org.eclipse.emf.common.notify.impl,
    org.eclipse.emf.ecore.util,
-   org.eclipse.recommenders.snipmatch.rcp.model",
- org.eclipse.recommenders.snipmatch.rcp.util;uses:="org.eclipse.jdt.core.dom,org.eclipse.jface.text,org.eclipse.recommenders.models.rcp"
+   org.eclipse.recommenders.snipmatch.rcp.model"
