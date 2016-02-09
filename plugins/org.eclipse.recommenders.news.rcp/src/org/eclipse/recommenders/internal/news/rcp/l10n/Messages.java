@@ -40,6 +40,7 @@ public final class Messages extends NLS {
     public static String FEED_DIALOG_DESCRIPTION;
     public static String FEED_NOT_POLLED_YET;
     public static String FEED_EMPTY;
+    public static String FEED_CONTRIBUTED_BY;
 
     public static String POLL_FEED_JOB_SCHEDULER_NAME;
     public static String STARTUP_JOB_NAME;

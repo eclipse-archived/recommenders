@@ -35,26 +35,29 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
     private final String description;
     private final String iconPath;
     private final Map<String, String> parameters;
+    private final String contributedBy;
     private boolean enabled;
 
     public FeedDescriptor(FeedDescriptor that) {
         this(that.getId(), that.getUrl().toString(), that.getName(), that.isEnabled(), that.isDefaultRepository(),
-                that.getPollingInterval(), that.getDescription(), that.getIconPath(), that.getParameters());
+                that.getPollingInterval(), that.getDescription(), that.getIconPath(), that.getParameters(),
+                that.getContributedBy());
     }
 
-    public FeedDescriptor(IConfigurationElement config, boolean enabled) {
+    public FeedDescriptor(IConfigurationElement config, boolean enabled, String contributedBy) {
         this(config.getAttribute(ATTRIBUTE_ID), config.getAttribute(ATTRIBUTE_URL), config.getAttribute(ATTRIBUTE_NAME),
                 enabled, true, config.getAttribute(ATTRIBUTE_POLLING_INTERVAL),
                 config.getAttribute(ATTRIBUTE_DESCRIPTION), config.getAttribute(ATTRIBUTE_ICON),
-                getParametersFromConfig(config));
+                getParametersFromConfig(config), contributedBy);
     }
 
     public FeedDescriptor(String url, String name, String pollingInterval) {
-        this(url, url, name, true, false, pollingInterval, null, null, null);
+        this(url, url, name, true, false, pollingInterval, null, null, null, null);
     }
 
     private FeedDescriptor(String id, String url, String name, boolean enabled, boolean defaultRepository,
-            String pollingInterval, String description, String iconPath, Map<String, String> parameters) {
+            String pollingInterval, String description, String iconPath, Map<String, String> parameters,
+            String contributedBy) {
         Preconditions.checkNotNull(id);
         Preconditions.checkArgument(isUrlValid(url), Messages.FEED_DESCRIPTOR_MALFORMED_URL);
 
@@ -67,6 +70,11 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
         this.description = description;
         this.iconPath = iconPath;
         this.parameters = parameters;
+        this.contributedBy = contributedBy;
+    }
+
+    public String getContributedBy() {
+        return contributedBy;
     }
 
     public String getId() {

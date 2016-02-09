@@ -27,7 +27,7 @@ public class TestUtils {
         when(config.getAttribute("id")).thenReturn(id);
         when(config.getAttribute("name")).thenReturn(id);
         when(config.getAttribute("url")).thenReturn(TEST_URL);
-        return new FeedDescriptor(config, true);
+        return new FeedDescriptor(config, true, null);
     }
 
     public static FeedDescriptor disabled(String id) {
@@ -35,7 +35,7 @@ public class TestUtils {
         when(config.getAttribute("id")).thenReturn(id);
         when(config.getAttribute("name")).thenReturn(id);
         when(config.getAttribute("url")).thenReturn(TEST_URL);
-        return new FeedDescriptor(config, false);
+        return new FeedDescriptor(config, false, null);
     }
 
     public static PollingResult mockMessages(boolean... readMessages) {
