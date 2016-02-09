@@ -83,7 +83,7 @@ public class TipsSessionProcessor extends SessionProcessor {
         }
 
         for (ICompletionTipProposal tip : unseenTips.keySet()) {
-            tip.setCursorPosition(context.getInvocationOffset());
+            tip.setInvocationOffset(context.getInvocationOffset());
         }
 
         return true;

@@ -31,11 +31,12 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessorDescr
 import org.eclipse.recommenders.completion.rcp.tips.AbstractCompletionTipProposal;
 import org.eclipse.recommenders.completion.rcp.tips.ConfigureContentAssistInformationControl;
 import org.eclipse.recommenders.internal.completion.rcp.CompletionRcpPreferences;
+import org.eclipse.recommenders.internal.completion.rcp.EmptyCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.EnabledCompletionProposal;
 import org.eclipse.recommenders.internal.types.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.collect.ImmutableList;
@@ -51,8 +52,12 @@ public class EnableTypesCompletionProposal extends AbstractCompletionTipProposal
     private static final String INFO = MessageFormat.format(Messages.PROPOSAL_TOOLTIP_ENABLE_TYPES_COMPLETION,
             URL_ABOUT_ENABLE, URL_HTTP_MANUAL);
 
-    // this proposal should appear below the enable code completion proposal
-    private static final int ENABLE_TYPE_COMPLETION_RELEVANCE = ENABLE_CODE_COMPLETION_RELEVANCE - RELEVANCE_STEP_SIZE;
+    /**
+     * Don't sort this proposal based on its label, but always show it before all other proposals except
+     * {@link EnabledCompletionProposal} (and {@link EmptyCompletionProposal}).
+     */
+    private static final int RELEVANCE = ENABLE_CODE_COMPLETION_RELEVANCE - RELEVANCE_STEP_SIZE;
+    private static final String SORT_STRING = "\u0001";
 
     private static final int TIME_DELAY_IN_MINUTES = 15;
 
@@ -61,12 +66,15 @@ public class EnableTypesCompletionProposal extends AbstractCompletionTipProposal
     @Inject
     public EnableTypesCompletionProposal(SharedImages images, CompletionRcpPreferences completionPreferences) {
         this.preferences = completionPreferences;
-        Image image = images.getImage(Images.OBJ_LIGHTBULB);
-        setRelevance(ENABLE_TYPE_COMPLETION_RELEVANCE);
-        setImage(image);
-        StyledString text = new StyledString(Messages.PROPOSAL_LABEL_ENABLE_TYPES_COMPLETION, DECORATIONS_STYLER);
-        setStyledDisplayString(text);
-        setSortString(text.getString());
+
+        setImage(images.getImage(Images.OBJ_LIGHTBULB));
+
+        setStyledDisplayString(new StyledString(Messages.PROPOSAL_LABEL_ENABLE_TYPES_COMPLETION, DECORATIONS_STYLER));
+
+        setRelevance(RELEVANCE);
+
+        setSortString(SORT_STRING);
+
         suppressProposal(TIME_DELAY_IN_MINUTES, TimeUnit.MINUTES);
     }
 

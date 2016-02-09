@@ -74,7 +74,7 @@
 								<feature id="org.eclipse.aether.transport.http.feature" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
--                                                       <labelSuffix>&#xA0;incl. Sources</labelSuffix>
+							<labelSuffix>&#xA0;incl. Sources</labelSuffix>
 						</configuration>
 					</execution>
 				</executions>
@@ -84,8 +84,7 @@
 				<artifactId>tycho-p2-plugin</artifactId>
 				<executions>
 					<execution>
-						<!-- Don't attach (default) metadata before the "generate-source-feature" 
-							execution. -->
+						<!-- Don't attach (default) metadata before the "generate-source-feature" execution. -->
 						<id>default-p2-metadata-default</id>
 						<configuration>
 							<attachP2Metadata>false</attachP2Metadata>

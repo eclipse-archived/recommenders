@@ -17,5 +17,5 @@ public interface ICompletionTipProposal extends ICompletionProposal {
 
     boolean isApplicable(IRecommendersCompletionContext context);
 
-    void setCursorPosition(int cursorPosition);
+    void setInvocationOffset(int invocationOffset);
 }
