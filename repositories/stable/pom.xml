@@ -15,6 +15,10 @@
 
 	<name>Code Recommenders Stable Update Site</name>
 
+	<properties>
+		<updateSitePrefix></updateSitePrefix>
+	</properties>
+
 	<profiles>
 		<profile>
 			<id>build-server</id>
