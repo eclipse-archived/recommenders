@@ -76,6 +76,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<!-- Single jacoco.exec referenced from both plugins/* and tests/*. -->
 		<sonar.jacoco.reportPath>../../target/jacoco.exec</sonar.jacoco.reportPath>
+		<updateSitePrefix></updateSitePrefix>
 	</properties>
 
 	<pluginRepositories>
