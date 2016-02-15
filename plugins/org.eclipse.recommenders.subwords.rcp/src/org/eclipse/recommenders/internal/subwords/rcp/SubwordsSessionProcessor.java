@@ -19,7 +19,11 @@ import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubseq
 import static org.eclipse.recommenders.internal.subwords.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -46,9 +50,12 @@ import org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAssistInvocationCo
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.recommenders.completion.rcp.CompletionContextKey;
 import org.eclipse.recommenders.completion.rcp.CompletionContexts;
 import org.eclipse.recommenders.completion.rcp.HtmlTagProposals;
@@ -63,6 +70,7 @@ import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.recommenders.utils.rcp.TimeDelimitedProgressMonitor;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -86,6 +94,20 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private static final int IGNORE_CASE_RANGE_START = -3000;
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
+
+    private static final Class<?> BOLD_STYLER_PROVIDER = Reflections
+            .loadClass(SubwordsSessionProcessor.class.getClassLoader(),
+                    "org.eclipse.jface.text.contentassist.BoldStylerProvider") //$NON-NLS-1$
+            .orNull();
+    private static final Constructor<?> NEW_BOLD_STYLER_PROVIDER = Reflections
+            .getDeclaredConstructor(BOLD_STYLER_PROVIDER, Font.class).orNull();
+    private static final Method GET_BOLD_STYLER = Reflections.getDeclaredMethod(BOLD_STYLER_PROVIDER, "getBoldStyler") //$NON-NLS-1$
+            .orNull();
+    private static final Method DISPOSE = Reflections.getDeclaredMethod(BOLD_STYLER_PROVIDER, "dispose") //$NON-NLS-1$
+            .orNull();
+
+    private Object stylerProvider;
+    private Styler styler;
 
     private static final Field CORE_CONTEXT = Reflections
             .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
@@ -363,6 +385,12 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                         }
                     }
                 }
+
+                if (bestSequence.length > 0) {
+                    // We will highlight on demand in modifyDisplayString.
+                    proposal.setTag(IS_HIGHLIGHTED, true);
+                }
+
                 return prefix.isEmpty() || bestSequence.length > 0;
             }
 
@@ -395,7 +423,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 }
 
                 for (int index : bestSequence) {
-                    displayString.setStyle(index + highlightAdjustment, 1, StyledString.COUNTER_STYLER);
+                    displayString.setStyle(index + highlightAdjustment, 1, getStyler());
                 }
             }
 
@@ -459,5 +487,39 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 return proposal.getCoreProposal().isPresent();
             }
         });
+    }
+
+    @Override
+    public void endSession(List<ICompletionProposal> proposals) {
+        styler = null;
+
+        if (DISPOSE != null && stylerProvider != null) {
+            try {
+                DISPOSE.invoke(stylerProvider);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            }
+        }
+
+        stylerProvider = null;
+    }
+
+    private Styler getStyler() {
+        if (styler != null) {
+            return styler;
+        }
+
+        if (NEW_BOLD_STYLER_PROVIDER != null && GET_BOLD_STYLER != null) {
+            try {
+                stylerProvider = NEW_BOLD_STYLER_PROVIDER.newInstance(JFaceResources.getDefaultFont());
+                styler = (Styler) GET_BOLD_STYLER.invoke(stylerProvider);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                    | InstantiationException | SecurityException e) {
+                styler = StyledString.COUNTER_STYLER;
+            }
+        } else {
+            styler = StyledString.COUNTER_STYLER;
+        }
+
+        return styler;
     }
 }

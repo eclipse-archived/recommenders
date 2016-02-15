@@ -12,6 +12,7 @@ package org.eclipse.recommenders.utils;
 
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -21,6 +22,20 @@ public final class Reflections {
 
     private Reflections() {
         // Not meant to be instantiated
+    }
+
+    public static Optional<Class<?>> loadClass(@Nullable ClassLoader loader, @Nullable String name) {
+        if (loader == null || name == null) {
+            return Optional.absent();
+        }
+
+        try {
+            Class<?> clazz = loader.loadClass(name);
+            return Optional.<Class<?>>of(clazz);
+        } catch (Exception e) {
+            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+            return Optional.absent();
+        }
     }
 
     public static Optional<Field> getDeclaredField(@Nullable Class<?> declaringClass, @Nullable String name) {
@@ -34,6 +49,22 @@ public final class Reflections {
             return Optional.of(field);
         } catch (Exception e) {
             log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+            return Optional.absent();
+        }
+    }
+
+    public static <T> Optional<Constructor<T>> getDeclaredConstructor(@Nullable Class<T> declaringClass,
+            @Nullable Class<?>... parameterTypes) {
+        if (declaringClass == null || parameterTypes == null) {
+            return Optional.absent();
+        }
+
+        try {
+            Constructor<T> constructor = declaringClass.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
+            return Optional.of(constructor);
+        } catch (Exception e) {
+            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e);
             return Optional.absent();
         }
     }
@@ -54,8 +85,8 @@ public final class Reflections {
         }
     }
 
-    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(@Nullable Class<?> declaringClass, @Nullable String name,
-            @Nullable Class<?>[]... parameterTypesAlternatives) {
+    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(@Nullable Class<?> declaringClass,
+            @Nullable String name, @Nullable Class<?>[]... parameterTypesAlternatives) {
         if (declaringClass == null || name == null || parameterTypesAlternatives == null) {
             return Optional.absent();
         }

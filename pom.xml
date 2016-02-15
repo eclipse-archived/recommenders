@@ -375,6 +375,10 @@
 							<artifactId>java17</artifactId>
 							<version>1.0</version>
 						</signature>
+						<ignores>
+							<!-- See https://github.com/mojohaus/animal-sniffer/issues/18 -->
+							<ignore>java.lang.invoke.MethodHandle</ignore>
+						</ignores>
 					</configuration>
 				</plugin>
 				<plugin>
