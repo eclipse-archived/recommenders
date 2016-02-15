@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.swt.SWT;
@@ -79,12 +80,16 @@ public class FeedDialog extends TitleAreaDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite area = (Composite) super.createDialogArea(parent);
+
         Composite container = new Composite(area, SWT.NONE);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout layout = new GridLayout(2, false);
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         container.setLayout(layout);
         createFeed(container);
+
+        Dialog.applyDialogFont(area);
+
         return area;
     }
 
