@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.mylyn.commons.notifications.core,
  org.eclipse.mylyn.commons.notifications.feed,
  org.eclipse.mylyn.commons.notifications.ui,
+ org.eclipse.mylyn.commons.ui;bundle-version="[3.7.0,4.0.0)",
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
