@@ -17,7 +17,6 @@ import static org.eclipse.core.databinding.beans.BeanProperties.value;
 import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
 import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.HELP_URL;
-import static org.eclipse.recommenders.internal.snipmatch.rcp.SnippetEditorDiscoveryUtils.openDiscoveryDialog;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -27,6 +26,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.Parameterization;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -60,6 +62,7 @@ import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.models.rcp.ProjectCoordinateSelectionDialog;
 import org.eclipse.recommenders.internal.snipmatch.rcp.SnippetsView;
+import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.utils.DatabindingConverters.EnumToBooleanConverter;
@@ -69,8 +72,10 @@ import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.Location;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditorInput;
+import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.rcp.Browsers;
 import org.eclipse.recommenders.utils.rcp.Selections;
+import org.eclipse.recommenders.utils.rcp.preferences.AbstractLinkContributionPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -91,12 +96,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.handlers.IHandlerService;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -105,6 +112,8 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class SnippetMetadataPage extends FormPage {
 
+    private static final String EXTENSION_DISCOVERY_COMMAND_ID = "org.eclipse.recommenders.rcp.commands.extensionDiscovery"; //$NON-NLS-1$
+
     private final class ContentsPartDirtyListener implements IChangeListener {
 
         @Override
@@ -112,6 +121,8 @@ public class SnippetMetadataPage extends FormPage {
             contentsPart.markDirty();
         }
     }
+
+    private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/snipmatch/directory.xml"; //$NON-NLS-1$
 
     private static final Location[] SNIPMATCH_LOCATIONS = { FILE, JAVA_FILE, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS,
             JAVADOC };
@@ -463,7 +474,7 @@ public class SnippetMetadataPage extends FormPage {
                 sharedImages.getDescriptor(SharedImages.Images.ELCL_INSTALL_EXTENSIONS)) {
             @Override
             public void run() {
-                openDiscoveryDialog();
+                showDiscoveryDialog();
             };
         };
         EditorUtils.addActionToForm(form, openDiscoveryAction, Messages.EDITOR_EXTENSIONS_HEADER_EXT_LINK);
@@ -749,6 +760,25 @@ public class SnippetMetadataPage extends FormPage {
     public void dispose() {
         context.dispose();
         super.dispose();
+    }
+
+    /**
+     * Show the snippet editor extensions discovery dialog.
+     */
+    private void showDiscoveryDialog() {
+        ICommandService cmdService = (ICommandService) getSite().getService(ICommandService.class);
+        Command cmd = cmdService.getCommand(EXTENSION_DISCOVERY_COMMAND_ID);
+        IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
+
+        try {
+            ParameterizedCommand parmCommand = new ParameterizedCommand(cmd,
+                    new Parameterization[] {
+                            new Parameterization(cmd.getParameter(AbstractLinkContributionPage.COMMAND_HREF_ID),
+                                    SNIPMATCH_P2_DISCOVERY_URL) });
+            handlerService.executeCommand(parmCommand, null);
+        } catch (Exception e) {
+            Logs.log(LogMessages.ERROR_FAILED_TO_EXECUTE_COMMAND, e, EXTENSION_DISCOVERY_COMMAND_ID);
+        }
     }
 
     private static class FilenameRestrictionLabelProperty extends SimpleValueProperty {
