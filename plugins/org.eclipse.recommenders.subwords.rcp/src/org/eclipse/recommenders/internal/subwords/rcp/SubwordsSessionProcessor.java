@@ -110,11 +110,11 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private Styler styler;
 
     private static final Field CORE_CONTEXT = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
-    private static final Field CU = Reflections.getDeclaredField(JavaContentAssistInvocationContext.class, "fCU") //$NON-NLS-1$
+            .getDeclaredField(true, JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
+    private static final Field CU = Reflections.getDeclaredField(true, JavaContentAssistInvocationContext.class, "fCU") //$NON-NLS-1$
             .orNull();
     private static final Field CU_COMPUTED = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCUComputed").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, JavaContentAssistInvocationContext.class, "fCUComputed").orNull(); //$NON-NLS-1$
 
     private final HTMLTagCompletionProposalComputer htmlTagProposalComputer = new HTMLTagCompletionProposalComputer();
     private final SubwordsRcpPreferences prefs;

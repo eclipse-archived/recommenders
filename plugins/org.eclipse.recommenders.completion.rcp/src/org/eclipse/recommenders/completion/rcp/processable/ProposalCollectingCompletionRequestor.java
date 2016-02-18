@@ -48,7 +48,7 @@ import com.google.common.collect.Maps;
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private static final Field F_PROPOSALS = Reflections
-            .getDeclaredField(CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
 
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
 

@@ -74,7 +74,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<JavadocInlineTagCompletionProposal> javadocInlineTagCompletionProposalClass;
 
     private static Method proposalInfoMethod = Reflections
-            .getDeclaredMethod(AbstractJavaCompletionProposal.class, "getProposalInfo").orNull(); //$NON-NLS-1$
+            .getDeclaredMethod(true, AbstractJavaCompletionProposal.class, "getProposalInfo").orNull(); //$NON-NLS-1$
 
     static {
         // No all versions of JDT offer all kinds of CompletionProposal. Probe using reflection.

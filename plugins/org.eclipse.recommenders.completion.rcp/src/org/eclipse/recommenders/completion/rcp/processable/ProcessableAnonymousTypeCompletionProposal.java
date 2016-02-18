@@ -46,7 +46,7 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
         implements IProcessableProposal {
 
     private static final Field F_SUPER_TYPE = Reflections
-            .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
 
     private final Map<IProposalTag, Object> tags = Maps.newHashMap();
     private final CompletionProposal coreProposal;

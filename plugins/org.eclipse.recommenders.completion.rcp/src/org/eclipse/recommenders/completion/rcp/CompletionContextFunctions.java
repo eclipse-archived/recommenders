@@ -537,9 +537,9 @@ public final class CompletionContextFunctions {
             }
         }
 
-        private static final Field EXTENDED_CONTEXT = getDeclaredField(internalCompletionContextClass,
+        private static final Field EXTENDED_CONTEXT = getDeclaredField(true, internalCompletionContextClass,
                 "extendedContext").orNull(); //$NON-NLS-1$
-        private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(internalExtendedCompletionContextClass,
+        private static final Field LOOKUP_ENVIRONMENT = getDeclaredField(true, internalExtendedCompletionContextClass,
                 "lookupEnvironment").orNull(); //$NON-NLS-1$
 
         @Override

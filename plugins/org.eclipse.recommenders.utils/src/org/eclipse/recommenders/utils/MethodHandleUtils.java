@@ -26,13 +26,27 @@ public final class MethodHandleUtils {
 
     public static Optional<MethodHandle> getSuperMethodHandle(Lookup lookupCapability, String methodName,
             Class<?> returnType, Class<?>... argumentTypes) {
+        return getSuperMethodHandle(false, lookupCapability, methodName, returnType, argumentTypes);
+    }
+
+    public static Optional<MethodHandle> getSuperMethodHandle(boolean isFunctionalityLimitedOnFailure,
+            Lookup lookupCapability, String methodName, Class<?> returnType, Class<?>... argumentTypes) {
         try {
             Class<?> callerClass = lookupCapability.lookupClass();
             Class<?> superclass = callerClass.getSuperclass();
             return Optional.of(lookupCapability.findSpecial(superclass, methodName,
                     MethodType.methodType(returnType, argumentTypes), callerClass));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, methodName);
+        } catch (NoSuchMethodException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, methodName);
+            }
+            return Optional.absent();
+        } catch (IllegalAccessException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, methodName);
+            } else {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, methodName);
+            }
             return Optional.absent();
         }
     }

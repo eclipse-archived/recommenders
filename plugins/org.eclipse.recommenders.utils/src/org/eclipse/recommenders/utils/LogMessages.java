@@ -22,8 +22,11 @@ public final class LogMessages extends DefaultLogMessage {
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
     public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
+            "Could not access \u2018{0}\u2019 using reflection.");
+    public static final LogMessages LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY = new LogMessages(WARNING,
             "Could not access \u2018{0}\u2019 using reflection. Functionality may be limited.");
-    public static final LogMessages LOG_ERROR_CANNOT_CLOSE_RESOURCE = new LogMessages(ERROR, "Failed to close resource ''{0}''");
+    public static final LogMessages LOG_ERROR_CANNOT_CLOSE_RESOURCE = new LogMessages(ERROR,
+            "Failed to close resource ''{0}''");
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

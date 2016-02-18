@@ -67,13 +67,13 @@ public final class JavadocProvider extends ApidocProvider {
 
     /**
      * Use of reflection made necessary due to a change in method signature of
-     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}. There no exists a second alternative signature of
-     * {@link JavadocContentAccess2#getHTMLContent(IJavaElement, boolean)}.
+     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}. There now exists a second alternative signature
+     * of {@link JavadocContentAccess2#getHTMLContent(IJavaElement, boolean)}.
      *
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=459519">Bug 459519</a>
      */
     private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = getDeclaredMethodWithAlternativeSignatures(
-            JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE }, //$NON-NLS-1$
+            true, JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE }, //$NON-NLS-1$
             new Class[] { IJavaElement.class, Boolean.TYPE }).orNull();
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
