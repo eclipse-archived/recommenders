@@ -25,13 +25,17 @@ public class NewsRcpInjection {
     public static final EventBus EVENT_BUS = new EventBus();
 
     public static void initiateContext(Object object) {
-        InjectorFactory.getDefault().addBinding(INewsService.class).implementedBy(NewsService.class);
-        InjectorFactory.getDefault().addBinding(IJobFacade.class).implementedBy(JobFacade.class);
-        InjectorFactory.getDefault().addBinding(INewsProperties.class).implementedBy(NewsProperties.class);
-        InjectorFactory.getDefault().addBinding(INotificationFacade.class).implementedBy(NotificationFacade.class);
+        addBindings();
         ContextInjectionFactory.inject(object,
                 (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class));
         ContextInjectionFactory.inject(EVENT_BUS,
                 (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class));
+    }
+
+    public static void addBindings() {
+        InjectorFactory.getDefault().addBinding(INewsService.class).implementedBy(NewsService.class);
+        InjectorFactory.getDefault().addBinding(IJobFacade.class).implementedBy(JobFacade.class);
+        InjectorFactory.getDefault().addBinding(INewsProperties.class).implementedBy(NewsProperties.class);
+        InjectorFactory.getDefault().addBinding(INotificationFacade.class).implementedBy(NotificationFacade.class);
     }
 }

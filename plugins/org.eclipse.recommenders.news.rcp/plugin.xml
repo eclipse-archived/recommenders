@@ -18,30 +18,7 @@
         <keyword id="org.eclipse.recommenders.news.rcp.keywords.news"
             label="%keywords.news.label"/>
    </extension>
-   <extension point="org.eclipse.core.expressions.propertyTesters">
-      <propertyTester
-            id="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
-            type="java.lang.Object"
-            class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContributionTester"
-            namespace="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester"
-            properties="newsEnabled">
-      </propertyTester>
-   </extension>
-   <extension point="org.eclipse.ui.menus">
-      <menuContribution allPopups="true" locationURI="toolbar:org.eclipse.ui.trim.status">
-         <toolbar id="org.eclipse.recommenders.trim.rcp.status.contributions">
-            <control class="org.eclipse.recommenders.internal.news.rcp.NewsToolbarContribution" id="org.eclipse.recommenders.rcp.toolbar.contributions.news">
-               <visibleWhen checkEnabled="false">
-                  <test
-                     forcePluginActivation="true"
-                     property="org.eclipse.recommenders.news.rcp.newsToolbarContributionTester.newsEnabled">
-                  </test>
-               </visibleWhen>
-            </control>
-         </toolbar>
-      </menuContribution>
-   </extension>
-   <extension  point="org.eclipse.core.runtime.preferences">
+   <extension point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences">
       </initializer>
@@ -83,5 +60,8 @@
             id="org.eclipse.recommenders.news.rcp.sink"
             label="%notifcations.sink.name">
       </sink>
+   </extension>
+   <extension point="org.eclipse.e4.workbench.model" id="org.eclipse.recommenders.news.rcp.model.news">
+      <fragment uri="fragment.e4xmi"/>
    </extension>
 </plugin>

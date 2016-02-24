@@ -12,6 +12,7 @@ import static org.eclipse.recommenders.internal.news.rcp.Constants.PREF_FEED_LIS
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -19,8 +20,9 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 
-@SuppressWarnings("restriction")
 @Creatable
+@Singleton
+@SuppressWarnings("restriction")
 public class NewsRcpPreferences extends AbstractPreferenceInitializer {
 
     @Inject

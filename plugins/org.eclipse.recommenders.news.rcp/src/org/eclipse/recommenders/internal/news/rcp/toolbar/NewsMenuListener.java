@@ -5,11 +5,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.recommenders.internal.news.rcp.menus;
+package org.eclipse.recommenders.internal.news.rcp.toolbar;
 
 import static org.eclipse.recommenders.internal.news.rcp.FeedEvents.createFeedMessageReadEvent;
 import static org.eclipse.recommenders.internal.news.rcp.MessageUtils.*;
-import static org.eclipse.recommenders.internal.news.rcp.menus.MarkAsReadAction.*;
+import static org.eclipse.recommenders.internal.news.rcp.toolbar.MarkAsReadAction.*;
 
 import java.text.MessageFormat;
 import java.util.List;

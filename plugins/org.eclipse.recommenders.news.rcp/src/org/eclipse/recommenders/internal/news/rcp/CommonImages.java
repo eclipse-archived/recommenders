@@ -26,10 +26,6 @@ public class CommonImages {
     private static final String T_EVIEW = "eview16"; //$NON-NLS-1$
     private static final String T_WIZBAN = "wizban"; //$NON-NLS-1$
 
-    public static final ImageDescriptor NOTIFICATION_CLOSE = create(T_EVIEW, "notification-close.gif"); //$NON-NLS-1$
-
-    public static final ImageDescriptor NOTIFICATION_CLOSE_HOVER = create(T_EVIEW, "notification-close-active.gif"); //$NON-NLS-1$
-
     public static final ImageDescriptor RSS_ACTIVE = create(T_EVIEW, "rss-active.png"); //$NON-NLS-1$
 
     public static final ImageDescriptor RSS_INACTIVE = create(T_EVIEW, "rss-inactive.png"); //$NON-NLS-1$
