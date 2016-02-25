@@ -51,8 +51,8 @@
 			priority="40"/>
 		<linkContribution
 			commandId="org.eclipse.recommenders.utils.rcp.commands.openBrowser"
-			label="%linkContribution.uservoice.label"
-			icon="icons/obj16/uservoice.png"
+			label="%linkContribution.forum.label"
+			icon="icons/obj16/forum.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="50"/>
 		<linkContribution
