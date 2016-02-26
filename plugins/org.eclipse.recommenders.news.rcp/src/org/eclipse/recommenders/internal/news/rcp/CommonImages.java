@@ -47,9 +47,9 @@ public class CommonImages {
             throw new MalformedURLException();
         }
 
-        StringBuffer buffer = new StringBuffer(prefix);
-        buffer.append('/');
-        buffer.append(name);
-        return new URL(BASE_URL, buffer.toString());
+        StringBuilder builder = new StringBuilder(prefix);
+        builder.append('/');
+        builder.append(name);
+        return new URL(BASE_URL, builder.toString());
     }
 }

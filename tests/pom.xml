@@ -31,6 +31,7 @@
 		<module>org.eclipse.recommenders.models.tests</module>
 		<module>org.eclipse.recommenders.models.rcp.tests</module>
 		<module>org.eclipse.recommenders.net.tests</module>
+		<module>org.eclipse.recommenders.news.impl.tests</module>
 		<module>org.eclipse.recommenders.news.rcp.tests</module>
 		<module>org.eclipse.recommenders.news.rcp.uitests</module>
 		<module>org.eclipse.recommenders.overrides.tests</module>

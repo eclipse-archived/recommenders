@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.eclipse.recommenders.news.impl.read.readitemsstore">
+   <implementation class="org.eclipse.recommenders.news.impl.read.DefaultReadItemsStore"/>
+   <service>
+      <provide interface="org.eclipse.recommenders.news.api.read.IReadItemsStore"/>
+   </service>
+   <reference name="LogService" interface="org.osgi.service.log.LogService" policy="static" cardinality="0..1" bind="bindLogService" unbind="unbindLogService"/>
+</scr:component>

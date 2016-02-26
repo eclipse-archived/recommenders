@@ -7,6 +7,7 @@
  */
 package org.eclipse.recommenders.internal.news.rcp;
 
+import static org.eclipse.recommenders.internal.news.rcp.Constants.*;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,8 +24,8 @@ public class FeedDescriptorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFailUrlMalformed() {
         IConfigurationElement config = Mockito.mock(IConfigurationElement.class);
-        when(config.getAttribute("id")).thenReturn(FIRST_ELEMENT);
-        when(config.getAttribute("url")).thenReturn("abc");
-        new FeedDescriptor(config, true, null);
+        when(config.getAttribute(ATTRIBUTE_ID)).thenReturn(FIRST_ELEMENT);
+        when(config.getAttribute(ATTRIBUTE_URI)).thenReturn("abc");
+        FeedDescriptor.fromConfigurationElement(config, true, null);
     }
 }

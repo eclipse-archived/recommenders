@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.news.rcp;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.core.runtime.IStatus.ERROR;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
@@ -34,8 +36,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-
-import com.google.common.base.Preconditions;
 
 /*
  * This class was copied from org.eclipse.recommenders.utils.Logs to remove its dependency from the news project. Unnecessary methods was removed as well.
@@ -74,10 +74,9 @@ public final class Logs {
 
         public DefaultLogMessage(int severity, int code, String message) {
             ensureIsGreaterOrEqualTo(code, 1, "The error code cannot be '0'");
-            Preconditions.checkNotNull(message);
             this.severity = severity;
             this.code = code;
-            this.message = message;
+            this.message = requireNonNull(message);
         }
 
         @Override
@@ -112,7 +111,7 @@ public final class Logs {
     }
 
     public static IStatus toStatus(ILogMessage msg, Throwable t, Object... args) {
-        Preconditions.checkNotNull(msg);
+        Objects.requireNonNull(msg);
         String message = null;
         try {
             message = MessageFormat.format(msg.message(), args);

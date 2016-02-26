@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.eclipse.recommenders.news.rcp.feed" name="%extension-point.feed.name" schema="schema/feed.exsd"/>
-   <extension point="org.eclipse.ui.startup">
-      <startup class="org.eclipse.recommenders.internal.news.rcp.Startup"/>
-   </extension>
-   <extension point="org.eclipse.ui.preferencePages">
-      <page
+    <extension-point id="org.eclipse.recommenders.news.rcp.feed" name="%extension-point.feed.name" schema="schema/feed.exsd"/>
+    <extension point="org.eclipse.ui.preferencePages">
+        <page id="org.eclipse.recommenders.news.rcp.preferencePages.news"
             category="org.eclipse.ui.preferencePages.Workbench"
-            class="org.eclipse.recommenders.internal.news.rcp.NewsPreferencePage"
-            id="org.eclipse.recommenders.news.rcp.preferencePage"
+            class="org.eclipse.recommenders.internal.news.rcp.preferences.NewsPreferencePage"
             name="%preferencePage.newsFeed.name">
             <keywordReference id="org.eclipse.recommenders.news.rcp.keywords.news"/>
         </page>
@@ -17,51 +13,41 @@
     <extension point="org.eclipse.ui.keywords">
         <keyword id="org.eclipse.recommenders.news.rcp.keywords.news"
             label="%keywords.news.label"/>
-   </extension>
-   <extension point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences">
-      </initializer>
-   </extension>
-   <extension point="org.eclipse.recommenders.news.rcp.feed">
-      <feed
-            id="org.eclipse.recommenders.news.rcp.planet.eclipse"
+    </extension>
+    <extension point="org.eclipse.core.runtime.preferences">
+        <initializer class="org.eclipse.recommenders.internal.news.rcp.preferences.PreferenceInitializer"/>
+    </extension>
+    <extension point="org.eclipse.recommenders.news.rcp.feed">
+        <feed id="org.eclipse.recommenders.news.rcp.planet.eclipse"
             name="%feed.planet.eclipse.name"
-            url="http://planeteclipse.org/planet/rss20.xml"
-            pollingInterval="480">
-      </feed>
-      <feed
-            id="org.eclipse.recommenders.news.rcp.marketplace"
+            uri="http://planeteclipse.org/planet/rss20.xml"
+            pollingInterval="480"/>
+        <feed id="org.eclipse.recommenders.news.rcp.marketplace"
             name="%feed.marketplace.name"
-            pollingInterval="480"
-            url="http://marketplace.eclipse.org/rss.xml">
-      </feed>
-   </extension>
-   <extension
-         point="org.eclipse.mylyn.commons.notifications.ui.notifications">
-      <category
+            uri="http://marketplace.eclipse.org/rss.xml"
+            pollingInterval="480"/>
+    </extension>
+    <extension point="org.eclipse.mylyn.commons.notifications.ui.notifications">
+        <category id="org.eclipse.recommenders.news"
             icon="icons/eview16/rss-active.png"
-            id="org.eclipse.recommenders.news"
-            label="%notifcations.category.name">
-      </category>
-      <event
+            label="%notifcations.category.name"/>
+        <event id="org.eclipse.recommenders.news.rcp.event.newNewsItems"
             categoryId="org.eclipse.recommenders.news"
-            id="org.eclipse.recommenders.news.rcp.NewMessages"
             label="%notifcations.event.label">
-            <description>
-          %notification.description
-       </description>
-       <defaultHandler
-               sinkId="org.eclipse.recommenders.news.rcp.sink">
-         </defaultHandler>
-      </event>
-      <sink
-            class="org.eclipse.recommenders.internal.news.rcp.notifications.NewsPopupNotificationSink"
-            id="org.eclipse.recommenders.news.rcp.sink"
-            label="%notifcations.sink.name">
-      </sink>
-   </extension>
-   <extension point="org.eclipse.e4.workbench.model" id="org.eclipse.recommenders.news.rcp.model.news">
-      <fragment uri="fragment.e4xmi"/>
-   </extension>
+            <description>%notification.description</description>
+            <defaultHandler sinkId="org.eclipse.mylyn.commons.notifications.sink.Popup"/>
+        </event>
+    </extension>
+    <extension point="org.eclipse.e4.workbench.model" id="org.eclipse.recommenders.news.rcp.model.news">
+        <fragment uri="fragment.e4xmi"/>
+    </extension>
+    <extension point="org.eclipse.ui.commands">
+        <!-- Not expressible in fragment.e4xmi yet -->
+        <commandParameterType id="org.eclipse.recommenders.news.rcp.commandParameterType.newsItems"
+            type="java.util.List"
+            converter="org.eclipse.recommenders.internal.news.rcp.command.NewsItemsParameterValueConverter"/>
+        <commandParameterType id="org.eclipse.recommenders.news.rcp.commandParameterType.boolean"
+            type="java.lang.Boolean"
+            converter="org.eclipse.recommenders.internal.news.rcp.command.BooleanParameterValueConverter"/>
+    </extension>
 </plugin>

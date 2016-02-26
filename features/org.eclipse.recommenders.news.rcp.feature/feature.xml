@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.news.rcp.feature"
-      label="%label"
       version="2.4.0.qualifier"
+      label="%label"
       provider-name="%provider-name"
+      plugin="org.eclipse.recommenders.news"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
 
@@ -18,6 +19,33 @@
    <license url="%licenseURL">
       %license
    </license>
+
+   <requires>
+      <import plugin="org.eclipse.mylyn.commons.notifications.core" version="1.1" match="compatible"/>
+      <import plugin="org.eclipse.mylyn.commons.notifications.feed" version="1.1" match="compatible"/>
+      <import plugin="org.eclipse.mylyn.commons.notifications.ui" version="1.1" match="compatible"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.recommenders.news"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.news.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.news.impl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.recommenders.news.rcp"

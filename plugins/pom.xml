@@ -37,6 +37,9 @@
 		<module>org.eclipse.recommenders.models.rcp</module>
 		<module>org.eclipse.recommenders.mylyn.rcp</module>
 		<module>org.eclipse.recommenders.net</module>
+		<module>org.eclipse.recommenders.news</module>
+		<module>org.eclipse.recommenders.news.api</module>
+		<module>org.eclipse.recommenders.news.impl</module>
 		<module>org.eclipse.recommenders.news.rcp</module>
 		<module>org.eclipse.recommenders.overrides</module>
 		<module>org.eclipse.recommenders.overrides.rcp</module>

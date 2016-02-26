@@ -10,10 +10,12 @@ package org.eclipse.recommenders.internal.news.rcp;
 import static com.google.common.base.Strings.nullToEmpty;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +23,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 
-import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,10 +44,10 @@ public class FeedDescriptors {
                 return lhs.getAttribute(Constants.ATTRIBUTE_NAME).compareTo(rhs.getAttribute(Constants.ATTRIBUTE_NAME));
             }
         });
-        final List<FeedDescriptor> feeds = Lists.newLinkedList();
+        final List<FeedDescriptor> feeds = new LinkedList<>();
         for (final IConfigurationElement element : elements) {
             boolean enabled = true;
-            FeedDescriptor feed = new FeedDescriptor(element, enabled, Platform
+            FeedDescriptor feed = FeedDescriptor.fromConfigurationElement(element, enabled, Platform
                     .getBundle(element.getContributor().getName()).getHeaders().get(Constants.BUNDLE_HEADER_NAME));
             if (!feeds.contains(feed)) {
                 feeds.add(feed);
@@ -77,7 +78,7 @@ public class FeedDescriptors {
     }
 
     public static List<FeedDescriptor> load(String preferenceString, List<FeedDescriptor> available) {
-        List<FeedDescriptor> result = Lists.newArrayList();
+        List<FeedDescriptor> result = new ArrayList<>();
         for (String id : StringUtils.split(nullToEmpty(preferenceString), SEPARATOR)) {
             final boolean enabled;
             if (id.charAt(0) == DISABLED_FLAG) {

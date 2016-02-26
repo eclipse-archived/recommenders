@@ -1,49 +1,47 @@
 /**
- * Copyright (c) 2015 Codetrails GmbH. All rights reserved. This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2015 Codetrails GmbH.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: Johannes Dorn - initial API and implementation.
+ * Contributors:
+ *    Johannes Dorn - initial API and implementation.
  */
 package org.eclipse.recommenders.internal.news.rcp;
-
-import static org.eclipse.recommenders.internal.news.rcp.Constants.PREF_FEED_LIST_SORTED;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.DefaultScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 
 @Creatable
 @Singleton
 @SuppressWarnings("restriction")
-public class NewsRcpPreferences extends AbstractPreferenceInitializer {
+public class NewsRcpPreferences {
 
     @Inject
-    @Preference(Constants.PREF_NEWS_ENABLED)
+    @Preference(PreferenceConstants.NEWS_ENABLED)
     private boolean enabled;
 
     @Inject
-    @Preference(Constants.PREF_FEED_LIST_SORTED)
+    @Preference(PreferenceConstants.FEED_LIST_SORTED)
     private String feeds;
 
     @Inject
-    @Preference(Constants.PREF_CUSTOM_FEED_LIST_SORTED)
+    @Preference(PreferenceConstants.CUSTOM_FEED_LIST_SORTED)
     private String customFeeds;
 
     @Inject
-    @Preference(Constants.PREF_POLLING_INTERVAL)
+    @Preference(PreferenceConstants.POLLING_INTERVAL)
     private Long pollingInterval;
 
     @Inject
-    @Preference(Constants.PREF_STARTUP_DELAY)
-    private Long startupDelay;
+    @Preference(PreferenceConstants.POLLING_DELAY)
+    private Long pollingDelay;
 
     public boolean isEnabled() {
         return enabled;
@@ -53,18 +51,8 @@ public class NewsRcpPreferences extends AbstractPreferenceInitializer {
         return pollingInterval;
     }
 
-    public Long getStartupDelay() {
-        return startupDelay;
-    }
-
-    @Override
-    public void initializeDefaultPreferences() {
-        IEclipsePreferences s = DefaultScope.INSTANCE.getNode(Constants.PLUGIN_ID);
-        s.putBoolean(Constants.PREF_NEWS_ENABLED, true);
-        s.putBoolean(Constants.PREF_NOTIFICATION_ENABLED, false);
-        s.putLong(Constants.PREF_POLLING_INTERVAL, Constants.DEFAULT_POLLING_INTERVAL);
-        s.putLong(Constants.PREF_STARTUP_DELAY, Constants.DEFAULT_STARTUP_DELAY);
-        s.put(PREF_FEED_LIST_SORTED, FeedDescriptors.feedsToString(FeedDescriptors.getRegisteredFeeds()));
+    public Long getPollingDelay() {
+        return pollingDelay;
     }
 
     public List<FeedDescriptor> getFeedDescriptors() {
