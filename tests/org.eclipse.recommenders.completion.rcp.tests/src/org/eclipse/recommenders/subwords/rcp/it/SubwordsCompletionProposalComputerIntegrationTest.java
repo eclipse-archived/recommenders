@@ -53,8 +53,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
     private static final int MIN_SUBWORDS_MATCH_RELEVANCE = Integer.MIN_VALUE;
     private static final int MAX_SUBWORDS_MATCH_RELEVANCE = -1;
-    private static final int MIN_CAMELCASE_MATCH_RELEVANCE = -6000;
-    private static final int MAX_CAMELCASE_MATCH_RELEVANCE = -4000;
+    private static final int MIN_CAMELCASE_MATCH_RELEVANCE = 0;
+    private static final int MAX_CAMELCASE_MATCH_RELEVANCE = Integer.MAX_VALUE;
     private static final int MIN_PREFIX_MATCH_RELEVANCE = 0;
     private static final int MAX_PREFIX_MATCH_RELEVANCE = Integer.MAX_VALUE;
 
