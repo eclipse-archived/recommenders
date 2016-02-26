@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.recommenders.internal.news.rcp.menus;
+package org.eclipse.recommenders.internal.news.rcp.toolbar;
 
 import static org.eclipse.recommenders.internal.news.rcp.FeedEvents.*;
 

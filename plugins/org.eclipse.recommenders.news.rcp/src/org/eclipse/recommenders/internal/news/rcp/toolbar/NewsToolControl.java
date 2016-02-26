@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015 Codetrails GmbH. All rights reserved. This program and the accompanying materials are made
+ * Copyright (c) 2016 Codetrails GmbH. All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: Johannes Dorn - initial API and implementation.
+ * Contributors: Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.news.rcp;
+package org.eclipse.recommenders.internal.news.rcp.toolbar;
 
 import static org.eclipse.recommenders.internal.news.rcp.MessageUtils.*;
 
@@ -16,16 +16,24 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.recommenders.internal.news.rcp.CommonImages;
+import org.eclipse.recommenders.internal.news.rcp.Constants;
+import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.AllReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedMessageReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.FeedReadEvent;
 import org.eclipse.recommenders.internal.news.rcp.FeedEvents.NewFeedItemsEvent;
+import org.eclipse.recommenders.internal.news.rcp.NewsRcpInjection;
+import org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences;
+import org.eclipse.recommenders.internal.news.rcp.PollingResult;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.recommenders.internal.news.rcp.menus.NewsMenuListener;
 import org.eclipse.recommenders.news.rcp.INewsService;
 import org.eclipse.recommenders.news.rcp.IPollingResult;
 import org.eclipse.recommenders.news.rcp.IPollingResult.Status;
@@ -35,34 +43,44 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
-@Creatable
-public class NewsToolbarContribution extends WorkbenchWindowControlContribution {
+public class NewsToolControl {
 
-    @Inject
-    private INewsService service;
-    @Inject
-    private NewsRcpPreferences preferences;
-    private NewsMenuListener newsMenuListener;
+    private MToolControl modelElement;
+
+    private final NewsRcpPreferences preferences;
+
+    private final INewsService service;
+    private final NewsMenuListener newsMenuListener;
+
     private UpdatingNewsAction updatingNewsAction;
     private MenuManager menuManager;
 
-    public NewsToolbarContribution() {
-        NewsRcpModule.initiateContext(this);
+    @Inject
+    public NewsToolControl(MToolControl modelElement, NewsRcpPreferences preferences) {
+        this.modelElement = modelElement;
+        this.preferences = preferences;
+
+        NewsRcpInjection.addBindings();
+
+        service = (INewsService) ContextInjectionFactory.make(INewsService.class,
+                (IEclipseContext) PlatformUI.getWorkbench().getService(IEclipseContext.class));
+        NewsRcpInjection.EVENT_BUS.register(this);
+
+        newsMenuListener = new NewsMenuListener(NewsRcpInjection.EVENT_BUS, service);
+    }
+
+    @Inject
+    @SuppressWarnings("restriction")
+    public void setEnabled(@Preference(Constants.PREF_NEWS_ENABLED) boolean enabled) {
+        modelElement.setVisible(enabled);
     }
 
     @PostConstruct
-    public void init() {
-        NewsRcpModule.EVENT_BUS.register(this);
-        newsMenuListener = new NewsMenuListener(NewsRcpModule.EVENT_BUS, service);
-    }
-
-    @Override
-    protected Control createControl(Composite parent) {
+    public Control createGui(Composite parent) {
         menuManager = new MenuManager();
         updatingNewsAction = new UpdatingNewsAction();
         ToolBarManager manager = new ToolBarManager(SWT.FLAT | SWT.HORIZONTAL);

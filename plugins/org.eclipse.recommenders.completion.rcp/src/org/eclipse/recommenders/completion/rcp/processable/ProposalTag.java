@@ -62,5 +62,10 @@ public enum ProposalTag implements IProposalTag {
     /**
      * Key to access the active prefix of a proposal. This is similar to {@link IProcessableProposal#getPrefix()}
      */
-    PREFIX
+    PREFIX,
+    /**
+     * Key to access a boolean value indicating whether the given proposal is highlighted, typically by an
+     * implementation of {@link ProposalProcessor#modifyDisplayString(org.eclipse.jface.viewers.StyledString)}.
+     */
+    IS_HIGHLIGHTED
 }

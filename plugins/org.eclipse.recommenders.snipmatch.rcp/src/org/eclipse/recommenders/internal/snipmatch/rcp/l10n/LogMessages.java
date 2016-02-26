@@ -31,6 +31,8 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_CANNOT_COMPUTE_LOCATION);
     public static final LogMessages ERROR_FAILED_TO_BIND_FILE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_BIND_FILE);
+    public static final ILogMessage ERROR_FAILED_TO_EXECUTE_COMMAND = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_EXECUTE_COMMAND);
     public static final LogMessages ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_DELETE_GIT_SNIPPET_REPOSITORY_ON_DISK);
     public static final LogMessages ERROR_FAILED_TO_JOIN_OPEN_JOB = new LogMessages(ERROR,

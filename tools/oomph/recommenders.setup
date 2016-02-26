@@ -1299,7 +1299,6 @@
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
-        id="org.eclipse.oomph.setup.ui"
         name="org.eclipse.oomph.setup.ui">
       <setupTask
           xsi:type="setup:PreferenceTask"
@@ -1374,8 +1373,7 @@
           pattern=".*/features/.*"/>
     </workingSet>
     <workingSet
-        name="Targets Definitions"
-        id="">
+        name="Targets Definitions">
       <predicate
           xsi:type="predicates:LocationPredicate"
           pattern=".*/targets/.*"/>
@@ -1403,7 +1401,7 @@
         targetURL="${workspace.location|uri}/.metadata/.plugins/net.sf.eclipsecs.core/checkstyle-config.xml"/>
     <setupTask
         xsi:type="git:GitCloneTask"
-        id="git.clone.recommenders"
+        id="org.eclipse.recommenders.git"
         remoteURI="recommenders/org.eclipse.recommenders"
         pushURI="">
       <annotation
@@ -1421,7 +1419,7 @@
           <value>remoteURI</value>
         </detail>
       </annotation>
-      <description>Recommenders</description>
+      <description>Git Clone of Code Recommenders Core</description>
     </setupTask>
     <setupTask
         xsi:type="setup.p2:P2Task">
@@ -1486,21 +1484,18 @@
           url="http://download.eclipse.org/technology/epp/logging/milestones/"/>
     </setupTask>
     <setupTask
-        xsi:type="maven:MavenImportTask"
-        id="org.eclipse.recommenders.maven">
+        xsi:type="maven:MavenImportTask">
       <sourceLocator
-          rootFolder="${git.clone.recommenders.location}"
+          rootFolder="${org.eclipse.recommenders.git.location}"
           locateNestedProjects="true"/>
     </setupTask>
     <setupTask
         xsi:type="pde:TargetPlatformTask"
-        id=""
         name="Target Definition for Eclipse Neon (4.6)">
       <description></description>
     </setupTask>
     <setupTask
         xsi:type="mylyn:MylynQueriesTask"
-        id="org.eclipse.recommenders.bugzilla"
         repositoryURL="https://bugs.eclipse.org/bugs"
         userID="${bugzilla.id}"
         password="${eclipse.user.password}">
@@ -1511,7 +1506,6 @@
     </setupTask>
     <setupTask
         xsi:type="mylyn:MylynQueriesTask"
-        id="org.eclipse.recommenders.gerrit"
         connectorKind="org.eclipse.mylyn.gerrit"
         repositoryURL="https://git.eclipse.org/r"
         userID="${bugzilla.id}"
@@ -1532,7 +1526,6 @@
     </setupTask>
     <setupTask
         xsi:type="mylyn:MylynBuildsTask"
-        id="org.eclipse.recommenders.hudson"
         serverURL="https://hudson.eclipse.org/recommenders"
         userID="${bugzilla.id}"
         password="${eclipse.user.password}">
@@ -1565,7 +1558,6 @@
     </setupTask>
     <setupTask
         xsi:type="setup:ResourceCreationTask"
-        id="org.eclipse.recommenders.completion.rcp.options"
         content="org.eclipse.recommenders.completion.rcp/debug=true"
         targetURL="${installation.location|uri}/.options"
         encoding="UTF8">
@@ -1815,8 +1807,7 @@
         <description>Git Clone of Code Recommenders Developer Statistics</description>
       </setupTask>
       <setupTask
-          xsi:type="maven:MavenImportTask"
-          id="org.eclipse.recommenders.stats.maven">
+          xsi:type="maven:MavenImportTask">
         <sourceLocator
             rootFolder="${org.eclipse.recommenders.stats.git.location}"
             locateNestedProjects="true"/>
@@ -1824,11 +1815,9 @@
       </setupTask>
       <setupTask
           xsi:type="pde:TargetPlatformTask"
-          id=""
           name="Target Definition for Eclipse Luna"/>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.stats.bugzilla"
           repositoryURL="https://bugs.eclipse.org/bugs"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -1839,7 +1828,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.stats.gerrit"
           connectorKind="org.eclipse.mylyn.gerrit"
           repositoryURL="https://git.eclipse.org/r"
           userID="${bugzilla.id}"
@@ -1860,7 +1848,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynBuildsTask"
-          id="org.eclipse.recommenders.stats.hudson"
           serverURL="https://hudson.eclipse.org/recommenders"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -1943,7 +1930,6 @@
           name="Target Definition for Eclipse Luna"/>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.livedoc.bugzilla"
           repositoryURL="https://bugs.eclipse.org/bugs"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -1954,7 +1940,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.livedoc.gerrit"
           connectorKind="org.eclipse.mylyn.gerrit"
           repositoryURL="https://git.eclipse.org/r"
           userID="${bugzilla.id}"
@@ -2035,7 +2020,6 @@
       </setupTask>
       <setupTask
           xsi:type="maven:MavenImportTask"
-          id="org.eclipse.recommenders.logging.maven"
           projectNameTemplate="">
         <sourceLocator
             rootFolder="${org.eclipse.recommenders.logging.git.location}"
@@ -2047,7 +2031,6 @@
           name="Target Definition for Eclipse Luna"/>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.logging.bugzilla"
           repositoryURL="https://bugs.eclipse.org/bugs"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -2058,7 +2041,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.logging.gerrit"
           connectorKind="org.eclipse.mylyn.gerrit"
           repositoryURL="https://git.eclipse.org/r"
           userID="${bugzilla.id}"
@@ -2138,8 +2120,7 @@
         <description>Git Clone of Code Recommenders Incubator Privacy</description>
       </setupTask>
       <setupTask
-          xsi:type="maven:MavenImportTask"
-          id="org.eclipse.recommenders.privacy.maven">
+          xsi:type="maven:MavenImportTask">
         <sourceLocator
             rootFolder="${org.eclipse.recommenders.privacy.git.location}"
             locateNestedProjects="true"/>
@@ -2150,7 +2131,6 @@
           name="Target Definition for Eclipse Neon"/>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.privacy.bugzilla"
           repositoryURL="https://bugs.eclipse.org/bugs"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -2161,7 +2141,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.privacy.gerrit"
           connectorKind="org.eclipse.mylyn.gerrit"
           repositoryURL="https://git.eclipse.org/r"
           userID="${bugzilla.id}"
@@ -2182,7 +2161,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynBuildsTask"
-          id="org.eclipse.recommenders.privacy.hudson"
           serverURL="https://hudson.eclipse.org/recommenders"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -2252,8 +2230,7 @@
         <description>Git Clone of Code Recommenders Snipmatch</description>
       </setupTask>
       <setupTask
-          xsi:type="maven:MavenImportTask"
-          id="org.eclipse.recommenders.snipmatch.maven">
+          xsi:type="maven:MavenImportTask">
         <sourceLocator
             rootFolder="${org.eclipse.recommenders.snipmatch.git.location}"
             locateNestedProjects="true"/>
@@ -2264,7 +2241,6 @@
           name="Target Definition for Eclipse Luna"/>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.snipmatch.bugzilla"
           repositoryURL="https://bugs.eclipse.org/bugs"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">
@@ -2275,7 +2251,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynQueriesTask"
-          id="org.eclipse.recommenders.snipmatch.gerrit"
           connectorKind="org.eclipse.mylyn.gerrit"
           repositoryURL="https://git.eclipse.org/r"
           userID="${bugzilla.id}"
@@ -2297,7 +2272,6 @@
       </setupTask>
       <setupTask
           xsi:type="mylyn:MylynBuildsTask"
-          id="org.eclipse.recommenders.snipmatch.hudson"
           serverURL="https://hudson.eclipse.org/recommenders"
           userID="${bugzilla.id}"
           password="${eclipse.user.password}">

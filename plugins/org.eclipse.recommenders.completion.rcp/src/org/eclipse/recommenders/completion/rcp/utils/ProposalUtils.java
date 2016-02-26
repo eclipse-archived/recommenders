@@ -65,7 +65,7 @@ public final class ProposalUtils {
      *
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203">Bug 380203</a>.
      */
-    private static final Field ORIGINAL_SIGNATURE = getDeclaredField(InternalCompletionProposal.class,
+    private static final Field ORIGINAL_SIGNATURE = getDeclaredField(true, InternalCompletionProposal.class,
             "originalSignature") //$NON-NLS-1$
                     .orNull();
 

@@ -54,10 +54,6 @@
 			name="%preferencePages.snipmatch.name">
 			<keywordReference id="org.eclipse.recommenders.snipmatch.rcp.keywords.snipmatch"/>
 		</page>
-		<page id="org.eclipse.recommenders.snipmatch.rcp.preferencePages.snippetEditor"
-			category="org.eclipse.recommenders.snipmatch.rcp.preferencePages.snipmatch"
-			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.SnippetEditorPreferencePage"
-			name="%preferencePages.snippetEditor.name"/>
 	</extension>
 	<extension point="org.eclipse.ui.keywords">
 		<keyword id="org.eclipse.recommenders.snipmatch.rcp.keywords.snipmatch"
@@ -134,5 +130,13 @@
 		<registeredEmfPackages
 			uri="org.eclipse.recommenders.snipmatch.rcp">
 		</registeredEmfPackages>
+	</extension>
+	<extension point="org.eclipse.recommenders.utils.rcp.linkContribution">
+		<linkContribution
+			commandId="org.eclipse.recommenders.rcp.commands.extensionDiscovery"
+			label="%linkContribution.extensionDiscovery.label"
+			icon="icons/obj16/lightbulb.png"
+			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
+			priority="45"/>
 	</extension>
 </plugin>

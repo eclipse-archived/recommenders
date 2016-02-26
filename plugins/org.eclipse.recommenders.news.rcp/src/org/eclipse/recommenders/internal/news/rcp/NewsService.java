@@ -69,7 +69,7 @@ public class NewsService implements INewsService {
     @Inject
     public NewsService(NewsRcpPreferences preferences, INewsProperties newsProperties, IJobFacade jobFacade,
             INotificationFacade notificationFacade) {
-        this(preferences, NewsRcpModule.EVENT_BUS, newsProperties, jobFacade, notificationFacade);
+        this(preferences, NewsRcpInjection.EVENT_BUS, newsProperties, jobFacade, notificationFacade);
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -78,10 +79,19 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
     }
 
     @Override
+    public void init(IWorkbench workbench) {
+        setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.PLUGIN_ID));
+        setMessage(Messages.PREFPAGE_TITLE);
+        setDescription(Messages.PREFPAGE_DESCRIPTION);
+        NewsRcpInjection.initiateContext(this);
+    }
+
+    @Override
     protected void createFieldEditors() {
         enabledEditor = new BooleanFieldEditor(Constants.PREF_NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED, 0,
                 getFieldEditorParent());
         addField(enabledEditor);
+
         startupEditor = new IntegerFieldEditor(Constants.PREF_STARTUP_DELAY, Messages.FIELD_LABEL_STARTUP_DELAY,
                 getFieldEditorParent(), 4);
         addField(startupEditor);
@@ -98,14 +108,8 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                 getFieldEditorParent()));
         addField(new LinkEditor(Messages.PREFPAGE_WEB_BROWSER_SETTINGS, "org.eclipse.ui.browser.preferencePage", //$NON-NLS-1$
                 getFieldEditorParent()));
-    }
 
-    @Override
-    public void init(IWorkbench workbench) {
-        setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.PLUGIN_ID));
-        setMessage(Messages.PREFPAGE_TITLE);
-        setDescription(Messages.PREFPAGE_DESCRIPTION);
-        NewsRcpModule.initiateContext(this);
+        Dialog.applyDialogFont(getControl());
     }
 
     @Override
@@ -342,7 +346,12 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                 @Override
                 public String getText(Object element) {
                     FeedDescriptor feed = (FeedDescriptor) element;
-                    return feed.getName();
+
+                    if (Strings.isNullOrEmpty(feed.getContributedBy())) {
+                        return feed.getName();
+                    }
+
+                    return MessageFormat.format(Messages.FEED_CONTRIBUTED_BY, feed.getName(), feed.getContributedBy());
                 }
 
                 @Override

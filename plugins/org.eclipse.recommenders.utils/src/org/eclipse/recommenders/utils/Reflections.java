@@ -12,6 +12,7 @@ package org.eclipse.recommenders.utils;
 
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -23,7 +24,33 @@ public final class Reflections {
         // Not meant to be instantiated
     }
 
+    public static Optional<Class<?>> loadClass(@Nullable ClassLoader loader, @Nullable String name) {
+        return loadClass(false, loader, name);
+    }
+
+    public static Optional<Class<?>> loadClass(boolean isFunctionalityLimitedOnFailure, @Nullable ClassLoader loader,
+            @Nullable String name) {
+        if (loader == null || name == null) {
+            return Optional.absent();
+        }
+
+        try {
+            Class<?> clazz = loader.loadClass(name);
+            return Optional.<Class<?>>of(clazz);
+        } catch (ClassNotFoundException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+            }
+            return Optional.absent();
+        }
+    }
+
     public static Optional<Field> getDeclaredField(@Nullable Class<?> declaringClass, @Nullable String name) {
+        return getDeclaredField(false, declaringClass, name);
+    }
+
+    public static Optional<Field> getDeclaredField(boolean isFunctionalityLimitedOnFailure,
+            @Nullable Class<?> declaringClass, @Nullable String name) {
         if (declaringClass == null || name == null) {
             return Optional.absent();
         }
@@ -32,14 +59,58 @@ public final class Reflections {
             Field field = declaringClass.getDeclaredField(name);
             field.setAccessible(true);
             return Optional.of(field);
-        } catch (Exception e) {
-            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+        } catch (NoSuchFieldException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+            }
+            return Optional.absent();
+        } catch (SecurityException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+            } else {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+            }
+            return Optional.absent();
+        }
+    }
+
+    public static <T> Optional<Constructor<T>> getDeclaredConstructor(@Nullable Class<T> declaringClass,
+            @Nullable Class<?>... parameterTypes) {
+        return getDeclaredConstructor(false, declaringClass, parameterTypes);
+    }
+
+    public static <T> Optional<Constructor<T>> getDeclaredConstructor(boolean isFunctionalityLimitedOnFailure,
+            @Nullable Class<T> declaringClass, @Nullable Class<?>... parameterTypes) {
+        if (declaringClass == null || parameterTypes == null) {
+            return Optional.absent();
+        }
+
+        try {
+            Constructor<T> constructor = declaringClass.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
+            return Optional.of(constructor);
+        } catch (NoSuchMethodException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, declaringClass);
+            }
+            return Optional.absent();
+        } catch (SecurityException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, declaringClass);
+            } else {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, declaringClass);
+            }
             return Optional.absent();
         }
     }
 
     public static Optional<Method> getDeclaredMethod(@Nullable Class<?> declaringClass, @Nullable String name,
             @Nullable Class<?>... parameterTypes) {
+        return getDeclaredMethod(false, declaringClass, name, parameterTypes);
+    }
+
+    public static Optional<Method> getDeclaredMethod(boolean isFunctionalityLimitedOnFailure,
+            @Nullable Class<?> declaringClass, @Nullable String name, @Nullable Class<?>... parameterTypes) {
         if (declaringClass == null || name == null || parameterTypes == null) {
             return Optional.absent();
         }
@@ -48,28 +119,43 @@ public final class Reflections {
             Method method = declaringClass.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
             return Optional.of(method);
-        } catch (Exception e) {
-            log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+        } catch (NoSuchMethodException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+            }
+            return Optional.absent();
+        } catch (SecurityException e) {
+            if (isFunctionalityLimitedOnFailure) {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+            } else {
+                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+            }
             return Optional.absent();
         }
     }
 
-    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(@Nullable Class<?> declaringClass, @Nullable String name,
+    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(@Nullable Class<?> declaringClass,
+            @Nullable String name, @Nullable Class<?>[]... parameterTypesAlternatives) {
+        return getDeclaredMethodWithAlternativeSignatures(false, declaringClass, name, parameterTypesAlternatives);
+    }
+
+    public static Optional<Method> getDeclaredMethodWithAlternativeSignatures(boolean isFunctionalityLimitedOnFailure,
+            @Nullable Class<?> declaringClass, @Nullable String name,
             @Nullable Class<?>[]... parameterTypesAlternatives) {
         if (declaringClass == null || name == null || parameterTypesAlternatives == null) {
             return Optional.absent();
         }
 
         for (Class<?>[] parameterTypesAlternative : parameterTypesAlternatives) {
-            try {
-                Method method = declaringClass.getDeclaredMethod(name, parameterTypesAlternative);
-                method.setAccessible(true);
-                return Optional.of(method);
-            } catch (Exception e) {
-                // Ignore and try next alternative.
+            Optional<Method> declaredMethod = getDeclaredMethod(false, declaringClass, name, parameterTypesAlternative);
+            if (declaredMethod.isPresent()) {
+                return declaredMethod;
             }
         }
-        log(LogMessages.LOG_WARNING_REFLECTION_FAILED, name);
+
+        if (isFunctionalityLimitedOnFailure) {
+            log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, name);
+        }
         return Optional.absent();
     }
 }

@@ -29,10 +29,10 @@ import com.google.common.base.Optional;
 @Beta
 public final class ScopeAccessWorkaround {
 
-    private static final Field EXTENDED_CONTEXT = Reflections.getDeclaredField(InternalCompletionContext.class,
-            "extendedContext").orNull(); //$NON-NLS-1$
-    private static final Field ASSIST_SCOPE = Reflections.getDeclaredField(InternalExtendedCompletionContext.class,
-            "assistScope").orNull(); //$NON-NLS-1$
+    private static final Field EXTENDED_CONTEXT = Reflections
+            .getDeclaredField(true, InternalCompletionContext.class, "extendedContext").orNull(); //$NON-NLS-1$
+    private static final Field ASSIST_SCOPE = Reflections
+            .getDeclaredField(true, InternalExtendedCompletionContext.class, "assistScope").orNull(); //$NON-NLS-1$
 
     private ScopeAccessWorkaround() {
         // Not meant to be instantiated

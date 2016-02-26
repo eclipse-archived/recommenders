@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.FilterInputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -102,5 +103,37 @@ public class ReflectionsTest {
 
         assertThat(declaringClassIsNull.isPresent(), is(false));
         assertThat(nameIsNull.isPresent(), is(false));
+    }
+
+    @Test
+    public void testGetDeclaredPublicConstructor() {
+        Optional<Constructor<String>> result = Reflections.getDeclaredConstructor(String.class, String.class);
+
+        assertThat(result.isPresent(), is(true));
+    }
+
+    @Test
+    public void testGetDeclaredProtectedConstructor() {
+        Optional<Constructor<Exception>> result = Reflections.getDeclaredConstructor(Exception.class, String.class,
+                Throwable.class, boolean.class, boolean.class);
+
+        assertThat(result.isPresent(), is(true));
+    }
+
+    @Test
+    public void testGetDeclaredMissingConstructor() {
+        Optional<Constructor<String>> result = Reflections.getDeclaredConstructor(String.class, Object.class);
+
+        assertThat(result.isPresent(), is(false));
+    }
+
+    @Test
+    public void testGetDeclaredConstructorIsNullSafe() {
+        Optional<Constructor<String>> declaringClassIsNull = Reflections.getDeclaredConstructor(null, String.class);
+        Optional<Constructor<String>> parameterTypeIsNull = Reflections.getDeclaredConstructor(String.class,
+                (Class[]) null);
+
+        assertThat(declaringClassIsNull.isPresent(), is(false));
+        assertThat(parameterTypeIsNull.isPresent(), is(false));
     }
 }

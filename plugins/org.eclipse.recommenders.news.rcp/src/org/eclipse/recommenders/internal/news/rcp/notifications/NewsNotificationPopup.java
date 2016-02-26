@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.mylyn.commons.ui.compatibility.CommonFonts;
+import org.eclipse.mylyn.commons.ui.dialogs.AbstractNotificationPopup;
 import org.eclipse.recommenders.internal.news.rcp.BrowserUtils;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils;
@@ -40,6 +42,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
 
     private static final int DELAY_CLOSE_MS = 4000;
     private static final int DEFAULT_NOTIFICATION_MESSAGES = 6;
+    private static final int MAX_WIDTH = 400; // Taken from AbstractNotificationPopup.MAX_WIDTH
 
     private final Map<FeedDescriptor, IPollingResult> messages;
     private final EventBus eventBus;
@@ -61,7 +64,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         processNotificationData(composite, sortedMap);
 
         Label hint = new Label(composite, SWT.NONE);
-        GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT).applyTo(hint);
+        GridDataFactory.fillDefaults().hint(MAX_WIDTH, SWT.DEFAULT).applyTo(hint);
         hint.setText(Messages.HINT_MORE_MESSAGES);
     }
 
@@ -72,8 +75,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
         for (Entry<FeedDescriptor, IPollingResult> entry : sortedMap.entrySet()) {
             if (feedCounter < DEFAULT_NOTIFICATION_MESSAGES) {
                 Label feedTitle = new Label(composite, SWT.NONE);
-                GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT)
-                        .applyTo(feedTitle);
+                GridDataFactory.fillDefaults().hint(MAX_WIDTH, SWT.DEFAULT).applyTo(feedTitle);
                 feedTitle.setFont(CommonFonts.BOLD);
                 feedTitle.setText(entry.getKey().getName());
 
@@ -90,7 +92,7 @@ public class NewsNotificationPopup extends AbstractNotificationPopup {
             if (messagesPerFeed < calculatedMessagesPerFeed) {
                 Link link = new Link(composite, SWT.WRAP);
                 link.setText(MessageFormat.format("<a href=\"{1}\">{0}</a>", message.getTitle(), message.getUrl())); //$NON-NLS-1$
-                GridDataFactory.fillDefaults().hint(AbstractNotificationPopup.MAX_WIDTH, SWT.DEFAULT).applyTo(link);
+                GridDataFactory.fillDefaults().hint(MAX_WIDTH, SWT.DEFAULT).applyTo(link);
                 link.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {

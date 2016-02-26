@@ -15,6 +15,8 @@ import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.IS
 import static org.eclipse.recommenders.completion.rcp.processable.Proposals.copyStyledString;
 import static org.eclipse.recommenders.utils.Checks.*;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -24,11 +26,14 @@ import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.utils.MethodHandleUtils;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -52,11 +57,11 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
 
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435597
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_CORE_CONTEXT = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, JavaContentAssistInvocationContext.class, "fCoreContext").orNull(); //$NON-NLS-1$
     private static final Field JAVA_CONTENT_ASSIST_INVOCATION_CONTEXT_F_COLLECTOR = Reflections
-            .getDeclaredField(JavaContentAssistInvocationContext.class, "fCollector").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, JavaContentAssistInvocationContext.class, "fCollector").orNull(); //$NON-NLS-1$
     private static final Field COMPLETION_PROPOSAL_COLLECTOR_F_CONTEXT = Reflections
-            .getDeclaredField(CompletionProposalCollector.class, "fContext").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, CompletionProposalCollector.class, "fContext").orNull(); //$NON-NLS-1$
 
     @Override
     protected LazyJavaCompletionProposal createRequiredTypeCompletionProposal(CompletionProposal completionProposal,
@@ -174,4 +179,20 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
     public ImmutableSet<IProposalTag> tags() {
         return ImmutableSet.copyOf(tags.keySet());
     }
+
+    // No @Override, as introduced in JDT 3.12 (Neon) only
+    protected String getPatternToEmphasizeMatch(IDocument document, int offset) {
+        if (getTag(ProposalTag.IS_HIGHLIGHTED, false) || GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD == null) {
+            return null;
+        } else {
+            try {
+                return (String) GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD.invokeExact(this, document, offset);
+            } catch (Throwable e) {
+                throw Throwables.propagate(e);
+            }
+        }
+    }
+
+    private static MethodHandle GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD = MethodHandleUtils.getSuperMethodHandle(
+            MethodHandles.lookup(), "getPatternToEmphasizeMatch", String.class, IDocument.class, int.class).orNull();
 }

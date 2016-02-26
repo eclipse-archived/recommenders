@@ -17,6 +17,8 @@ import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -28,11 +30,14 @@ import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeProposalInfo;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.utils.MethodHandleUtils;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -41,7 +46,7 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
         implements IProcessableProposal {
 
     private static final Field F_SUPER_TYPE = Reflections
-            .getDeclaredField(AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
+            .getDeclaredField(true, AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
 
     private final Map<IProposalTag, Object> tags = Maps.newHashMap();
     private final CompletionProposal coreProposal;
@@ -176,4 +181,20 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
     public ImmutableSet<IProposalTag> tags() {
         return ImmutableSet.copyOf(tags.keySet());
     }
+
+    // No @Override, as introduced in JDT 3.12 (Neon) only
+    protected String getPatternToEmphasizeMatch(IDocument document, int offset) {
+        if (getTag(ProposalTag.IS_HIGHLIGHTED, false) || GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD == null) {
+            return null;
+        } else {
+            try {
+                return (String) GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD.invokeExact(this, document, offset);
+            } catch (Throwable e) {
+                throw Throwables.propagate(e);
+            }
+        }
+    }
+
+    private static MethodHandle GET_PATTERN_TO_EMPHASIZE_MATCH_SUPER_METHOD = MethodHandleUtils.getSuperMethodHandle(
+            MethodHandles.lookup(), "getPatternToEmphasizeMatch", String.class, IDocument.class, int.class).orNull();
 }
