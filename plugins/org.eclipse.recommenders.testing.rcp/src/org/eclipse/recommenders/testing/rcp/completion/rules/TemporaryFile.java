@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
@@ -41,7 +42,8 @@ import com.google.common.collect.Sets;
 @SuppressWarnings("restriction")
 public class TemporaryFile {
 
-    private static final String JAVA_IDENTIFIER_REGEX = "([a-zA-Z_$\\p{Lu}\\p{Ll}]{1}" + "[a-zA-Z_$0-9\\p{Lu}\\p{Ll}\\p{Nl}]*)";
+    private static final String JAVA_IDENTIFIER_REGEX = "([a-zA-Z_$\\p{Lu}\\p{Ll}]{1}"
+            + "[a-zA-Z_$0-9\\p{Lu}\\p{Ll}\\p{Nl}]*)";
 
     private final ICompilationUnit cu;
     private final Set<Integer> markers;
@@ -135,6 +137,10 @@ public class TemporaryFile {
             cu = (ICompilationUnit) javaProject.findElement(srcRelativePath);
         }
         return cu;
+    }
+
+    public void openFileInEditor() throws CoreException {
+        JavaUI.openInEditor(cu);
     }
 
     private static String findClassName(final CharSequence source) {
