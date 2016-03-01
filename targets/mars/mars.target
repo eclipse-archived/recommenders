@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="160">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="161">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable build for Mars.2 RC4 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.5-M-builds/M-4.5.2RC4-201602121500/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/modeling/emf/emf/updates/2.11.x/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/mylyn/snapshots/weekly/"/>
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+<!-- Stable build for Mars.2 -->
+<repository location="http://download.eclipse.org/releases/mars/201602261000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
@@ -72,7 +63,7 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9005 -->
-<unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715B"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9004 -->
 <unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
@@ -95,8 +86,9 @@
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- Recommended Orbit build for Mars.2 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20151221205849/repository/"/>
+<!-- Recommended Orbit build for Mars.2+ -->
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=487833#c29 as to why this is Mars.2+ rather than Mars.2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
