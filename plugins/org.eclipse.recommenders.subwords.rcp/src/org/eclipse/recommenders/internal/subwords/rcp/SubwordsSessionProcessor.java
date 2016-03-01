@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.subwords.rcp;
 
 import static java.lang.Math.min;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.eclipse.recommenders.completion.rcp.CompletionContextKey.JAVA_PROPOSALS;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.*;
 import static org.eclipse.recommenders.internal.subwords.rcp.LCSS.containsSubsequence;
@@ -90,8 +89,6 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     // Negative value ensures subsequence matches have a lower relevance than standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -9000;
-    private static final int CAMEL_CASE_RANGE_START = -6000;
-    private static final int IGNORE_CASE_RANGE_START = -3000;
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
@@ -428,16 +425,8 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             }
 
             /**
-             * Since we may simulate completion triggers at positions before the actual triggering, we don't get JDT's
-             * additional relevance for exact prefix matches. So we add the additional relevance ourselves, if is not
-             * already supplied by the JDT which it does, if the prefix is shorter than the configured minimum prefix
-             * length.
-             *
-             * The boost is the same one as JDT adds at
+             * The fundamental logic of this method has been taken from the method
              * {@link org.eclipse.jdt.internal.codeassist.CompletionEngine#computeRelevanceForCaseMatching}
-             *
-             * The boost is further multiplied by 16 which reflects the same thing happening in
-             * {@link org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal#computeRelevance}
              */
             @Override
             public int modifyRelevance() {
@@ -448,31 +437,44 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
                 int relevanceBoost = 0;
 
-                if (minPrefixLengthForTypes < prefix.length() && StringUtils.equalsIgnoreCase(matchingArea, prefix)) {
-                    relevanceBoost += 16 * RelevanceConstants.R_EXACT_NAME;
-                    proposal.setTag(IS_EXACT_MATCH, true);
-                }
-
-                // We only apply case matching to genuine Java proposals, i.e., proposals link HTML tags are ranked
-                // together with the case in-sensitive matches.
-                if (StringUtils.startsWith(matchingArea, prefix) && isFromJavaCompletionProposalComputer(proposal)) {
+                /*
+                 * In providing subwords proposals we simulate two content assist triggers. The first is at position 0
+                 * and the second at the position of the minimum prefix length. For the case that the prefix is longer
+                 * than the minimum prefix length we need to take extra steps to ensure that possible recommendations
+                 * which would be an exact match to this full prefix are given a boost, as they would be for
+                 * non-subwords proposals. (see Bug 468494)
+                 *
+                 * The boost for full prefix matches is the same one as JDT adds at {@link
+                 * org.eclipse.jdt.internal.codeassist.CompletionEngine#computeRelevanceForCaseMatching}
+                 *
+                 * The boost is further multiplied by 16 which reflects what happens in {@link
+                 * org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal#computeRelevance}
+                 */
+                if (StringUtils.equals(prefix, matchingArea)) {
+                    if (minPrefixLengthForTypes < prefix.length()) {
+                        relevanceBoost = 16 * (RelevanceConstants.R_EXACT_NAME + RelevanceConstants.R_CASE);
+                    }
                     proposal.setTag(SUBWORDS_SCORE, null);
+                    proposal.setTag(IS_EXACT_MATCH, true);
                     proposal.setTag(IS_PREFIX_MATCH, true);
-                    // Don't adjust relevance.
-                } else if (startsWithIgnoreCase(matchingArea, prefix)) {
+                } else if (StringUtils.equalsIgnoreCase(prefix, matchingArea)) {
+                    if (minPrefixLengthForTypes < prefix.length()) {
+                        relevanceBoost = 16 * RelevanceConstants.R_EXACT_NAME;
+                    }
+                    proposal.setTag(SUBWORDS_SCORE, null);
+                    proposal.setTag(IS_EXACT_MATCH, true);
+                    proposal.setTag(IS_CASE_INSENSITIVE_PREFIX_MATCH, true);
+                } else if (StringUtils.startsWithIgnoreCase(prefix, matchingArea)) {
+                    // Don't adjust score
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_CASE_INSENSITIVE_PREFIX_MATCH, true);
-                    relevanceBoost = IGNORE_CASE_RANGE_START + relevanceBoost;
-                } else if (CharOperation.camelCaseMatch(prefix.toCharArray(), matchingArea.toCharArray())
-                        && isFromJavaCompletionProposalComputer(proposal)) {
-                    proposal.setTag(IS_PREFIX_MATCH, false);
+                } else if (CharOperation.camelCaseMatch(prefix.toCharArray(), matchingArea.toCharArray())) {
+                    // Don't adjust score
                     proposal.setTag(IS_CAMEL_CASE_MATCH, true);
-                    relevanceBoost = CAMEL_CASE_RANGE_START + relevanceBoost;
                 } else {
                     int score = LCSS.scoreSubsequence(bestSequence);
-                    proposal.setTag(IS_PREFIX_MATCH, false);
                     proposal.setTag(SUBWORDS_SCORE, score);
-                    relevanceBoost = SUBWORDS_RANGE_START + relevanceBoost + score;
+                    relevanceBoost = SUBWORDS_RANGE_START + score;
                 }
 
                 return relevanceBoost;

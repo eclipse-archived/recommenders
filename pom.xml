@@ -331,6 +331,7 @@
 								<encoding>${project.build.sourceEncoding}</encoding>
 								<header>header-codetrails-2016.txt</header>
 								<validHeaders>
+									<validHeader>header-acurana-2016.txt</validHeader>
 									<validHeader>header-amann-2012.txt</validHeader>
 									<validHeader>header-aziza-2016.txt</validHeader>
 									<validHeader>header-codetrails-2014.txt</validHeader>

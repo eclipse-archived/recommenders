@@ -8,7 +8,7 @@
  * Contributors:
  *    Andreas Sewe - initial API and implementation.
  */
-package org.eclipse.recommenders.snipmatch.rcp.util;
+package org.eclipse.recommenders.internal.snipmatch.rcp.util;
 
 import java.util.Set;
 

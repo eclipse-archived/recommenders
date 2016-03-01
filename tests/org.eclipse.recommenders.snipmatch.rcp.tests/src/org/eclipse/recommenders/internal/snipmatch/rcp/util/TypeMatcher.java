@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.snipmatch.rcp.util;
+package org.eclipse.recommenders.internal.snipmatch.rcp.util;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.mockito.ArgumentMatcher;

@@ -2,8 +2,8 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
 import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.completion.RepositoryProposalMatcher.repository;
-import static org.eclipse.recommenders.snipmatch.rcp.util.SearchContextMatcher.context;
-import static org.eclipse.recommenders.snipmatch.rcp.util.SnippetProposalMatcher.snippet;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.util.SearchContextMatcher.context;
+import static org.eclipse.recommenders.internal.snipmatch.rcp.util.SnippetProposalMatcher.snippet;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.*;
