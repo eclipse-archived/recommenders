@@ -206,6 +206,33 @@
 					<artifactId>target-platform-configuration</artifactId>
 					<version>${tychoVersion}</version>
 					<configuration>
+						<environments>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>macosx</os>
+								<ws>cocoa</ws>
+								<arch>x86_64</arch>
+							</environment>
+						</environments>
 						<executionEnvironmentDefault>JavaSE-${javaVersion}</executionEnvironmentDefault>
 						<includePackedArtifacts>true</includePackedArtifacts>
 						<target>
