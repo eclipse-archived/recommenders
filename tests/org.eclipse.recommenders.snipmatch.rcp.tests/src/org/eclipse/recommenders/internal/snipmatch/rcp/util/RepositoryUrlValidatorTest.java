@@ -27,13 +27,12 @@ public class RepositoryUrlValidatorTest {
     @Parameters
     public static Collection<Object[]> scenarios() {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
-
         scenarios.add(invalidUri(""));
         scenarios.add(invalidUri("http://"));
         scenarios.add(invalidUri("http://foo.com"));
         scenarios.add(invalidUri("https:///www.foo.bar/"));
         scenarios.add(invalidUri("http://.."));
-        scenarios.add(invalidUri("ssh://serverexample.com@example.com:/home/git.example.com/example.git"));
+        scenarios.add(invalidUri("ssh:user|example.com:my-project"));
 
         scenarios.add(validUri("http://foo.com/bar_bar"));
         scenarios.add(validUri("https://userid@example.com/"));
@@ -54,6 +53,6 @@ public class RepositoryUrlValidatorTest {
 
     @Test
     public void testValidateUri() {
-        assertThat(RepositoryUrlValidator.isValidUri(inputUri), is(expectedResult));
+        assertThat(RepositoryUrlValidator.isValidUri(inputUri).isOK(), is(expectedResult));
     }
 }
