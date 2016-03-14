@@ -24,22 +24,34 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.mylyn.commons.notifications.core.AbstractNotification;
 import org.eclipse.mylyn.commons.notifications.ui.NotificationsUi;
+import org.eclipse.mylyn.internal.commons.notifications.ui.popup.NotificationPopup;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences;
 import org.eclipse.recommenders.internal.news.rcp.TopicConstants;
 import org.eclipse.recommenders.news.api.NewsItem;
 import org.eclipse.recommenders.news.api.poll.PollingResult;
 
+import com.google.common.collect.Ordering;
+
 @Creatable
 @Singleton
 public class NotificationBridge {
+
+    /**
+     * Mylyn's {@link NotificationPopup} can show up to 4 notifications. If more are present, it shows a bogus
+     * <q><var>n</var> more</q> link which does nothing.
+     *
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=489504">Bug 489504</a>
+     */
+    private final int MAX_NOTIFICATIONS = 4;
 
     private final NewsRcpPreferences preferences;
     private final ECommandService commandService;
     private final EHandlerService handlerService;
 
     @Inject
-    public NotificationBridge(NewsRcpPreferences preferences, ECommandService commandService, EHandlerService handlerService) {
+    public NotificationBridge(NewsRcpPreferences preferences, ECommandService commandService,
+            EHandlerService handlerService) {
         this.preferences = preferences;
         this.commandService = commandService;
         this.handlerService = handlerService;
@@ -47,7 +59,8 @@ public class NotificationBridge {
 
     @Inject
     @Optional
-    public void handlePollingResults(@EventTopic(TopicConstants.POLLING_RESULTS) Collection<PollingResult> pollingResults) {
+    public void handlePollingResults(
+            @EventTopic(TopicConstants.POLLING_RESULTS) Collection<PollingResult> pollingResults) {
         List<AbstractNotification> notifications = new ArrayList<>();
 
         List<FeedDescriptor> feedDescriptors = preferences.getFeedDescriptors();
@@ -57,13 +70,14 @@ public class NotificationBridge {
             for (FeedDescriptor feedDescriptor : feedDescriptors) {
                 if (feedDescriptor.isEnabled() && pollingResult.getFeedUri().equals(feedDescriptor.getUri())) {
                     for (NewsItem newNewsItem : pollingResult.getNewNewsItems()) {
-                        notifications.add(new NewNewsItemsNotification(newNewsItem, feedDescriptor, token, commandService, handlerService));
+                        notifications.add(new NewNewsItemsNotification(newNewsItem, feedDescriptor, token,
+                                commandService, handlerService));
                     }
                     break;
                 }
             }
         }
 
-        NotificationsUi.getService().notify(notifications);
+        NotificationsUi.getService().notify(Ordering.natural().leastOf(notifications, MAX_NOTIFICATIONS));
     }
 }
