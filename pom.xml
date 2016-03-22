@@ -185,6 +185,11 @@
 					<artifactId>maven-remote-resources-plugin</artifactId>
 					<version>1.5</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-toolchains-plugin</artifactId>
+					<version>1.1</version>
+				</plugin>
 				<!-- Eclipse Tycho plugins -->
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -206,33 +211,6 @@
 					<artifactId>target-platform-configuration</artifactId>
 					<version>${tychoVersion}</version>
 					<configuration>
-						<environments>
-							<environment>
-								<os>win32</os>
-								<ws>win32</ws>
-								<arch>x86</arch>
-							</environment>
-							<environment>
-								<os>win32</os>
-								<ws>win32</ws>
-								<arch>x86_64</arch>
-							</environment>
-							<environment>
-								<os>linux</os>
-								<ws>gtk</ws>
-								<arch>x86</arch>
-							</environment>
-							<environment>
-								<os>linux</os>
-								<ws>gtk</ws>
-								<arch>x86_64</arch>
-							</environment>
-							<environment>
-								<os>macosx</os>
-								<ws>cocoa</ws>
-								<arch>x86_64</arch>
-							</environment>
-						</environments>
 						<executionEnvironmentDefault>JavaSE-${javaVersion}</executionEnvironmentDefault>
 						<includePackedArtifacts>true</includePackedArtifacts>
 						<target>
@@ -530,15 +508,31 @@
 			</build>
 		</profile>
 		<profile>
-			<!-- Activate the "toolchains" profile if you have toolchains configured. (This is the case on hudson.eclipse.org.) -->
-			<id>toolchains</id>
+			<!-- Set the "toolchain" property (to "JavaSE-1.7", "JavaSE-1.8") if you have toolchains configured. (This is the case on hudson.eclipse.org.) -->
+			<id>toolchain</id>
+			<activation>
+				<property>
+					<name>toolchain</name>
+				</property>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-compiler-plugin</artifactId>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-toolchains-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>toolchain</goal>
+								</goals>
+							</execution>
+						</executions>
 						<configuration>
-							<useJDK>BREE</useJDK>
+							<toolchains>
+								<jdk>
+									<id>${toolchain}</id>
+								</jdk>
+							</toolchains>
 						</configuration>
 					</plugin>
 				</plugins>
