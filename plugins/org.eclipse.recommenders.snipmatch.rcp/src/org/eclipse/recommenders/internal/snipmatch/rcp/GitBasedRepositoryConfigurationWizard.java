@@ -17,6 +17,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -210,10 +211,13 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
                 }
             });
 
-            Label lblPushSettingsDescription = new Label(group, SWT.NONE);
+            Label lblPushSettingsDescription = new Label(group, SWT.NONE | SWT.WRAP);
+            lblPushSettingsDescription.setLayoutData(GridDataFactory.swtDefaults().span(4, 1)
+                    .align(SWT.FILL, SWT.BEGINNING).grab(true, false)
+                    .hint(super.convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH), SWT.DEFAULT)
+                    .create());
             lblPushSettingsDescription.setText(MessageFormat
                     .format(Messages.WIZARD_GIT_REPOSITORY_PUSH_SETTINGS_DESCRIPTION, Snippet.FORMAT_VERSION));
-            GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(lblPushSettingsDescription);
 
             Label lblPushBranchPrefix = new Label(group, SWT.NONE);
             lblPushBranchPrefix.setText(Messages.WIZARD_GIT_REPOSITORY_LABEL_PUSH_BRANCH_PREFIX);
