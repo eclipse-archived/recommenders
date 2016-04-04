@@ -10,21 +10,26 @@
  */
 package org.eclipse.recommenders.testing;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import org.junit.rules.ExternalResource;
 
 public class RetainSystemProperties extends ExternalResource {
 
-    private Properties properties;
+    private HashMap<Object, Object> backup;
 
     @Override
     protected void before() {
-        properties = (Properties) System.getProperties().clone();
+        // Back up system properties (but not their default values).
+        backup = new HashMap<>(System.getProperties());
     }
 
     @Override
     protected void after() {
-        System.setProperties(properties);
+        // Re-insert backed up systme properties (but leave default values as is).
+        Properties properties = System.getProperties();
+        properties.clear();
+        properties.putAll(backup);
     }
 }
