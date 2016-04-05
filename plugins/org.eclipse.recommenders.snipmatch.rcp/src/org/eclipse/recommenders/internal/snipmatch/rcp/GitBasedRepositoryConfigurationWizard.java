@@ -154,17 +154,17 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
                 if (PUSH_BRANCH_PREFIXES.contains(pushBranchPrefix)) {
                     cmbPushBranchRepository.select(PUSH_BRANCH_PREFIXES.indexOf(pushBranchPrefix));
                     txtPushBranchPrefix.setText(pushBranchPrefix);
-                    txtPushBranchPrefix.setEditable(false);
+                    txtPushBranchPrefix.setEnabled(false);
                 } else {
                     cmbPushBranchRepository.select(
                             REPOSITORY_OPTIONS.indexOf(Messages.WIZARD_GIT_REPOSITORY_OPTION_OTHER_PUSH_BRANCH_PREFIX));
                     txtPushBranchPrefix.setText(pushBranchPrefix);
-                    txtPushBranchPrefix.setEditable(true);
+                    txtPushBranchPrefix.setEnabled(true);
                 }
             } else {
                 cmbPushBranchRepository.select(0);
                 txtPushBranchPrefix.setText(PUSH_BRANCH_PREFIXES.get(0));
-                txtPushBranchPrefix.setEditable(false);
+                txtPushBranchPrefix.setEnabled(false);
             }
 
             txtName.forceFocus();
@@ -233,11 +233,11 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
                     if (cmbPushBranchRepository.getText()
                             .equals(Messages.WIZARD_GIT_REPOSITORY_OPTION_OTHER_PUSH_BRANCH_PREFIX)) {
                         txtPushBranchPrefix.setText("");
-                        txtPushBranchPrefix.setEditable(true);
+                        txtPushBranchPrefix.setEnabled(true);
                     } else {
                         txtPushBranchPrefix
                                 .setText(PUSH_BRANCH_PREFIXES.get(cmbPushBranchRepository.getSelectionIndex()));
-                        txtPushBranchPrefix.setEditable(false);
+                        txtPushBranchPrefix.setEnabled(false);
                     }
                 }
 
