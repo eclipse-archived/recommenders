@@ -15,7 +15,7 @@ package org.eclipse.recommenders.completion.rcp.utils;
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.jdt.core.compiler.CharOperation.NO_CHAR;
-import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_REFLECTION_FAILED;
+import static org.eclipse.recommenders.utils.LogMessages.LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY;
 import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
@@ -260,7 +260,8 @@ public final class ProposalUtils {
             try {
                 signature = (char[]) ORIGINAL_SIGNATURE.get(proposal);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                log(LOG_WARNING_REFLECTION_FAILED, e, ORIGINAL_SIGNATURE);
+                log(LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY, e, ORIGINAL_SIGNATURE,
+                        ORIGINAL_SIGNATURE.getDeclaringClass());
             }
         }
         return signature != null ? signature : proposal.getSignature();
