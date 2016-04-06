@@ -21,12 +21,24 @@ public final class LogMessages extends DefaultLogMessage {
 
     private static final Bundle BUNDLE = Logs.getBundle(LogMessages.class);
 
-    public static final LogMessages LOG_WARNING_REFLECTION_FAILED = new LogMessages(WARNING,
-            "Could not access \u2018{0}\u2019 using reflection.");
-    public static final LogMessages LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY = new LogMessages(WARNING,
-            "Could not access \u2018{0}\u2019 using reflection. Functionality may be limited.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY = new LogMessages(WARNING,
+            "Could not access field {0} of {1} using reflection.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_CONSTRUCTOR_REFLECTIVELY = new LogMessages(WARNING,
+            "Could not access constructor of {0} using reflection.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY = new LogMessages(WARNING,
+            "Could not access method {0} of {1} using reflection.");
+
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_CLASS_REFLECTIVELY_LIMITED_FUNCTIONALITY = new LogMessages(
+            WARNING, "Could not access class {0} using reflection. Functionality may be limited.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY_LIMITED_FUNCTIONALITY = new LogMessages(
+            WARNING, "Could not access field {0} of {1} using reflection. Functionality may be limited.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_CONSTRUCTOR_REFLECTIVELY_LIMITED_FUNCTIONALITY = new LogMessages(
+            WARNING, "Could not access constructor of {0} using reflection. Functionality may be limited.");
+    public static final LogMessages LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY_LIMITED_FUNCTIONALITY = new LogMessages(
+            WARNING, "Could not access method {0} of {1} using reflection. Functionality may be limited.");
+
     public static final LogMessages LOG_ERROR_CANNOT_CLOSE_RESOURCE = new LogMessages(ERROR,
-            "Failed to close resource ''{0}''");
+            "Failed to close resource \u2018{0}\u2019");
 
     private LogMessages(int severity, String message) {
         super(severity, code++, message);

@@ -39,7 +39,7 @@ public final class Reflections {
             return Optional.<Class<?>>of(clazz);
         } catch (ClassNotFoundException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_CLASS_REFLECTIVELY_LIMITED_FUNCTIONALITY, e, name);
             }
             return Optional.absent();
         }
@@ -61,14 +61,16 @@ public final class Reflections {
             return Optional.of(field);
         } catch (NoSuchFieldException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY_LIMITED_FUNCTIONALITY, e, name,
+                        declaringClass);
             }
             return Optional.absent();
         } catch (SecurityException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY_LIMITED_FUNCTIONALITY, e, name,
+                        declaringClass);
             } else {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_FIELD_REFLECTIVELY, e, name, declaringClass);
             }
             return Optional.absent();
         }
@@ -91,14 +93,16 @@ public final class Reflections {
             return Optional.of(constructor);
         } catch (NoSuchMethodException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, declaringClass);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_CONSTRUCTOR_REFLECTIVELY_LIMITED_FUNCTIONALITY, e,
+                        declaringClass);
             }
             return Optional.absent();
         } catch (SecurityException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, declaringClass);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_CONSTRUCTOR_REFLECTIVELY_LIMITED_FUNCTIONALITY, e,
+                        declaringClass);
             } else {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, declaringClass);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_CONSTRUCTOR_REFLECTIVELY, e, declaringClass);
             }
             return Optional.absent();
         }
@@ -121,14 +125,16 @@ public final class Reflections {
             return Optional.of(method);
         } catch (NoSuchMethodException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY_LIMITED_FUNCTIONALITY, e, name,
+                        declaringClass);
             }
             return Optional.absent();
         } catch (SecurityException e) {
             if (isFunctionalityLimitedOnFailure) {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY_LIMITED_FUNCTIONALITY, e, name,
+                        declaringClass);
             } else {
-                log(LogMessages.LOG_WARNING_REFLECTION_FAILED, e, name);
+                log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY, e, name, declaringClass);
             }
             return Optional.absent();
         }
@@ -154,7 +160,8 @@ public final class Reflections {
         }
 
         if (isFunctionalityLimitedOnFailure) {
-            log(LogMessages.LOG_WARNING_REFLECTION_FAILED_LIMITED_FUNCTIONALITY, name);
+            log(LogMessages.LOG_WARNING_FAILED_TO_ACCESS_METHOD_REFLECTIVELY_LIMITED_FUNCTIONALITY, name,
+                    declaringClass);
         }
         return Optional.absent();
     }
