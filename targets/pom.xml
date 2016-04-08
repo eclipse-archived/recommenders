@@ -22,4 +22,21 @@
 		<module>mars</module>
 		<module>neon</module>
 	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>target-platform-validation-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>validate-target-platform</id>
+						<goals>
+							<goal>validate-target-platform</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
