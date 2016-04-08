@@ -39,7 +39,12 @@
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
-							<appArgLine>-application org.eclipse.ant.core.antRunner -data ${project.build.directory}/antrunner-workspace</appArgLine>
+							<applicationsArgs>
+								<arg>-application</arg>
+								<arg>org.eclipse.ant.core.antRunner</arg>
+								<arg>-data</arg>
+								<arg>${project.build.directory}/antrunner-workspace</arg>
+							</applicationsArgs>
 							<dependencies>
 								<dependency>
 									<artifactId>org.eclipse.ant.launching</artifactId>

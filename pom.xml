@@ -65,7 +65,7 @@
 	<properties>
 		<recommendersVersion>2.4.0-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
-		<tychoVersion>0.24.0</tychoVersion>
+		<tychoVersion>0.25.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>neon</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
@@ -305,6 +305,11 @@
 				<plugin>
 					<groupId>org.eclipse.tycho.extras</groupId>
 					<artifactId>tycho-source-feature-plugin</artifactId>
+					<version>${tychoVersion}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>target-platform-validation-plugin</artifactId>
 					<version>${tychoVersion}</version>
 				</plugin>
 				<!-- Eclipse Common Build Infrastructure plugins -->
