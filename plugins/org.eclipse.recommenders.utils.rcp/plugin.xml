@@ -27,5 +27,13 @@
 				optional="false">
 			</commandParameter>
 		</command>
+		<command id="org.eclipse.recommenders.utils.rcp.commands.openHelp"
+			defaultHandler="org.eclipse.recommenders.internal.utils.rcp.help.OpenHelpHandler"
+			name="%commands.openHelp.name">
+			<commandParameter id="org.eclipse.recommenders.utils.rcp.linkContribution.href"
+				name="%commandParameter.uri.name"
+				optional="false">
+			</commandParameter>
+		</command>
 	</extension>
 </plugin>
