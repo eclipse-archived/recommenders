@@ -152,11 +152,6 @@ public class NewsToolControl {
         // No op
     }
 
-    @Inject
-    public void setEnabled(@Preference(PreferenceConstants.NEWS_ENABLED) boolean enabled) {
-        modelElement.setToBeRendered(enabled);
-    }
-
     @PostConstruct
     public void createGui(Composite parent) {
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.HORIZONTAL);

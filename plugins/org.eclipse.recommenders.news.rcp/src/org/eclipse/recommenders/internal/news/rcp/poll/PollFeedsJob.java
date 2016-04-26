@@ -47,7 +47,7 @@ public class PollFeedsJob extends Job {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        if (periodic) {
+        if (periodic && preferences.isEnabled()) {
             schedule(MINUTES.toMillis(preferences.getPollingInterval()));
         }
 

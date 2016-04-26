@@ -77,11 +77,19 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
     @Override
     protected void createFieldEditors() {
         enabledEditor = new BooleanFieldEditor(PreferenceConstants.NEWS_ENABLED, Messages.FIELD_LABEL_NEWS_ENABLED, 0,
-                getFieldEditorParent());
+                getFieldEditorParent()) {
+            @Override
+            protected void valueChanged(boolean oldValue, boolean newValue) {
+                super.valueChanged(oldValue, newValue);
+                startupEditor.setEnabled(enabledEditor.getBooleanValue(), getFieldEditorParent());
+            }
+        };
         addField(enabledEditor);
 
         startupEditor = new IntegerFieldEditor(PreferenceConstants.POLLING_DELAY, Messages.FIELD_LABEL_STARTUP_DELAY,
                 getFieldEditorParent(), 4);
+        startupEditor.setEnabled(getPreferenceStore().getBoolean(PreferenceConstants.NEWS_ENABLED),
+                getFieldEditorParent());
         addField(startupEditor);
 
         final Composite bottomGroup = new Composite(getFieldEditorParent(), SWT.NONE);
