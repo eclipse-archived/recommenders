@@ -55,12 +55,6 @@
 			icon="icons/obj16/forum.png"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="50"/>
-		<linkContribution
-			commandId="org.eclipse.recommenders.utils.rcp.commands.openBrowserDialog"
-			label="%linkContribution.newsletter.label"
-			icon="icons/obj16/newsletter.png"
-			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
-			priority="60"/>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
 		<command id="org.eclipse.recommenders.rcp.commands.extensionDiscovery"
