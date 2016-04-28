@@ -196,7 +196,7 @@ Make sure that the [head of the `maintenance` branch](https://git.eclipse.org/c/
 - `mvn clean -Dtycho.mode=maven`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${MASTER_VERSION}`
 - `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
-- `mvn tidy:pom`
+- `mvn tidy:pom -Dtycho.mode=maven`
 - `git commit -a -m "[releng] ${MASTER_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
 - `git push --force origin HEAD:refs/for/maintenance`
