@@ -68,6 +68,7 @@ import org.eclipse.recommenders.internal.snipmatch.Filenames;
 import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
+import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,10 +144,11 @@ public class FileSnippetRepository implements ISnippetRepository {
         Preconditions.checkArgument(basedir.isAbsolute());
         Preconditions.checkArgument(CACHE_SIZE > MAX_SEARCH_RESULTS,
                 "The cache size needs to be larger than the maximum number of search results.");
+
         this.id = id;
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
-        repoUrl = mangle(basedir.getPath());
+        repoUrl = mangle(Urls.getUrl(basedir));
 
         analyzer = createAnalyzer();
         parser = createParser();
