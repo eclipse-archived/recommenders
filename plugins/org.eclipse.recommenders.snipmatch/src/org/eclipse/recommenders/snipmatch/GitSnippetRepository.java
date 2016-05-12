@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -35,7 +37,11 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.recommenders.internal.snipmatch.ChainingCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,7 +184,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         StoredConfig config = git.getRepository().getConfig();
         config.setString("remote", "origin", "url", getRepositoryLocation());
         config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-        config.setString("remote", "origin", "pushUrl", pushUrl);
+        config.setString("remote", "origin", "pushUrl", getPushUrl());
         // prevents trust anchor errors when pulling from eclipse.org
         config.setBoolean("http", null, "sslVerify", false);
         config.save();
@@ -186,9 +192,34 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     private Git fetch() throws GitAPIException, IOException {
         localRepo = new FileRepositoryBuilder().setGitDir(gitFile).build();
+
         Git git = new Git(localRepo);
-        git.fetch().call();
+        FetchCommand fetch = git.fetch();
+        fetch.setCredentialsProvider(getCredentialsProvider(fetchUrl));
+        fetch.call();
         return git;
+    }
+
+    public static CredentialsProvider getCredentialsProvider(String urlString) {
+        URIish uri;
+        try {
+            uri = new URIish(urlString);
+        } catch (URISyntaxException e) {
+            // ignore
+            return CredentialsProvider.getDefault();
+        }
+
+        String username = uri.getUser();
+        String password = uri.getPass();
+
+        if (username == null || password == null) {
+            return CredentialsProvider.getDefault();
+        }
+
+        UsernamePasswordCredentialsProvider usernamePasswordProvider = new UsernamePasswordCredentialsProvider(username,
+                password);
+
+        return new ChainingCredentialsProvider(usernamePasswordProvider, CredentialsProvider.getDefault());
     }
 
     private String getCheckoutBranch(Git git) throws IOException, GitAPIException {
@@ -236,6 +267,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         checkout.call();
 
         PullCommand pull = git.pull();
+        pull.setCredentialsProvider(getCredentialsProvider(fetchUrl));
         pull.call();
     }
 
@@ -281,5 +313,9 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     public File getBasedir() {
         return basedir;
+    }
+
+    public String getPushUrl() {
+        return pushUrl;
     }
 }

@@ -55,7 +55,6 @@ import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.eclipse.egit.ui.internal.commit.CommitHelper;
 import org.eclipse.egit.ui.internal.commit.CommitJob;
-import org.eclipse.egit.ui.internal.credentials.EGitCredentialsProvider;
 import org.eclipse.egit.ui.internal.dialogs.CommitDialog;
 import org.eclipse.egit.ui.internal.push.SimpleConfigurePushDialog;
 import org.eclipse.emf.common.util.BasicEList;
@@ -661,7 +660,8 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         RemoteConfig config = SimpleConfigurePushDialog.getConfiguredRemote(repository);
         int timeout = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.REMOTE_CONNECTION_TIMEOUT);
         final PushOperation push = new PushOperation(repository, config.getName(), false, timeout);
-        push.setCredentialsProvider(new EGitCredentialsProvider());
+        push.setCredentialsProvider(GitSnippetRepository.getCredentialsProvider(delegate.getPushUrl()));
+
         Job pushJob = new Job(Messages.JOB_NAME_PUSHING_SNIPPETS_TO_REMOTE_GIT_REPO) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
