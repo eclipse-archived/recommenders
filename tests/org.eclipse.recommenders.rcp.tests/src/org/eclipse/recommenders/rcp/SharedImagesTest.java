@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.rcp;
 
-import static org.eclipse.recommenders.rcp.SharedImages.Images.VIEW_SLICE;
+import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_HOMEPAGE;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -51,17 +51,17 @@ public class SharedImagesTest {
 
     @Test
     public void testIsCachingImages() {
-        assertThat(sut.getImage(VIEW_SLICE), is(equalTo(sut.getImage(Images.VIEW_SLICE))));
-        assertThat(sut.getDescriptor(VIEW_SLICE), is(equalTo(sut.getDescriptor(Images.VIEW_SLICE))));
+        assertThat(sut.getImage(OBJ_HOMEPAGE), is(equalTo(sut.getImage(Images.OBJ_HOMEPAGE))));
+        assertThat(sut.getDescriptor(OBJ_HOMEPAGE), is(equalTo(sut.getDescriptor(Images.OBJ_HOMEPAGE))));
     }
 
     @Test
     public void testDuplicatedImagesWork() {
-        Image image1 = sut.getImage(Images.VIEW_SLICE);
+        Image image1 = sut.getImage(Images.OBJ_HOMEPAGE);
         Image image2 = sut.getImage(new ImageResource() {
             @Override
             public String getName() {
-                return Images.VIEW_SLICE.getName();
+                return Images.OBJ_HOMEPAGE.getName();
             }
         });
         assertThat(image1, is(not(equalTo(image2))));

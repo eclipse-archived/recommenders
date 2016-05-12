@@ -107,7 +107,6 @@ public final class SharedImages implements IDisposable {
         ELCL_REMOVE_REPOSITORY_DISABLED(elcl16("remove_repository_disabled.png")), //$NON-NLS-1$
         ELCL_REMOVE_SNIPPET(elcl16("remove_snippet.png")), //$NON-NLS-1$
         ELCL_SHARE_SNIPPET(elcl16("share_snippet.png")), //$NON-NLS-1$
-        ELCL_SYNCED(elcl16("synced.gif")), //$NON-NLS-1$
         OBJ_BIRD_BLUE(obj16("bird_blue_16.png")), //$NON-NLS-1$
         OBJ_BULLET_BLUE(obj16("bullet_blue.png")), //$NON-NLS-1$
         OBJ_BULLET_GREEN(obj16("bullet_green.png")), //$NON-NLS-1$
@@ -117,7 +116,7 @@ public final class SharedImages implements IDisposable {
         OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")), //$NON-NLS-1$
         OBJ_CHECK_GREEN(obj16("tick_small.png")), //$NON-NLS-1$
         OBJ_CROSS_RED(obj16("cross_small.png")), //$NON-NLS-1$
-        OBJ_CONTAINER(obj16("container_obj.gif")), //$NON-NLS-1$
+        OBJ_MANUAL(obj16("manual.gif")), //$NON-NLS-1$
         OBJ_FAVORITE_STAR(obj16("favorite_star.png")), //$NON-NLS-1$
         OBJ_HOMEPAGE(obj16("homepage.png")), //$NON-NLS-1$
         OBJ_HOURGLASS(obj16("hourglass.png")), //$NON-NLS-1$
@@ -127,8 +126,7 @@ public final class SharedImages implements IDisposable {
         OBJ_JAVA_PROJECT(obj16("project.gif")), //$NON-NLS-1$
         OBJ_JRE(obj16("jre.gif")), //$NON-NLS-1$
         OBJ_REPOSITORY(obj16("repository.gif")), //$NON-NLS-1$
-        OVR_STAR(ovr16("star.png")), //$NON-NLS-1$
-        VIEW_SLICE(view16("slice.gif")); //$NON-NLS-1$
+        OVR_STAR(ovr16("star.png")); //$NON-NLS-1$
         // @formatter:on
 
         private final String name;
