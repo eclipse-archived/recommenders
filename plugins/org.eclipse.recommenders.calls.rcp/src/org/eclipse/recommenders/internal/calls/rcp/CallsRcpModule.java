@@ -24,13 +24,12 @@ import org.eclipse.recommenders.internal.calls.rcp.CallCompletionContextFunction
 import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 
 @SuppressWarnings({ "rawtypes" })
-public class CallsRcpModule extends AbstractModule implements Module {
+public class CallsRcpModule extends AbstractModule {
 
     @Override
     protected void configure() {

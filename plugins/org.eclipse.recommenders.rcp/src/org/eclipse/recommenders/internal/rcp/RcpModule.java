@@ -64,7 +64,6 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
@@ -74,7 +73,7 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 
 @SuppressWarnings("restriction")
-public class RcpModule extends AbstractModule implements Module {
+public class RcpModule extends AbstractModule {
 
     @Override
     protected void configure() {
