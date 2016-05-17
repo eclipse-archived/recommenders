@@ -28,7 +28,7 @@
 		<linkContribution
 			commandId="org.eclipse.recommenders.utils.rcp.commands.openBrowser"
 			label="%linkContribution.manual.label"
-			icon="icons/obj16/container_obj.gif"
+			icon="icons/obj16/manual.gif"
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="10"/>
 		<linkContribution
