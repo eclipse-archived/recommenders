@@ -18,11 +18,10 @@ import org.eclipse.recommenders.overrides.IOverrideModelProvider;
 import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 
-public class OverridesRcpModule extends AbstractModule implements Module {
+public class OverridesRcpModule extends AbstractModule {
 
     public OverridesRcpModule() {
     }

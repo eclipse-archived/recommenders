@@ -139,4 +139,9 @@
 			preferencePageId="org.eclipse.recommenders.rcp.preferencePages.root"
 			priority="45"/>
 	</extension>
+	<extension point="org.eclipse.mylyn.tasks.bugs.support">
+		<mapping namespace="org.eclipse.recommenders.snipmatch" productId="org.eclipse.recommenders">
+			<property name="component" value="Snipmatch"/>
+		</mapping>
+	</extension>
 </plugin>

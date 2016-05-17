@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.CharUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -92,8 +93,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         THIS
     }
 
-    private final IProjectCoordinateProvider pcProvider;
-    private final ICallModelProvider store;
+    private final Provider<IProjectCoordinateProvider> pcProvider;
+    private final Provider<ICallModelProvider> store;
     private final IAstProvider astProvider;
     private final JavaElementResolver elementResolver;
     private final Map<CompletionContextKey, ICompletionContextFunction> functions;
@@ -109,8 +110,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private ICallModel model;
 
     @Inject
-    public TemplatesCompletionProposalComputer(IProjectCoordinateProvider pcProvider, ICallModelProvider store,
-            IAstProvider astProvider, JavaElementResolver elementResolver,
+    public TemplatesCompletionProposalComputer(Provider<IProjectCoordinateProvider> pcProvider,
+            Provider<ICallModelProvider> store, IAstProvider astProvider, JavaElementResolver elementResolver,
             Map<CompletionContextKey, ICompletionContextFunction> functions) {
         this.pcProvider = pcProvider;
         this.store = store;
@@ -183,9 +184,9 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void addPatternsForType(IType t, ProposalBuilder proposalBuilder) {
-        ProjectCoordinate pc = pcProvider.resolve(t).or(ProjectCoordinate.UNKNOWN);
+        ProjectCoordinate pc = pcProvider.get().resolve(t).or(ProjectCoordinate.UNKNOWN);
         UniqueTypeName name = new UniqueTypeName(pc, elementResolver.toRecType(t));
-        model = store.acquireModel(name).orNull();
+        model = store.get().acquireModel(name).orNull();
         try {
             if (model == null) {
                 return;
@@ -197,7 +198,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
                 handleVariableCompletionRequest(proposalBuilder);
             }
         } finally {
-            store.releaseModel(model);
+            store.get().releaseModel(model);
         }
     }
 

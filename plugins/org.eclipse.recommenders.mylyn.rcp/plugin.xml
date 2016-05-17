@@ -9,4 +9,9 @@
 			description="%sessionprocessors.mylyn.description">
 		</processor>
 	</extension>
+	<extension point="org.eclipse.mylyn.tasks.bugs.support">
+		<mapping namespace="org.eclipse.recommenders.mylyn" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+	</extension>
 </plugin>
