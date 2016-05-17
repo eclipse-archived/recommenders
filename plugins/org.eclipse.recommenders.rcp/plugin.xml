@@ -66,4 +66,34 @@
 			</commandParameter>
 		</command>
 	</extension>
+	<extension point="org.eclipse.mylyn.tasks.bugs.support">
+		<product id="org.eclipse.recommenders"
+			providerId="org.eclipse"
+			icon="icons/about/32x32.png"
+			name="%support.recommenders.name"
+			description="%support.recommenders.description"
+			url="https://www.eclipse.org/recommenders/community/"/>
+		<mapping namespace="org.eclipse.recommenders" productId="org.eclipse.recommenders">
+			<property name="product" value="Recommenders"/>
+			<property name="component" value="Core"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.apidocs" productId="org.eclipse.recommenders">
+			<property name="component" value="Extdoc"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.calls" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.chain" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.completion" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.constructors" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+		<mapping namespace="org.eclipse.recommenders.overrides" productId="org.eclipse.recommenders">
+			<property name="component" value="Completion"/>
+		</mapping>
+	</extension>
 </plugin>
