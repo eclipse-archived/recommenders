@@ -6,12 +6,12 @@
 	<extension-point id="registeredEmfPackages" name="Snippet Repository Emf Package Registration" schema="schema/registeredEmfPackages.exsd"/>
 	<extension-point id="defaultGitSnippetRepositoryConfigurations" name="Default Git Snippet Repository Configuration" schema="schema/defaultGitSnippetRepositoryConfigurations.exsd"/>
 	<!-- do not move the following extension to the bottom -->
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated snipmatchrcp -->
-      <package
-            uri="org.eclipse.recommenders.snipmatch.rcp"
-            class="org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelPackage"/>
-   </extension>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<!-- @generated snipmatchrcp -->
+		<package
+			uri="org.eclipse.recommenders.snipmatch.rcp"
+			class="org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelPackage"/>
+	</extension>
 	<extension point="org.eclipse.ui.editors">
 		<editor
 			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.snipmatch.rcp.SnippetEditor"
@@ -123,7 +123,7 @@
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.configurationWizards">
 		<configurationWizard
 			name="%configurationWizards.gitBasedRepository.name"
-			wizard="org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
+			wizard="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.snipmatch.rcp.GitBasedRepositoryConfigurationWizard">
 		</configurationWizard>
 	</extension>
 	<extension point="org.eclipse.recommenders.snipmatch.rcp.registeredEmfPackages">
