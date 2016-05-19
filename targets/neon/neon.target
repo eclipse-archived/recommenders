@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="9">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="10">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -53,9 +53,9 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
-<unit id="com.google.inject" version="3.0.0.v201312141243"/>
+<unit id="com.google.inject" version="3.0.0.v201605172100"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
-<unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
+<unit id="com.google.inject.multibindings" version="3.0.0.v201605172100"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5969 -->
 <unit id="javax.inject" version="1.0.0.v20091030"/>
 <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
@@ -91,13 +91,13 @@
 <!-- Tests-only dependency -->
 <unit id="org.junit" version="4.12.0.v201504281640"/>
 <!-- Tests-only dependency -->
-<unit id="org.mockito" version="1.9.5.v201311280930"/>
+<unit id="org.mockito" version="1.9.5.v201605172210"/>
 <!-- Tests-only dependency -->
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- Stable Orbit build for Neon M7a -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20160501200945/repository/"/>
+<!-- Stable Orbit build for Neon RC2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20160518051658/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
