@@ -437,6 +437,19 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.eclipse.tycho.extras</groupId>
+										<artifactId>target-platform-validation-plugin</artifactId>
+										<versionRange>[0,)</versionRange>
+										<goals>
+											<goal>validate-target-platform</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>org.jacoco</groupId>
 										<artifactId>jacoco-maven-plugin</artifactId>
 										<versionRange>[0,)</versionRange>
