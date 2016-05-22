@@ -25,6 +25,12 @@ import com.google.common.base.Throwables;
 public final class Urls {
 
     public static String mangle(URL url) {
+        String urlString = toStringWithoutUsernameAndPassword(url);
+
+        return doMangle(urlString);
+    }
+
+    public static String toStringWithoutUsernameAndPassword(URL url) {
         int len = url.getProtocol().length() + 1;
 
         String host = url.getHost();
@@ -71,8 +77,7 @@ public final class Urls {
             result.append("#");
             result.append(ref);
         }
-
-        return doMangle(result.toString());
+        return result.toString();
     }
 
     private static String doMangle(String url) {
@@ -105,7 +110,7 @@ public final class Urls {
         }
     }
 
-    private static Optional<URL> parseURL(String urlString) {
+    public static Optional<URL> parseURL(String urlString) {
         try {
             return Optional.of(new URL(urlString));
         } catch (MalformedURLException e) {
