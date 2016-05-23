@@ -20,10 +20,12 @@ import static org.eclipse.aether.resolution.ArtifactDescriptorPolicy.IGNORE_MISS
 import static org.eclipse.aether.resolution.ResolutionErrorPolicy.*;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -36,6 +38,7 @@ import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -51,6 +54,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
 import org.eclipse.aether.util.repository.SimpleResolutionErrorPolicy;
+import org.eclipse.recommenders.utils.Urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,8 +129,29 @@ public class ModelRepository implements IModelRepository {
         return session;
     }
 
-    private RemoteRepository createRemoteRepository(String url) {
-        return new RemoteRepository.Builder("models", "default", url).build();
+    private RemoteRepository createRemoteRepository(String urlString) {
+        URL url = Urls.parseURL(urlString).orNull();
+        if (url == null) {
+            return new RemoteRepository.Builder("models", "default", urlString).build();
+        }
+
+        String urlWithoutAuth = Urls.toStringWithoutUsernameAndPassword(url);
+        RemoteRepository.Builder builder = new RemoteRepository.Builder("models", "default", urlWithoutAuth);
+        String authority = url.getAuthority();
+        if (authority == null || !authority.contains("@")) {
+            return builder.build();
+        }
+
+        String auth = StringUtils.substringBeforeLast(authority, "@");
+        String[] usernamePassword = StringUtils.split(auth, ':');
+        if (usernamePassword.length == 2) {
+            String user = usernamePassword[0];
+            String password = usernamePassword[1];
+            Authentication authentication = new AuthenticationBuilder().addUsername(user).addPassword(password).build();
+            builder.setAuthentication(authentication);
+        }
+
+        return builder.build();
     }
 
     /**
@@ -186,8 +211,11 @@ public class ModelRepository implements IModelRepository {
     private Optional<File> resolveInternal(ModelCoordinate mc, RepositorySystemSession session) {
         try {
             final Artifact coord = toSnapshotArtifact(mc);
-            RemoteRepository remoteRepo = new RemoteRepository.Builder(defaultRemoteRepo)
-                    .setAuthentication(authentication).setProxy(proxy).build();
+            Builder remoteRepoBuilder = new RemoteRepository.Builder(defaultRemoteRepo).setProxy(proxy);
+            if (authentication != null) {
+                remoteRepoBuilder.setAuthentication(authentication);
+            }
+            RemoteRepository remoteRepo = remoteRepoBuilder.build();
             ArtifactRequest request = new ArtifactRequest(coord, Collections.singletonList(remoteRepo), null);
             ArtifactResult result = system.resolveArtifact(session, request);
             return Optional.of(result.getArtifact().getFile());
