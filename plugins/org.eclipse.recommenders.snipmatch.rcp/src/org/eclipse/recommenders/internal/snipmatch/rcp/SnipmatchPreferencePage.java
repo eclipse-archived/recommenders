@@ -81,11 +81,11 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             @Named(REPOSITORY_CONFIGURATION_FILE) File repositoryConfigurationFile, SnipmatchRcpPreferences prefs) {
         super(GRID);
         setDescription(Messages.PREFPAGE_DESCRIPTION);
-        this.prefs = prefs;
         this.bus = bus;
         this.repos = repos;
         this.configuration = configuration;
         this.repositoryConfigurationFile = repositoryConfigurationFile;
+        this.prefs = prefs;
     }
 
     @Override

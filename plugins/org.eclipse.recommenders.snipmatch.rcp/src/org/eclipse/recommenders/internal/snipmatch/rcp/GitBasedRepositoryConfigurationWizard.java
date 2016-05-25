@@ -16,6 +16,8 @@ import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -25,12 +27,14 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.recommenders.internal.snipmatch.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.snipmatch.rcp.util.RepositoryUrlValidator;
+import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Snippet;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -47,21 +51,25 @@ import com.google.common.collect.ImmutableList;
 
 public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISnippetRepositoryWizard {
 
-    private GitBasedRepositoryConfigurationWizardPage page = new GitBasedRepositoryConfigurationWizardPage(
-            Messages.WIZARD_GIT_REPOSITORY_PAGE_NAME);
-
-    private EclipseGitSnippetRepositoryConfiguration configuration;
-    private final BranchInputValidator branchInputValidator = new BranchInputValidator();
-
     private static final List<String> REPOSITORY_OPTIONS = ImmutableList.of(
             Messages.WIZARD_GIT_REPOSITORY_OPTION_GIT_PUSH_BRANCH_PREFIX,
             Messages.WIZARD_GIT_REPOSITORY_OPTION_GERRIT_PUSH_BRANCH_PREFIX,
             Messages.WIZARD_GIT_REPOSITORY_OPTION_OTHER_PUSH_BRANCH_PREFIX);
 
+    private final BranchInputValidator branchInputValidator = new BranchInputValidator();
+    private final Repositories repositories;
+
+    private GitBasedRepositoryConfigurationWizardPage page = new GitBasedRepositoryConfigurationWizardPage(
+            Messages.WIZARD_GIT_REPOSITORY_PAGE_NAME);
+    private EclipseGitSnippetRepositoryConfiguration configuration;
+
     private static final List<String> PUSH_BRANCH_PREFIXES = ImmutableList.of("refs/heads", //$NON-NLS-1$
             "refs/for"); //$NON-NLS-1$
 
-    public GitBasedRepositoryConfigurationWizard() {
+    @Inject
+    public GitBasedRepositoryConfigurationWizard(Repositories repositories) {
+        this.repositories = repositories;
+
         setWindowTitle(Messages.WIZARD_GIT_REPOSITORY_WINDOW_TITLE);
         page.setWizard(this);
         page.setImageDescriptor(imageDescriptorFromPlugin(BUNDLE_ID, WIZBAN_ADD_GIT_REPOSITORY));
@@ -273,6 +281,8 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             } else if (!fetchUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_FETCH_URI,
                         fetchUriValidation.getMessage()));
+            } else if (isUriAlreadyAdded(txtFetchUri.getText())) {
+                setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_FETCH_URI_ALREADY_ADDED);
             } else if (!pushUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_PUSH_URI,
                         pushUriValidation.getMessage()));
@@ -285,6 +295,20 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             }
 
             setPageComplete(getErrorMessage() == null);
+        }
+
+        private boolean isUriAlreadyAdded(String newText) {
+            String mangledNewText = Urls.mangle(newText);
+
+            for (ISnippetRepository repository : repositories.getRepositories()) {
+                String fetchUrl = repository.getRepositoryLocation();
+
+                if (Urls.mangle(fetchUrl).equals(mangledNewText)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public boolean canFinish() {

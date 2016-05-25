@@ -185,8 +185,6 @@ public class GitSnippetRepository extends FileSnippetRepository {
         config.setString("remote", "origin", "url", getRepositoryLocation());
         config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
         config.setString("remote", "origin", "pushUrl", getPushUrl());
-        // prevents trust anchor errors when pulling from eclipse.org
-        config.setBoolean("http", null, "sslVerify", false);
         config.save();
     }
 
