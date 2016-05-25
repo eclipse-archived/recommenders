@@ -110,9 +110,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     private static final int COMMIT_MESSAGE_LINE_LENGTH = 70;
 
     private final EventBus bus;
+    private final GitSnippetRepository delegate;
 
     private volatile int timesOpened;
-    private GitSnippetRepository delegate;
     private volatile boolean delegateOpen;
 
     private final Lock readLock;
@@ -309,10 +309,6 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     public String getRepositoryLocation() {
         readLock.lock();
         try {
-            Preconditions.checkState(isOpen());
-            if (!delegateOpen) {
-                return ""; //$NON-NLS-1$
-            }
             return delegate.getRepositoryLocation();
         } finally {
             readLock.unlock();

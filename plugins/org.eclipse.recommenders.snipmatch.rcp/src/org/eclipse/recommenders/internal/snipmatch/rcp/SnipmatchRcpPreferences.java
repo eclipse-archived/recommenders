@@ -43,7 +43,7 @@ public class SnipmatchRcpPreferences {
     @Inject
     public void setDisabledRepositoryConfigurations(
             @Preference(Constants.PREF_DISABLED_REPOSITORY_CONFIGURATIONS) String newDisabledRepositoryConfiguration)
-                    throws Exception {
+            throws Exception {
         if (newDisabledRepositoryConfiguration == null) {
             return;
         }
