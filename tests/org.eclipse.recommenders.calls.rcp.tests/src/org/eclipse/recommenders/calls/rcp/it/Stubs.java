@@ -173,10 +173,15 @@ public class Stubs {
         // refine later
         when(pcProvider.toName((IType) anyObject())).thenReturn(VmTypeName.OBJECT);
         when(pcProvider.toName((IMethod) anyObject())).thenReturn(Optional.of(VmMethodName.NULL));
+        Provider pcMetaProvider = mock(Provider.class);
+        when(pcMetaProvider.get()).thenReturn(pcProvider);
 
-        ICallModelProvider mp = mock(ICallModelProvider.class);
-        when(mp.acquireModel((UniqueTypeName) anyObject())).thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
-        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcProvider, mp,
+        ICallModelProvider modelProvider = mock(ICallModelProvider.class);
+        when(modelProvider.acquireModel((UniqueTypeName) anyObject()))
+                .thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
+        Provider modelMetaProvider = mock(Provider.class);
+        when(modelMetaProvider.get()).thenReturn(modelProvider);
+        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcMetaProvider, modelMetaProvider,
                 new ProposalNameProvider(), new CallsRcpPreferences(), new SharedImages());
 
         CompletionRcpPreferences preferences = mock(CompletionRcpPreferences.class);

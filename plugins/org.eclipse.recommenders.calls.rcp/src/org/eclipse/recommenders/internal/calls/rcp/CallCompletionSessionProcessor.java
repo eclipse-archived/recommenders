@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
@@ -72,8 +73,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             .<Class<? extends ASTNode>>of(CompletionOnMemberAccess.class, CompletionOnMessageSend.class,
                     CompletionOnQualifiedNameReference.class, CompletionOnSingleNameReference.class);
 
-    private final IProjectCoordinateProvider pcProvider;
-    private final ICallModelProvider modelProvider;
+    private final Provider<IProjectCoordinateProvider> pcProvider;
+    private final Provider<ICallModelProvider> modelProvider;
     private final IProposalNameProvider methodNameProvider;
     private final CallsRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
@@ -86,10 +87,10 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private Map<Recommendation<IMethodName>, Integer> recommendationsIndex;
 
-
     @Inject
-    public CallCompletionSessionProcessor(IProjectCoordinateProvider pcProvider, ICallModelProvider modelProvider,
-            IProposalNameProvider methodNameProvider, CallsRcpPreferences prefs, SharedImages images) {
+    public CallCompletionSessionProcessor(Provider<IProjectCoordinateProvider> pcProvider,
+            Provider<ICallModelProvider> modelProvider, IProposalNameProvider methodNameProvider,
+            CallsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
         this.methodNameProvider = methodNameProvider;
@@ -129,13 +130,13 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (receiverType == null) {
             return false;
         }
-        Result<UniqueTypeName> res = pcProvider.tryToUniqueName(receiverType);
+        Result<UniqueTypeName> res = pcProvider.get().tryToUniqueName(receiverType);
         switch (res.getReason()) {
         case OK:
-            model = modelProvider.acquireModel(res.get()).orNull();
+            model = modelProvider.get().acquireModel(res.get()).orNull();
             return model != null;
         case REASON_NOT_IN_CACHE:
-            new PrefetchModelArchiveJob<ICallModel>(receiverType, pcProvider, modelProvider).schedule(200);
+            new PrefetchModelArchiveJob<ICallModel>(receiverType, pcProvider.get(), modelProvider.get()).schedule(200);
         case ABSENT:
         default:
             return false;
@@ -146,7 +147,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         // set override-context:
         IMethod overrides = ctx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
         if (overrides != null) {
-            IMethodName crOverrides = pcProvider.toName(overrides)
+            IMethodName crOverrides = pcProvider.get().toName(overrides)
                     .or(org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
             model.setObservedOverrideContext(crOverrides);
         }
@@ -189,7 +190,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private void releaseModel() {
         if (model != null) {
-            modelProvider.releaseModel(model);
+            modelProvider.get().releaseModel(model);
         }
     }
 

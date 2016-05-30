@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
@@ -52,8 +53,8 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 @SuppressWarnings({ "restriction" })
 public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
-    private final IProjectCoordinateProvider pcProvider;
-    private final IOverrideModelProvider modelProvider;
+    private final Provider<IProjectCoordinateProvider> pcProvider;
+    private final Provider<IOverrideModelProvider> modelProvider;
     private final JavaElementResolver jdtCache;
     private final OverridesRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
@@ -66,8 +67,8 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private List<Recommendation<IMethodName>> recommendations;
 
     @Inject
-    public OverrideCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IOverrideModelProvider modelProvider, JavaElementResolver cache, SharedImages images,
+    public OverrideCompletionSessionProcessor(Provider<IProjectCoordinateProvider> pcProvider,
+            Provider<IOverrideModelProvider> modelProvider, JavaElementResolver cache, SharedImages images,
             OverridesRcpPreferences prefs) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
@@ -111,19 +112,19 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findProjectCoordinate() {
-        pc = pcProvider.resolve(supertype).orNull();
+        pc = pcProvider.get().resolve(supertype).orNull();
         return pc != null;
     }
 
     private boolean hasModel() {
         UniqueTypeName name = new UniqueTypeName(pc, jdtCache.toRecType(supertype));
-        model = modelProvider.acquireModel(name).orNull();
+        model = modelProvider.get().acquireModel(name).orNull();
         return model != null;
     }
 
     private void releaseModel() {
         if (model != null) {
-            modelProvider.releaseModel(model);
+            modelProvider.get().releaseModel(model);
         }
     }
 

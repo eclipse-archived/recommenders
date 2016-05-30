@@ -455,18 +455,24 @@ class CompletionSmokeTest {
    }
 
    def createSut(IProjectCoordinateProvider pcProvider, JavaElementResolver jer) {
+      val pcp = mock(Provider)
+      when(pcp.get).thenReturn(pcProvider)
       switch processor {
          case "calls": {
             val mp = mock(ICallModelProvider)
             when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.INSTANCE))
-            val sut = new CallCompletionSessionProcessor(pcProvider, mp, new ProposalNameProvider,
+            val mpp = mock(Provider)
+            when(mpp.get).thenReturn(mp)
+            val sut = new CallCompletionSessionProcessor(pcp, mpp, new ProposalNameProvider,
                new CallsRcpPreferences, new SharedImages)
             return sut
          }
          case "overrides": {
             val mp = mock(IOverrideModelProvider)
             when(mp.acquireModel(anyObject())).thenReturn(Optional.<IOverrideModel>of(NullOverrideModel.INSTANCE))
-            return new OverrideCompletionSessionProcessor(pcProvider, mp, jer, new SharedImages,
+            val mpp = mock(Provider)
+            when(mpp.get).thenReturn(mp)
+            return new OverrideCompletionSessionProcessor(pcp, mpp, jer, new SharedImages,
                new OverridesRcpPreferences)
          }
          case "subwords": {
