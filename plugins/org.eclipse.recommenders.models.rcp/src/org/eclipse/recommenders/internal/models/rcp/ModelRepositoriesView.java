@@ -508,7 +508,7 @@ public class ModelRepositoriesView extends ViewPart {
                             addRemoteRepositoryAction);
 
                     final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
-                    if (url.isPresent() && prefs.remotes.length > 1) {
+                    if (url.isPresent()) {
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
                             @Override

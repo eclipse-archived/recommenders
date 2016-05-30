@@ -21,8 +21,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -50,8 +48,8 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         repoEditor = new ModelRepositoryListEditor(PREF_REPOSITORY_URL_LIST, Messages.FIELD_LABEL_REPOSITORY_URIS,
                 getFieldEditorParent());
         addField(repoEditor);
-        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD,
-                Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD, getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD,
+                getFieldEditorParent()));
     }
 
     @Override
@@ -66,19 +64,10 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
 
         private ModelRepositoryListEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
-            getList().addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    boolean hasMoreThanOneUrl = getList().getItems().length > 1;
-                    getRemoveButton().setEnabled(hasMoreThanOneUrl);
-                }
-            });
         }
 
         public String[] getItems() {
             return super.getList().getItems();
-
         }
 
         @Override
