@@ -25,6 +25,8 @@ public class UrlsTest {
     private static final String HTTP_ABSOLUTE_URI_WITH_QUERY_AND_FRAGMENT = "http://download.eclipse.org/recommenders/models/2.0/v201210_1212/data?key=value#fragid1";
     private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME = "http://user@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
     private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD = "http://user:password@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
+    private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD = "http://user:********@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
+    private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD_DIFFERENT_MASK = "http://user:xxxxxxxx@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
     private static final String HTTPS_ABSOLUTE_URI = "https://download.eclipse.org/recommenders/models/2.0/v201210_1212/";
     private static final String RELATIVE_URI = "download.eclipse.org/recommenders/models/2.0/v201210_1212/";
 
@@ -192,5 +194,47 @@ public class UrlsTest {
         acceptedProtocols.add("file");
         acceptedProtocols.add("http");
         assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
+    }
+
+    @Test
+    public void testUrlToStringWithoutUsernameAndPassword() {
+        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI));
+        assertEquals(HTTP_ABSOLUTE_URI, out);
+    }
+
+    @Test
+    public void testUrlWithUsernameToStringWithoutUsernameAndPassword() {
+        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME));
+        assertEquals(HTTP_ABSOLUTE_URI, out);
+    }
+
+    @Test
+    public void testUrlWithUsernameAndPasswordToStringWithoutUsernameAndPassword() {
+        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD));
+        assertEquals(HTTP_ABSOLUTE_URI, out);
+    }
+
+    @Test
+    public void testUrlToStringWithMaskedPassword() {
+        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI), '*');
+        assertEquals(HTTP_ABSOLUTE_URI, out);
+    }
+
+    @Test
+    public void testUrlWithUsernameToStringWithMaskedPassword() {
+        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME), '*');
+        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME, out);
+    }
+
+    @Test
+    public void testUrlWithUsernameAndPasswordToStringWithMaskedPassword() {
+        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD), '*');
+        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD, out);
+    }
+
+    @Test
+    public void testUrlWithUsernameAndPasswordToStringWithMaskedPasswordDifferentMask() {
+        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD), 'x');
+        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD_DIFFERENT_MASK, out);
     }
 }
