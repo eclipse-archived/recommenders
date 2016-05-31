@@ -55,25 +55,20 @@ public class AndroidDirectoryNameAdvisorTest {
                 jar(dir("home", "example", "android-sdks", "platforms", "android-10"), "android.jar"),
                 ProjectCoordinate.valueOf("com.google.android:android:2.3.3")));
 
-        scenarios.add(scenario("Standard path, latest SDK: Android 4.4 Kit Kat",
-                jar(dir("home", "example", "android-sdks", "platforms", "android-19"), "android.jar"),
-                ProjectCoordinate.valueOf("com.google.android:android:4.4.0")));
+        scenarios.add(scenario("Standard path, latest SDK: Android 6.0 M",
+                jar(dir("home", "example", "android-sdks", "platforms", "android-23"), "android.jar"),
+                ProjectCoordinate.valueOf("com.google.android:android:6.0.0")));
 
         scenarios.add(scenario("Standard path, future SDK",
-                jar(dir("home", "example", "android-sdks", "platforms", "android-20"), "android.jar"), null));
+                jar(dir("home", "example", "android-sdks", "platforms", "android-24"), "android.jar"), null));
 
         scenarios.add(scenario("Non-standard path",
                 jar(dir("home", "example", "android-sdks", "platforms", "android"), "android.jar"), null));
 
         scenarios.add(scenario("Non-standard JAR",
-                jar(dir("home", "example", "android-sdks", "platforms", "android-19"), "android-19.jar"), null));
+                jar(dir("home", "example", "android-sdks", "platforms", "android-23"), "android-23.jar"), null));
 
         return scenarios;
-    }
-
-    private static DependencyInfo jar(File dir, String name) {
-        File jar = new File(dir, name);
-        return new DependencyInfo(jar, JAR);
     }
 
     @Test
@@ -83,6 +78,11 @@ public class AndroidDirectoryNameAdvisorTest {
         Optional<ProjectCoordinate> result = sut.suggest(dependency);
 
         assertThat(result, is(expectedCoordinate));
+    }
+
+    private static DependencyInfo jar(File dir, String name) {
+        File jar = new File(dir, name);
+        return new DependencyInfo(jar, JAR);
     }
 
     private static Object[] scenario(String description, DependencyInfo dependency,

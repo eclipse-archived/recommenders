@@ -33,28 +33,33 @@ public class AndroidDirectoryNameAdvisor extends AbstractProjectCoordinateAdviso
     private static final String ANDROID_TARGET_PREFIX = "android-";
 
     /**
-     * @see <a href="developer.android.com/reference/android/os/Build.VERSION_CODES.html">Android Version Codes</a>
+     * @see <a href="https://developer.android.com/reference/android/os/Build.VERSION_CODES.html">Android Version
+     *      Codes</a>
      */
-    private static final String[] VERSION_CODES = new String[] { null, // No API Version 0
-            "1.0", //
-            "1.1", //
-            "1.5", // Cupcake
-            "1.6", // Donut
-            "2.0", // Eclair
-            "2.0.1", // Eclair
-            "2.1", // Eclair
-            "2.2", // Froyo
-            "2.3", // Gingerbread
-            "2.3.3", // Gingerbread
-            "3.0", // Honeycomb
-            "3.1", // Honeycomb
-            "3.2", // Honeycomb
-            "4.0", // Ice Cream Sandwich
-            "4.0.3", // Ice Cream Sandwich
-            "4.1", // Jelly Bean
-            "4.2", // Jelly Bean
-            "4.3", // Jelly Bean
-            "4.4", // Kit Kat
+    private static final String[] VERSION_CODES = new String[] { null, // No API 0
+            "1.0", // API 1
+            "1.1", // API 2
+            "1.5", // API 3: Cupcake
+            "1.6", // API 4: Donut
+            "2.0", // API 5: Eclair
+            "2.0.1", // API 6: Eclair
+            "2.1", // API 7: Eclair
+            "2.2", // API 8: Froyo
+            "2.3", // API 9: Gingerbread
+            "2.3.3", // API 10: Gingerbread
+            "3.0", // API 11: Honeycomb
+            "3.1", // API 12: Honeycomb
+            "3.2", // API 13: Honeycomb
+            "4.0", // API 14: Ice Cream Sandwich
+            "4.0.3", // API 15: Ice Cream Sandwich
+            "4.1", // API 16: Jelly Bean
+            "4.2", // API 17: Jelly Bean
+            "4.3", // API 18: Jelly Bean
+            "4.4", // API 19: Kit Kat
+            "4.5", // API 20: Kit Kat Watch (technically 4.4W)
+            "5.0", // API 21: Lollipop
+            "5.1", // API 22: Lollipop MR1
+            "6.0", // API 23: M (Marshmallow)
     };
 
     @Override
