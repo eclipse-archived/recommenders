@@ -21,6 +21,8 @@ import static org.mockito.Mockito.*;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnArgumentName;
@@ -77,8 +79,9 @@ public class ConstructorCompletionSessionProcessorTest {
     private final IProcessableProposal objectInitProcessableProposal = mock(ProcessableJavaCompletionProposal.class);
     private final IProcessableProposal stringInitProcessableProposal = mock(ProcessableJavaCompletionProposal.class);
 
-    private IProjectCoordinateProvider pcProvider;
+    private Provider<IProjectCoordinateProvider> pcMetaProvider;
     private IConstructorModelProvider modelProvider;
+    private Provider<IConstructorModelProvider> modelMetaProvider;
     private IProposalNameProvider methodNameProvider;
     private IRecommendersCompletionContext context;
 
@@ -99,8 +102,8 @@ public class ConstructorCompletionSessionProcessorTest {
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT),
                 new ConstructorModel(OBJECT, Collections.<IMethodName, Integer>emptyMap()));
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -117,8 +120,8 @@ public class ConstructorCompletionSessionProcessorTest {
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT),
                 new ConstructorModel(OBJECT, Collections.<IMethodName, Integer>emptyMap()));
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -134,8 +137,8 @@ public class ConstructorCompletionSessionProcessorTest {
 
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT), NO_MODEL);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -150,8 +153,8 @@ public class ConstructorCompletionSessionProcessorTest {
         ConstructorModel model = new ConstructorModel(OBJECT, Collections.<IMethodName, Integer>emptyMap());
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT), model);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -168,8 +171,8 @@ public class ConstructorCompletionSessionProcessorTest {
         ConstructorModel model = new ConstructorModel(OBJECT, ImmutableMap.of(OBJECT_INIT, 0));
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT), model);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -186,8 +189,8 @@ public class ConstructorCompletionSessionProcessorTest {
         ConstructorModel model = new ConstructorModel(OBJECT, ImmutableMap.of(OBJECT_INIT, 1));
         setUpModelRepository(objectType, new UniqueTypeName(JRE_1_6_0, OBJECT), model);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, createDefaultPreferences(), new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, createDefaultPreferences(), new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -214,8 +217,8 @@ public class ConstructorCompletionSessionProcessorTest {
 
         ConstructorsRcpPreferences preferences = createPreferences(0, 1, false, false, false);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, preferences, new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, preferences, new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -241,8 +244,8 @@ public class ConstructorCompletionSessionProcessorTest {
 
         ConstructorsRcpPreferences preferences = createPreferences(50, 2, true, true, true);
 
-        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcProvider, modelProvider,
-                methodNameProvider, preferences, new SharedImages());
+        ConstructorCompletionSessionProcessor sut = new ConstructorCompletionSessionProcessor(pcMetaProvider,
+                modelMetaProvider, methodNameProvider, preferences, new SharedImages());
 
         boolean shouldProcess = sut.startSession(context);
 
@@ -276,22 +279,25 @@ public class ConstructorCompletionSessionProcessorTest {
         when(context.getProposals()).thenReturn(proposals);
 
         methodNameProvider = mock(IProposalNameProvider.class);
-        when(methodNameProvider.toMethodName(objectInitCoreProposal))
-                .thenReturn(Optional.of(OBJECT_INIT));
-        when(methodNameProvider.toMethodName(stringInitCoreProposal))
-                .thenReturn(Optional.of(STRING_INIT));
+        when(methodNameProvider.toMethodName(objectInitCoreProposal)).thenReturn(Optional.of(OBJECT_INIT));
+        when(methodNameProvider.toMethodName(stringInitCoreProposal)).thenReturn(Optional.of(STRING_INIT));
     }
 
     private void setUpModelRepository(@Nullable IType type, @Nullable UniqueTypeName uniqueTypeName,
             @Nullable ConstructorModel model) {
-        pcProvider = Mockito.mock(IProjectCoordinateProvider.class);
+        IProjectCoordinateProvider pcProvider = Mockito.mock(IProjectCoordinateProvider.class);
         when(pcProvider.tryToUniqueName(type)).thenReturn(Result.fromNullable(uniqueTypeName));
 
-        modelProvider = Mockito.mock(IConstructorModelProvider.class);
+        pcMetaProvider = Mockito.mock(Provider.class);
+        when(pcMetaProvider.get()).thenReturn(pcProvider);
 
+        modelProvider = Mockito.mock(IConstructorModelProvider.class);
         if (uniqueTypeName != null) {
             when(modelProvider.acquireModel(uniqueTypeName)).thenReturn(Optional.fromNullable(model));
         }
+
+        modelMetaProvider = Mockito.mock(Provider.class);
+        when(modelMetaProvider.get()).thenReturn(modelProvider);
     }
 
     private ConstructorsRcpPreferences createDefaultPreferences() {

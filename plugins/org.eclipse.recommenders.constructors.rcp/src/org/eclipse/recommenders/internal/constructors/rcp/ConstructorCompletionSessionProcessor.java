@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
@@ -62,8 +63,8 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
             .<Class<? extends ASTNode>>of(CompletionOnSingleTypeReference.class,
                     CompletionOnQualifiedTypeReference.class);
 
-    private final IProjectCoordinateProvider pcProvider;
-    private final IConstructorModelProvider modelProvider;
+    private final Provider<IProjectCoordinateProvider> pcProvider;
+    private final Provider<IConstructorModelProvider> modelProvider;
     private final IProposalNameProvider methodNameProvider;
     private final ConstructorsRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
@@ -71,8 +72,8 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
     private Map<CompletionProposal, Double> recommationationsMap;
 
     @Inject
-    public ConstructorCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
-            IConstructorModelProvider modelProvider, IProposalNameProvider methodNameProvider,
+    public ConstructorCompletionSessionProcessor(Provider<IProjectCoordinateProvider> pcProvider,
+            Provider<IConstructorModelProvider> modelProvider, IProposalNameProvider methodNameProvider,
             ConstructorsRcpPreferences prefs, SharedImages images) {
         this.pcProvider = requireNonNull(pcProvider);
         this.modelProvider = requireNonNull(modelProvider);
@@ -93,13 +94,14 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
         }
 
         final ConstructorModel model;
-        Result<UniqueTypeName> res = pcProvider.tryToUniqueName(expectedType);
+        Result<UniqueTypeName> res = pcProvider.get().tryToUniqueName(expectedType);
         switch (res.getReason()) {
         case OK:
-            model = modelProvider.acquireModel(res.get()).orNull();
+            model = modelProvider.get().acquireModel(res.get()).orNull();
             break;
         case REASON_NOT_IN_CACHE:
-            new PrefetchModelArchiveJob<ConstructorModel>(expectedType, pcProvider, modelProvider).schedule(200);
+            new PrefetchModelArchiveJob<ConstructorModel>(expectedType, pcProvider.get(), modelProvider.get())
+                    .schedule(200);
             // fall-through
         case ABSENT:
         default:
@@ -162,7 +164,7 @@ public class ConstructorCompletionSessionProcessor extends SessionProcessor {
 
             return true;
         } finally {
-            modelProvider.releaseModel(model);
+            modelProvider.get().releaseModel(model);
         }
     }
 

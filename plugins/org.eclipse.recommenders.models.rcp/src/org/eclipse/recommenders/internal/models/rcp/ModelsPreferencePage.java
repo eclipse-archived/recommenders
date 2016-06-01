@@ -13,6 +13,9 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.internal.models.rcp.Constants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -21,8 +24,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -50,8 +52,8 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         repoEditor = new ModelRepositoryListEditor(PREF_REPOSITORY_URL_LIST, Messages.FIELD_LABEL_REPOSITORY_URIS,
                 getFieldEditorParent());
         addField(repoEditor);
-        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD,
-                Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD, getFieldEditorParent()));
+        addField(new BooleanFieldEditor(PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD, Messages.FIELD_LABEL_ENABLE_AUTO_DOWNLOAD,
+                getFieldEditorParent()));
     }
 
     @Override
@@ -64,40 +66,46 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
 
     private static final class ModelRepositoryListEditor extends ListEditor {
 
+        private final Map<String, String> toUnobfuscatedUrls = new HashMap<>();
+
         private ModelRepositoryListEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
-            getList().addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    boolean hasMoreThanOneUrl = getList().getItems().length > 1;
-                    getRemoveButton().setEnabled(hasMoreThanOneUrl);
-                }
-            });
         }
 
         public String[] getItems() {
             return super.getList().getItems();
-
-        }
-
-        @Override
-        protected String[] parseString(String stringList) {
-            return ModelsRcpPreferences.splitRemoteRepositoryString(stringList);
         }
 
         @Override
         protected String getNewInputObject() {
             InputDialog inputDialog = Dialogs.newModelRepositoryUrlDialog(getShell(), getItems());
             if (inputDialog.open() == Window.OK) {
-                return inputDialog.getValue();
+                String unobfuscatedUrl = inputDialog.getValue();
+                String obfuscatedUrl = Urls.toStringWithMaskedPassword(Urls.toUrl(unobfuscatedUrl), '*');
+                toUnobfuscatedUrls.put(obfuscatedUrl, unobfuscatedUrl);
+                return obfuscatedUrl;
             }
             return null;
         }
 
         @Override
+        protected String[] parseString(String string) {
+            String[] unobfuscatedUrls = ModelsRcpPreferences.splitRemoteRepositoryString(string);
+            String[] list = new String[unobfuscatedUrls.length];
+            for (int i = 0; i < unobfuscatedUrls.length; i++) {
+                list[i] = Urls.toStringWithMaskedPassword(Urls.toUrl(unobfuscatedUrls[i]), '*');
+                toUnobfuscatedUrls.put(list[i], unobfuscatedUrls[i]);
+            }
+            return list;
+        }
+
+        @Override
         protected String createList(String[] items) {
-            return ModelsRcpPreferences.joinRemoteRepositoriesToString(items);
+            String[] unobfuscated = new String[items.length];
+            for (int i = 0; i < items.length; i++) {
+                unobfuscated[i] = toUnobfuscatedUrls.get(items[i]);
+            }
+            return ModelsRcpPreferences.joinRemoteRepositoriesToString(unobfuscated);
         }
     }
 }
