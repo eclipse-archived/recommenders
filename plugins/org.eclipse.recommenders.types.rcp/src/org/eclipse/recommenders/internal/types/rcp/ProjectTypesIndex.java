@@ -145,10 +145,13 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
 
             for (IPackageFragmentRoot root : roots) {
                 File location = JavaElementsFinder.findLocation(root).orNull();
+                if (location == null) {
+                    continue;
+                }
                 if (!indexedRoots.remove(location)) {
                     // this root was unknown:
                     sb.append("  [+] ").append(location).append('\n'); //$NON-NLS-1$
-                } else if (!isCurrent(root)) {
+                } else if (!isCurrent(location)) {
                     // this root's timestamp is different to what we indexed before:
                     sb.append("  [*] ").append(location).append('\n'); //$NON-NLS-1$
                 }
@@ -158,7 +161,6 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
                 for (File file : indexedRoots) {
                     sb.append("  [-] ").append(file.getAbsolutePath()).append('\n'); //$NON-NLS-1$
                 }
-
             }
         } catch (IOException e) {
             Logs.log(LogMessages.ERROR_ACCESSING_SEARCHINDEX_FAILED, e);
@@ -200,9 +202,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
         return res;
     }
 
-    private boolean isCurrent(IPackageFragmentRoot root) throws IOException {
-        File rootLocation = JavaElementsFinder.findLocation(root).orNull();
-
+    private boolean isCurrent(File rootLocation) throws IOException {
         BooleanQuery query = new BooleanQuery();
         query.add(new TermQuery(termLocation(rootLocation)), Occur.MUST);
         query.add(newLongRange(F_LAST_MODIFIED, rootLocation.lastModified(), rootLocation.lastModified(), true, true),
