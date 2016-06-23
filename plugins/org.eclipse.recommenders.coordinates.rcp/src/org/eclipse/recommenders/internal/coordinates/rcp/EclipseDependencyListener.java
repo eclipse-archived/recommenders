@@ -32,6 +32,7 @@ import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.IDependencyListener;
 import org.eclipse.recommenders.coordinates.rcp.DependencyInfos;
 import org.eclipse.recommenders.internal.coordinates.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.jdt.JavaElementsFinder;
 import org.eclipse.recommenders.rcp.JavaModelEvents;
 import org.eclipse.recommenders.utils.Logs;
 
@@ -111,28 +112,25 @@ public class EclipseDependencyListener implements IDependencyListener {
     private synchronized Set<DependencyInfo> searchForAllDependenciesOfProject(IJavaProject javaProject) {
         Set<DependencyInfo> dependencies = new HashSet<>();
         Collection<IPackageFragmentRoot> jreRoots = jrePackageFragmentRoots.get(javaProject);
-        try {
-            for (IPackageFragmentRoot packageFragmentRoot : javaProject.getAllPackageFragmentRoots()) {
-                if (!jreRoots.contains(packageFragmentRoot) && packageFragmentRoot instanceof JarPackageFragmentRoot) {
-                    DependencyInfo dependencyInfo = createJarDependencyInfo(packageFragmentRoot).orNull();
-                    if (dependencyInfo != null) {
-                        dependencies.add(dependencyInfo);
-                    }
-                } else if (packageFragmentRoot.getKind() == IPackageFragmentRoot.K_SOURCE
-                        && packageFragmentRoot.getJavaProject() != null) {
-                    IJavaProject project = packageFragmentRoot.getJavaProject();
-                    if (project == null) {
-                        continue;
-                    }
+        for (IPackageFragmentRoot packageFragmentRoot : JavaElementsFinder.getAllPackageFragmentRoots(javaProject)) {
+            if (!jreRoots.contains(packageFragmentRoot) && packageFragmentRoot instanceof JarPackageFragmentRoot) {
+                DependencyInfo dependencyInfo = createJarDependencyInfo(packageFragmentRoot).orNull();
+                if (dependencyInfo != null) {
+                    dependencies.add(dependencyInfo);
+                }
+            } else if (JavaElementsFinder
+                    .getPackageFragmentRootKind(packageFragmentRoot) == IPackageFragmentRoot.K_SOURCE
+                    && packageFragmentRoot.getJavaProject() != null) {
+                IJavaProject project = packageFragmentRoot.getJavaProject();
+                if (project == null) {
+                    continue;
+                }
 
-                    DependencyInfo dependencyInfo = DependencyInfos.createProjectDependencyInfo(project).orNull();
-                    if (dependencyInfo != null) {
-                        dependencies.add(dependencyInfo);
-                    }
+                DependencyInfo dependencyInfo = DependencyInfos.createProjectDependencyInfo(project).orNull();
+                if (dependencyInfo != null) {
+                    dependencies.add(dependencyInfo);
                 }
             }
-        } catch (JavaModelException e) {
-            Logs.log(LogMessages.ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES, e, javaProject);
         }
 
         return dependencies;

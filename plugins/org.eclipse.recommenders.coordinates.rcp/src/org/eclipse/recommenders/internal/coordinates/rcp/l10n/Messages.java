@@ -60,7 +60,6 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_FAILED_TO_READ_CACHED_COORDINATES;
     public static String LOG_ERROR_FAILED_TO_READ_MANUAL_MAPPINGS;
     public static String LOG_ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES;
-    public static String LOG_ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES;
     public static String LOG_ERROR_FAILED_TO_WRITE_CACHED_COORDINATES;
     public static String LOG_ERROR_FAILED_TO_WRITE_MANUAL_MAPPINGS;
     public static String LOG_ERROR_IN_ADVISOR_SERVICE_SUGGEST;

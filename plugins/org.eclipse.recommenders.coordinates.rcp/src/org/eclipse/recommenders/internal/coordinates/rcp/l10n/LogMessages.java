@@ -36,8 +36,6 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_FAILED_TO_READ_MANUAL_MAPPINGS);
     public static final ILogMessage ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_REGISTER_PROJECT_DEPENDENCIES);
-    public static final ILogMessage ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_SEARCH_FOR_PROJECT_DEPENDENCIES);
     public static final ILogMessage ERROR_FAILED_TO_WRITE_CACHED_COORDINATES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_WRITE_CACHED_COORDINATES);
     public static final ILogMessage ERROR_FAILED_TO_WRITE_MANUAL_MAPPINGS = new LogMessages(ERROR,
