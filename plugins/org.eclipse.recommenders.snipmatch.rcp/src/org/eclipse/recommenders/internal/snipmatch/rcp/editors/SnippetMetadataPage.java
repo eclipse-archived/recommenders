@@ -13,9 +13,6 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp.editors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.eclipse.core.databinding.beans.BeanProperties.value;
-import static org.eclipse.jface.databinding.swt.WidgetProperties.*;
-import static org.eclipse.jface.databinding.viewers.ViewerProperties.singleSelection;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.HELP_URL;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -43,9 +40,9 @@ import org.eclipse.core.databinding.property.ISimplePropertyListener;
 import org.eclipse.core.databinding.property.value.SimpleValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -153,10 +150,10 @@ public class SnippetMetadataPage extends FormPage {
     private Button btnRemoveTag;
     private Button btnRemoveDependency;
 
-    private IObservableSet ppDependencies;
-    private IObservableList ppExtraSearchTerms;
-    private IObservableList ppFilenameRestrictions;
-    private IObservableList ppTags;
+    private IObservableSet modelSnippetDependencies;
+    private IObservableList modelSnippetExtraSearchTerms;
+    private IObservableList modelSnippetFilenameRestrictions;
+    private IObservableList modelSnippetTags;
     private DataBindingContext context;
 
     private final Image errorDecorationImage = FieldDecorationRegistry.getDefault()
@@ -274,22 +271,23 @@ public class SnippetMetadataPage extends FormPage {
                 filenameRestrictionsButtonContainer = createButtonContainer(managedForm);
                 btnAddFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer,
                         Messages.EDITOR_BUTTON_ADD, new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        createFilenameRestrictionInputDialog(filenameRestrictionsButtonContainer.getShell()).open();
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                createFilenameRestrictionInputDialog(filenameRestrictionsButtonContainer.getShell())
+                                        .open();
+                            }
+                        });
                 btnAddFilenameRestriction.setEnabled(snippet.getLocation() == Location.FILE);
                 btnRemoveFilenameRestriction = createButton(managedForm, filenameRestrictionsButtonContainer,
                         Messages.EDITOR_BUTTON_REMOVE, new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Optional<String> o = Selections.getFirstSelected(listViewerFilenameRestrictions);
-                        if (o.isPresent()) {
-                            ppFilenameRestrictions.remove(o.get());
-                        }
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                Optional<String> o = Selections.getFirstSelected(listViewerFilenameRestrictions);
+                                if (o.isPresent()) {
+                                    modelSnippetFilenameRestrictions.remove(o.get());
+                                }
+                            }
+                        });
 
                 createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_EXTRA_SEARCH_TERMS);
                 listViewerExtraSearchTerms = createListViewer(managedForm, horizontalIndent);
@@ -299,21 +297,21 @@ public class SnippetMetadataPage extends FormPage {
                 extraSearchTermsButtonContainer = createButtonContainer(managedForm);
                 createButton(managedForm, extraSearchTermsButtonContainer, Messages.EDITOR_BUTTON_ADD,
                         new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        createExtraSearchTermInputDialog(extraSearchTermsButtonContainer.getShell()).open();
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                createExtraSearchTermInputDialog(extraSearchTermsButtonContainer.getShell()).open();
+                            }
+                        });
                 btnRemoveExtraSearchTerm = createButton(managedForm, extraSearchTermsButtonContainer,
                         Messages.EDITOR_BUTTON_REMOVE, new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Optional<String> o = Selections.getFirstSelected(listViewerExtraSearchTerms);
-                        if (o.isPresent()) {
-                            ppExtraSearchTerms.remove(o.get());
-                        }
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                Optional<String> o = Selections.getFirstSelected(listViewerExtraSearchTerms);
+                                if (o.isPresent()) {
+                                    modelSnippetExtraSearchTerms.remove(o.get());
+                                }
+                            }
+                        });
 
                 createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_TAG);
                 listViewerTags = createListViewer(managedForm, horizontalIndent);
@@ -329,14 +327,14 @@ public class SnippetMetadataPage extends FormPage {
                 });
                 btnRemoveTag = createButton(managedForm, tagsButtonContainer, Messages.EDITOR_BUTTON_REMOVE,
                         new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Optional<String> o = Selections.getFirstSelected(listViewerTags);
-                        if (o.isPresent()) {
-                            ppTags.remove(o.get());
-                        }
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                Optional<String> o = Selections.getFirstSelected(listViewerTags);
+                                if (o.isPresent()) {
+                                    modelSnippetTags.remove(o.get());
+                                }
+                            }
+                        });
 
                 createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_DEPENDENCIES);
                 listViewerDependencies = createListViewer(managedForm, horizontalIndent);
@@ -346,53 +344,54 @@ public class SnippetMetadataPage extends FormPage {
                 dependenciesButtonContainer = createButtonContainer(managedForm);
                 createButton(managedForm, dependenciesButtonContainer, Messages.EDITOR_BUTTON_ADD,
                         new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Shell shell = dependenciesButtonContainer.getShell();
-                        ProjectCoordinateSelectionDialog dialog = new ProjectCoordinateSelectionDialog(shell) {
                             @Override
-                            public String createLabelForProjectCoordinate(ProjectCoordinate element) {
-                                return getStringForDependency(element);
-                            }
-
-                            private final Set<String> alreadyAddedPcLabels = Sets.newHashSet();
-
-                            @Override
-                            public boolean filter(ProjectCoordinate pc) {
-                                for (String dependencylistItem : fetchDependencyListItems()) {
-                                    if (dependencylistItem.equals(getStringForDependency(pc))) {
-                                        return true;
+                            public void widgetSelected(SelectionEvent e) {
+                                Shell shell = dependenciesButtonContainer.getShell();
+                                ProjectCoordinateSelectionDialog dialog = new ProjectCoordinateSelectionDialog(shell) {
+                                    @Override
+                                    public String createLabelForProjectCoordinate(ProjectCoordinate element) {
+                                        return getStringForDependency(element);
                                     }
-                                }
 
-                                String labelForPc = createLabelForProjectCoordinate(pc);
-                                if (alreadyAddedPcLabels.contains(labelForPc)) {
-                                    return true;
-                                } else {
-                                    alreadyAddedPcLabels.add(labelForPc);
-                                    return false;
-                                }
+                                    private final Set<String> alreadyAddedPcLabels = Sets.newHashSet();
+
+                                    @Override
+                                    public boolean filter(ProjectCoordinate pc) {
+                                        for (String dependencylistItem : fetchDependencyListItems()) {
+                                            if (dependencylistItem.equals(getStringForDependency(pc))) {
+                                                return true;
+                                            }
+                                        }
+
+                                        String labelForPc = createLabelForProjectCoordinate(pc);
+                                        if (alreadyAddedPcLabels.contains(labelForPc)) {
+                                            return true;
+                                        } else {
+                                            alreadyAddedPcLabels.add(labelForPc);
+                                            return false;
+                                        }
+                                    }
+                                };
+                                dialog.setInitialPattern(""); //$NON-NLS-1$
+                                dialog.setTitle(Messages.DIALOG_TITLE_SELECT_DEPENDENCY);
+                                dialog.setMessage(Messages.DIALOG_MESSAGE_SELECT_DEPENDENCY);
+                                dialog.open();
+
+                                Set<ProjectCoordinate> selectedElements = changeVersionsToZero(
+                                        dialog.getSelectedElements());
+                                modelSnippetDependencies.addAll(selectedElements);
                             }
-                        };
-                        dialog.setInitialPattern(""); //$NON-NLS-1$
-                        dialog.setTitle(Messages.DIALOG_TITLE_SELECT_DEPENDENCY);
-                        dialog.setMessage(Messages.DIALOG_MESSAGE_SELECT_DEPENDENCY);
-                        dialog.open();
-
-                        Set<ProjectCoordinate> selectedElements = changeVersionsToZero(dialog.getSelectedElements());
-                        ppDependencies.addAll(selectedElements);
-                    }
-                });
+                        });
                 btnRemoveDependency = createButton(managedForm, dependenciesButtonContainer,
                         Messages.EDITOR_BUTTON_REMOVE, new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Optional<String> o = Selections.getFirstSelected(listViewerDependencies);
-                        if (o.isPresent()) {
-                            ppDependencies.remove(o.get());
-                        }
-                    }
-                });
+                            @Override
+                            public void widgetSelected(SelectionEvent e) {
+                                Optional<String> o = Selections.getFirstSelected(listViewerDependencies);
+                                if (o.isPresent()) {
+                                    modelSnippetDependencies.remove(o.get());
+                                }
+                            }
+                        });
 
                 createLabel(managedForm, Messages.EDITOR_LABEL_SNIPPET_UUID);
                 txtUuid = managedForm.getToolkit().createText(managedForm.getForm().getBody(),
@@ -538,7 +537,7 @@ public class SnippetMetadataPage extends FormPage {
                 Messages.DIALOG_MESSAGE_ENTER_NEW_FILENAME_RESTRICTION, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
-                ppFilenameRestrictions.add(getValue().toLowerCase());
+                modelSnippetFilenameRestrictions.add(getValue().toLowerCase());
                 super.okPressed();
             }
         };
@@ -562,7 +561,7 @@ public class SnippetMetadataPage extends FormPage {
                 Messages.DIALOG_MESSAGE_ENTER_NEW_EXTRA_SEARCH_TERM, "", validator) { //$NON-NLS-1$
             @Override
             protected void okPressed() {
-                ppExtraSearchTerms.add(getValue());
+                modelSnippetExtraSearchTerms.add(getValue());
                 super.okPressed();
             }
         };
@@ -586,7 +585,7 @@ public class SnippetMetadataPage extends FormPage {
                 validator) {
             @Override
             protected void okPressed() {
-                ppTags.add(getValue());
+                modelSnippetTags.add(getValue());
                 super.okPressed();
             }
         };
@@ -596,45 +595,81 @@ public class SnippetMetadataPage extends FormPage {
         DataBindingContext context = new DataBindingContext();
 
         // Name
-        IObservableValue wpTxtNameText = text(SWT.Modify).observe(txtName);
-        IObservableValue ppName = value(Snippet.class, "name", String.class).observe(snippet); //$NON-NLS-1$
-        context.bindValue(wpTxtNameText, ppName);
-        ppName.addChangeListener(new ContentsPartDirtyListener());
+        IObservableValue targetNameWidget = WidgetProperties.text(SWT.Modify).observe(txtName);
+        IObservableValue modelSnippetName = BeanProperties.value(Snippet.class, "name", String.class).observe(snippet); //$NON-NLS-1$
+        context.bindValue(targetNameWidget, modelSnippetName);
+        modelSnippetName.addChangeListener(new ContentsPartDirtyListener());
 
         // Description
-        IObservableValue wpTxtDescriptionText = text(SWT.Modify).observe(txtDescription);
-        IObservableValue ppDescription = value(Snippet.class, "description", String.class).observe(snippet); //$NON-NLS-1$
-        context.bindValue(wpTxtDescriptionText, ppDescription);
-        ppDescription.addChangeListener(new ContentsPartDirtyListener());
+        IObservableValue targetDescriptionWidget = WidgetProperties.text(SWT.Modify).observe(txtDescription);
+        IObservableValue modelSnippetDescription = BeanProperties.value(Snippet.class, "description", String.class) //$NON-NLS-1$
+                .observe(snippet);
+        context.bindValue(targetDescriptionWidget, modelSnippetDescription);
+        modelSnippetDescription.addChangeListener(new ContentsPartDirtyListener());
 
         // Location
-        IObservableValue wpTxtLocation = ViewerProperties.singleSelection().observe(comboLocation);
-        IObservableValue ppLocation = value(Snippet.class, "location", Location.class).observe(snippet); //$NON-NLS-1$
-
-        context.bindValue(wpTxtLocation, ppLocation);
-        ppLocation.addChangeListener(new ContentsPartDirtyListener());
-
-        // Filenames
-        ppFilenameRestrictions = BeanProperties.list(Snippet.class, "filenameRestrictions", String.class) //$NON-NLS-1$
+        IObservableValue targetLocationComboViewer = ViewerProperties.singleSelection().observe(comboLocation);
+        IObservableValue modelSnippetLocation = BeanProperties.value(Snippet.class, "location", Location.class) //$NON-NLS-1$
                 .observe(snippet);
-        ppFilenameRestrictions.addChangeListener(new ContentsPartDirtyListener());
-        ViewerSupport.bind(listViewerFilenameRestrictions, ppFilenameRestrictions,
+        context.bindValue(targetLocationComboViewer, modelSnippetLocation);
+        modelSnippetLocation.addChangeListener(new ContentsPartDirtyListener());
+
+        // Filename restrictions
+        modelSnippetFilenameRestrictions = BeanProperties.list(Snippet.class, "filenameRestrictions", String.class) //$NON-NLS-1$
+                .observe(snippet);
+        modelSnippetFilenameRestrictions.addChangeListener(new ContentsPartDirtyListener());
+        ViewerSupport.bind(listViewerFilenameRestrictions, modelSnippetFilenameRestrictions,
                 new FilenameRestrictionLabelProperty());
 
+        UpdateValueStrategy locationEnablementStrategy = new UpdateValueStrategy();
+        locationEnablementStrategy.setConverter(new NullSafeEnumToBooleanConverter(new Location[] { Location.FILE }));
+        IObservableValue modelFilenameRestrictionsEnabled = WidgetProperties.enabled()
+                .observe(listViewerFilenameRestrictions.getControl());
+        final IObservableValue modelAddFilenameRestrictionButtonEnabled = WidgetProperties.enabled()
+                .observe(btnAddFilenameRestriction);
+
+        context.bindValue(targetLocationComboViewer, modelFilenameRestrictionsEnabled, locationEnablementStrategy,
+                null);
+        context.bindValue(targetLocationComboViewer, modelAddFilenameRestrictionButtonEnabled,
+                locationEnablementStrategy, null);
+
+        final IObservableValue targetEnableRemoveFilenameButton = WidgetProperties.enabled()
+                .observe(btnRemoveFilenameRestriction);
+        final IObservableValue targetFilenameRestrictionSelected = ViewerProperties.singleSelection()
+                .observe(listViewerFilenameRestrictions);
+        ComputedValue computedRemoveButtonEnablement = new ObserveValueWithNullChecker(targetEnableRemoveFilenameButton,
+                modelAddFilenameRestrictionButtonEnabled, targetFilenameRestrictionSelected);
+        context.bindValue(targetEnableRemoveFilenameButton, computedRemoveButtonEnablement);
+
         // Extra search terms
-        ppExtraSearchTerms = BeanProperties.list(Snippet.class, "extraSearchTerms", String.class).observe(snippet); //$NON-NLS-1$
-        ViewerSupport.bind(listViewerExtraSearchTerms, ppExtraSearchTerms, new SelfValueProperty(String.class));
-        ppExtraSearchTerms.addChangeListener(new ContentsPartDirtyListener());
+        modelSnippetExtraSearchTerms = BeanProperties.list(Snippet.class, "extraSearchTerms", String.class) //$NON-NLS-1$
+                .observe(snippet);
+        ViewerSupport.bind(listViewerExtraSearchTerms, modelSnippetExtraSearchTerms,
+                new SelfValueProperty(String.class));
+        modelSnippetExtraSearchTerms.addChangeListener(new ContentsPartDirtyListener());
+
+        UpdateValueStrategy objectToBooleanStrategy = new UpdateValueStrategy();
+        objectToBooleanStrategy.setConverter(new ObjectToBooleanConverter());
+        IObservableValue targetExtraSearchTermSelected = ViewerProperties.singleSelection()
+                .observe(listViewerExtraSearchTerms);
+        IObservableValue modelRemoveExtraSearchTermButtonEnabled = WidgetProperties.enabled()
+                .observe(btnRemoveExtraSearchTerm);
+        context.bindValue(targetExtraSearchTermSelected, modelRemoveExtraSearchTermButtonEnabled,
+                objectToBooleanStrategy, null);
 
         // Tags
-        ppTags = BeanProperties.list(Snippet.class, "tags", String.class).observe(snippet); //$NON-NLS-1$
-        ViewerSupport.bind(listViewerTags, ppTags, new SelfValueProperty(String.class));
-        ppTags.addChangeListener(new ContentsPartDirtyListener());
+        modelSnippetTags = BeanProperties.list(Snippet.class, "tags", String.class).observe(snippet); //$NON-NLS-1$
+        ViewerSupport.bind(listViewerTags, modelSnippetTags, new SelfValueProperty(String.class));
+        modelSnippetTags.addChangeListener(new ContentsPartDirtyListener());
+
+        IObservableValue targetTagSelected = ViewerProperties.singleSelection().observe(listViewerTags);
+        IObservableValue modelRemoveTagButtonEnabled = WidgetProperties.enabled().observe(btnRemoveTag);
+        context.bindValue(targetTagSelected, modelRemoveTagButtonEnabled, objectToBooleanStrategy, null);
 
         // Dependencies
-        ppDependencies = BeanProperties.set(Snippet.class, "neededDependencies", ProjectCoordinate.class) //$NON-NLS-1$
+        modelSnippetDependencies = BeanProperties.set(Snippet.class, "neededDependencies", ProjectCoordinate.class) //$NON-NLS-1$
                 .observe(snippet);
-        ViewerSupport.bind(listViewerDependencies, ppDependencies, new SimpleValueProperty() {
+        ViewerSupport.bind(listViewerDependencies, modelSnippetDependencies, new SimpleValueProperty() {
 
             @Override
             public Object getValueType() {
@@ -660,58 +695,19 @@ public class SnippetMetadataPage extends FormPage {
             }
 
         });
-        ppDependencies.addChangeListener(new ContentsPartDirtyListener());
+        modelSnippetDependencies.addChangeListener(new ContentsPartDirtyListener());
 
-        // uuid
+        IObservableValue targetDependencySelected = ViewerProperties.singleSelection().observe(listViewerDependencies);
+        IObservableValue modelRemoveDependencyButtonEnabled = WidgetProperties.enabled().observe(btnRemoveDependency);
+        context.bindValue(targetDependencySelected, modelRemoveDependencyButtonEnabled, objectToBooleanStrategy, null);
+
+        // uuid text
         UpdateValueStrategy stringToUuidStrategy = new UpdateValueStrategy();
-        StringToUuidConverter stringToUuidConverter = new StringToUuidConverter();
-        stringToUuidStrategy.setConverter(stringToUuidConverter);
-
-        IObservableValue wpUuidText = text(SWT.Modify).observe(txtUuid);
-        IObservableValue ppUuid = value(Snippet.class, "uuid", UUID.class).observe(snippet); //$NON-NLS-1$
-        context.bindValue(wpUuidText, ppUuid, stringToUuidStrategy, null);
-        ppUuid.addChangeListener(new ContentsPartDirtyListener());
-
-        // enable widgets
-        UpdateValueStrategy strategy = new UpdateValueStrategy();
-        strategy.setConverter(new ObjectToBooleanConverter());
-
-        final IObservableValue vpFilenamesSelection = singleSelection().observe(listViewerFilenameRestrictions);
-        IObservableValue wpBtnRemoveFilenamesEnable = enabled().observe(btnRemoveFilenameRestriction);
-
-        IObservableValue vpLocationSelection = ViewersObservables.observeSingleSelection(comboLocation);
-        IObservableValue wpListViewerFilenamesEnabled = enabled().observe(listViewerFilenameRestrictions.getControl());
-        final IObservableValue wpBtnAddFilenamesEnabled = enabled().observe(btnAddFilenameRestriction);
-
-        UpdateValueStrategy locationEnablementStrategy = new UpdateValueStrategy();
-        EnumToBooleanConverter<Location> locationToBooleanConverter = new EnumToBooleanConverter<Location>(
-                Location.FILE);
-        locationEnablementStrategy.setConverter(locationToBooleanConverter);
-
-        context.bindValue(vpLocationSelection, wpListViewerFilenamesEnabled, locationEnablementStrategy, null);
-        context.bindValue(vpLocationSelection, wpBtnAddFilenamesEnabled, locationEnablementStrategy, null);
-
-        ComputedValue computedRemoveButtonEnablement = new ComputedValue() {
-
-            @Override
-            protected Object calculate() {
-                boolean addButtonEnabled = (boolean) wpBtnAddFilenamesEnabled.getValue();
-                return vpFilenamesSelection.getValue() != null && addButtonEnabled;
-            }
-        };
-        context.bindValue(wpBtnRemoveFilenamesEnable, computedRemoveButtonEnablement);
-
-        IObservableValue vpExtraSearchTermsSelection = singleSelection().observe(listViewerExtraSearchTerms);
-        IObservableValue wpBtnRemoveExtraSearchTermEnable = enabled().observe(btnRemoveExtraSearchTerm);
-        context.bindValue(vpExtraSearchTermsSelection, wpBtnRemoveExtraSearchTermEnable, strategy, null);
-
-        IObservableValue vpTagSelection = singleSelection().observe(listViewerTags);
-        IObservableValue wpBtnRemoveTagsEnable = enabled().observe(btnRemoveTag);
-        context.bindValue(vpTagSelection, wpBtnRemoveTagsEnable, strategy, null);
-
-        IObservableValue vpDependencySelection = singleSelection().observe(listViewerDependencies);
-        IObservableValue wpBtnRemoveDependenciesEnable = enabled().observe(btnRemoveDependency);
-        context.bindValue(vpDependencySelection, wpBtnRemoveDependenciesEnable, strategy, null);
+        stringToUuidStrategy.setConverter(new StringToUuidConverter());
+        IObservableValue targetUuidWidget = WidgetProperties.text(SWT.Modify).observe(txtUuid);
+        IObservableValue modelSnippetUuid = BeanProperties.value(Snippet.class, "uuid", UUID.class).observe(snippet); //$NON-NLS-1$
+        context.bindValue(targetUuidWidget, modelSnippetUuid, stringToUuidStrategy, null);
+        modelSnippetUuid.addChangeListener(new ContentsPartDirtyListener());
 
         context.updateModels();
         return context;
@@ -781,6 +777,18 @@ public class SnippetMetadataPage extends FormPage {
         }
     }
 
+    private static class NullSafeEnumToBooleanConverter extends EnumToBooleanConverter<Location> {
+
+        private NullSafeEnumToBooleanConverter(Location[] trueValues) {
+            super(trueValues);
+        }
+
+        @Override
+        public Object convert(Object fromObject) {
+            return fromObject != null ? super.convert(fromObject) : false;
+        }
+    }
+
     private static class FilenameRestrictionLabelProperty extends SimpleValueProperty {
 
         @Override
@@ -805,6 +813,30 @@ public class SnippetMetadataPage extends FormPage {
         @Override
         public INativePropertyListener adaptListener(ISimplePropertyListener listener) {
             return null;
+        }
+    }
+
+    private final class ObserveValueWithNullChecker extends ComputedValue {
+        private final IObservableValue target;
+        private final IObservableValue observableNullChecker;
+        private final IObservableValue observableValue;
+
+        private ObserveValueWithNullChecker(IObservableValue target, IObservableValue observableValue,
+                IObservableValue observableNullChecker) {
+            this.target = target;
+            this.observableNullChecker = observableNullChecker;
+            this.observableValue = observableValue;
+        }
+
+        @Override
+        protected void doSetValue(Object value) {
+            target.setValue(value);
+        }
+
+        @Override
+        protected Object calculate() {
+            boolean value = (boolean) observableValue.getValue();
+            return observableNullChecker.getValue() != null && value;
         }
     }
 }
