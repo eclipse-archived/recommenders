@@ -16,18 +16,20 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.jdt.l10n.messages"; //$NON-NLS-1$
 
-    public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
-    public static String LOG_ERROR_CANNOT_FETCH_JAVA_PROJECTS;
-    public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS;
-    public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT;
-    public static String LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS;
-    public static String LOG_ERROR_CANNOT_FETCH_CLASS_FILES;
-    public static String LOG_ERROR_CANNOT_FETCH_TYPES;
-    public static String LOG_ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH;
-    public static String LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT;
     public static String LOG_ERROR_CANNOT_DETERMINE_LOCATION;
-    public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
+    public static String LOG_ERROR_CANNOT_FETCH_ALL_PACKAGE_FRAGMENT_ROOTS;
+    public static String LOG_ERROR_CANNOT_FETCH_CLASS_FILES;
+    public static String LOG_ERROR_CANNOT_FETCH_COMPILATION_UNITS;
+    public static String LOG_ERROR_CANNOT_FETCH_JAVA_PROJECTS;
+    public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT;
+    public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOT_KIND;
+    public static String LOG_ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOTS;
+    public static String LOG_ERROR_CANNOT_FETCH_SOURCE_ATTACHMENT_PATH;
+    public static String LOG_ERROR_CANNOT_FETCH_TYPES;
+    public static String LOG_ERROR_CANNOT_FIND_TYPE_IN_PROJECT;
     public static String LOG_ERROR_FAILED_TO_CREATE_METHODNAME;
+    public static String LOG_ERROR_FAILED_TO_CREATE_TYPENAME;
+    public static String LOG_ERROR_SNIPPET_REPLACE_LEADING_WHITESPACE_FAILED;
 
     public static String LOG_WARN_FAILED_TO_GET_TEXT_SELECTION;
 

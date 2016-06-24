@@ -127,6 +127,8 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
         private Text txtPushBranchPrefix;
         private Combo cmbPushBranchRepository;
 
+        private String initialFetchUri;
+
         protected GitBasedRepositoryConfigurationWizardPage(String pageName) {
             super(pageName);
             setTitle(Messages.WIZARD_GIT_REPOSITORY_TITLE);
@@ -154,8 +156,9 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             addPushGroup(container);
 
             if (configuration != null) {
+                initialFetchUri = configuration.getUrl();
                 txtName.setText(configuration.getName());
-                txtFetchUri.setText(configuration.getUrl());
+                txtFetchUri.setText(initialFetchUri);
                 txtPushUri.setText(configuration.getPushUrl());
 
                 String pushBranchPrefix = configuration.getPushBranchPrefix();
@@ -240,7 +243,7 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
                 public void widgetSelected(SelectionEvent e) {
                     if (cmbPushBranchRepository.getText()
                             .equals(Messages.WIZARD_GIT_REPOSITORY_OPTION_OTHER_PUSH_BRANCH_PREFIX)) {
-                        txtPushBranchPrefix.setText("");
+                        txtPushBranchPrefix.setText(""); //$NON-NLS-1$
                         txtPushBranchPrefix.setEnabled(true);
                     } else {
                         txtPushBranchPrefix
@@ -272,23 +275,27 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
         public void updatePageComplete() {
             setErrorMessage(null);
 
-            String pushBranchPrefixValid = branchInputValidator.isValid(txtPushBranchPrefix.getText());
-            IStatus fetchUriValidation = RepositoryUrlValidator.isValidUri(txtFetchUri.getText());
-            IStatus pushUriValidation = RepositoryUrlValidator.isValidUri(txtPushUri.getText());
+            String fetchUri = txtFetchUri.getText();
+            String pushUri = txtPushUri.getText();
+            String pushBranchPrefix = txtPushBranchPrefix.getText();
+
+            IStatus fetchUriValidation = RepositoryUrlValidator.isValidUri(fetchUri);
+            IStatus pushUriValidation = RepositoryUrlValidator.isValidUri(pushUri);
+            String pushBranchPrefixValid = branchInputValidator.isValid(pushBranchPrefix);
 
             if (Strings.isNullOrEmpty(txtName.getText())) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_NAME);
             } else if (!fetchUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_FETCH_URI,
                         fetchUriValidation.getMessage()));
-            } else if (isUriAlreadyAdded(txtFetchUri.getText())) {
+            } else if (!fetchUri.equals(initialFetchUri) && isUriAlreadyAdded(fetchUri)) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_FETCH_URI_ALREADY_ADDED);
             } else if (!pushUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_PUSH_URI,
                         pushUriValidation.getMessage()));
             } else if (cmbPushBranchRepository.getSelectionIndex() == -1) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX_REPOSITORY);
-            } else if (Strings.isNullOrEmpty(txtPushBranchPrefix.getText())) {
+            } else if (Strings.isNullOrEmpty(pushBranchPrefix)) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_ERROR_EMPTY_BRANCH_PREFIX);
             } else if (pushBranchPrefixValid != null) {
                 setErrorMessage(pushBranchPrefixValid);

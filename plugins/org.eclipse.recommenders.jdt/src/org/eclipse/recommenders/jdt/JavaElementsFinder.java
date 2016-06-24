@@ -70,7 +70,7 @@ public final class JavaElementsFinder {
         Builder<IPackageFragmentRoot> b = ImmutableList.builder();
         try {
             for (IPackageFragmentRoot root : project.getPackageFragmentRoots()) {
-                if (K_SOURCE == root.getKind()) {
+                if (K_SOURCE == getPackageFragmentRootKind(root)) {
                     b.add(root);
                 }
             }
@@ -84,9 +84,10 @@ public final class JavaElementsFinder {
         Builder<IPackageFragmentRoot> b = ImmutableList.builder();
         try {
             for (IPackageFragmentRoot root : project.getPackageFragmentRoots()) {
-                if (K_SOURCE == root.getKind()) {
+                int kind = getPackageFragmentRootKind(root);
+                if (K_SOURCE == kind) {
                     b.add(root);
-                } else if (K_BINARY == root.getKind()) {
+                } else if (K_BINARY == kind) {
                     if (hasSourceAttachment(root)) {
                         b.add(root);
                     }
@@ -376,5 +377,23 @@ public final class JavaElementsFinder {
             // swallow. That happened during testing in JDT Mars M6
         }
         return res;
+    }
+
+    public static IPackageFragmentRoot[] getAllPackageFragmentRoots(IJavaProject javaProject) {
+        try {
+            return javaProject.getAllPackageFragmentRoots();
+        } catch (JavaModelException e) {
+            Logs.log(LogMessages.ERROR_CANNOT_FETCH_ALL_PACKAGE_FRAGMENT_ROOTS, e, javaProject);
+            return new IPackageFragmentRoot[0];
+        }
+    }
+
+    public static int getPackageFragmentRootKind(IPackageFragmentRoot packageFragmentRoot) {
+        try {
+            return packageFragmentRoot.getKind();
+        } catch (JavaModelException e) {
+            Logs.log(LogMessages.ERROR_CANNOT_FETCH_PACKAGE_FRAGMENT_ROOT_KIND, e, packageFragmentRoot);
+            return 0;
+        }
     }
 }

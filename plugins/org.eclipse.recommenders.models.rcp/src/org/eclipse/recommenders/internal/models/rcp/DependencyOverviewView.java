@@ -89,8 +89,8 @@ public class DependencyOverviewView extends ViewPart {
 
     @Override
     public void createPartControl(Composite parent) {
-        Tree dependencyTree = new Tree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL
-                | SWT.V_SCROLL);
+        Tree dependencyTree = new Tree(parent,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         dependencyTree.setHeaderVisible(true);
         dependencyTree.setLinesVisible(true);
         createColumn(dependencyTree, Messages.COLUMN_LABEL_DEPENDENCY, 400);

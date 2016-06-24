@@ -16,7 +16,6 @@ import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.coordinates.DependencyType.*;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Constants.REASON_NOT_IN_CACHE;
 import static org.eclipse.recommenders.utils.Result.*;
@@ -81,7 +80,6 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
                         return extractDependencyInfo(pfr);
                     }
                 });
-
     }
 
     @Override
@@ -137,21 +135,25 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         if (root == null) {
             return absent();
         }
-        if (!root.isArchive()) {
-            return extractDependencyInfo(root.getJavaProject());
+
+        IJavaProject javaProject = root.getJavaProject();
+        if (javaProject == null) {
+            return absent();
         }
+
+        if (!root.isArchive()) {
+            return extractDependencyInfo(javaProject);
+        }
+
         File location = JdtUtils.getLocation(root).orNull();
         if (location == null) {
             return absent();
         }
 
-        IJavaProject javaProject = root.getJavaProject();
-
         if (isPartOfJRE(root, javaProject)) {
-            return DependencyInfos.createDependencyInfoForJre(javaProject);
+            return DependencyInfos.createJreDependencyInfo(javaProject);
         } else {
-            DependencyInfo request = new DependencyInfo(location, JAR);
-            return of(request);
+            return Optional.of(new DependencyInfo(location, JAR));
         }
     }
 
@@ -182,7 +184,7 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     }
 
     private Optional<DependencyInfo> extractDependencyInfo(IJavaProject javaProject) {
-        File location = getLocation(javaProject).orNull();
+        File location = JdtUtils.getLocation(javaProject).orNull();
         DependencyInfo request = new DependencyInfo(location, PROJECT,
                 ImmutableMap.of(PROJECT_NAME, javaProject.getElementName()));
         return of(request);

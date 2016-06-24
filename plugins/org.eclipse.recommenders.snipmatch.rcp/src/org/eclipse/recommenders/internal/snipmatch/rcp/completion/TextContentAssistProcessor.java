@@ -42,10 +42,13 @@ public class TextContentAssistProcessor extends AbstractContentAssistProcessor<T
         IJavaProject project = context.getProject().orNull();
         if (project == null) {
             return Collections.emptySet();
+        }
+
+        DependencyInfo dependencyInfo = DependencyInfos.createProjectDependencyInfo(project).orNull();
+        if (dependencyInfo == null) {
+            return Collections.emptySet();
         } else {
-            IJavaProject javaProject = project;
-            return dependencyListener
-                    .getDependenciesForProject(DependencyInfos.createDependencyInfoForProject(javaProject));
+            return dependencyListener.getDependenciesForProject(dependencyInfo);
         }
     }
 

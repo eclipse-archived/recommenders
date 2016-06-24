@@ -57,7 +57,7 @@ public class EclipseDependencyListenerTest {
         EventBus eventBus = mock(EventBus.class);
         EclipseDependencyListener sut = new EclipseDependencyListener(eventBus);
 
-        DependencyInfo project = DependencyInfos.createDependencyInfoForProject(javaProject);
+        DependencyInfo project = DependencyInfos.createProjectDependencyInfo(javaProject).orNull();
         assertThat(sut.getProjects(), hasItem(project));
         assertThat(sut.getDependencies(), hasItem(project));
         assertThat(sut.getDependenciesForProject(project), hasItem(project));
@@ -70,7 +70,7 @@ public class EclipseDependencyListenerTest {
 
         IJavaProject javaProject = createProject("ProjectAddedOnJavaProjectOpened");
 
-        DependencyInfo project = DependencyInfos.createDependencyInfoForProject(javaProject);
+        DependencyInfo project = DependencyInfos.createProjectDependencyInfo(javaProject).orNull();
         assertThat(sut.getDependencies(), not(hasItem(project)));
         assertThat(sut.getProjects(), not(hasItem(project)));
         assertThat(sut.getDependenciesForProject(project), not(hasItem(project)));
@@ -91,7 +91,7 @@ public class EclipseDependencyListenerTest {
         eventBus.post(new JavaProjectOpened(javaProject));
         eventBus.post(new JavaProjectClosed(javaProject));
 
-        DependencyInfo project = DependencyInfos.createDependencyInfoForProject(javaProject);
+        DependencyInfo project = DependencyInfos.createProjectDependencyInfo(javaProject).orNull();
         assertThat(sut.getDependencies(), not(hasItem(project)));
         assertThat(sut.getProjects(), not(hasItem(project)));
         assertThat(sut.getDependenciesForProject(project), not(hasItem(project)));
@@ -106,8 +106,8 @@ public class EclipseDependencyListenerTest {
         appendJreToClasspath(javaProject);
         eventBus.post(new JavaProjectOpened(javaProject));
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
-        DependencyInfo jre = createDependencyInfoForJre(javaProject).get();
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
+        DependencyInfo jre = createJreDependencyInfo(javaProject).get();
         assertThat(sut.getDependencies(), hasItem(jre));
         assertThat(sut.getProjects(), not(hasItem(jre)));
         assertThat(sut.getDependenciesForProject(project), hasItem(jre));
@@ -127,8 +127,8 @@ public class EclipseDependencyListenerTest {
 
         eventBus.post(new JavaProjectClosed(javaProject1));
 
-        DependencyInfo project2 = createDependencyInfoForProject(javaProject2);
-        DependencyInfo jre = createDependencyInfoForJre(javaProject2).get();
+        DependencyInfo project2 = createProjectDependencyInfo(javaProject2).orNull();
+        DependencyInfo jre = createJreDependencyInfo(javaProject2).get();
         assertThat(sut.getDependencies(), hasItem(jre));
         assertThat(sut.getDependenciesForProject(project2), hasItem(jre));
     }
@@ -151,8 +151,8 @@ public class EclipseDependencyListenerTest {
             }
         }
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
-        DependencyInfo jre = createDependencyInfoForJre(javaProject).get();
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
+        DependencyInfo jre = createJreDependencyInfo(javaProject).get();
         assertThat(sut.getDependenciesForProject(project), not(hasItem(jre)));
     }
 
@@ -165,7 +165,7 @@ public class EclipseDependencyListenerTest {
         File dependency = tmp.newFile("dependency.jar");
         eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, dependency)));
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
         DependencyInfo jar = new DependencyInfo(dependency, DependencyType.JAR);
         assertThat(sut.getDependencies(), hasItem(jar));
         assertThat(sut.getDependenciesForProject(project), hasItem(jar));
@@ -181,7 +181,7 @@ public class EclipseDependencyListenerTest {
         eventBus.post(new JarPackageFragmentRootAdded(mockJarPackageFragmentRoot(javaProject, dependency)));
         eventBus.post(new JarPackageFragmentRootRemoved(mockJarPackageFragmentRoot(javaProject, dependency)));
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
         DependencyInfo jar = new DependencyInfo(dependency, DependencyType.JAR);
         assertThat(sut.getDependencies(), not(hasItem(jar)));
         assertThat(sut.getDependenciesForProject(project), not(hasItem(jar)));
@@ -198,8 +198,8 @@ public class EclipseDependencyListenerTest {
         eventBus.post(new JavaProjectOpened(javaProject));
         eventBus.post(new JavaProjectOpened(javaDependency));
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
-        DependencyInfo dependency = createDependencyInfoForProject(javaDependency);
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
+        DependencyInfo dependency = createProjectDependencyInfo(javaDependency).orNull();
         assertThat(sut.getProjects(), hasItems(project, dependency));
         assertThat(sut.getDependencies(), hasItems(project, dependency));
         assertThat(sut.getDependenciesForProject(project), hasItems(project, dependency));
@@ -219,7 +219,7 @@ public class EclipseDependencyListenerTest {
         eventBus.post(new JavaProjectOpened(javaDependency));
         eventBus.post(new JavaProjectClosed(javaDependency));
 
-        DependencyInfo project = createDependencyInfoForProject(javaProject);
+        DependencyInfo project = createProjectDependencyInfo(javaProject).orNull();
         assertThat(sut.getProjects(), hasItems(project));
         assertThat(sut.getDependencies(), hasItems(project));
         assertThat(sut.getDependenciesForProject(project), hasItems(project));
