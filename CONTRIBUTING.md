@@ -135,10 +135,10 @@ To release a new **maintenance version** (same major/minor version, different mi
 - `git fetch`
 - `git checkout origin/maintenance`
 - `git clean -df`
-- `mvn clean -Dtycho.mode=maven`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${MAINTENANCE_VERSION}`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MAINTENANCE_VERSION}-SNAPSHOT`
-- `mvn tidy:pom`
+- `mvn -Dtycho.mode=maven clean`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${MAINTENANCE_VERSION}`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MAINTENANCE_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven tidy:pom`
 - `git commit -a -m "[releng] ${MAINTENANCE_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
 - `git push origin HEAD:refs/for/maintenance`
@@ -147,7 +147,7 @@ Thereafter, switch to the next (SNAPSHOT) version (**unless** this is going to b
 
 - `export NEXT_MAINTENANCE_VERSION=x.y.(z+1)`
 - `git checkout HEAD^ -- '*'`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${NEXT_MAINTENANCE_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${NEXT_MAINTENANCE_VERSION}-SNAPSHOT`
 
 The version numbers of the required `org.eclipse.recommenders.*` bundles will now have to be updated in the `META-INF/MANIFEST.MF` files of each project.
 To do this perform the following three steps:
@@ -193,10 +193,10 @@ Make sure that the [head of the `maintenance` branch](https://git.eclipse.org/c/
 - `git fetch`
 - `git checkout origin/master`
 - `git clean -df`
-- `mvn clean -Dtycho.mode=maven`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${MASTER_VERSION}`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
-- `mvn tidy:pom -Dtycho.mode=maven`
+- `mvn -Dtycho.mode=maven clean`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${MASTER_VERSION}`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven tidy:pom`
 - `git commit -a -m "[releng] ${MASTER_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
 - `git push --force origin HEAD:refs/for/maintenance`
@@ -206,7 +206,7 @@ Thereafter, switch to the next minor or major (SNAPSHOT) version:
 - `export NEXT_MASTER_VERSION=x.(y+1).0`
 - `git checkout origin/master`
 - `git clean -df`
-- `mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -Dproperties=recommendersVersion -DnewVersion=${NEXT_MASTER_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dproperties=recommendersVersion -DnewVersion=${NEXT_MASTER_VERSION}-SNAPSHOT`
 
 The version numbers of the required `org.eclipse.recommenders.*` bundles will now have to be updated in the `META-INF/MANIFEST.MF` files of each project.
 To do this perform the following three steps:
