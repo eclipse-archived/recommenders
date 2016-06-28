@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
@@ -55,6 +56,11 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             Messages.WIZARD_GIT_REPOSITORY_OPTION_GIT_PUSH_BRANCH_PREFIX,
             Messages.WIZARD_GIT_REPOSITORY_OPTION_GERRIT_PUSH_BRANCH_PREFIX,
             Messages.WIZARD_GIT_REPOSITORY_OPTION_OTHER_PUSH_BRANCH_PREFIX);
+
+    @VisibleForTesting
+    static final String PUSH_BRANCH_PREFIX_TEXT_KEY = "push-branch-prefix-key";
+    @VisibleForTesting
+    static final String PUSH_BRANCH_PREFIX_TEXT_VALUE = "push-branch-prefix-value";
 
     private final BranchInputValidator branchInputValidator = new BranchInputValidator();
     private final Repositories repositories;
@@ -258,6 +264,7 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             });
 
             txtPushBranchPrefix = new Text(group, SWT.BORDER | SWT.SINGLE);
+            txtPushBranchPrefix.setData(PUSH_BRANCH_PREFIX_TEXT_KEY, PUSH_BRANCH_PREFIX_TEXT_VALUE);
             GridDataFactory.fillDefaults().grab(true, false).span(1, 1).applyTo(txtPushBranchPrefix);
             txtPushBranchPrefix.addModifyListener(new ModifyListener() {
 
