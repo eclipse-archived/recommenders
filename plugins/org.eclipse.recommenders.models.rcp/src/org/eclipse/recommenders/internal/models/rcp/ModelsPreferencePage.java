@@ -24,7 +24,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -81,7 +81,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
             InputDialog inputDialog = Dialogs.newModelRepositoryUrlDialog(getShell(), getItems());
             if (inputDialog.open() == Window.OK) {
                 String unobfuscatedUrl = inputDialog.getValue();
-                String obfuscatedUrl = Urls.toStringWithMaskedPassword(Urls.toUrl(unobfuscatedUrl), '*');
+                String obfuscatedUrl = Uris.toStringWithMaskedPassword(Uris.toUri(unobfuscatedUrl), '*');
                 toUnobfuscatedUrls.put(obfuscatedUrl, unobfuscatedUrl);
                 return obfuscatedUrl;
             }
@@ -93,7 +93,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
             String[] unobfuscatedUrls = ModelsRcpPreferences.splitRemoteRepositoryString(string);
             String[] list = new String[unobfuscatedUrls.length];
             for (int i = 0; i < unobfuscatedUrls.length; i++) {
-                list[i] = Urls.toStringWithMaskedPassword(Urls.toUrl(unobfuscatedUrls[i]), '*');
+                list[i] = Uris.toStringWithMaskedPassword(Uris.toUri(unobfuscatedUrls[i]), '*');
                 toUnobfuscatedUrls.put(list[i], unobfuscatedUrls[i]);
             }
             return list;

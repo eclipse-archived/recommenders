@@ -78,7 +78,7 @@ import org.eclipse.recommenders.models.rcp.actions.TriggerModelDownloadForModelC
 import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.rcp.SharedImages.ImageResource;
 import org.eclipse.recommenders.utils.Logs;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.recommenders.utils.rcp.Selections;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -206,7 +206,7 @@ public class ModelRepositoriesView extends ViewPart {
                 StyledString text = new StyledString();
                 if (element instanceof String) {
                     String url = (String) element;
-                    text.append(Urls.toStringWithMaskedPassword(Urls.toUrl(url), '*'));
+                    text.append(Uris.toStringWithMaskedPassword(Uris.toUri(url), '*'));
                     text.append(" "); //$NON-NLS-1$
                     text.append(format(Messages.TABLE_CELL_SUFFIX_KNOWN_COORDINATES, fetchNumberOfModels(url)),
                             StyledString.COUNTER_STYLER);
@@ -512,12 +512,12 @@ public class ModelRepositoriesView extends ViewPart {
                     if (url.isPresent()) {
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                            @Override
-                            public void run() {
-                                deleteRepository(url.get());
-                                refreshData();
-                            }
-                        });
+                                    @Override
+                                    public void run() {
+                                        deleteRepository(url.get());
+                                        refreshData();
+                                    }
+                                });
                     }
                 }
             }

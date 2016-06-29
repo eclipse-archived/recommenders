@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Shell;
 
@@ -37,7 +38,7 @@ public final class Dialogs {
 
                     @Override
                     public String isValid(String newText) {
-                        URI uri = Urls.parseURI(newText).orNull();
+                        URI uri = Uris.parseURI(newText).orNull();
                         if (uri == null) {
                             return Messages.DIALOG_MESSAGE_INVALID_URI;
                         }
@@ -48,7 +49,7 @@ public final class Dialogs {
                             return Messages.DIALOG_MESSAGE_URI_ALREADY_ADDED;
                         }
 
-                        if (!Urls.isUriProtocolSupported(uri, SUPPORTED_PROTOCOLS)) {
+                        if (!Uris.isUriProtocolSupported(uri, SUPPORTED_PROTOCOLS)) {
                             return MessageFormat.format(Messages.DIALOG_MESSAGE_UNSUPPORTED_PROTOCOL, uri.getScheme(),
                                     StringUtils.join(SUPPORTED_PROTOCOLS, Messages.LIST_SEPARATOR));
                         }

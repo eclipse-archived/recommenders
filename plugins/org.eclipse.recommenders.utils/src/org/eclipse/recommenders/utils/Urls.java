@@ -15,139 +15,19 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 
 public final class Urls {
 
     public static String mangle(URL url) {
-        String urlString = toStringWithoutUsernameAndPassword(url);
+        String urlString = Uris.toStringWithoutUserinfo(toUri(url));
 
         return doMangle(urlString);
     }
 
-    public static String toStringWithMaskedPassword(URL url, char mask) {
-        int len = url.getProtocol().length() + 1;
-
-        String userInfo = url.getUserInfo();
-        String host = url.getHost();
-        int port = url.getPort();
-        String path = url.getPath();
-        String query = url.getQuery();
-        String ref = url.getRef();
-
-        if (!Strings.isNullOrEmpty(host)) {
-            if (!Strings.isNullOrEmpty(userInfo)) {
-                len += 1 + userInfo.length();
-            }
-            len += 2 + host.length();
-        }
-        if (port >= 0) {
-            len += 1 + String.valueOf(port).length();
-        }
-        if (path != null) {
-            len += path.length();
-        }
-        if (query != null) {
-            len += 1 + query.length();
-        }
-        if (ref != null) {
-            len += 1 + ref.length();
-        }
-
-        StringBuffer result = new StringBuffer(len);
-        result.append(url.getProtocol());
-        result.append(":");
-        if (!Strings.isNullOrEmpty(host)) {
-            result.append("//");
-            if (!Strings.isNullOrEmpty(userInfo)) {
-                int indexOfColon = userInfo.indexOf(':');
-                if (indexOfColon < 0 || indexOfColon == userInfo.length() - 1) {
-                    result.append(userInfo);
-                } else {
-                    result.append(userInfo.substring(0, indexOfColon));
-                    result.append(':');
-                    result.append(StringUtils.repeat(mask, userInfo.length() - indexOfColon - 1));
-                }
-                result.append('@');
-            }
-            result.append(host);
-        }
-        if (port >= 0) {
-            result.append(":");
-            result.append(String.valueOf(port));
-        }
-        if (path != null) {
-            result.append(path);
-        }
-        if (query != null) {
-            result.append('?');
-            result.append(query);
-        }
-        if (ref != null) {
-            result.append("#");
-            result.append(ref);
-        }
-        return result.toString();
-    }
-
-    public static String toStringWithoutUsernameAndPassword(URL url) {
-        int len = url.getProtocol().length() + 1;
-
-        String host = url.getHost();
-        int port = url.getPort();
-        String path = url.getPath();
-        String query = url.getQuery();
-        String ref = url.getRef();
-
-        if (!Strings.isNullOrEmpty(host)) {
-            len += 2 + host.length();
-        }
-        if (port >= 0) {
-            len += 1 + String.valueOf(port).length();
-        }
-        if (path != null) {
-            len += path.length();
-        }
-        if (query != null) {
-            len += 1 + query.length();
-        }
-        if (ref != null) {
-            len += 1 + ref.length();
-        }
-
-        StringBuffer result = new StringBuffer(len);
-        result.append(url.getProtocol());
-        result.append(":");
-        if (!Strings.isNullOrEmpty(host)) {
-            result.append("//");
-            result.append(host);
-        }
-        if (port >= 0) {
-            result.append(":");
-            result.append(String.valueOf(port));
-        }
-        if (path != null) {
-            result.append(path);
-        }
-        if (query != null) {
-            result.append('?');
-            result.append(query);
-        }
-        if (ref != null) {
-            result.append("#");
-            result.append(ref);
-        }
-        return result.toString();
-    }
-
     private static String doMangle(String url) {
-
         return url.replaceAll("\\W", "_");
     }
 
@@ -182,24 +62,6 @@ public final class Urls {
         } catch (MalformedURLException e) {
             return Optional.absent();
         }
-    }
-
-    public static Optional<URI> parseURI(String uriString) {
-        try {
-            return Optional.of(new URI(uriString));
-        } catch (URISyntaxException e) {
-            return Optional.absent();
-        }
-    }
-
-    public static boolean isUriProtocolSupported(URI uri, List<String> protocols) {
-        for (String protocol : protocols) {
-            if (StringUtils.equalsIgnoreCase(protocol, uri.getScheme())) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static URL getUrl(File file) {
