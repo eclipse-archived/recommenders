@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.subwords.rcp.it;
 
 import static java.util.Arrays.asList;
+import static org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor.*;
 import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.junit.Assert.fail;
@@ -50,12 +51,16 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     @Rule
     public final RetainSystemProperties retainSystemProperties = new RetainSystemProperties();
 
-    private static final int MIN_SUBWORDS_MATCH_RELEVANCE = Integer.MIN_VALUE;
+    private static final int MIN_SUBWORDS_MATCH_RELEVANCE = SUBWORDS_RANGE_START;
     private static final int MAX_SUBWORDS_MATCH_RELEVANCE = -1;
     private static final int MIN_CAMELCASE_MATCH_RELEVANCE = 0;
     private static final int MAX_CAMELCASE_MATCH_RELEVANCE = Integer.MAX_VALUE;
     private static final int MIN_PREFIX_MATCH_RELEVANCE = 0;
     private static final int MAX_PREFIX_MATCH_RELEVANCE = Integer.MAX_VALUE;
+    private static final int MIN_EXACT_MATCH_RELEVANCE = CASE_SENSITIVE_EXACT_MATCH_START;
+    private static final int MAX_EXACT_MATCH_RELEVANCE = Integer.MAX_VALUE;
+    private static final int MIN_EXACT_MATCH_IGNORE_CASE_RELEVANCE = CASE_INSENSITIVE_EXACT_MATCH_START;
+    private static final int MAX_EXACT_MATCH_IGNORE_CASE_RELEVANCE = Integer.MAX_VALUE;
 
     private static final SubwordsRcpPreferences COMPREHENSIVE = new SubwordsRcpPreferences() {
         {
@@ -76,7 +81,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     private final List<String> expectedProposalPrefixes;
 
     public SubwordsCompletionProposalComputerIntegrationTest(String description, CharSequence code,
-            SubwordsRcpPreferences preferences, int minRelevance, int maxRelevance, List<String> expectedProposalPrefixes) {
+            SubwordsRcpPreferences preferences, int minRelevance, int maxRelevance,
+            List<String> expectedProposalPrefixes) {
         this.code = code;
         this.preferences = preferences;
         this.minRelevance = minRelevance;
@@ -146,13 +152,13 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         scenarios.add(scenario("Generated method stub ex",
                 classbody("ex$"),
                 COMPREHENSIVE,
-                MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
+                MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
                 "ex()"));
 
         scenarios.add(scenario("Generated method stub exe",
                 classbody("exe$"),
                 COMPREHENSIVE,
-                MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
+                MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
                 "exe()"));
 
         scenarios.add(scenario("Subwords Type match",
@@ -167,11 +173,41 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
                 "sun.security.internal.spec"));
 
-        scenarios.add(scenario("Exact Prefix match",
+        scenarios.add(scenario("Case sensitive prefix match",
                 classbody("BbbXyzBbb", "public void method() { Bbb$ }"),
                 COMPREHENSIVE,
                 MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
                 "BbbXyzBbb"));
+
+        scenarios.add(scenario("Case insensitive prefix match",
+                classbody("BbbXyzBbb", "public void method() { bbb$ }"),
+                COMPREHENSIVE,
+                MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
+                "BbbXyzBbb"));
+
+        scenarios.add(scenario("Exact match: 3 characters",
+                classbody("Bbb", "public void method() { Bbb$ }"),
+                COMPREHENSIVE,
+                MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
+                "Bbb"));
+
+        scenarios.add(scenario("Exact match: 1 character",
+                classbody("B", "public void method() { B$ }"),
+                COMPREHENSIVE,
+                MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
+                "B"));
+
+        scenarios.add(scenario("Case insensitive exact match: 3 characters",
+                classbody("Bbb", "public void method() { bbb$ }"),
+                COMPREHENSIVE,
+                MIN_EXACT_MATCH_IGNORE_CASE_RELEVANCE, MAX_EXACT_MATCH_IGNORE_CASE_RELEVANCE,
+                "Bbb"));
+
+        scenarios.add(scenario("Case insensitive exact match: 1 character",
+                classbody("B", "public void method() { b$ }"),
+                COMPREHENSIVE,
+                MIN_EXACT_MATCH_IGNORE_CASE_RELEVANCE, MAX_EXACT_MATCH_IGNORE_CASE_RELEVANCE,
+                "B"));
 
         scenarios.add(scenario("Camel case match",
                 method("ArrayList arrayList; aL$"),
@@ -182,7 +218,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         scenarios.add(scenario("Exact match of anonymous inner type",
                 classbody("Maps", "public void method() { new Map$ }"),
                 PREFIX_LENGTH_2,
-                MIN_SUBWORDS_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
+                MIN_SUBWORDS_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
                 "Map(", "Maps("));
         // @formatter:on
 
