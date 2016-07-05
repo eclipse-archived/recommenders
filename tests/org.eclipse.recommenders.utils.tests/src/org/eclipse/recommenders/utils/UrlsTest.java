@@ -1,13 +1,10 @@
 package org.eclipse.recommenders.utils;
 
 import static org.eclipse.recommenders.utils.Urls.*;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -25,9 +22,6 @@ public class UrlsTest {
     private static final String HTTP_ABSOLUTE_URI_WITH_QUERY_AND_FRAGMENT = "http://download.eclipse.org/recommenders/models/2.0/v201210_1212/data?key=value#fragid1";
     private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME = "http://user@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
     private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD = "http://user:password@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
-    private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD = "http://user:********@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
-    private static final String HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD_DIFFERENT_MASK = "http://user:xxxxxxxx@download.eclipse.org/recommenders/models/2.0/v201210_1212/data";
-    private static final String HTTPS_ABSOLUTE_URI = "https://download.eclipse.org/recommenders/models/2.0/v201210_1212/";
     private static final String RELATIVE_URI = "download.eclipse.org/recommenders/models/2.0/v201210_1212/";
 
     @Test
@@ -117,124 +111,5 @@ public class UrlsTest {
     @Test(expected = RuntimeException.class)
     public void testToUrlFails() {
         Urls.toUrl("http/");
-    }
-
-    @Test
-    public void testValidAbsoluteUri() throws Exception {
-        URI expectedUri = new URI(HTTP_ABSOLUTE_URI);
-
-        assertThat(parseURI(HTTP_ABSOLUTE_URI).get(), is(expectedUri));
-    }
-
-    @Test
-    public void testValidRelativeUri() throws Exception {
-        URI expectedUri = new URI(RELATIVE_URI);
-        assertThat(parseURI(RELATIVE_URI).get(), is(expectedUri));
-    }
-
-    @Test
-    public void testEmptyUri() throws Exception {
-        URI uri = new URI("");
-        assertThat(parseURI("").get(), is(uri));
-    }
-
-    @Test
-    public void testInvalidUri() throws Exception {
-        assertEquals(parseURI("<>").isPresent(), false);
-    }
-
-    @Test
-    public void testValidAbsoluteUriWithSupportedProtocol() throws Exception {
-        URI uri = new URI(HTTP_ABSOLUTE_URI);
-        ArrayList<String> acceptedProtocols = new ArrayList<String>();
-        acceptedProtocols.add("http");
-        acceptedProtocols.add("file");
-        acceptedProtocols.add("https");
-        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), true);
-    }
-
-    @Test
-    public void testValidRelativeUriProtocol() throws Exception {
-        URI uri = new URI(RELATIVE_URI);
-        ArrayList<String> acceptedProtocols = new ArrayList<String>();
-        acceptedProtocols.add("http");
-        acceptedProtocols.add("file");
-        acceptedProtocols.add("https");
-        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
-    }
-
-    @Test
-    public void testValidAbsoluteUriWithUnsupportedProtocol() throws Exception {
-        URI uri = new URI(HTTP_ABSOLUTE_URI);
-        ArrayList<String> acceptedProtocols = new ArrayList<String>();
-        acceptedProtocols.add("file");
-        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
-    }
-
-    @Test
-    public void testValidAbsoluteUriWithEmptyProtocolList() throws Exception {
-        URI uri = new URI(HTTP_ABSOLUTE_URI);
-        assertEquals(isUriProtocolSupported(uri, new ArrayList<String>()), false);
-    }
-
-    @Test
-    public void testLowerUpperCaseValidAbsoluteUriWithSupportedProtocol() throws Exception {
-        URI uri = new URI(HTTP_ABSOLUTE_URI);
-        ArrayList<String> acceptedProtocols = new ArrayList<String>();
-        acceptedProtocols.add("HTTP");
-        acceptedProtocols.add("file");
-        acceptedProtocols.add("https");
-        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), true);
-    }
-
-    @Test
-    public void testAbsoluteUriProtocolIsSubstringOfSupportedProtocol() throws Exception {
-        URI uri = new URI(HTTPS_ABSOLUTE_URI);
-        ArrayList<String> acceptedProtocols = new ArrayList<String>();
-        acceptedProtocols.add("file");
-        acceptedProtocols.add("http");
-        assertEquals(isUriProtocolSupported(uri, acceptedProtocols), false);
-    }
-
-    @Test
-    public void testUrlToStringWithoutUsernameAndPassword() {
-        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI));
-        assertEquals(HTTP_ABSOLUTE_URI, out);
-    }
-
-    @Test
-    public void testUrlWithUsernameToStringWithoutUsernameAndPassword() {
-        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME));
-        assertEquals(HTTP_ABSOLUTE_URI, out);
-    }
-
-    @Test
-    public void testUrlWithUsernameAndPasswordToStringWithoutUsernameAndPassword() {
-        String out = toStringWithoutUsernameAndPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD));
-        assertEquals(HTTP_ABSOLUTE_URI, out);
-    }
-
-    @Test
-    public void testUrlToStringWithMaskedPassword() {
-        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI), '*');
-        assertEquals(HTTP_ABSOLUTE_URI, out);
-    }
-
-    @Test
-    public void testUrlWithUsernameToStringWithMaskedPassword() {
-        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME), '*');
-        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME, out);
-    }
-
-    @Test
-    public void testUrlWithUsernameAndPasswordToStringWithMaskedPassword() {
-        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD), '*');
-        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD, out);
-    }
-
-    @Test
-    public void testUrlWithUsernameAndPasswordToStringWithMaskedPasswordDifferentMask() {
-        String out = toStringWithMaskedPassword(toUrl(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_PASSWORD), 'x');
-        assertEquals(HTTP_ABSOLUTE_URI_WITH_USERNAME_AND_MASKED_PASSWORD_DIFFERENT_MASK, out);
     }
 }

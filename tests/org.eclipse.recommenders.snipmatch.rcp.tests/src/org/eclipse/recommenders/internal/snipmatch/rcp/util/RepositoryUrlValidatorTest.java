@@ -28,17 +28,32 @@ public class RepositoryUrlValidatorTest {
     public static Collection<Object[]> scenarios() {
         LinkedList<Object[]> scenarios = Lists.newLinkedList();
         scenarios.add(invalidUri(""));
+        scenarios.add(invalidUri("///"));
+        scenarios.add(invalidUri("***"));
         scenarios.add(invalidUri("http://"));
         scenarios.add(invalidUri("http://foo.com"));
         scenarios.add(invalidUri("https:///www.foo.bar/"));
         scenarios.add(invalidUri("http://.."));
         scenarios.add(invalidUri("ssh:user|example.com:my-project"));
+        scenarios.add(invalidUri("cvs://folder/"));
+        scenarios.add(invalidUri("jar://folder/"));
+        scenarios.add(invalidUri("pop://folder/"));
+        scenarios.add(invalidUri("telnet://folder/"));
+        scenarios.add(invalidUri("udp://folder/"));
 
         scenarios.add(validUri("http://foo.com/bar_bar"));
         scenarios.add(validUri("https://userid@example.com/"));
+        scenarios.add(validUri("http://user:password@folder/"));
         scenarios.add(validUri("http://foo.xz/bar_bar_(foo)_(again)"));
         scenarios.add(validUri("git://host.xz:8001/path/to/repo.git/"));
         scenarios.add(validUri("ssh://git@git.example.com/foo/example.git/"));
+        scenarios.add(validUri("amazon-s3://user@fetch/"));
+        scenarios.add(validUri("bundle:///"));
+        scenarios.add(validUri("file:///"));
+        scenarios.add(validUri("ftp://folder/"));
+        scenarios.add(validUri("git+ssh://folder/"));
+        scenarios.add(validUri("sftp://folder/"));
+        scenarios.add(validUri("ssh+git://folder/"));
 
         return scenarios;
     }

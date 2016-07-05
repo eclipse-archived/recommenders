@@ -492,7 +492,13 @@ public final class JdtUtils {
         try {
             final String superclassTypeSignature = type.getSuperclassTypeSignature();
             if (superclassTypeSignature == null) {
-                return absent();
+                if (type.isEnum()) {
+                    return findTypeFromSignature("Qjava.lang.Enum;", type);
+                } else if (type.isClass()) {
+                    return findTypeFromSignature("Qjava.lang.Object;", type);
+                } else {
+                    return absent();
+                }
             }
             return findTypeFromSignature(superclassTypeSignature, type);
         } catch (JavaModelException e) {
