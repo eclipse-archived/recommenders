@@ -25,6 +25,8 @@
 	</modules>
 
 	<properties>
+		<!-- Override on the command line (e.g., -DupdateSitePrefix="maintenance-") -->
+		<updateSitePrefix/>
 		<!-- Override as appropriate in child projects. -->
 		<downloadPath>/recommenders/updates/${updateSitePrefix}${project.artifactId}</downloadPath>
 		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=${downloadPath}&amp;format=xml</p2MirrorsURL>

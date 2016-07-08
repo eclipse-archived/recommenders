@@ -57,6 +57,8 @@ import com.google.common.base.Throwables;
 @SuppressWarnings("restriction")
 public class ProcessableProposalFactory implements IProcessableProposalFactory {
 
+    private static final String ORG_ECLIPSE_OBJECTTEAMS_OTDT = "org.eclipse.objectteams.otdt";
+
     private static Class<JavaMethodCompletionProposal> javaMethodCompletionProposalClass;
     private static Class<JavaFieldWithCastedReceiverCompletionProposal> javaFieldWithCastedReceiverCompletionProposalClass;
     private static Class<OverrideCompletionProposal> overrideCompletionProposalClass;
@@ -250,12 +252,36 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
                 return res;
             }
 
+            // Some plug-ins are known to add their own proposals to JDT's Java editor.
+            // While we cannot make arbitrary proposals processable, this is likely to be fine and we should not
+            // complain about such proposals.
+
+            // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=497180>
+            if (isWhitelisted(uiProposal, ORG_ECLIPSE_OBJECTTEAMS_OTDT)) {
+                return uiProposal;
+            }
+
             // log error and return the fallback proposal
             log(ERROR_UNEXPECTED_PROPOSAL_KIND, c, uiProposal.getDisplayString());
             return uiProposal;
         } catch (final Exception e) {
-            Logs.log(LogMessages.ERROR_FAILED_TO_WRAP_JDT_PROPOSAL, e, c, uiProposal.getDisplayString());
+            log(LogMessages.ERROR_FAILED_TO_WRAP_JDT_PROPOSAL, e, c, uiProposal.getDisplayString());
             return uiProposal;
+        }
+    }
+
+    private static boolean isWhitelisted(IJavaCompletionProposal uiProposal, String whitelistedPackage) {
+        String uiProposalPackage = uiProposal.getClass().getPackage().getName();
+        if (uiProposalPackage.startsWith(whitelistedPackage)) {
+            if (uiProposalPackage.length() == whitelistedPackage.length()) {
+                return true; // in whitelisted package
+            } else if (uiProposalPackage.charAt(whitelistedPackage.length()) == '.') {
+                return true; // in subpackage of whitelisted package
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -305,7 +331,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newAnonymousTypeCompletionProposal(CompletionProposal coreProposal,
             AnonymousTypeCompletionProposal uiProposal, JavaContentAssistInvocationContext context)
-                    throws JavaModelException {
+            throws JavaModelException {
         return postConstruct(new ProcessableAnonymousTypeCompletionProposal(coreProposal, uiProposal, context),
                 uiProposal);
     }

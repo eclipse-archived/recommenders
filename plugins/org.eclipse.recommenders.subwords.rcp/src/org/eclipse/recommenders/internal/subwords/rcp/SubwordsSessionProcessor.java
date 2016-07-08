@@ -88,7 +88,10 @@ public class SubwordsSessionProcessor extends SessionProcessor {
     private static final int JAVADOC_TYPE_REF_HIGHLIGHT_ADJUSTMENT = "{@link ".length(); //$NON-NLS-1$
 
     // Negative value ensures subsequence matches have a lower relevance than standard JDT or template proposals
-    private static final int SUBWORDS_RANGE_START = -9000;
+    public static final int SUBWORDS_RANGE_START = -9000;
+    public static final int CASE_SENSITIVE_EXACT_MATCH_START = 16
+            * (RelevanceConstants.R_EXACT_NAME + RelevanceConstants.R_CASE);
+    public static final int CASE_INSENSITIVE_EXACT_MATCH_START = 16 * RelevanceConstants.R_EXACT_NAME;
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
@@ -452,19 +455,19 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                  */
                 if (StringUtils.equals(prefix, matchingArea)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * (RelevanceConstants.R_EXACT_NAME + RelevanceConstants.R_CASE);
+                        relevanceBoost = CASE_SENSITIVE_EXACT_MATCH_START;
                     }
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_EXACT_MATCH, true);
                     proposal.setTag(IS_PREFIX_MATCH, true);
                 } else if (StringUtils.equalsIgnoreCase(prefix, matchingArea)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * RelevanceConstants.R_EXACT_NAME;
+                        relevanceBoost = CASE_INSENSITIVE_EXACT_MATCH_START;
                     }
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_EXACT_MATCH, true);
                     proposal.setTag(IS_CASE_INSENSITIVE_PREFIX_MATCH, true);
-                } else if (StringUtils.startsWithIgnoreCase(prefix, matchingArea)) {
+                } else if (StringUtils.startsWithIgnoreCase(matchingArea, prefix)) {
                     // Don't adjust score
                     proposal.setTag(SUBWORDS_SCORE, null);
                     proposal.setTag(IS_CASE_INSENSITIVE_PREFIX_MATCH, true);
