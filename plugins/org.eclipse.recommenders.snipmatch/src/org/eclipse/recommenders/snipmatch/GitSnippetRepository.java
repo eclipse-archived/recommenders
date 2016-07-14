@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.snipmatch.Snippet.FORMAT_VERSION;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -55,18 +56,18 @@ public class GitSnippetRepository extends FileSnippetRepository {
     private static final Logger LOG = LoggerFactory.getLogger(GitSnippetRepository.class);
 
     private final File basedir;
-    private final String fetchUrl;
-    private final String pushUrl;
+    private final URI fetchUri;
+    private final URI pushUri;
     private final String pushBranchPrefix;
     private final File gitFile;
 
     private Repository localRepo;
 
-    public GitSnippetRepository(String id, File basedir, String fetchUrl, String pushUrl, String pushBranchPrefix) {
+    public GitSnippetRepository(String id, File basedir, URI uri, URI pushUri, String pushBranchPrefix) {
         super(id, basedir);
         this.basedir = basedir;
-        this.fetchUrl = fetchUrl;
-        this.pushUrl = pushUrl;
+        this.fetchUri = uri;
+        this.pushUri = pushUri;
         this.pushBranchPrefix = pushBranchPrefix;
         this.gitFile = new File(basedir, ".git");
     }
@@ -104,7 +105,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
             } catch (InvalidRemoteException e) {
                 LOG.error("Invalid remote repository.", e);
                 throw createException(updatePossible, MessageFormat
-                        .format("Invalid remote repository \"{0}\". Check the repository's URL.", fetchUrl), e);
+                        .format("Invalid remote repository \"{0}\". Check the repository's URL.", fetchUri), e);
             } catch (TransportException e) {
                 LOG.error("Transport operation failed.", e);
                 throw createException(updatePossible,
@@ -184,7 +185,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         StoredConfig config = git.getRepository().getConfig();
         config.setString("remote", "origin", "url", getRepositoryLocation());
         config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-        config.setString("remote", "origin", "pushUrl", getPushUrl());
+        config.setString("remote", "origin", "pushUrl", getPushUrl().toString());
         config.save();
     }
 
@@ -193,22 +194,22 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
         Git git = new Git(localRepo);
         FetchCommand fetch = git.fetch();
-        fetch.setCredentialsProvider(getCredentialsProvider(fetchUrl));
+        fetch.setCredentialsProvider(getCredentialsProvider(fetchUri));
         fetch.call();
         return git;
     }
 
-    public static CredentialsProvider getCredentialsProvider(String urlString) {
-        URIish uri;
+    public static CredentialsProvider getCredentialsProvider(URI uri) {
+        URIish urish;
         try {
-            uri = new URIish(urlString);
+            urish = new URIish(uri.toString());
         } catch (URISyntaxException e) {
             // ignore
             return CredentialsProvider.getDefault();
         }
 
-        String username = uri.getUser();
-        String password = uri.getPass();
+        String username = urish.getUser();
+        String password = urish.getPass();
 
         if (username == null || password == null) {
             return CredentialsProvider.getDefault();
@@ -265,7 +266,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         checkout.call();
 
         PullCommand pull = git.pull();
-        pull.setCredentialsProvider(getCredentialsProvider(fetchUrl));
+        pull.setCredentialsProvider(getCredentialsProvider(fetchUri));
         pull.call();
     }
 
@@ -284,7 +285,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
 
     @Override
     public String getRepositoryLocation() {
-        return fetchUrl;
+        return fetchUri.toString();
     }
 
     @Override
@@ -313,7 +314,7 @@ public class GitSnippetRepository extends FileSnippetRepository {
         return basedir;
     }
 
-    public String getPushUrl() {
-        return pushUrl;
+    public URI getPushUrl() {
+        return pushUri;
     }
 }

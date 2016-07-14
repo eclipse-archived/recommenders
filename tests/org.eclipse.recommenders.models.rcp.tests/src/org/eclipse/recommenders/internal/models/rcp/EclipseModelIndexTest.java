@@ -24,7 +24,7 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.utils.Pair;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -69,8 +69,8 @@ public class EclipseModelIndexTest {
         IModelIndex mock = mock(IModelIndex.class);
 
         when(mock.getKnownModels("call")).thenReturn(ImmutableSet.copyOf(models));
-        when(mock.suggest(Mockito.any(ProjectCoordinate.class), Mockito.eq("call"))).thenReturn(
-                Optional.<ModelCoordinate>absent());
+        when(mock.suggest(Mockito.any(ProjectCoordinate.class), Mockito.eq("call")))
+                .thenReturn(Optional.<ModelCoordinate>absent());
 
         for (ModelCoordinate mc : models) {
             ProjectCoordinate pc = MC_TO_PC_MAPPING.get(mc);
@@ -89,9 +89,9 @@ public class EclipseModelIndexTest {
         String[] remotes = new String[configuration.length];
         for (int i = 0; i < configuration.length; i++) {
             Pair<String, ModelCoordinate[]> pair = configuration[i];
-            map.put(Urls.mangle(pair.getFirst()), createMockedModelIndex(pair.getSecond()));
-            String url = configuration[i].getFirst();
-            remotes[i] = url;
+            String uri = configuration[i].getFirst();
+            map.put(Uris.mangle(Uris.toUri(uri)), createMockedModelIndex(pair.getSecond()));
+            remotes[i] = uri;
         }
 
         prefs.remotes = remotes;

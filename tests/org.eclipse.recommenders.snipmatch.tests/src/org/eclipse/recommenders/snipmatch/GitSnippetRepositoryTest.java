@@ -65,8 +65,8 @@ public class GitSnippetRepositoryTest {
         when(root.getLocation()).thenReturn(path);
         when(root.getProject(anyString())).thenReturn(project);
 
-        sut = new GitSnippetRepository("Repo1", basedir, remotePath.getAbsolutePath(), remotePath.getAbsolutePath(),
-                "refs/for");
+        sut = new GitSnippetRepository("Repo1", basedir, remotePath.getAbsoluteFile().toURI(),
+                remotePath.getAbsoluteFile().toURI(), "refs/for");
     }
 
     @Test

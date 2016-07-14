@@ -16,7 +16,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.lucene.queryParser.QueryParser.Operator.AND;
 import static org.eclipse.recommenders.snipmatch.Location.*;
 import static org.eclipse.recommenders.utils.Constants.DOT_JSON;
-import static org.eclipse.recommenders.utils.Urls.mangle;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -68,7 +67,7 @@ import org.eclipse.recommenders.internal.snipmatch.Filenames;
 import org.eclipse.recommenders.internal.snipmatch.MultiFieldPrefixQueryParser;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Recommendation;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +147,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         this.id = id;
         snippetsdir = new File(basedir, "snippets");
         indexdir = new File(basedir, "index");
-        repoUrl = mangle(Urls.getUrl(basedir));
+        repoUrl = Uris.mangle(basedir.toURI());
 
         analyzer = createAnalyzer();
         parser = createParser();

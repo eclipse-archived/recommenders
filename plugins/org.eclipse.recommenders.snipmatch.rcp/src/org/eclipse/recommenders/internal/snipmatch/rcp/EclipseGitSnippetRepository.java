@@ -87,7 +87,7 @@ import org.eclipse.recommenders.snipmatch.rcp.SnippetRepositoryOpenedEvent;
 import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryConfiguration;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Recommendation;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -136,11 +136,11 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     private Set<String> notTracked;
     private Set<String> files;
 
-    public EclipseGitSnippetRepository(String id, File basedir, String remoteUri, String pushUrl,
-            String pushBranchPrefix, EventBus bus) {
+    public EclipseGitSnippetRepository(String id, File basedir, URI fetchUri, URI pushUri, String pushBranchPrefix,
+            EventBus bus) {
         this.bus = bus;
 
-        delegate = new GitSnippetRepository(id, new File(basedir, Urls.mangle(remoteUri)), remoteUri, pushUrl,
+        delegate = new GitSnippetRepository(id, new File(basedir, Uris.mangle(fetchUri)), fetchUri, pushUri,
                 pushBranchPrefix);
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -386,8 +386,10 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         File basedir = InjectionService.getInstance().requestAnnotatedInstance(File.class,
                 Names.named(SnipmatchRcpModule.SNIPPET_REPOSITORY_BASEDIR));
 
-        return new EclipseGitSnippetRepository(config.getId(), basedir, config.getUrl(), config.getPushUrl(),
-                config.getPushBranchPrefix(), bus);
+        URI uri = Uris.toUri(config.getUrl());
+        URI pushUri = Uris.toUri(config.getPushUrl());
+        return new EclipseGitSnippetRepository(config.getId(), basedir, uri, pushUri, config.getPushBranchPrefix(),
+                bus);
     }
 
     public static BasicEList<SnippetRepositoryConfiguration> getDefaultConfiguration() {

@@ -134,4 +134,30 @@ public class UrisTest {
         assertThat(Uris.toStringWithoutUserinfo(new URI("http://username:@example.org/path")),
                 is(equalTo("http://example.org/path")));
     }
+
+    @Test
+    public void testMangleUri() throws Exception {
+        assertThat(Uris.mangle(new URI("http://example.org/path")), is(equalTo("http___example_org_path")));
+    }
+
+    @Test
+    public void testMangleUriOpaqueUri() throws Exception {
+        assertThat(Uris.mangle(new URI("mailto:postmaster@example.org")), is(equalTo("mailto_postmaster_example_org")));
+    }
+
+    @Test
+    public void testMangleUriWithUsername() throws Exception {
+        assertThat(Uris.mangle(new URI("http://username@example.org/path")), is(equalTo("http___example_org_path")));
+    }
+
+    @Test
+    public void testMangleUriWithUsernameAndPassword() throws Exception {
+        assertThat(Uris.mangle(new URI("http://username:password@example.org/path")),
+                is(equalTo("http___example_org_path")));
+    }
+
+    @Test
+    public void testMangleUriWithUsernameAndEmptyPassword() throws Exception {
+        assertThat(Uris.mangle(new URI("http://username:@example.org/path")), is(equalTo("http___example_org_path")));
+    }
 }
