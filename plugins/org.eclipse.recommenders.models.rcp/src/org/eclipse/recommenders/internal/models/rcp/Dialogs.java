@@ -19,7 +19,6 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.utils.Uris;
-import org.eclipse.recommenders.utils.Urls;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.collect.ImmutableList;
@@ -31,7 +30,7 @@ public final class Dialogs {
     private Dialogs() {
     }
 
-    public static InputDialog newModelRepositoryUrlDialog(Shell parent, final String[] remoteUrls) {
+    public static InputDialog newModelRepositoryUrlDialog(Shell parent, final String[] remoteUris) {
         return new InputDialog(parent, Messages.DIALOG_TITLE_ADD_MODEL_REPOSITORY, Messages.FIELD_LABEL_REPOSITORY_URI,
                 "http://download.eclipse.org/recommenders/models/<version>", //$NON-NLS-1$
                 new IInputValidator() {
@@ -45,7 +44,7 @@ public final class Dialogs {
                         if (!uri.isAbsolute()) {
                             return Messages.DIALOG_MESSAGE_NOT_ABSOLUTE_URI;
                         }
-                        if (isUriAlreadyAdded(newText)) {
+                        if (isUriAlreadyAdded(uri)) {
                             return Messages.DIALOG_MESSAGE_URI_ALREADY_ADDED;
                         }
 
@@ -56,10 +55,10 @@ public final class Dialogs {
                         return null;
                     }
 
-                    private boolean isUriAlreadyAdded(String newText) {
-                        String mangledNewText = Urls.mangle(newText);
-                        for (String remoteUrl : remoteUrls) {
-                            if (Urls.mangle(remoteUrl).equals(mangledNewText)) {
+                    private boolean isUriAlreadyAdded(URI uri) {
+                        String mangledUri = Uris.mangle(uri);
+                        for (String remoteUri : remoteUris) {
+                            if (Uris.mangle(Uris.toUri(remoteUri)).equals(mangledUri)) {
                                 return true;
                             }
                         }

@@ -48,7 +48,7 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Pair;
-import org.eclipse.recommenders.utils.Urls;
+import org.eclipse.recommenders.utils.Uris;
 import org.eclipse.recommenders.utils.Zips;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -126,12 +126,12 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
         Checks.ensureNoDuplicates(prefs.remotes);
         clearDelegates();
         basedir.mkdir();
-        for (String remoteUrl : prefs.remotes) {
-            File file = createIndexLocation(remoteUrl);
+        for (String remoteUri : prefs.remotes) {
+            File file = createIndexLocation(remoteUri);
             if (indexAlreadyDownloaded(file)) {
-                openDelegate(remoteUrl, file);
+                openDelegate(remoteUri, file);
             }
-            triggerIndexDownload(remoteUrl);
+            triggerIndexDownload(remoteUri);
         }
     }
 
@@ -139,9 +139,9 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     public void openForTesting() throws IOException {
         Checks.ensureNoDuplicates(prefs.remotes);
         clearDelegates();
-        for (String remoteUrl : prefs.remotes) {
-            File file = createIndexLocation(remoteUrl);
-            openDelegate(remoteUrl, file);
+        for (String remoteUri : prefs.remotes) {
+            File file = createIndexLocation(remoteUri);
+            openDelegate(remoteUri, file);
         }
     }
 
@@ -167,8 +167,8 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
         bus.post(new ModelIndexOpenedEvent());
     }
 
-    private File createIndexLocation(String remoteUrl) {
-        return new File(basedir, Urls.mangle(remoteUrl));
+    private File createIndexLocation(String remoteUri) {
+        return new File(basedir, Uris.mangle(Uris.toUri(remoteUri)));
     }
 
     @VisibleForTesting
@@ -337,14 +337,14 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
         }
         if (isIndex(e.model)) {
             File location = repository.getLocation(e.model, false).orNull();
-            String remoteUrl = e.model.getHint(HINT_REPOSITORY_URL).orNull();
-            if (remoteUrl != null) {
-                Pair<File, IModelIndex> pair = openDelegates.get(remoteUrl);
+            String remoteUri = e.model.getHint(HINT_REPOSITORY_URL).orNull();
+            if (remoteUri != null) {
+                Pair<File, IModelIndex> pair = openDelegates.get(remoteUri);
                 if (pair == null) {
-                    File folder = createIndexLocation(remoteUrl);
+                    File folder = createIndexLocation(remoteUri);
                     folder.mkdir();
                     Zips.unzip(location, folder);
-                    openDelegate(remoteUrl, folder);
+                    openDelegate(remoteUri, folder);
                 } else {
                     File folder = Files.createTempDir();
                     Zips.unzip(location, folder);

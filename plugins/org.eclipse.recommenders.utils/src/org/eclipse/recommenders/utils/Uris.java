@@ -61,8 +61,10 @@ public final class Uris {
 
     private static String toStringWithUserInfo(URI uri, @Nullable String userInfo) {
         try {
-            return new URI(uri.getScheme(), userInfo, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(),
-                    uri.getFragment()).toString();
+            URI uriWithServerAuthority = uri.parseServerAuthority();
+            return new URI(uriWithServerAuthority.getScheme(), userInfo, uriWithServerAuthority.getHost(),
+                    uriWithServerAuthority.getPort(), uriWithServerAuthority.getPath(),
+                    uriWithServerAuthority.getQuery(), uriWithServerAuthority.getFragment()).toString();
         } catch (URISyntaxException e) {
             throw Throwables.propagate(e);
         }
@@ -70,7 +72,7 @@ public final class Uris {
 
     public static Optional<URI> parseURI(String uriString) {
         try {
-            return Optional.of(new URI(uriString));
+            return Optional.of(new URI(uriString).parseServerAuthority());
         } catch (URISyntaxException e) {
             return Optional.absent();
         }
@@ -78,7 +80,7 @@ public final class Uris {
 
     public static URI toUri(String uriString) {
         try {
-            return new URI(uriString);
+            return new URI(uriString).parseServerAuthority();
         } catch (URISyntaxException e) {
             throw Throwables.propagate(e);
         }
@@ -91,5 +93,10 @@ public final class Uris {
             }
         }
         return false;
+    }
+
+    public static String mangle(URI uri) {
+        String string = toStringWithoutUserinfo(uri);
+        return string.replaceAll("\\W", "_");
     }
 }

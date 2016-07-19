@@ -21,6 +21,7 @@ import com.google.common.base.Throwables;
 
 public final class Urls {
 
+    @Deprecated
     public static String mangle(URL url) {
         String urlString = Uris.toStringWithoutUserinfo(toUri(url));
 
@@ -31,6 +32,7 @@ public final class Urls {
         return url.replaceAll("\\W", "_");
     }
 
+    @Deprecated
     public static String mangle(String urlString) {
         URL url = parseURL(urlString).orNull();
         if (url == null) {
@@ -64,6 +66,7 @@ public final class Urls {
         }
     }
 
+    @Deprecated
     public static URL getUrl(File file) {
         URI uri = file.toURI();
 
