@@ -65,7 +65,7 @@
 	<properties>
 		<recommendersVersion>2.4.3-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
-		<tychoVersion>0.25.0</tychoVersion>
+		<tychoVersion>0.26.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>neon</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->

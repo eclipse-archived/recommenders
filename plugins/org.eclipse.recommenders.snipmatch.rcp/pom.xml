@@ -34,11 +34,12 @@
 							<type>eclipse-plugin</type>
 						</dependency>
 					</dependencies>
+					<executionEnvironment>JavaSE-1.8</executionEnvironment>
 					<repositories>
 						<repository>
-							<id>mars</id>
+							<id>neon</id>
 							<layout>p2</layout>
-							<url>http://download.eclipse.org/releases/mars</url>
+							<url>http://download.eclipse.org/releases/neon</url>
 						</repository>
 					</repositories>
 				</configuration>
