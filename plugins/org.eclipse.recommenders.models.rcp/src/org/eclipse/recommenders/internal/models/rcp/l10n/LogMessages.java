@@ -30,12 +30,12 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED);
     public static final ILogMessage ERROR_FAILED_TO_ACCESS_MODEL_COORDINATES_CACHE = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_ACCESS_MODEL_COORDINATES_CACHE);
+    public static final ILogMessage ERROR_FAILED_TO_GET_CLASSPATH_ENTRY = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_GET_CLASSPATH_ENTRY);
     public static final ILogMessage ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION = new LogMessages(
             ERROR, Messages.LOG_ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION);
     public static final ILogMessage ERROR_FAILED_TO_STORE_REMOTE_REPOSITORY_PREFERENCES = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_STORE_REMOTE_REPOSITORY_PREFERENCES);
-    public static final ILogMessage ERROR_FAILED_TO_TRAVERSE_PROJECT_DEPENDENCIES = new LogMessages(ERROR,
-            Messages.LOG_ERROR_FAILED_TO_TRAVERSE_PROJECT_DEPENDENCIES);
     public static final LogMessages ERROR_SAVE_PREFERENCES_FAILED = new LogMessages(ERROR,
             Messages.LOG_ERROR_SAVE_PREFERENCES_FAILED);
 

@@ -25,6 +25,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -57,6 +59,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 
 public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IRcpService {
+
+    private final IPath jreContainerPath = new Path("org.eclipse.jdt.launching.JRE_CONTAINER");
 
     private final JavaElementResolver javaElementResolver;
     private final IProjectCoordinateAdvisorService pcAdvisorService;
@@ -150,32 +154,22 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
             return absent();
         }
 
-        if (isPartOfJRE(root, javaProject)) {
+        if (isPartOfJre(root)) {
             return DependencyInfos.createJreDependencyInfo(javaProject);
         } else {
             return Optional.of(new DependencyInfo(location, JAR));
         }
     }
 
-    private static boolean isPartOfJRE(IPackageFragmentRoot root, IJavaProject javaProject) {
+    private boolean isPartOfJre(IPackageFragmentRoot root) {
         try {
-            for (IClasspathEntry entry : javaProject.getRawClasspath()) {
-                if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) { //$NON-NLS-1$
-                        for (IPackageFragmentRoot packageFragmentRoot : javaProject.findPackageFragmentRoots(entry)) {
-                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) { //$NON-NLS-1$
-                                if (packageFragmentRoot.equals(root)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            IClasspathEntry entry = root.getRawClasspathEntry();
+            File file = root.getPath().toFile();
+            return jreContainerPath.isPrefixOf(entry.getPath()) && !"ext".equals(file.getParentFile().getName());
         } catch (JavaModelException e) {
-            Logs.log(LogMessages.ERROR_FAILED_TO_TRAVERSE_PROJECT_DEPENDENCIES, e, javaProject);
+            Logs.log(LogMessages.ERROR_FAILED_TO_GET_CLASSPATH_ENTRY, e, root);
+            return false;
         }
-        return false;
     }
 
     @Override
