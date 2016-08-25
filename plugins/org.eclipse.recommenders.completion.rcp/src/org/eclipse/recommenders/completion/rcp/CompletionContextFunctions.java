@@ -74,8 +74,11 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.internal.completion.rcp.l10n.Messages;
 import org.eclipse.recommenders.jdt.AstBindings;
 import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -83,6 +86,7 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.TimeDelimitedProgressMonitor;
+import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -401,7 +405,18 @@ public final class CompletionContextFunctions {
             ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
-            } catch (final Exception e) {
+            } catch (JavaModelException e) {
+                if (e.isDoesNotExist() && !cu.getJavaProject().isOnClasspath(cu)) {
+                    // See
+                    // org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposalComputer#internalComputeCompletionProposals.
+                    ITextViewer viewer = context.getJavaContext().getViewer();
+                    Shell shell = viewer.getTextWidget().getShell();
+                    MessageDialog.openInformation(shell, Messages.DIALOG_TITLE_CANNOT_PERFORM_OPERATION,
+                            Messages.DIALOG_MESSAGE_NOT_ON_CLASSPATH);
+                } else {
+                    log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
+                }
+            } catch (Exception e) {
                 log(ERROR_EXCEPTION_DURING_CODE_COMPLETION, e);
             }
             InternalCompletionContext internal = collector.getCoreContext();

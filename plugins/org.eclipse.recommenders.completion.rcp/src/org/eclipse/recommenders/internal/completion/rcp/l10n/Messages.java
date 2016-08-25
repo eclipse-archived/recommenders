@@ -32,6 +32,9 @@ public final class Messages extends NLS {
 
     public static String BUTTON_LABEL_CONFIGURE;
 
+    public static String DIALOG_TITLE_CANNOT_PERFORM_OPERATION;
+    public static String DIALOG_MESSAGE_NOT_ON_CLASSPATH;
+
     public static String FIELD_LABEL_SESSION_PROCESSORS;
     public static String FIELD_LABEL_ENABLE_COMPLETION;
 
