@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
@@ -393,14 +393,11 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             MethodDeclarationCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         try {
             IJavaElement enclosingElement = context.getCoreContext().getEnclosingElement();
-            // may be a type or a source field:
             IType type = null;
             if (enclosingElement instanceof IType) {
                 type = (IType) enclosingElement;
-            } else if (enclosingElement instanceof IField) {
-                type = ((IField) enclosingElement).getDeclaringType();
-            } else if (enclosingElement instanceof IMethod) {
-                type = ((IMethod) enclosingElement).getDeclaringType();
+            } else if (enclosingElement instanceof IMember) {
+                type = ((IMember) enclosingElement).getDeclaringType();
             }
             if (type == null) {
                 throw Throws.throwIllegalArgumentException("No type found for enclosing element %s", enclosingElement); //$NON-NLS-1$
@@ -452,5 +449,4 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         processableProposal.setTriggerCharacters(originalProposal.getTriggerCharacters());
         return processableProposal;
     }
-
 }
