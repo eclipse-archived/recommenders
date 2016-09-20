@@ -96,8 +96,8 @@
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
 <unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- Stable Orbit build for Oxygen M1 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S201607281920/"/>
+<!-- Stable Orbit build for Oxygen M2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20160916162009/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
