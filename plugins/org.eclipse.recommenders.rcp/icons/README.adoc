@@ -1,0 +1,13 @@
+See http://wiki.eclipse.org/User_Interface_Guidelines#Folder_Structure for naming conventions.
+
+obj16
+-----
+
+lightbulb::
+    org.eclipse.jdt.ui/icons/full/obj16/quickfix_obj
+
+ovr16
+-----
+
+star::
+    selfmade
