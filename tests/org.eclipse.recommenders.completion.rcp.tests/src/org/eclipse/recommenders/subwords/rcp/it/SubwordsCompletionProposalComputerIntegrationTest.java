@@ -2,7 +2,6 @@ package org.eclipse.recommenders.subwords.rcp.it;
 
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor.*;
-import static org.eclipse.recommenders.testing.CodeBuilder.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.junit.Assert.fail;
 
@@ -68,9 +67,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         }
     };
 
-    private static final SubwordsRcpPreferences PREFIX_LENGTH_2 = new SubwordsRcpPreferences() {
+    private static final SubwordsRcpPreferences PREFIX_LENGTH_5 = new SubwordsRcpPreferences() {
         {
-            minPrefixLengthForTypes = 2;
+            minPrefixLengthForTypes = 5;
         }
     };
 
@@ -96,130 +95,129 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
         // @formatter:off
         scenarios.add(scenario("Methods of local variable",
-                method("Object obj = null; obj.hc$"),
+                "class Example { void m() { Object o = null; o.hc$ } }",
                 COMPREHENSIVE,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
                 "hashCode"));
 
         scenarios.add(scenario("Methods of local variable (upper-case)",
-                method("Object obj = null; obj.C$"),
+                "class Example { void m() { Object o = null; o.C$ } }",
                 COMPREHENSIVE,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
                 "hashCode",
                 "getClass"));
 
         scenarios.add(scenario("Methods of local variable's supertype",
-                method("InputStream in = null; in.hc$"),
+                "class Example { void m() { Example e = null; e.hc$ } }",
                 COMPREHENSIVE,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
                 "hashCode"));
 
         scenarios.add(scenario("Constructors in initialization expression",
-                method("InputStream in = new Ziut$"),
-                COMPREHENSIVE,
+                "class XyzzyExample { void m() { XyzzyExample e = new XyzzyEe$ } }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "ZipInputStream(" /* InputStream */,
-                "ZipInputStream(" /* InputStream, Charset */));
+                "XyzzyExample()"));
 
         // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435745
         scenarios.add(scenario("Constructors in standalone expression",
-                method("new Ziut$"),
-                COMPREHENSIVE,
+                "class XyzzyExample { void m() { new XyzzyEe$ } }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "ZipInputStream("));
+                "XyzzyExample()"));
 
         // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435745
         scenarios.add(scenario("Return types of method declaration",
-                classbody("public Ziut$ method() { }"),
-                COMPREHENSIVE,
+                "class XyzzyExample { XyzzyEe$ m() { } }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "ZipInputStream"));
+                "XyzzyExample"));
 
         // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=435745
         scenarios.add(scenario("Parameter types of method declaration",
-                classbody("public void method(Ziut$) { }"),
-                COMPREHENSIVE,
+                "class XyzzyExample { void m(XyzzyEe$) { } }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "ZipInputStream"));
+                "XyzzyExample"));
 
         scenarios.add(scenario("Generated getters/setters",
-                classbody("ZipInputStream zipInputStream; ziut$"),
-                COMPREHENSIVE,
+                "class XyzzyExample { XyzzyExample xyzzyExample; XyzzyEe$ }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "getZipInputStream()",
-                "setZipInputStream(ZipInputStream)"));
+                "getXyzzyExample()",
+                "setXyzzyExample(XyzzyExample)"));
 
         scenarios.add(scenario("Generated method stub ex",
-                classbody("ex$"),
+                "class Example { ex$ }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
                 "ex()"));
 
         scenarios.add(scenario("Generated method stub exe",
-                classbody("exe$"),
+                "class Example { exe$ }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
                 "exe()"));
 
         scenarios.add(scenario("Subwords Type match",
-                classbody("AaaXyzAaa", "public void method() { Xyz$ }"),
+                "class ExampleXyzzyFrobz { void m() { Xyzzy$ } }",
                 COMPREHENSIVE,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
-                "AaaXyzAaa"));
+                "ExampleXyzzyFrobz"));
 
         scenarios.add(scenario("Package subwords match",
-                method("Sys$"),
+                "class Example { void m() { Sys$ } }",
                 COMPREHENSIVE,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_SUBWORDS_MATCH_RELEVANCE,
                 "sun.security.internal.spec"));
 
         scenarios.add(scenario("Case sensitive prefix match",
-                classbody("BbbXyzBbb", "public void method() { Bbb$ }"),
+                "class XyzzyExample { void m() { Xyzzy$ } }",
                 COMPREHENSIVE,
                 MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
-                "BbbXyzBbb"));
+                "XyzzyExample"));
 
         scenarios.add(scenario("Case insensitive prefix match",
-                classbody("BbbXyzBbb", "public void method() { bbb$ }"),
+                "class XyzzyExample { void m() { xyzzy$ } }",
                 COMPREHENSIVE,
                 MIN_PREFIX_MATCH_RELEVANCE, MAX_PREFIX_MATCH_RELEVANCE,
-                "BbbXyzBbb"));
+                "XyzzyExample"));
 
-        scenarios.add(scenario("Exact match: 3 characters",
-                classbody("Bbb", "public void method() { Bbb$ }"),
+        scenarios.add(scenario("Exact match: 5 characters",
+                "class Xyzzy { void method() { Xyzzy$ } }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
-                "Bbb"));
+                "Xyzzy"));
 
         scenarios.add(scenario("Exact match: 1 character",
-                classbody("B", "public void method() { B$ }"),
+                "class X { void method() { X$ } }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
-                "B"));
+                "X"));
 
-        scenarios.add(scenario("Case insensitive exact match: 3 characters",
-                classbody("Bbb", "public void method() { bbb$ }"),
+        scenarios.add(scenario("Case insensitive exact match: 5 characters",
+                "class Xyzzy { void method() { xyzzy$ } }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_IGNORE_CASE_RELEVANCE, MAX_EXACT_MATCH_IGNORE_CASE_RELEVANCE,
-                "Bbb"));
+                "Xyzzy"));
 
         scenarios.add(scenario("Case insensitive exact match: 1 character",
-                classbody("B", "public void method() { b$ }"),
+                "class X { void method() { x$ } }",
                 COMPREHENSIVE,
                 MIN_EXACT_MATCH_IGNORE_CASE_RELEVANCE, MAX_EXACT_MATCH_IGNORE_CASE_RELEVANCE,
-                "B"));
+                "X"));
 
         scenarios.add(scenario("Camel case match",
-                method("ArrayList arrayList; aL$"),
+                "class XyzzyExample { void m() { XyzzyExample xyzzyExample; xE$ } }",
                 COMPREHENSIVE,
                 MIN_CAMELCASE_MATCH_RELEVANCE, MAX_CAMELCASE_MATCH_RELEVANCE,
-                "arrayList"));
+                "xyzzyExample"));
 
         scenarios.add(scenario("Exact match of anonymous inner type",
-                classbody("Maps", "public void method() { new Map$ }"),
-                PREFIX_LENGTH_2,
+                "interface XyzzyExample { } class Access { void m() { new XyzzyExample$ } }",
+                PREFIX_LENGTH_5,
                 MIN_SUBWORDS_MATCH_RELEVANCE, MAX_EXACT_MATCH_RELEVANCE,
-                "Map(", "Maps("));
+                "XyzzyExample()"));
         // @formatter:on
 
         return scenarios;
