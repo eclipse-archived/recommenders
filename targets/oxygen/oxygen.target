@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="3">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="6">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Oxygen M1 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/S-4.7M1-201608032000/"/>
+<!-- Stable platform build for Oxygen M2 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/S-4.7M2-201609150230/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -16,7 +16,9 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
+<!-- Build of EGit/JGit 4.6.x targeting Neon.3 (no build targeting Oxygen yet) -->
+<!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
+<repository location="http://download.eclipse.org/egit/updates-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
@@ -94,10 +96,10 @@
 <unit id="org.mockito" version="1.9.5.v201605172210"/>
 <!-- Tests-only dependency -->
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- Stable Orbit build for Oxygen M1 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S201607281920/"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
+<unit id="org.slf4j.api" version="1.7.10.v20160921-1923"/>
+<!-- Stable Orbit build for Oxygen M3 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20161021172207/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

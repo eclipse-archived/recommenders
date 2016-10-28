@@ -10,12 +10,17 @@
  */
 package org.eclipse.recommenders.rcp;
 
-import static org.eclipse.jface.resource.ImageDescriptor.createFromFile;
+import static org.eclipse.jface.resource.ImageDescriptor.createFromURL;
+
+import java.net.URL;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.internal.util.BundleUtility;
 import org.eclipse.ui.services.IDisposable;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Registry for images shared over several Recommenders plugins. It's worth mentioning that this registry supports lazy
@@ -171,7 +176,9 @@ public final class SharedImages implements IDisposable {
     }
 
     private ImageDescriptor register(ImageResource resource) {
-        ImageDescriptor desc = createFromFile(resource.getClass(), resource.getName());
+        Bundle bundle = FrameworkUtil.getBundle(resource.getClass());
+        URL url = BundleUtility.find(bundle, resource.getName());
+        ImageDescriptor desc = createFromURL(url);
         String key = toKey(resource);
         getRegistry().put(key, desc);
         return desc;

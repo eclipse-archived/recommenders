@@ -16,6 +16,8 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+<!-- Build of EGit/JGit 4.5.x targeting Neon.2 -->
+<!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
 <repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
