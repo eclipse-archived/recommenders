@@ -17,6 +17,7 @@ import java.net.URL;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.internal.util.BundleUtility;
 import org.eclipse.ui.services.IDisposable;
 import org.osgi.framework.Bundle;
@@ -159,7 +160,7 @@ public final class SharedImages implements IDisposable {
 
     private ImageRegistry getRegistry() {
         if (registry == null) {
-            registry = new ImageRegistry();
+            registry = new ImageRegistry(Display.getDefault());
         }
 
         return registry;
