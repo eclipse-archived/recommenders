@@ -51,6 +51,22 @@ public final class Uris {
         return toStringWithUserInfo(uri, userInfo);
     }
 
+    public static boolean isPasswordProtected(URI uri) {
+        if (uri.isOpaque()) {
+            return false;
+        }
+        String userInfo = uri.getUserInfo();
+        if (userInfo == null) {
+            return false;
+        }
+        int indexOfColon = userInfo.indexOf(':');
+        return indexOfColon > 0;
+    }
+
+    public static boolean hasCredentials(URI uri) {
+        return uri.getUserInfo() != null;
+    }
+
     public static String toStringWithoutUserinfo(URI uri) {
         if (uri.isOpaque()) {
             return uri.toString();

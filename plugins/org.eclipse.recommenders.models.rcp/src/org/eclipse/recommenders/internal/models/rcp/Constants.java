@@ -21,4 +21,6 @@ public final class Constants {
     public static final String PREF_REPOSITORY_URL_LIST = "repository.url.list"; //$NON-NLS-1$
     public static final String PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD = "repository.auto.download"; //$NON-NLS-1$
     public static final String PREF_IGNORE_DOWNLOAD_FAILURES = "ignore.download.failures"; //$NON-NLS-1$
+    public static final String PREF_REPOSITORY_USERNAME = "username"; //$NON-NLS-1$
+    public static final String PREF_REPOSITORY_PASSWORD = "password"; //$NON-NLS-1$
 }

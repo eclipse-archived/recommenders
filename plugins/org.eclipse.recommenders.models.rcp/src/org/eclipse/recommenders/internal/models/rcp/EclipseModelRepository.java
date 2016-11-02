@@ -42,10 +42,12 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Pair;
+import org.eclipse.recommenders.utils.Uris;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -143,6 +145,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     @Override
     public Optional<File> resolve(ModelCoordinate mc, boolean force) {
         ensureIsOpen();
+        updateAuthenticationSettings();
         updateProxySettings();
 
         List<ModelRepository> foundSuitableDelegates = searchDelegates(mc);
@@ -158,6 +161,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     @Override
     public Optional<File> resolve(ModelCoordinate mc, boolean force, DownloadCallback callback) {
         ensureIsOpen();
+        updateAuthenticationSettings();
         updateProxySettings();
 
         List<ModelRepository> foundSuitableDelegates = searchDelegates(mc);
@@ -169,6 +173,24 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         }
 
         return absent();
+    }
+
+    private void updateAuthenticationSettings() {
+        for (Pair<String, ModelRepository> delegate : delegates) {
+            updateAuthenticationSettings(delegate.getFirst(), delegate.getSecond());
+        }
+    }
+
+    private void updateAuthenticationSettings(String repositoryUri, ModelRepository modelRepository) {
+        URI serverUri = Uris.toUri(repositoryUri);
+        if (Uris.hasCredentials(serverUri)) {
+            // Credentials encoded in the URL take precedence
+        }
+        String username = prefs.getServerUsername(repositoryUri).orNull();
+        if (!Strings.isNullOrEmpty(username)) {
+            String password = prefs.getServerPassword(repositoryUri).orNull();
+            modelRepository.setAuthentication(username, password);
+        }
     }
 
     private void updateProxySettings() {

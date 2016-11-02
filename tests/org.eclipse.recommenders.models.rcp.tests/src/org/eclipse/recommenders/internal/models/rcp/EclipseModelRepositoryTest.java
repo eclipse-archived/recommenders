@@ -67,6 +67,8 @@ public class EclipseModelRepositoryTest {
         ModelRepository firstRepo = mockModelRepository(of(COORDINATE, FIRST_MODEL_ZIP));
         ModelRepository secondRepo = mockModelRepository(of(COORDINATE, SECOND_MODEL_ZIP));
 
+        when(prefs.getServerUsername(anyString())).thenReturn(Optional.<String>absent());
+
         EclipseModelRepository sut = new EclipseModelRepository(temp.getRoot(), proxy, prefs, bus);
         sut.openInternal(asList(newPair(FIRST_REPO, firstRepo), newPair(SECOND_REPO, secondRepo)));
         Optional<File> result = sut.resolve(COORDINATE, true);
@@ -79,6 +81,8 @@ public class EclipseModelRepositoryTest {
     public void testResolveSearchesThroughAllRepositories() {
         ModelRepository firstRepo = mockModelRepository(EMPTY_REPOSITORY);
         ModelRepository secondRepo = mockModelRepository(of(COORDINATE, SECOND_MODEL_ZIP));
+
+        when(prefs.getServerUsername(anyString())).thenReturn(Optional.<String>absent());
 
         EclipseModelRepository sut = new EclipseModelRepository(temp.getRoot(), proxy, prefs, bus);
         sut.openInternal(asList(newPair(FIRST_REPO, firstRepo), newPair(SECOND_REPO, secondRepo)));
@@ -96,6 +100,8 @@ public class EclipseModelRepositoryTest {
         ModelRepository firstRepo = mockModelRepository(EMPTY_REPOSITORY);
         ModelRepository secondRepo = mockModelRepository(EMPTY_REPOSITORY);
         ModelRepository thirdRepo = mockModelRepository(EMPTY_REPOSITORY);
+
+        when(prefs.getServerUsername(anyString())).thenReturn(Optional.<String>absent());
 
         when(proxy.isProxiesEnabled()).thenReturn(true);
         when(proxy.select(new URI(FIRST_REPO))).thenReturn(NO_PROXY);
