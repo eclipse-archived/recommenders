@@ -296,7 +296,7 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             } else if (!fetchUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_FETCH_URI,
                         fetchUriValidation.getMessage()));
-            } else if (!fetchUri.equals(initialFetchUri) && isUriAlreadyAdded(fetchUri)) {
+            } else if (!isEqualToInitialUri(fetchUri) && isUriAlreadyAdded(fetchUri)) {
                 setErrorMessage(Messages.WIZARD_GIT_REPOSITORY_FETCH_URI_ALREADY_ADDED);
             } else if (!pushUriValidation.isOK()) {
                 setErrorMessage(MessageFormat.format(Messages.WIZARD_GIT_REPOSITORY_ERROR_INVALID_PUSH_URI,
@@ -310,6 +310,13 @@ public class GitBasedRepositoryConfigurationWizard extends Wizard implements ISn
             }
 
             setPageComplete(getErrorMessage() == null);
+        }
+
+        private boolean isEqualToInitialUri(String fetchUri) {
+            if (initialFetchUri == null) {
+                return false;
+            }
+            return Urls.mangle(fetchUri).equals(Urls.mangle(initialFetchUri));
         }
 
         private boolean isUriAlreadyAdded(String newText) {
