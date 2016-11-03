@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
@@ -157,13 +158,7 @@ public class ModelsRcpPreferences {
             return Optional.absent();
         }
 
-        String nodeName;
-        try {
-            nodeName = URLEncoder.encode(uri, Charsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            Logs.log(LogMessages.ERROR_FAILED_TO_LOAD_SECURE_PREFERENCE, e);
-            return Optional.absent();
-        }
+        String nodeName = EncodingUtils.encodeSlashes(uri);
         if (create || securePreferencesRoot.nodeExists(nodeName)) {
             return Optional.of(securePreferencesRoot.node(nodeName));
         }
