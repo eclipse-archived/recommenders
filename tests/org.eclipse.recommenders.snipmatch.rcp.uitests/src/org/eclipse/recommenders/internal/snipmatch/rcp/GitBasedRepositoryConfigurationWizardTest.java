@@ -351,6 +351,51 @@ public class GitBasedRepositoryConfigurationWizardTest {
         assertThat(configuration.getPushBranchPrefix(), is(equalTo("refs/heads")));
     }
 
+    @Test
+    public void testChangeUserCredentialsOfRepository() {
+        EclipseGitSnippetRepositoryConfiguration configurationToEdit = Mockito
+                .mock(EclipseGitSnippetRepositoryConfiguration.class);
+        when(configurationToEdit.getName()).thenReturn("Example");
+        when(configurationToEdit.getUrl()).thenReturn("http://user:pass@example.org/old-fetch/");
+        when(configurationToEdit.getPushUrl()).thenReturn("http://user:pass@example.org/push/");
+        when(configurationToEdit.getPushBranchPrefix()).thenReturn("refs/heads");
+
+        ISnippetRepository snippetRepositoryToEdit = mock(ISnippetRepository.class);
+        when(snippetRepositoryToEdit.getRepositoryLocation()).thenReturn("http://user:pass@example.org/old-fetch/");
+
+        ISnippetRepository anotherSnippetRepository = mock(ISnippetRepository.class);
+        when(anotherSnippetRepository.getRepositoryLocation()).thenReturn("http://example.org/another-fetch/");
+
+        Repositories repositories = mock(Repositories.class);
+        when(repositories.getRepositories())
+                .thenReturn(Sets.newHashSet(snippetRepositoryToEdit, anotherSnippetRepository));
+
+        GitBasedRepositoryConfigurationWizard sut = new GitBasedRepositoryConfigurationWizard(repositories);
+        sut.setConfiguration(configurationToEdit);
+
+        SWTBot bot = createBot(sut);
+
+        SWTBotButton finishButton = bot.button("Finish");
+        assertThat(finishButton.isEnabled(), is(true));
+
+        SWTBotText pushBranchPrefixText = getPushBranchPrefixText(bot);
+        assertThat(pushBranchPrefixText.isEnabled(), is(false));
+
+        setFetchUrl(bot, "http://user:pass@example.org/another-fetch/");
+        assertThat(finishButton.isEnabled(), is(false));
+
+        setFetchUrl(bot, "http://user:pass2@example.org/old-fetch/");
+        assertThat(finishButton.isEnabled(), is(true));
+
+        finishButton.click();
+        EclipseGitSnippetRepositoryConfigurationImpl configuration = cast(sut.getConfiguration());
+
+        assertThat(configuration.getName(), is(equalTo("Example")));
+        assertThat(configuration.getUrl(), is(equalTo("http://user:pass2@example.org/old-fetch/")));
+        assertThat(configuration.getPushUrl(), is(equalTo("http://user:pass@example.org/push/")));
+        assertThat(configuration.getPushBranchPrefix(), is(equalTo("refs/heads")));
+    }
+
     private void setName(SWTBot bot, String text) {
         bot.textWithLabel(Messages.WIZARD_GIT_REPOSITORY_LABEL_NAME).setText(text);
     }
