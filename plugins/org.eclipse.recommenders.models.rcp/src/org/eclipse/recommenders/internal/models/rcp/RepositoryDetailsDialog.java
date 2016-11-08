@@ -52,6 +52,7 @@ public class RepositoryDetailsDialog extends TitleAreaDialog {
         this.repositoryUrl = repositoryUrl;
         this.remoteUris = remoteUris;
         this.preferences = preferences;
+        setHelpAvailable(false);
     }
 
     @Override
