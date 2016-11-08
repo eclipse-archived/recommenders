@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.MODEL
 import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +51,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -128,7 +128,7 @@ public class ModelRepositoriesView extends ViewPart {
 
     private final EclipseModelRepository repo;
 
-    private final ModelsRcpPreferences prefs;
+    private final ModelsRcpPreferences preferences;
 
     private final List<String> modelClassifiers;
 
@@ -153,11 +153,12 @@ public class ModelRepositoriesView extends ViewPart {
 
     @Inject
     public ModelRepositoriesView(IModelIndex index, SharedImages images, EclipseModelRepository repo,
-            ModelsRcpPreferences prefs, @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers, EventBus bus) {
+            ModelsRcpPreferences preferences, @Named(MODEL_CLASSIFIER) ImmutableSet<String> modelClassifiers,
+            EventBus bus) {
         this.index = index;
         this.images = images;
         this.repo = repo;
-        this.prefs = prefs;
+        this.preferences = preferences;
         this.modelClassifiers = Lists.newArrayList(modelClassifiers);
         Collections.sort(this.modelClassifiers);
         this.bus = bus;
@@ -210,7 +211,7 @@ public class ModelRepositoriesView extends ViewPart {
                     text.append(" "); //$NON-NLS-1$
                     text.append(format(Messages.TABLE_CELL_SUFFIX_KNOWN_COORDINATES, fetchNumberOfModels(url)),
                             StyledString.COUNTER_STYLER);
-                    cell.setImage(images.getImage(OBJ_REPOSITORY));
+                    cell.setImage(getCellImage(url));
                 }
                 if (element instanceof KnownCoordinate) {
                     KnownCoordinate v = (KnownCoordinate) element;
@@ -219,6 +220,19 @@ public class ModelRepositoriesView extends ViewPart {
                 cell.setText(text.toString());
                 cell.setStyleRanges(text.getStyleRanges());
                 super.update(cell);
+            }
+
+            private Image getCellImage(String url) {
+                URI uri = Uris.parseURI(url).orNull();
+                if (uri == null) {
+                    return images.getImage(OBJ_REPOSITORY);
+                } else if (Uris.isPasswordProtected(uri)) {
+                    return images.getImage(OBJ_LOCKED_REPOSITORY);
+                } else if (preferences.hasPassword(url)) {
+                    return images.getImage(SharedImages.Images.OBJ_LOCKED_REPOSITORY);
+                } else {
+                    return images.getImage(SharedImages.Images.OBJ_REPOSITORY);
+                }
             }
         });
 
@@ -241,7 +255,7 @@ public class ModelRepositoriesView extends ViewPart {
             @Override
             public void updateElement(Object parent, int index) {
                 if (parent instanceof IViewSite) {
-                    String element = prefs.remotes[index];
+                    String element = preferences.remotes[index];
                     treeViewer.replace(parent, index, element);
                     treeViewer.setChildCount(element, getChildren(element).length);
                 } else if (parent instanceof String) {
@@ -261,10 +275,10 @@ public class ModelRepositoriesView extends ViewPart {
                 int count = 0;
 
                 if (element instanceof IViewSite) {
-                    count = prefs.remotes.length;
+                    count = preferences.remotes.length;
                 }
 
-                if (contains(prefs.remotes, element)) {
+                if (contains(preferences.remotes, element)) {
                     count = getChildren(element).length;
                 }
 
@@ -510,14 +524,21 @@ public class ModelRepositoriesView extends ViewPart {
 
                     final Optional<String> url = Selections.getFirstSelected(treeViewer.getSelection());
                     if (url.isPresent()) {
+                        addAction(Messages.MENUITEM_EDIT_REPOSITORY, ELCL_EDIT_REPOSITORY, menuManager, new Action() {
+                            @Override
+                            public void run() {
+                                editRepository(url.get());
+                                refreshData();
+                            }
+                        });
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                                    @Override
-                                    public void run() {
-                                        deleteRepository(url.get());
-                                        refreshData();
-                                    }
-                                });
+                            @Override
+                            public void run() {
+                                deleteRepository(url.get());
+                                refreshData();
+                            }
+                        });
                     }
                 }
             }
@@ -612,8 +633,8 @@ public class ModelRepositoriesView extends ViewPart {
         int numberOfVisibleElements = treeViewer.getTree().getSize().y / treeViewer.getTree().getItemHeight() + 1;
         treeViewer.refresh();
         int replacedElementsCount = 0;
-        for (int i = 0; i < prefs.remotes.length; i++) {
-            String url = prefs.remotes[i];
+        for (int i = 0; i < preferences.remotes.length; i++) {
+            String url = preferences.remotes[i];
             List<KnownCoordinate> elements = filteredCoordinatesGroupedByRepo.get(url);
             treeViewer.setChildCount(url, elements.size());
             for (int j = 0; j < elements.size() && replacedElementsCount < numberOfVisibleElements; j++) {
@@ -670,22 +691,38 @@ public class ModelRepositoriesView extends ViewPart {
     }
 
     private void addRemoteRepository() {
-        InputDialog inputDialog = Dialogs.newModelRepositoryUrlDialog(tree.getShell(), prefs.remotes);
-        if (inputDialog.open() == Window.OK) {
-            addRepository(inputDialog.getValue());
+        RepositoryDetailsDialog newRepositoryDialog = new RepositoryDetailsDialog(null, null,
+                Lists.newArrayList(preferences.remotes), preferences);
+        if (newRepositoryDialog.open() == Window.OK) {
+            addRepository(newRepositoryDialog.getRepositoryUrl());
         }
     }
 
     private void deleteRepository(String remoteUrl) {
-        ArrayList<String> newRemotes = Lists.newArrayList(prefs.remotes);
+        ArrayList<String> newRemotes = Lists.newArrayList(preferences.remotes);
         newRemotes.remove(remoteUrl);
         storeRepositories(newRemotes);
     }
 
     private void addRepository(String remoteUrl) {
-        ArrayList<String> newRemotes = Lists.newArrayList(prefs.remotes);
+        ArrayList<String> newRemotes = Lists.newArrayList(preferences.remotes);
         newRemotes.add(remoteUrl);
         storeRepositories(newRemotes);
+    }
+
+    private void editRepository(String remoteUrl) {
+        ArrayList<String> newRemotes = Lists.newArrayList(preferences.remotes);
+
+        RepositoryDetailsDialog editRepositoryDialog = new RepositoryDetailsDialog(null, remoteUrl, newRemotes,
+                preferences);
+        if (editRepositoryDialog.open() == Window.OK) {
+            String updatedRepositoryUrl = editRepositoryDialog.getRepositoryUrl();
+
+            int indexOfOriginalRepository = newRemotes.indexOf(remoteUrl);
+            newRemotes.remove(indexOfOriginalRepository);
+            newRemotes.add(indexOfOriginalRepository, updatedRepositoryUrl);
+            storeRepositories(newRemotes);
+        }
     }
 
     private void storeRepositories(List<String> newRemotes) {

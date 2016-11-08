@@ -16,6 +16,11 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.models.rcp.l10n.messages"; //$NON-NLS-1$
 
+    public static String PREFPAGE_BUTTON_EDIT;
+    public static String PREFPAGE_BUTTON_ADD;
+    public static String PREFPAGE_BUTTON_REMOVE;
+    public static String PREFPAGE_BUTTON_UP;
+    public static String PREFPAGE_BUTTON_DOWN;
     public static String PREFPAGE_TITLE_MODEL_REPOSITORIES;
 
     public static String PREFPAGE_DESCRIPTION_MODEL_REPOSITORIES;
@@ -27,6 +32,7 @@ public final class Messages extends NLS {
     public static String MENUITEM_ADD_REPOSITORY;
     public static String MENUITEM_DELETE_MODELS;
     public static String MENUITEM_DOWNLOAD_MODELS;
+    public static String MENUITEM_EDIT_REPOSITORY;
     public static String MENUITEM_REMOVE_REPOSITORY;
 
     public static String TOOLBAR_TOOLTIP_ADD_REPOSITORY;
@@ -36,14 +42,23 @@ public final class Messages extends NLS {
 
     public static String DIALOG_RESOLVING_DEPENDENCIES;
     public static String DIALOG_TITLE_ADD_MODEL_REPOSITORY;
+    public static String DIALOG_TITLE_EDIT_MODEL_REPOSITORY;
     public static String DIALOG_TITLE_INDEX_DOWNLOAD_FAILURE;
     public static String DIALOG_TITLE_SELECT_PROJECT_COORDINATE;
     public static String DIALOG_TOGGLE_IGNORE_DOWNLOAD_FAILURES;
 
+    public static String DIALOG_HINT_OPTIONAL;
+    public static String DIALOG_LABEL_REPOSITORY_URL;
+    public static String DIALOG_LABEL_REPOSITORY_USERNAME;
+    public static String DIALOG_LABEL_REPOSITORY_PASSWORD;
+
+    public static String DIALOG_MESSAGE_EDIT_REPOSITORY_DETAILS;
+    public static String DIALOG_MESSAGE_ENTER_REPOSITORY_DETAILS;
     public static String DIALOG_MESSAGE_URI_ALREADY_ADDED;
     public static String DIALOG_MESSAGE_INVALID_URI;
     public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE;
     public static String DIALOG_MESSAGE_NOT_ABSOLUTE_URI;
+    public static String DIALOG_MESSAGE_PASSWORD_WITHOUT_USERNAME;
     public static String DIALOG_MESSAGE_UNSUPPORTED_PROTOCOL;
     public static String DIALOG_MESSAGE_INDEX_DOWNLOAD_FAILURE_SUGGESTIONS;
 
@@ -75,6 +90,8 @@ public final class Messages extends NLS {
     public static String LOG_ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED;
     public static String LOG_ERROR_FAILED_TO_ACCESS_MODEL_COORDINATES_CACHE;
     public static String LOG_ERROR_FAILED_TO_DELETE_MODEL_CACHE;
+    public static String LOG_ERROR_FAILED_TO_LOAD_SECURE_PREFERENCES;
+    public static String LOG_ERROR_FAILED_TO_STORE_SECURE_PREFERENCES;
     public static String LOG_ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION;
     public static String LOG_ERROR_FAILED_TO_STORE_REMOTE_REPOSITORY_PREFERENCES;
     public static String LOG_ERROR_FAILED_TO_GET_CLASSPATH_ENTRY;

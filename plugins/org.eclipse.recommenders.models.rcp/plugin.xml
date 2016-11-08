@@ -21,7 +21,7 @@
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.models.rcp.preferencePages.models"
 			category="org.eclipse.recommenders.rcp.preferencePages.root"
-			class="org.eclipse.recommenders.internal.models.rcp.ModelsPreferencePage"
+			class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ModelsPreferencePage"
 			name="%preferencePages.models.name">
 			<keywordReference id="org.eclipse.recommenders.models.rcp.keywords.models"/>
 		</page>

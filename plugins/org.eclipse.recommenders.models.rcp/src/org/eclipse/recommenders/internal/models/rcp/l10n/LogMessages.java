@@ -32,6 +32,10 @@ public final class LogMessages extends DefaultLogMessage {
             Messages.LOG_ERROR_FAILED_TO_ACCESS_MODEL_COORDINATES_CACHE);
     public static final ILogMessage ERROR_FAILED_TO_GET_CLASSPATH_ENTRY = new LogMessages(ERROR,
             Messages.LOG_ERROR_FAILED_TO_GET_CLASSPATH_ENTRY);
+    public static final ILogMessage ERROR_FAILED_TO_LOAD_SECURE_PREFERENCE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_LOAD_SECURE_PREFERENCES);
+    public static final ILogMessage ERROR_FAILED_TO_STORE_SECURE_PREFERENCE = new LogMessages(ERROR,
+            Messages.LOG_ERROR_FAILED_TO_STORE_SECURE_PREFERENCES);
     public static final ILogMessage ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION = new LogMessages(
             ERROR, Messages.LOG_ERROR_FAILED_TO_OPEN_ECLIPSE_MODEL_REPOSITORY_FOLLOWING_MODEL_DELETION);
     public static final ILogMessage ERROR_FAILED_TO_STORE_REMOTE_REPOSITORY_PREFERENCES = new LogMessages(ERROR,
