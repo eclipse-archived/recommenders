@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.news.rcp.feature"
-      version="2.4.4.qualifier"
+      version="2.4.5.qualifier"
       label="%label"
       provider-name="%provider-name"
       plugin="org.eclipse.recommenders.news"

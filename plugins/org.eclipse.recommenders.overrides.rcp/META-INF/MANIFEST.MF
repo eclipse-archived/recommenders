@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.overrides.rcp;singleton:=true
-Bundle-Version: 2.4.4.qualifier
+Bundle-Version: 2.4.5.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
@@ -11,14 +11,14 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
- org.eclipse.recommenders.completion.rcp;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.coordinates;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.overrides;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.models.rcp;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.rcp;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.utils;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.models;bundle-version="[2.4.4,2.4.5]",
- org.eclipse.recommenders.injection;bundle-version="[2.4.4,2.4.5]",
+ org.eclipse.recommenders.completion.rcp;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.coordinates;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.overrides;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.models.rcp;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.rcp;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.utils;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.models;bundle-version="[2.4.5,2.4.6]",
+ org.eclipse.recommenders.injection;bundle-version="[2.4.5,2.4.6]",
  org.eclipse.ui
 Import-Package: com.google.common.base;version="[15.0.0,16.0.0)",
  com.google.common.eventbus;version="[15.0.0,16.0.0)"
