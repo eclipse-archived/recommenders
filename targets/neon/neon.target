@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="18">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="19">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Neon.1 RC4 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.6-M-builds/M-4.6.1RC4-201609071200/"/>
+<!-- Stable platform build for Neon.2 RC1 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.6-M-builds/M-4.6.2RC1-201611100200/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
