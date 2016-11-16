@@ -271,6 +271,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 }
 
                 WizardDialog dialog = new WizardDialog(this.getPage().getShell(), wizard);
+                dialog.setHelpAvailable(false);
                 if (dialog.open() == Window.OK) {
                     List<SnippetRepositoryConfiguration> configurations = getTableInput();
                     configurations.add(configurations.indexOf(oldConfiguration), wizard.getConfiguration());
@@ -294,6 +295,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
             if (!availableWizards.isEmpty()) {
                 SnippetRepositoryTypeSelectionWizard newWizard = new SnippetRepositoryTypeSelectionWizard();
                 WizardDialog dialog = new WizardDialog(this.getPage().getShell(), newWizard);
+                dialog.setHelpAvailable(false);
                 if (dialog.open() == Window.OK) {
                     List<SnippetRepositoryConfiguration> configurations = getTableInput();
                     SnippetRepositoryConfiguration newConfiguration = newWizard.getConfiguration();

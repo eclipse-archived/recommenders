@@ -39,7 +39,8 @@ public final class Dialogs {
         configuration.setShowTagFilter(false);
 
         DiscoveryWizard wizard = new DiscoveryWizard(catalog, configuration);
-        return new WizardDialog(WorkbenchUtil.getShell(), wizard);
+        WizardDialog dialog = new WizardDialog(WorkbenchUtil.getShell(), wizard);
+        dialog.setHelpAvailable(false);
+        return dialog;
     }
-
 }
