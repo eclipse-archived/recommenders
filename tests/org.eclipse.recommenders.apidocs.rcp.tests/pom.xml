@@ -5,12 +5,11 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>tests</artifactId>
-		<version>2.4.5</version>
+		<version>2.4.6-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>org.eclipse.recommenders.apidocs.rcp.tests</artifactId>
-	<version>2.4.5-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
