@@ -7,8 +7,8 @@
 				description="%connectorDescriptor.ctrlflow.description"
 				provider="%connectorDescriptor.ctrlflow.provider"
 				license="%connectorDescriptor.ctrlflow.license"
-				siteUrl="http://download.ctrlflow.com/updates/public/stable/">
-				<iu id="com.codetrails.ctrlflow.editions.starter.feature.feature.group"/>
+				siteUrl="http://download.ctrlflow.com/updates/public/discovery/">
+			<iu id="com.codetrails.ctrlflow.editions.starter.feature.feature.group"/>
 			<overview
 					summary="%overview.ctrlflow.summary"
 					url="https://www.ctrlflow.com/"/>
@@ -20,7 +20,7 @@
 				provider="%connectorDescriptor.connect.provider"
 				license="%connectorDescriptor.connect.license"
 				siteUrl="http://download.codetrails.com/updates/connect/stable/">
-				<iu id="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
+			<iu id="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
 			<overview
 					summary="%overview.connect.summary"
 					url="http://www.codetrails.com/connect/"/>
