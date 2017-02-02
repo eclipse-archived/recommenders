@@ -119,7 +119,8 @@ public class SnippetMetadataPage extends FormPage {
         }
     }
 
-    private static final String SNIPMATCH_P2_DISCOVERY_URL = "http://download.eclipse.org/recommenders/discovery/2.0/snipmatch/directory.xml"; //$NON-NLS-1$
+    private static final String SNIPMATCH_P2_DISCOVERY_URL =
+            "https://www.eclipse.org/downloads/download.php?r=1&file=/recommenders/discovery/2.x/directories/snipmatch.xml"; //$NON-NLS-1$
 
     private static final Location[] SNIPMATCH_LOCATIONS = { FILE, JAVA_FILE, JAVA, JAVA_STATEMENTS, JAVA_TYPE_MEMBERS,
             JAVADOC };
