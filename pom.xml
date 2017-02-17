@@ -65,7 +65,7 @@
 	<properties>
 		<recommendersVersion>2.4.6-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
-		<tychoVersion>0.26.0</tychoVersion>
+		<tychoVersion>1.0.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
 		<simrel>neon</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
@@ -200,6 +200,8 @@
 					<version>${tychoVersion}</version>
 					<configuration>
 						<strictCompilerTarget>true</strictCompilerTarget>
+						<!-- Don't allow .settings/org.eclipse.jdt.core.prefs to override. -->
+						<useProjectSettings>false</useProjectSettings>
 						<source>${javaVersion}</source>
 						<target>${javaVersion}</target>
 					</configuration>
