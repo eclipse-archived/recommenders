@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="23">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="24">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -18,14 +18,15 @@
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
 <!-- Build of EGit/JGit 4.6.x targeting Neon.3 -->
 <!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
-<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
+<repository location="http://download.eclipse.org/egit/updates-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.tasks.ide.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/mylyn/snapshots/weekly/"/>
+<!-- Final build of Mylyn targeting Neon (Neon.2 == Neon.3) -->
+<repository location="http://download.eclipse.org/mylyn/drops/3.21.1/v20161129-2023"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
