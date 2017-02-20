@@ -39,6 +39,9 @@
          id="org.eclipse.aether.transport.http.feature"
          version="0.0.0"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5923 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7760 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12370 -->
    <plugin
          id="com.google.gson"
          download-size="0"
@@ -46,28 +49,32 @@
          version="0.0.0"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
    <plugin
          id="com.google.guava"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="15.0.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
    <plugin
          id="com.google.inject"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
    <plugin
          id="com.google.inject.multibindings"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.0.0.qualifier"
          fragment="true"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5969 -->
    <plugin
          id="javax.inject"
          download-size="0"
@@ -75,20 +82,24 @@
          version="0.0.0"
          unpack="false"/>
 
+   <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
    <plugin
          id="org.apache.commons.codec"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.6.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7437 -->
    <plugin
          id="org.apache.commons.httpclient"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.1.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4790 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9073 -->
    <plugin
          id="org.apache.commons.io"
          download-size="0"
@@ -96,62 +107,72 @@
          version="0.0.0"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
    <plugin
          id="org.apache.commons.lang3"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.1.0.qualifier"
          unpack="false"/>
 
+   <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
    <plugin
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.1.1.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4759 -->
    <plugin
          id="org.apache.commons.math"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="2.1.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
    <plugin
          id="org.apache.commons.pool"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.6.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9005 -->
    <plugin
          id="org.apache.httpcomponents.httpclient"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.3.6.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9004 -->
    <plugin
          id="org.apache.httpcomponents.httpcore"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.3.3.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
    <plugin
          id="org.apache.lucene.core"
          download-size="0"
          install-size="0"
-         version="3.5.0.v20120725-1805"
+         version="3.5.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7436 -->
    <plugin
          id="org.apache.solr.client.solrj"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.5.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
    <plugin
          id="org.slf4j.api"
          download-size="0"
