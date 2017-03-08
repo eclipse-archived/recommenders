@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="25">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="28">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Neon.3 RC2 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.6-M-builds/M-4.6.3RC2-201702150400/"/>
+<!-- Stable platform build for Neon.3 RC4 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.6-M-builds/M-4.6.3RC4-201703010400/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -18,7 +18,7 @@
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
 <!-- Build of EGit/JGit 4.6.x targeting Neon.3 -->
 <!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
-<repository location="http://download.eclipse.org/egit/updates-nightly/"/>
+<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
