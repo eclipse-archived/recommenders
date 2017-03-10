@@ -64,7 +64,7 @@
 		<minimumMavenVersion>3.1.1</minimumMavenVersion>
 		<tychoVersion>1.0.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
-		<simrel>neon</simrel>
+		<simrel>oxygen</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:https://git.eclipse.org/r/recommenders/org.eclipse.recommenders</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
