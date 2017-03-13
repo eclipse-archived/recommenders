@@ -27,10 +27,6 @@
 		</mailingList>
 	</mailingLists>
 
-	<prerequisites>
-		<maven>3.1.1</maven>
-	</prerequisites>
-
 	<modules>
 		<module>releng</module>
 		<module>targets</module>
@@ -65,9 +61,10 @@
 	<properties>
 		<recommendersVersion>2.5.0-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
+		<minimumMavenVersion>3.1.1</minimumMavenVersion>
 		<tychoVersion>1.0.0</tychoVersion>
 		<!-- The default simultaneous release used to base the target platform on. (Override with -Dsimrel=...) -->
-		<simrel>neon</simrel>
+		<simrel>oxygen</simrel>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:https://git.eclipse.org/r/recommenders/org.eclipse.recommenders</tycho.scmUrl>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -478,6 +475,19 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>require-maven-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>${minimumMavenVersion}</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
 					<execution>
 						<id>require-plugin-versions</id>
 						<goals>

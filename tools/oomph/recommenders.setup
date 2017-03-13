@@ -1722,7 +1722,7 @@
       <repository
           url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
       <repository
-          url="http://download.codetrails.com/updates/connect/milestones/"/>
+          url="http://download.ctrlflow.com/connect/updates/public/maintenance-milestones/"/>
       <repository
           url="http://download.eclipse.org/technology/epp/logging/milestones/"/>
     </setupTask>
