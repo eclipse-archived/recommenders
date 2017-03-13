@@ -19,7 +19,7 @@
 				description="%connectorDescriptor.connect.descriptor"
 				provider="%connectorDescriptor.connect.provider"
 				license="%connectorDescriptor.connect.license"
-				siteUrl="http://download.codetrails.com/connect/updates/stable/">
+				siteUrl="https://download.ctrlflow.com/connect/updates/discovery/stable/">
 			<iu id="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
 			<overview
 					summary="%overview.connect.summary"
