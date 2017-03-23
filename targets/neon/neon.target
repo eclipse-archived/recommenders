@@ -1,32 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="28">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="29">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Neon.3 RC4 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.6-M-builds/M-4.6.3RC4-201703010400/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/modeling/emf/emf/updates/2.12/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-<!-- Build of EGit/JGit 4.6.x targeting Neon.3 -->
-<!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
-<repository location="http://download.eclipse.org/egit/updates-stable-nightly/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.tasks.ide.feature.group" version="0.0.0"/>
-<!-- Final build of Mylyn targeting Neon (Neon.2 == Neon.3) -->
-<repository location="http://download.eclipse.org/mylyn/drops/3.21.1/v20161129-2023"/>
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+<!-- Stable build for Neon.3 -->
+<repository location="http://download.eclipse.org/releases/neon/201703231000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
@@ -45,8 +33,8 @@
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7760 -->
-<unit id="com.google.gson" version="2.2.4.v201311231704"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12370 -->
+<unit id="com.google.gson" version="2.7.0.v20170129-0911"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
@@ -91,10 +79,10 @@
 <unit id="org.mockito" version="1.9.5.v201605172210"/>
 <!-- Tests-only dependency -->
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<!-- Recommended Orbit build for Neon -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
+<unit id="org.slf4j.api" version="1.7.10.v20170224-1220"/>
+<!-- Recommended Orbit build for Neon.3 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
