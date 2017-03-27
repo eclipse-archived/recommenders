@@ -69,7 +69,7 @@ import com.google.common.collect.Multiset.Entry;
 import com.google.common.eventbus.EventBus;
 
 /**
- * Several shortcuts for creating SWT components in the API Docs view default style.
+ * Several shortcuts for creating SWT components in the Augmented Docs view default style.
  */
 // TODO: Review these methods. not sure they are still the defaults
 public final class ApidocsViewUtils {
