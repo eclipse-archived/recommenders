@@ -19,26 +19,6 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.aether.connector.basic.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.aether.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.aether.maven.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.aether.transport.file.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.aether.transport.http.feature"
-         version="0.0.0"/>
-
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5923 -->
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7760 -->
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12370 -->
@@ -163,6 +143,62 @@
          version="3.5.0.qualifier"
          unpack="false"/>
 
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13012 -->
+   <plugin
+         id="org.apache.maven.resolver.api"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13013 -->
+   <plugin
+         id="org.apache.maven.resolver.connector.basic"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13014 -->
+   <plugin
+         id="org.apache.maven.resolver.impl"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13015 -->
+   <plugin
+         id="org.apache.maven.resolver.spi"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13016 -->
+   <plugin
+         id="org.apache.maven.resolver.transport.file"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13017 -->
+   <plugin
+         id="org.apache.maven.resolver.transport.http"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13018 -->
+   <plugin
+         id="org.apache.maven.resolver.util"
+         download-size="0"
+         install-size="0"
+         version="1.0.3.qualifier"
+         unpack="false"/>
+
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7436 -->
    <plugin
          id="org.apache.solr.client.solrj"
@@ -171,10 +207,8 @@
          version="3.5.0.qualifier"
          unpack="false"/>
 
-   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
-   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
    <plugin
-         id="org.slf4j.api"
+         id="org.eclipse.aether.maven"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -182,6 +216,15 @@
 
    <plugin
          id="org.eclipse.xtext.xbase.lib"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7274 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
+   <plugin
+         id="org.slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"
