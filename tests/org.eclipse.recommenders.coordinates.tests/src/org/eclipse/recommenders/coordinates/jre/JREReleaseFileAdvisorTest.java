@@ -29,8 +29,6 @@ import com.google.common.base.Optional;
 
 public class JREReleaseFileAdvisorTest {
 
-    private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.0.0");
-
     @Rule
     public final TemporaryFolder tmp = new TemporaryFolder();
 
@@ -49,9 +47,9 @@ public class JREReleaseFileAdvisorTest {
         releaseFile = tmp.newFile("JAVA_HOME" + File.separator + "release");
     }
 
-    private void fillReleaseFileWithVersion() throws IOException {
+    private void fillReleaseFileWithVersion(CharSequence version) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(releaseFile, true));
-        writer.write("JAVA_VERSION=\"1.0.0\"\n");
+        writer.append("JAVA_VERSION=\"").append(version).append("\"\n");
         writer.close();
     }
 
@@ -74,10 +72,10 @@ public class JREReleaseFileAdvisorTest {
     }
 
     @Test
-    public void testValidReleaseFile() throws IOException {
+    public void testValidPreJava9ReleaseFile() throws IOException {
         createJavaHomeDirectory();
         createReleaseFile();
-        fillReleaseFileWithVersion();
+        fillReleaseFileWithVersion("1.6.0");
         fillReleaseFileWithOtherStuff();
 
         DependencyInfo info = new DependencyInfo(javaHomeDirectory, DependencyType.JRE);
@@ -85,7 +83,22 @@ public class JREReleaseFileAdvisorTest {
 
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
-        assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
+        assertEquals(new ProjectCoordinate("jre", "jre", "1.6.0"), optionalProjectCoordinate.get());
+    }
+
+    @Test
+    public void testValidPostJava9ReleaseFile() throws IOException {
+        createJavaHomeDirectory();
+        createReleaseFile();
+        fillReleaseFileWithVersion("9");
+        fillReleaseFileWithOtherStuff();
+
+        DependencyInfo info = new DependencyInfo(javaHomeDirectory, DependencyType.JRE);
+        IProjectCoordinateAdvisor sut = new JREReleaseFileAdvisor();
+
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
+
+        assertEquals(new ProjectCoordinate("jre", "jre", "1.9.0"), optionalProjectCoordinate.get());
     }
 
     @Test
@@ -113,5 +126,4 @@ public class JREReleaseFileAdvisorTest {
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }
-
 }

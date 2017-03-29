@@ -40,8 +40,6 @@ public class JREExecutionEnvironmentAdvisorTest {
         javaHome = tmp.newFolder("JAVA_HOME");
     }
 
-    private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.6.0");
-
     private static Map<String, String> createAttributesMapForExecutionEnvironment(final String executionEnvironment) {
         Map<String, String> attributes = Maps.newHashMap();
         attributes.put(DependencyInfo.EXECUTION_ENVIRONMENT, executionEnvironment);
@@ -67,14 +65,24 @@ public class JREExecutionEnvironmentAdvisorTest {
     }
 
     @Test
-    public void testValidJRE() {
+    public void testValidPreJava9JRE() {
         DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE,
                 createAttributesMapForExecutionEnvironment("JavaSE-1.6"));
         IProjectCoordinateAdvisor sut = new JREExecutionEnvironmentAdvisor();
 
         Optional<ProjectCoordinate> projectCoordinate = sut.suggest(info);
 
-        assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
+        assertEquals(new ProjectCoordinate("jre", "jre", "1.6.0"), projectCoordinate.get());
     }
 
+    @Test
+    public void testValidPostJava9JRE() {
+        DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE,
+                createAttributesMapForExecutionEnvironment("JavaSE-9"));
+        IProjectCoordinateAdvisor sut = new JREExecutionEnvironmentAdvisor();
+
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(info);
+
+        assertEquals(new ProjectCoordinate("jre", "jre", "1.9.0"), projectCoordinate.get());
+    }
 }
