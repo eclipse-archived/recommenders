@@ -54,7 +54,9 @@ public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor
     @Inject
     public ManualProjectCoordinateAdvisor(@Named(CoordinatesRcpModule.MANUAL_MAPPINGS) File persistenceFile) {
         this.persistenceFile = persistenceFile;
-        gson = new GsonBuilder().registerTypeAdapter(ProjectCoordinate.class, new ProjectCoordinateJsonTypeAdapter())
+        gson = new GsonBuilder()
+                .registerTypeAdapter(File.class, new FileJsonTypeAdapter())
+                .registerTypeAdapter(ProjectCoordinate.class, new ProjectCoordinateJsonTypeAdapter())
                 .enableComplexMapKeySerialization().serializeNulls().create();
     }
 
