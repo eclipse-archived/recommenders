@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="14">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="15">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -91,7 +91,7 @@
 <!-- Tests-only dependency -->
 <unit id="org.objenesis" version="1.0.0.v201505121915"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
-<unit id="org.slf4j.api" version="1.7.10.v20160921-1923"/>
+<unit id="org.slf4j.api" version="1.7.10.v20170224-1220"/>
 <!-- Lastest I-build (towards Oxygen) -->
 <repository location="http://download.eclipse.org/tools/orbit/downloads/latest-I"/>
 </location>
