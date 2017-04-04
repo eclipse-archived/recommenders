@@ -26,6 +26,7 @@ import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.utils.IOUtils;
+import org.eclipse.recommenders.utils.Version;
 
 import com.google.common.base.Optional;
 
@@ -51,13 +52,20 @@ public class JREReleaseFileAdvisor extends AbstractProjectCoordinateAdvisor {
             throws IOException {
         Properties properties = new Properties();
         properties.load(releaseFileInputStream);
-        String version = properties.getProperty("JAVA_VERSION");
-        if (version == null) {
+        String versionProperty = properties.getProperty("JAVA_VERSION");
+        if (versionProperty == null) {
             return absent();
         }
+
         // Replace of " is needed because of the release file structure
-        version = version.replace("\"", "");
-        return tryNewProjectCoordinate("jre", "jre", canonicalizeVersion(version));
+        versionProperty = versionProperty.replace("\"", "");
+
+        Version version = Version.valueOf(canonicalizeVersion(versionProperty));
+        if (version.getMajor() >= 9) {
+            // Bring version of Java 9 or later into the 1.x.y form used by earlier JREs.
+            version = new Version(1, version.getMajor(), version.getMinor());
+        }
+        return tryNewProjectCoordinate("jre", "jre", version.toString());
     }
 
     private Optional<FileInputStream> readReleaseFileIn(File folderPath) {

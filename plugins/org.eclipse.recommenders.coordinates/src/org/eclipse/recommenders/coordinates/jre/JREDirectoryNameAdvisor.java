@@ -19,6 +19,7 @@ import org.eclipse.recommenders.coordinates.AbstractProjectCoordinateAdvisor;
 import org.eclipse.recommenders.coordinates.DependencyInfo;
 import org.eclipse.recommenders.coordinates.DependencyType;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import org.eclipse.recommenders.utils.Version;
 
 import com.google.common.base.Optional;
 
@@ -32,9 +33,14 @@ public class JREDirectoryNameAdvisor extends AbstractProjectCoordinateAdvisor {
         File directory = dependencyInfo.getFile();
 
         do {
-            String version = canonicalizeVersion(directory.getName());
-            if (isValidVersion(version)) {
-                return of(new ProjectCoordinate("jre", "jre", version));
+            String versionString = canonicalizeVersion(directory.getName());
+            if (isValidVersion(versionString)) {
+                Version version = Version.valueOf(versionString);
+                if (version.getMajor() > 1) {
+                    // Bring version of Java 9 or later into the 1.x.y form used by earlier JREs.
+                    version = new Version(1,  version.getMajor(), version.getMinor());
+                }
+                return of(new ProjectCoordinate("jre", "jre", version.toString()));
             }
             directory = directory.getParentFile();
         } while (directory != null);
