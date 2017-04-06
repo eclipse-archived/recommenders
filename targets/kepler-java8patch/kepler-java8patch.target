@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3) with Java 8 Support" sequenceNumber="4">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3) with Java 8 Support" sequenceNumber="5">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
@@ -27,11 +27,13 @@
 <unit id="org.eclipse.aether.connector.basic.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.aether.transport.file.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.aether.transport.http.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=514749 -->
+<repository location="http://archive.eclipse.org/recommenders/3rd/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=514749 -->
+<repository location="http://archive.eclipse.org/recommenders/3rd/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
