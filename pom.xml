@@ -169,6 +169,11 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jdeps-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
 				<!-- Apache Maven tools -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
