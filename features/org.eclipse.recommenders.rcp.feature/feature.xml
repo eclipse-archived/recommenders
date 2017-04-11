@@ -21,12 +21,18 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.aether.feature" version="1.0.0" match="compatible"/>
-      <import feature="org.eclipse.aether.connector.basic.feature" version="1.0.0" match="compatible"/>
-      <import feature="org.eclipse.aether.maven.feature" version="3.1.0" match="compatible"/>
-      <import feature="org.eclipse.aether.transport.file.feature" version="1.0.0" match="compatible"/>
-      <import feature="org.eclipse.aether.transport.http.feature" version="1.0.0" match="compatible"/>
       <import plugin="com.google.inject.multibindings" version="3.0.0" match="compatible"/>
+      <!-- We unfortunately need *explicit* dependencies on the Maven Resolver; implicit dependencies are not enough. -->
+      <!-- p2 may otherwise pick org.eclipse.m2e.maven.runtime as provider of org.eclipse.aether.* packages. -->
+      <!-- Equinox will later refuse to wire these packages to to our bundles due to the provider="m2e" directive on the package exports. -->
+      <import plugin="org.apache.maven.resolver.api" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.connector.basic" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.impl" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.spi" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.transport.file" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.transport.http" version="1.0.0" match="compatible"/>
+      <import plugin="org.apache.maven.resolver.util" version="1.0.0" match="compatible"/>
+      <import plugin="org.eclipse.aether.maven" version="3.1.0" match="compatible"/>
    </requires>
 
    <plugin

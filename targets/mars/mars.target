@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="164">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Mars (4.5)" sequenceNumber="165">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -15,15 +15,6 @@
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
 <!-- Stable build for Mars.2 -->
 <repository location="http://download.eclipse.org/releases/mars/201602261000/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.feature.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.connector.basic.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.file.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.http.feature.feature.group" version="0.0.0"/>
-<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=514749 -->
-<repository location="http://archive.eclipse.org/recommenders/3rd/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
@@ -86,6 +77,24 @@
 <!-- Recommended Orbit build for Mars.2+ -->
 <!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=487833#c29 as to why this is Mars.2+ rather than Mars.2 -->
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13012 -->
+<unit id="org.apache.maven.resolver.api" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13013 -->
+<unit id="org.apache.maven.resolver.connector.basic" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13014 -->
+<unit id="org.apache.maven.resolver.impl" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13015 -->
+<unit id="org.apache.maven.resolver.spi" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13016 -->
+<unit id="org.apache.maven.resolver.transport.file" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13017 -->
+<unit id="org.apache.maven.resolver.transport.http" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13018 -->
+<unit id="org.apache.maven.resolver.util" version="1.0.3.v20170405-0725"/>
+<!-- Latest Integration Orbit build, as Maven Resolver is not part of the recommended Orbit build for Mars.2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/latest-I"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

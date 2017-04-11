@@ -67,10 +67,7 @@
 						<configuration>
 							<!-- Exclude 3rd party features without sources -->
 							<excludes>
-								<feature id="org.eclipse.aether.connector.basic.feature" />
-								<feature id="org.eclipse.aether.maven.feature" />
-								<feature id="org.eclipse.aether.transport.file.feature" />
-								<feature id="org.eclipse.aether.transport.http.feature" />
+								<plugin id="org.eclipse.aether.maven" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
 							<labelSuffix>&#xA0;incl. Sources</labelSuffix>
