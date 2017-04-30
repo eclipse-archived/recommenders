@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3)" sequenceNumber="156">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Kepler (4.3)" sequenceNumber="158">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
@@ -15,16 +15,9 @@
 <repository location="http://download.eclipse.org/releases/kepler/201402280900/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.aether.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.feature.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.connector.basic.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.file.feature.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.aether.transport.http.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/aether/aether-core/releases/1.0/1.0.1.v20141111/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=514749 -->
+<repository location="http://archive.eclipse.org/recommenders/3rd/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
@@ -85,6 +78,24 @@
 <unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <!-- Recommended Orbit build for Luna SR2, as not all dependencies are part of the recommended Orbit build for Kepler SR2 -->
 <repository location="http://archive.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13012 -->
+<unit id="org.apache.maven.resolver.api" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13013 -->
+<unit id="org.apache.maven.resolver.connector.basic" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13014 -->
+<unit id="org.apache.maven.resolver.impl" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13015 -->
+<unit id="org.apache.maven.resolver.spi" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13016 -->
+<unit id="org.apache.maven.resolver.transport.file" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13017 -->
+<unit id="org.apache.maven.resolver.transport.http" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13018 -->
+<unit id="org.apache.maven.resolver.util" version="1.0.3.v20170405-0725"/>
+<!-- Latest Integration Orbit build, as Maven Resolver is not part of the recommended Orbit build for Kepler SR2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/latest-I"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
