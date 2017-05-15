@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
 	<extension point="org.eclipse.mylyn.discovery.core.connectorDiscovery">
-		<connectorDescriptor id="org.eclipse.recommenders.discovery.content.connectorDescriptor.ctrlflow"
-				categoryId="org.eclipse.recommenders.discovery.connectorCategory.3rd"
-				name="%connectorDescriptor.ctrlflow.name"
-				description="%connectorDescriptor.ctrlflow.description"
-				provider="%connectorDescriptor.ctrlflow.provider"
-				license="%connectorDescriptor.ctrlflow.license"
-				siteUrl="http://download.ctrlflow.com/updates/public/discovery/">
-			<iu id="com.codetrails.ctrlflow.editions.starter.feature.feature.group"/>
-			<overview
-					summary="%overview.ctrlflow.summary"
-					url="https://www.ctrlflow.com/"/>
-		</connectorDescriptor>
 		<connectorDescriptor id="org.eclipse.recommenders.discovery.content.connectorDescriptor.connect"
 				categoryId="org.eclipse.recommenders.discovery.connectorCategory.3rd"
 				name="%connectorDescriptor.connect.name"
