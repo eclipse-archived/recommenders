@@ -9,6 +9,7 @@
  */
 package org.eclipse.recommenders.internal.news.rcp.preferences;
 
+import static com.google.common.base.Objects.firstNonNull;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -16,10 +17,12 @@ import java.text.MessageFormat;
 
 import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.ui.PlatformUI;
@@ -31,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class NewsPreferencePageUITest {
@@ -55,7 +59,14 @@ public class NewsPreferencePageUITest {
             bot.button("Cancel").click(); //$NON-NLS-1$
         }
         bot.button("Restore Defaults").click(); //$NON-NLS-1$
-        bot.button("OK").click(); //$NON-NLS-1$
+        okButton().click(); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private SWTBotButton okButton() {
+        // With Oxygen, the button's label has changed.
+        // This needs a better, less fragile alternative.
+        // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=516666>
+        return bot.button(6);
     }
 
     @Test
@@ -256,7 +267,7 @@ public class NewsPreferencePageUITest {
     }
 
     private void applyChangesAndReopenPreferencePage() {
-        bot.button("OK").click();
+        okButton().click();
         openPreferencePage(bot);
     }
 
