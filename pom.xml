@@ -289,6 +289,15 @@
 						<argLine>${tycho.test.jvmArgs}</argLine>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-versions-plugin</artifactId>
+					<version>${tychoVersion}</version>
+					<configuration>
+						<properties>recommendersVersion</properties>
+						<updateVersionRangeMatchingBounds>true</updateVersionRangeMatchingBounds>
+					</configuration>
+				</plugin>
 				<!-- Eclipse Tycho extras -->
 				<plugin>
 					<groupId>org.eclipse.tycho.extras</groupId>

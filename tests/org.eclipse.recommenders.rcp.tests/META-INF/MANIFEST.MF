@@ -5,7 +5,6 @@ Fragment-Host: org.eclipse.recommenders.rcp
 Bundle-Version: 2.5.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.jdt.launching,
  org.eclipse.recommenders.testing,

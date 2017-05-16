@@ -4,7 +4,6 @@ Bundle-SymbolicName: org.eclipse.recommenders.injection;singleton:=true
 Bundle-Version: 2.5.0.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: com.google.inject;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
  javax.inject;bundle-version="[1.0.0,2.0.0)";visibility:=reexport,
