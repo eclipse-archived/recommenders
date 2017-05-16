@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.news.api
-Bundle-Version: 2.4.8.qualifier
+Bundle-Version: 2.4.9.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.annotation;bundle-version="[1.0.0,2.0.0)";resolution:=optional
-Export-Package: org.eclipse.recommenders.news.api;version="2.4.8",
- org.eclipse.recommenders.news.api.poll;version="2.4.8";uses:="org.eclipse.core.runtime",
- org.eclipse.recommenders.news.api.read;version="2.4.8";uses:="org.eclipse.recommenders.news.api"
+Export-Package: org.eclipse.recommenders.news.api;version="2.4.9",
+ org.eclipse.recommenders.news.api.poll;version="2.4.9";uses:="org.eclipse.core.runtime",
+ org.eclipse.recommenders.news.api.read;version="2.4.9";uses:="org.eclipse.recommenders.news.api"
