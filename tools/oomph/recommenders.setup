@@ -1345,8 +1345,7 @@
   <setupTask
       xsi:type="setup:VariableTask"
       name="train.url"
-      value="http://download.eclipse.org/releases/mars"
-      defaultValue=""/>
+      value="http://download.eclipse.org/releases/neon"/>
   <setupTask
       xsi:type="setup:VariableTask"
       id="eclipse.target.platform"
@@ -1574,119 +1573,28 @@
       label="Demo">
     <setupTask
         xsi:type="setup:CompoundTask"
-        name="Demo Preferences">
+        name="Preferences">
       <setupTask
           xsi:type="setup:CompoundTask"
-          name="com.codetrails.connect.calls.rcp">
+          name="edu.umd.cs.findbugs.plugin.eclipse">
         <setupTask
             xsi:type="setup:PreferenceTask"
-            key="/instance/com.codetrails.connect.calls.rcp/model.repository"
-            value="http://download.codetrails.com/models/clng"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.recommenders.models.rcp">
+            key="/instance/edu.umd.cs.findbugs.plugin.eclipse/detectorFindMissingSelfCalls"
+            value="FindMissingSelfCalls|true">
+          <description></description>
+        </setupTask>
         <setupTask
             xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.recommenders.models.rcp/repository.url.list"
-            value="http://download.eclipse.org/recommenders/models/mars/&#x9;http://download.codetrails.com/models/clng&#x9;http://download.codetrails.com/models/paths-l2"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="com.codetrails.connect.snippets.rcp">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/com.codetrails.connect.snippets.rcp/model.repository"
-            value="http://download.codetrails.com/models/paths-l2"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.recommenders.rcp">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.recommenders.rcp/first_activation_date"
-            value="1395531993808"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="com.codetrails.connect.tracker.rcp">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/configuration/com.codetrails.connect.tracker.rcp/user_id"
-            value="5f32c740-a6d2-49ac-bf94-ba5e8a481fba"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.jdt.ui">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.jdt.ui/content_assist_number_of_computers"
-            value="16"/>
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.jdt.ui/smart_semicolon"
-            value="true"/>
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.jdt.ui/smart_opening_brace"
-            value="true"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.egit.core">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.egit.core/GitRepositoriesView.GitDirectories"
-            value="/Users/Marcel/Oomph/recommenders/demo-latest/ws/.snipmatch/.git:"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.recommenders.completion.rcp.sessionprocessors">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.recommenders.completion.rcp.sessionprocessors/disabled"
-            value=""/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="org.eclipse.recommenders.codesearch.rcp">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/org.eclipse.recommenders.codesearch.rcp/recommenders.codesearch.index.keep_in_sync"
-            value="true"/>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          name="com.codetrails.connect.hippie.rcp">
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.enable.user.id"
-            value="true"/>
-        <setupTask
-            xsi:type="setup:PreferenceTask"
-            key="/instance/com.codetrails.connect.hippie.rcp/com.codetrails.internal.hippie.completion.rcp.preferences.user.id"
-            value="marcel.bruch.demo@codetrails.com"/>
+            key="/instance/edu.umd.cs.findbugs.plugin.eclipse/detectorFindSuspiciousCallOrdering"
+            value="FindSuspiciousCallOrdering|true">
+          <description></description>
+        </setupTask>
       </setupTask>
     </setupTask>
     <setupTask
         xsi:type="git:GitCloneTask"
         id="git.clone.recommenders.examples"
-        remoteURI="recommenders/org.eclipse.recommenders.examples">
-      <annotation
-          source="http://www.eclipse.org/oomph/setup/InducedChoices">
-        <detail
-            key="inherit">
-          <value>eclipse.git.gerrit.remoteURIs</value>
-        </detail>
-        <detail
-            key="label">
-          <value>Recommenders Example Git or Gerrit Repository</value>
-        </detail>
-        <detail
-            key="target">
-          <value>remoteURI</value>
-        </detail>
-      </annotation>
+        remoteURI="http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.examples.git">
       <description>Recommenders Demo</description>
     </setupTask>
     <setupTask
@@ -1696,35 +1604,44 @@
       <requirement
           name="org.eclipse.recommenders.snipmatch.rcp.feature.feature.group"/>
       <requirement
-          name="org.eclipse.epp.logging.aeri.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.recommenders.stats.rcp.feature.feature.group"/>
-      <requirement
           name="org.eclipse.recommenders.mylyn.rcp.feature.feature.group"/>
       <requirement
-          name="org.eclipse.recommenders.stats.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.connect.calls.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.connect.hippie.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.connect.snippets.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.connect.tracker.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.connect.tweaks.rcp.feature.feature.group"/>
-      <requirement
-          name="com.codetrails.vaadin.rcp.feature.feature.group"/>
-      <requirement
           name="org.eclipse.mylyn.java_feature.feature.group"/>
+      <requirement
+          name="org.eclipse.epp.logging.aeri.feature.feature.group"/>
+      <requirement
+          name="com.codetrails.ctrlflow.editions.pro.feature.feature.group"/>
+      <requirement
+          name="com.ctrlflow.codecity.git.rcp.feature.feature.group"/>
+      <requirement
+          name="com.ctrlflow.codecity.jacoco.rcp.feature.feature.group"/>
+      <requirement
+          name="com.ctrlflow.codecity.pmd.rcp.feature.feature.group"/>
+      <requirement
+          name="com.mountainminds.eclemma.feature.feature.group"
+          filter=""/>
+      <requirement
+          name="net.sourceforge.pmd.eclipse.feature.group"
+          filter=""/>
+      <requirement
+          name="com.codetrails.connect.findbugs.rcp.feature.feature.group"/>
+      <requirement
+          name="edu.umd.cs.findbugs.plugin.eclipse.feature.group"
+          filter=""/>
       <repository
-          url="http://download.eclipse.org/recommenders/updates/milestones/"/>
+          url="http://download.eclipse.org/recommenders/updates/maintenance-head/"/>
       <repository
-          url="http://download.eclipse.org/recommenders.incubator/updates/milestones/"/>
+          url="http://download.eclipse.org/technology/epp/logging/head/"/>
       <repository
-          url="http://download.ctrlflow.com/connect/updates/public/maintenance-milestones/"/>
+          url="https://download.codetrails.com/insights/updates/head/"/>
       <repository
-          url="http://download.eclipse.org/technology/epp/logging/milestones/"/>
+          url="http://update.eclemma.org/"/>
+      <repository
+          url="https://dl.bintray.com/pmd/pmd-eclipse-plugin/updates/"/>
+      <repository
+          url="https://download.codetrails.com/connect/updates/head/"/>
+      <repository
+          url="http://andrei.gmxhome.de/eclipse"/>
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask">
