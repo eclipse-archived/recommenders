@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="22">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="23">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Oxygen M7 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/S-4.7M7-201705120500/"/>
+<!-- Stable platform build for Oxygen RC1 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.7milestones/S-4.7RC1-201705181030/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -16,7 +16,7 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-<!-- Build of EGit/JGit 4.7.x targeting Oxygen -->
+<!-- Build of EGit/JGit 4.8.x targeting Oxygen -->
 <!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
 <repository location="http://download.eclipse.org/egit/updates-nightly/"/>
 </location>
