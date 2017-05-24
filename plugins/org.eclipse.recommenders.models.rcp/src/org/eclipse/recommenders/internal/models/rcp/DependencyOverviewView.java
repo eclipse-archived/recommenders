@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,8 +56,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -82,7 +81,7 @@ public class DependencyOverviewView extends ViewPart {
         this.modelIndex = modelIndex;
         this.modelRepository = modelRepository;
         this.images = images;
-        this.modelClassifiers = Lists.newArrayList(modelClassifiers);
+        this.modelClassifiers = new ArrayList<>(modelClassifiers);
         Collections.sort(this.modelClassifiers);
         bus.register(this);
     }
@@ -129,7 +128,7 @@ public class DependencyOverviewView extends ViewPart {
     }
 
     private Set<DependencyInfo> extractSelectedDependencies(IStructuredSelection selection) {
-        final Set<DependencyInfo> selectedDependencies = Sets.newHashSet();
+        final Set<DependencyInfo> selectedDependencies = new HashSet<>();
 
         for (Object element : selection.toList()) {
             if (element instanceof Dependency) {

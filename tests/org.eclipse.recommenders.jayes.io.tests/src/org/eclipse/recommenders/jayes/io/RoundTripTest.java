@@ -37,8 +37,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class RoundTripTest {
 
@@ -52,7 +50,7 @@ public class RoundTripTest {
 
     @Parameters(name = "{0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario(JayesBifReader.class, JayesBifWriter.class));
         scenarios.add(scenario(XDSLReader.class, XDSLWriter.class));

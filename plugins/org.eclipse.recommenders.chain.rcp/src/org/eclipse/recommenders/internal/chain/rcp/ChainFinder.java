@@ -14,6 +14,7 @@ package org.eclipse.recommenders.internal.chain.rcp;
 import static org.eclipse.recommenders.internal.chain.rcp.TypeBindingAnalyzer.findVisibleInstanceFieldsAndRelevantInstanceMethods;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 
 @SuppressWarnings("restriction")
@@ -41,10 +40,10 @@ public class ChainFinder {
     private final InvocationSite invocationSite;
     private final Scope scope;
 
-    private final List<Chain> chains = Lists.newLinkedList();
+    private final List<Chain> chains = new LinkedList<>();
 
-    private final Map<Binding, ChainElement> edgeCache = Maps.newHashMap();
-    private final Map<TypeBinding, List<Binding>> fieldsAndMethodsCache = Maps.newHashMap();
+    private final Map<Binding, ChainElement> edgeCache = new HashMap<>();
+    private final Map<TypeBinding, List<Binding>> fieldsAndMethodsCache = new HashMap<>();
     private final Table<ChainElement, TypeBinding, Boolean> assignableCache = HashBasedTable.create();
 
     ChainFinder(final List<Optional<TypeBinding>> expectedTypes, final Set<String> excludedTypes,
@@ -102,9 +101,9 @@ public class ChainFinder {
     }
 
     private static LinkedList<LinkedList<ChainElement>> prepareQueue(final List<ChainElement> entrypoints) {
-        final LinkedList<LinkedList<ChainElement>> incompleteChains = Lists.newLinkedList();
+        final LinkedList<LinkedList<ChainElement>> incompleteChains = new LinkedList<>();
         for (final ChainElement entrypoint : entrypoints) {
-            final LinkedList<ChainElement> chain = Lists.newLinkedList();
+            final LinkedList<ChainElement> chain = new LinkedList<>();
             chain.add(entrypoint);
             incompleteChains.add(chain);
         }
@@ -146,7 +145,7 @@ public class ChainFinder {
     private List<Binding> findAllFieldsAndMethods(final TypeBinding chainElementType) {
         List<Binding> cached = fieldsAndMethodsCache.get(chainElementType);
         if (cached == null) {
-            cached = Lists.newLinkedList();
+            cached = new LinkedList<>();
             for (final Binding binding : findVisibleInstanceFieldsAndRelevantInstanceMethods(chainElementType,
                     invocationSite, scope)) {
                 if (!isFromExcludedType(binding)) {

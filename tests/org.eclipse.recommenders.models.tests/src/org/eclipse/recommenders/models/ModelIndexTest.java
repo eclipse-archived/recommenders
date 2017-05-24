@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,11 +44,11 @@ public class ModelIndexTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario(Lists.newArrayList(PC_1, PC_3, PC_4), Lists.newArrayList(PC_2, PC_4)));
-        scenarios.add(scenario(Lists.newArrayList(PC_2, PC_4), Lists.<ProjectCoordinate>newArrayList()));
-        scenarios.add(scenario(Lists.<ProjectCoordinate>newArrayList(), Lists.newArrayList(PC_2, PC_4)));
+        scenarios.add(scenario(Lists.newArrayList(PC_2, PC_4), new ArrayList<ProjectCoordinate>()));
+        scenarios.add(scenario(new ArrayList<ProjectCoordinate>(), Lists.newArrayList(PC_2, PC_4)));
 
         return scenarios;
     }

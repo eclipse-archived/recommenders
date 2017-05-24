@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.eclipse.recommenders.utils.Reflections;
@@ -14,9 +15,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @RunWith(Parameterized.class)
 public class ProcessableProposalTagsTest {
@@ -31,7 +29,7 @@ public class ProcessableProposalTagsTest {
     @SuppressWarnings("unchecked")
     @Parameters(name = "{0}")
     public static Collection<Object[]> fieldDeclarations() {
-        LinkedList<Object[]> classes = Lists.newLinkedList();
+        LinkedList<Object[]> classes = new LinkedList<>();
         classes.add(toArray(ProcessableAnonymousTypeCompletionProposal.class));
         classes.add(toArray(ProcessableFilledArgumentNamesMethodProposal.class));
         classes.add(toArray(ProcessableJavaCompletionProposal.class));
@@ -51,7 +49,7 @@ public class ProcessableProposalTagsTest {
     public void before() throws Exception {
         sut = Mockito.mock(clazz);
         Field f = Reflections.getDeclaredField(clazz, "tags").orNull();
-        f.set(sut, Maps.newHashMap());
+        f.set(sut, new HashMap<>());
         Mockito.doCallRealMethod().when(sut).setTag(Mockito.any(IProposalTag.class), Mockito.anyObject());
         Mockito.doCallRealMethod().when(sut).getTag(Mockito.any(IProposalTag.class), Mockito.anyObject());
         Mockito.doCallRealMethod().when(sut).getTag(Mockito.any(IProposalTag.class));

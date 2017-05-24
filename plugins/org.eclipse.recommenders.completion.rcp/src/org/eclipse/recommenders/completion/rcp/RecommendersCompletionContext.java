@@ -19,6 +19,8 @@ import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,8 +55,6 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class RecommendersCompletionContext implements IRecommendersCompletionContext {
@@ -67,7 +67,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         if (sigs.length < 1) {
             return Collections.emptySet();
         }
-        Set<ITypeName> res = Sets.newHashSet();
+        Set<ITypeName> res = new HashSet<>();
         // JDT signatures contain '.' instead of '/' and may end with ';'
         for (char[] sig : sigs) {
             try {
@@ -83,7 +83,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
         return res;
     }
 
-    private Map<CompletionContextKey, Object> data = Maps.newHashMap();
+    private Map<CompletionContextKey, Object> data = new HashMap<>();
     private Map<CompletionContextKey, ICompletionContextFunction> functions;
 
     public RecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
@@ -159,7 +159,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     @Override
     public Set<ITypeName> getExpectedTypeNames() {
         Set<ITypeName> res = get(EXPECTED_TYPENAMES, null);
-        return res == null ? Sets.<ITypeName>newHashSet() : res;
+        return res == null ? new HashSet<ITypeName>() : res;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
 
     @Override
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals() {
-        return get(JAVA_PROPOSALS, Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap());
+        return get(JAVA_PROPOSALS, new HashMap<IJavaCompletionProposal, CompletionProposal>());
     }
 
     @Override

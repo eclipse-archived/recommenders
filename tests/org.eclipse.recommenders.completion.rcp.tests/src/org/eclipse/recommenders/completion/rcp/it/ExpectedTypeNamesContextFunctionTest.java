@@ -20,8 +20,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class ExpectedTypeNamesContextFunctionTest {
 
@@ -30,7 +28,6 @@ public class ExpectedTypeNamesContextFunctionTest {
 
     private static final ITypeName OBJECT_ARRAY = VmTypeName.get("[Ljava/lang/Object");
     private static final ITypeName STRING = VmTypeName.get("Ljava/lang/String");
-    private static final ITypeName STRING_ARRAY = VmTypeName.get("[Ljava/lang/String");
     private static final ITypeName FILE = VmTypeName.get("Ljava/io/File");
     private static final ITypeName COLLECTION = VmTypeName.get("Ljava/util/Collection");
     private static final ITypeName URI = VmTypeName.get("Ljava/net/URI");
@@ -45,7 +42,7 @@ public class ExpectedTypeNamesContextFunctionTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario(method("new File($);"), FILE, STRING, URI));
         scenarios.add(scenario(method("File f = $;"), FILE));

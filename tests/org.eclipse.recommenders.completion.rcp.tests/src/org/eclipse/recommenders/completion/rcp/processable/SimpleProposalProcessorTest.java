@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class SimpleProposalProcessorTest<T> {
 
@@ -29,7 +27,7 @@ public class SimpleProposalProcessorTest<T> {
 
     @Parameters(name = "{index}: {0} => equal: {3}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("Same increment, no label", new SimpleProposalProcessor(1), new SimpleProposalProcessor(
                 1), true));

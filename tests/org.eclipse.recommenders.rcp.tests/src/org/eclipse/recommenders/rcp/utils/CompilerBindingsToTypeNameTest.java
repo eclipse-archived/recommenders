@@ -27,8 +27,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 @SuppressWarnings("restriction")
 public class CompilerBindingsToTypeNameTest {
@@ -43,7 +41,7 @@ public class CompilerBindingsToTypeNameTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         // Real-world scenarios
         scenarios.add(scenario("Primitive type", method("$int i = 0;"), get("I")));

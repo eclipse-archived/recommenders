@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 /**
  * Test that the enclosing type is computed correctly when completion is triggered for the generic argument of a field.
  *
@@ -38,7 +36,7 @@ public class Bug399800Test {
 
     @Parameters
     public static Collection<Object[]> fieldDeclarations() {
-        LinkedList<Object[]> fieldDeclarations = Lists.newLinkedList();
+        LinkedList<Object[]> fieldDeclarations = new LinkedList<>();
 
         fieldDeclarations.add(fieldDeclaration("List<S$>"));
         fieldDeclarations.add(fieldDeclaration("List<S$>;"));

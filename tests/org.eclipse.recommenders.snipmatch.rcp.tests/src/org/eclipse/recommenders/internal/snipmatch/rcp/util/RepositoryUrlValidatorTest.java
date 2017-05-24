@@ -11,8 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class RepositoryUrlValidatorTest {
 
@@ -26,7 +24,7 @@ public class RepositoryUrlValidatorTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
         scenarios.add(invalidUri(""));
         scenarios.add(invalidUri("///"));
         scenarios.add(invalidUri("***"));

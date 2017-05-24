@@ -12,13 +12,12 @@ package org.eclipse.recommenders.commons.bayesnet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
-
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("deprecation")
 public class CommonsWriter implements IBayesNetWriter {
@@ -56,7 +55,7 @@ public class CommonsWriter implements IBayesNetWriter {
 
         for (BayesNode node : bayesNet.getNodes()) {
             Node n = network.getNode(node.getName());
-            List<Node> parents = Lists.newArrayList();
+            List<Node> parents = new ArrayList<>();
             for (BayesNode parent : node.getParents()) {
                 parents.add(network.getNode(parent.getName()));
             }

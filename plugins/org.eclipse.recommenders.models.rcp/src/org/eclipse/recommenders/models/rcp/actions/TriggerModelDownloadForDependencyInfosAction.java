@@ -11,6 +11,7 @@
  */
 package org.eclipse.recommenders.models.rcp.actions;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,6 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 public class TriggerModelDownloadForDependencyInfosAction extends TriggerModelDownloadForProjectCoordinatesAction {
@@ -39,7 +39,7 @@ public class TriggerModelDownloadForDependencyInfosAction extends TriggerModelDo
 
     @Override
     public void run() {
-        Set<ProjectCoordinate> pcs = Sets.newHashSet();
+        Set<ProjectCoordinate> pcs = new HashSet<>();
         for (DependencyInfo dep : deps) {
             Optional<ProjectCoordinate> opc = pcProvider.resolve(dep);
             if (opc.isPresent()) {

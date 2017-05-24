@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
@@ -17,7 +18,6 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 /**
  * EXPERIMENTAL. Not recommended for public API use.
@@ -26,7 +26,7 @@ import com.google.common.collect.Maps;
 @Beta
 public class AccessibleCompletionProposal extends InternalCompletionProposal {
 
-    private Map<String, Object> data = Maps.newHashMap();
+    private Map<String, Object> data = new HashMap<>();
 
     public AccessibleCompletionProposal(int kind, int completionOffset) {
         super(kind, completionOffset);

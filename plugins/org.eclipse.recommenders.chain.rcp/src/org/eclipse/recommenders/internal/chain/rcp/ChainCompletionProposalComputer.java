@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +59,6 @@ import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 
@@ -214,7 +214,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private static Set<String> getLocalVariableNames(final ObjectVector visibleLocalVariables) {
-        final Set<String> names = Sets.newHashSet();
+        final Set<String> names = new HashSet<>();
         for (int i = visibleLocalVariables.size(); i-- > 0;) {
             final LocalVariableBinding decl = (LocalVariableBinding) visibleLocalVariables.elementAt(i);
             names.add(Arrays.toString(decl.name));
@@ -275,7 +275,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private List<ICompletionProposal> buildCompletionProposals(final List<Chain> chains) {
-        final List<ICompletionProposal> proposals = Lists.newLinkedList();
+        final List<ICompletionProposal> proposals = new LinkedList<>();
         for (final Chain chain : chains) {
             final TemplateProposal proposal = CompletionTemplateBuilder.create(chain, ctx.getJavaContext());
             final ChainCompletionProposal completionProposal = new ChainCompletionProposal(proposal, chain);

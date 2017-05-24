@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
@@ -32,7 +33,7 @@ public class WizardDescriptorsTest {
     public void testEmptyDescriptorList() {
         SnippetRepositoryConfiguration config = mock(SnippetRepositoryConfiguration.class);
 
-        List<WizardDescriptor> descriptors = Lists.newArrayList();
+        List<WizardDescriptor> descriptors = new ArrayList<>();
 
         List<WizardDescriptor> filteredDescriptors = WizardDescriptors.filterApplicableWizardDescriptors(descriptors,
                 config);

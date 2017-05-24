@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 /**
  * Test that generic types and their (first) bound are taken into account when completion is triggered on a generic
  * return value.
@@ -45,7 +43,7 @@ public class Bug404751Test {
 
     @Parameters(name = "{index}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("Object", null, null));
         scenarios.add(scenario("Number", null, "Number"));

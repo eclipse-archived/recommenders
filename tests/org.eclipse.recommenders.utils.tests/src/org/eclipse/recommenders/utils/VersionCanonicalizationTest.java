@@ -20,8 +20,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class VersionCanonicalizationTest {
 
@@ -35,7 +33,7 @@ public class VersionCanonicalizationTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
         scenarios.add(new Object[] { "2.3.0", "2.3.0" });
         scenarios.add(new Object[] { "2.3.0", "2.3" });
         scenarios.add(new Object[] { "2.0.0", "2" });
@@ -58,5 +56,4 @@ public class VersionCanonicalizationTest {
     public void testCanonicalVersionWorksCorrect() {
         assertEquals(expected, Versions.canonicalizeVersion(input));
     }
-
 }

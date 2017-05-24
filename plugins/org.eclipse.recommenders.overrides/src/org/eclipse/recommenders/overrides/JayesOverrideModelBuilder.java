@@ -13,6 +13,7 @@ package org.eclipse.recommenders.overrides;
 import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -92,7 +93,7 @@ public class JayesOverrideModelBuilder {
 
     private void createMethodNodes() {
         final Set<IMethodName> methods = collectInvokedMethodsFromPatterns();
-        methodNodes = Lists.newLinkedList();
+        methodNodes = new LinkedList<>();
         for (final IMethodName ref : methods) {
             final BayesNode methodNode = network.createNode(ref.getIdentifier());
             methodNode.setParents(Lists.newArrayList(patternNode));

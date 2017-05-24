@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Status;
@@ -26,7 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public final class SelectRepositoryDialog {
 
@@ -94,7 +94,7 @@ public final class SelectRepositoryDialog {
     private static List<SnippetRepositoryConfiguration> filterImportSupportingConfigurations(Repositories repos,
             SnippetRepositoryConfigurations configs) {
 
-        List<SnippetRepositoryConfiguration> filteredConfigurations = Lists.newArrayList();
+        List<SnippetRepositoryConfiguration> filteredConfigurations = new ArrayList<>();
         for (SnippetRepositoryConfiguration config : configs.getRepos()) {
             if (isImportSupported(config, repos)) {
                 filteredConfigurations.add(config);

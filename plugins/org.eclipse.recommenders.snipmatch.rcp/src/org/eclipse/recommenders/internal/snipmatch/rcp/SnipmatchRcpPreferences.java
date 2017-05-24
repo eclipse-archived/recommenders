@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -33,7 +34,7 @@ public class SnipmatchRcpPreferences {
 
     private static final String SEPARATOR = ";"; //$NON-NLS-1$
     private final EventBus bus;
-    private Set<String> disabledRepositories = Sets.newHashSet();
+    private Set<String> disabledRepositories = new HashSet<>();
 
     @Inject
     public SnipmatchRcpPreferences(EventBus bus) {
@@ -62,7 +63,7 @@ public class SnipmatchRcpPreferences {
     }
 
     public void setRepositoryEnabled(SnippetRepositoryConfiguration config, boolean enabled) {
-        Set<String> temp = Sets.newHashSet(disabledRepositories);
+        Set<String> temp = new HashSet<>(disabledRepositories);
         if (enabled) {
             temp.remove(config.getId());
         } else {

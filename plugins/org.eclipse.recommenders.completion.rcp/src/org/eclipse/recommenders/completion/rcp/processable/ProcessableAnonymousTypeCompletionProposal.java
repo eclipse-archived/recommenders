@@ -20,6 +20,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
@@ -39,7 +40,6 @@ import org.eclipse.swt.graphics.Image;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCompletionProposal
@@ -48,7 +48,7 @@ public class ProcessableAnonymousTypeCompletionProposal extends AnonymousTypeCom
     private static final Field F_SUPER_TYPE = Reflections
             .getDeclaredField(true, AnonymousTypeCompletionProposal.class, "fSuperType").orNull(); //$NON-NLS-1$
 
-    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
     private ProposalProcessorManager mgr;

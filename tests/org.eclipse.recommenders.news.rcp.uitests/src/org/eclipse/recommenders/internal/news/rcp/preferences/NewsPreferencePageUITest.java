@@ -9,7 +9,6 @@
  */
 package org.eclipse.recommenders.internal.news.rcp.preferences;
 
-import static com.google.common.base.Objects.firstNonNull;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -34,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class NewsPreferencePageUITest {

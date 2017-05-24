@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +34,6 @@ import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -45,7 +45,7 @@ public class ManualProjectCoordinateAdvisor implements IProjectCoordinateAdvisor
     private final File persistenceFile;
     private final Gson gson;
 
-    private Map<DependencyInfo, ProjectCoordinate> manualMappings = Maps.newHashMap();
+    private Map<DependencyInfo, ProjectCoordinate> manualMappings = new HashMap<>();
 
     @SuppressWarnings("serial")
     private static final Type MANUAL_MAPPINGS_TYPE_TOKEN = new TypeToken<Map<DependencyInfo, ProjectCoordinate>>() {

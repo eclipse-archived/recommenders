@@ -12,8 +12,6 @@
  */
 package org.eclipse.recommenders.testing.jdt;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.testing.jdt.AstUtils.*;
 import static org.eclipse.recommenders.utils.Checks.*;
@@ -24,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -84,7 +83,7 @@ public class JavaProjectFixture {
 
     public static List<String> findInnerClassNames(final CharSequence source) {
         String declaringType = findClassName(source);
-        List<String> names = newArrayList();
+        List<String> names = new ArrayList<>();
 
         Pattern p = Pattern.compile("(class|interface|enum)\\s+" + JAVA_IDENTIFIER_REGEX, Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
@@ -100,7 +99,7 @@ public class JavaProjectFixture {
     public static List<String> findAnonymousClassNames(final CharSequence source) {
         String declaringType = findClassName(source);
         int num = 1;
-        List<String> names = newArrayList();
+        List<String> names = new ArrayList<>();
 
         // new <name> ( ... ) {
         Pattern p = Pattern.compile("new\\s*?" + JAVA_IDENTIFIER_REGEX + "\\s*?\\([^)]*?\\)\\s*?\\{", Pattern.DOTALL);
@@ -177,7 +176,7 @@ public class JavaProjectFixture {
             }
 
             private void configureProjectClasspath() throws JavaModelException {
-                final Set<IClasspathEntry> entries = newHashSet();
+                final Set<IClasspathEntry> entries = new HashSet<>();
                 final IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
                 final IClasspathEntry defaultJREContainerEntry = JavaRuntime.getDefaultJREContainerEntry();
                 entries.addAll(asList(rawClasspath));

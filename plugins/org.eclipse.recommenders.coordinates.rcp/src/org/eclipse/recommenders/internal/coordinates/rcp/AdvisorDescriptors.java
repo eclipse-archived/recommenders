@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.coordinates.rcp;
 
 import static java.lang.Boolean.TRUE;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -22,7 +23,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 
 public final class AdvisorDescriptors {
 
@@ -51,7 +51,7 @@ public final class AdvisorDescriptors {
             }
         });
 
-        final List<AdvisorDescriptor> descriptors = Lists.newLinkedList();
+        final List<AdvisorDescriptor> descriptors = new ArrayList<>(elements.length);
         for (final IConfigurationElement element : elements) {
             boolean enabled = Boolean.valueOf(Objects.firstNonNull(element.getAttribute(ENABLED_BY_DEFAULT_ATTRIBUTE),
                     TRUE.toString()));
@@ -67,7 +67,7 @@ public final class AdvisorDescriptors {
      * string are appended to the result.
      */
     public static List<AdvisorDescriptor> load(String string, List<AdvisorDescriptor> available) {
-        List<AdvisorDescriptor> result = Lists.newArrayList();
+        List<AdvisorDescriptor> result = new ArrayList<>();
         for (String id : StringUtils.split(string, SEPARATOR)) {
             final boolean enabled;
             if (id.charAt(0) == DISABLED_FLAG) {

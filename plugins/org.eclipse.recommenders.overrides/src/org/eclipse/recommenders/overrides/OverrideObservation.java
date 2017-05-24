@@ -11,17 +11,16 @@
 package org.eclipse.recommenders.overrides;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.recommenders.utils.names.IMethodName;
-
-import com.google.common.collect.Sets;
 
 public class OverrideObservation {
 
     public int frequency;
 
-    public Set<IMethodName> overriddenMethods = Sets.newTreeSet();
+    public Set<IMethodName> overriddenMethods = new TreeSet<>();
 
     @Override
     public String toString() {

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -20,8 +21,6 @@ import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
-
-import com.google.common.collect.Lists;
 
 public final class WizardDescriptors {
 
@@ -34,7 +33,7 @@ public final class WizardDescriptors {
     }
 
     public static List<WizardDescriptor> loadAvailableWizards() {
-        List<WizardDescriptor> wizardDescriptors = Lists.newArrayList();
+        List<WizardDescriptor> wizardDescriptors = new ArrayList<>();
         try {
             final IConfigurationElement[] elements = Platform.getExtensionRegistry()
                     .getConfigurationElementsFor(EXT_ID_CONFIGURATION_WIZARDS);
@@ -54,7 +53,7 @@ public final class WizardDescriptors {
 
     public static List<WizardDescriptor> filterApplicableWizardDescriptors(List<WizardDescriptor> descriptors,
             SnippetRepositoryConfiguration config) {
-        List<WizardDescriptor> wizardDescriptors = Lists.newArrayList();
+        List<WizardDescriptor> wizardDescriptors = new ArrayList<>();
         for (WizardDescriptor descriptor : descriptors) {
             if (descriptor.getWizard().isApplicable(config)) {
                 wizardDescriptors.add(descriptor);

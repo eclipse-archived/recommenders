@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.testing.jdt;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -18,8 +19,6 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.recommenders.utils.Pair;
-
-import com.google.common.collect.Sets;
 
 public class AstUtils {
 
@@ -38,7 +37,7 @@ public class AstUtils {
     }
 
     public static Pair<CompilationUnit, Set<Integer>> createAstWithMarkers(final String content) {
-        final Set<Integer> markers = Sets.newTreeSet();
+        final Set<Integer> markers = new TreeSet<>();
 
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);

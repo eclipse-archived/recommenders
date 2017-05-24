@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElement
 import static org.eclipse.recommenders.tests.apidocs.JavaSelectionTestUtils.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -29,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @SuppressWarnings({ "deprecation" })
 public class SubscriptionManagerTest {
@@ -47,7 +47,7 @@ public class SubscriptionManagerTest {
 
     @Before
     public void setup() {
-        providers = Lists.newArrayList();
+        providers = new ArrayList<>();
         verifier = new SubscriptionVerifier();
     }
 

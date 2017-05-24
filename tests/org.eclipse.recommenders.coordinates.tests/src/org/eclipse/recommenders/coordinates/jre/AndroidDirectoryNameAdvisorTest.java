@@ -28,7 +28,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class AndroidDirectoryNameAdvisorTest {
@@ -45,7 +44,7 @@ public class AndroidDirectoryNameAdvisorTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("Standard path, earliest SDK: Android 1.0",
                 jar(dir("home", "example", "android-sdks", "platforms", "android-1"), "android.jar"),

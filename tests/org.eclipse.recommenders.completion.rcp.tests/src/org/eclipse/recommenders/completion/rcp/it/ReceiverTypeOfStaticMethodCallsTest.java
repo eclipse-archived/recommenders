@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 /**
  * Test that receiver types of static method calls are handled correctly.
  */
@@ -35,7 +33,7 @@ public class ReceiverTypeOfStaticMethodCallsTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("System"));
         scenarios.add(scenario("Class")); // <T>

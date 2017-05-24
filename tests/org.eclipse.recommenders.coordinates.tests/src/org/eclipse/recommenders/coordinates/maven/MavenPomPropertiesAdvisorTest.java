@@ -33,7 +33,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class MavenPomPropertiesAdvisorTest {
@@ -60,7 +59,7 @@ public class MavenPomPropertiesAdvisorTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("Valid pom.properties, correct directory structure", EXAMPLE_JAR,
                 of("META-INF/maven/org.example/example/pom.properties", ORG_EXAMPLE_PROPS), COORDINATE));

@@ -23,8 +23,10 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import static org.eclipse.recommenders.utils.Reflections.getDeclaredField;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,8 +92,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 public final class CompletionContextFunctions {
@@ -230,7 +230,7 @@ public final class CompletionContextFunctions {
             } else {
                 signatures = core.getExpectedTypesSignatures();
             }
-            Set<ITypeName> res = Sets.newHashSet();
+            Set<ITypeName> res = new HashSet<>();
             for (char[] signature : Objects.firstNonNull(signatures, NO_CHAR_CHAR)) {
                 IJavaElement enclosing = context.getEnclosingElement().orNull();
                 ITypeName resolved = resolveType(signature, enclosing).orNull();
@@ -457,7 +457,7 @@ public final class CompletionContextFunctions {
                 return Collections.emptyList();
             }
             final ObjectVector v = ctx.getVisibleMethods();
-            final List<IMethod> res = Lists.newArrayListWithCapacity(v.size);
+            final List<IMethod> res = new ArrayList<>(v.size);
             for (int i = v.size(); i-- > 0;) {
                 final MethodBinding b = cast(v.elementAt(i));
                 final Optional<IMethod> f = JdtUtils.createUnresolvedMethod(b);
@@ -479,7 +479,7 @@ public final class CompletionContextFunctions {
                 return Collections.emptyList();
             }
             final ObjectVector v = ctx.getVisibleFields();
-            final List<IField> res = Lists.newArrayListWithCapacity(v.size);
+            final List<IField> res = new ArrayList<>(v.size);
             for (int i = v.size(); i-- > 0;) {
                 final FieldBinding b = cast(v.elementAt(i));
                 final Optional<IField> f = JdtUtils.createUnresolvedField(b);
@@ -502,7 +502,7 @@ public final class CompletionContextFunctions {
                 return Collections.emptyList();
             }
             final ObjectVector v = ctx.getVisibleLocalVariables();
-            final List<ILocalVariable> res = Lists.newArrayListWithCapacity(v.size);
+            final List<ILocalVariable> res = new ArrayList<>(v.size);
             for (int i = v.size(); i-- > 0;) {
                 final LocalVariableBinding b = cast(v.elementAt(i));
                 final JavaElement parent = (JavaElement) context.getEnclosingElement().get();
@@ -600,7 +600,7 @@ public final class CompletionContextFunctions {
         public Set<IPackageName> compute(IRecommendersCompletionContext context,
                 CompletionContextKey<Set<IPackageName>> key) {
             Optional<CompilationUnit> ast = context.getAST();
-            Set<IPackageName> res = Sets.newHashSet();
+            Set<IPackageName> res = new HashSet<>();
             List<ImportDeclaration> imports = null;
             if (ast.isPresent()) {
                 imports = ast.get().imports();

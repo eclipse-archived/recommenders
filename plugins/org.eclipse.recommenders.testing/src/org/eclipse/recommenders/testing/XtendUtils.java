@@ -15,8 +15,6 @@ import java.util.List;
 
 import org.eclipse.xtext.xbase.lib.Pair;
 
-import com.google.common.collect.Lists;
-
 public final class XtendUtils {
 
     private XtendUtils() {
@@ -24,7 +22,7 @@ public final class XtendUtils {
     }
 
     public static <K> List<K> newListWithFrequency(final Pair<K, Integer>... initial) {
-        final ArrayList<K> result = Lists.newArrayList();
+        final ArrayList<K> result = new ArrayList<>();
         for (final Pair<K, Integer> p : initial) {
             for (int i = p.getValue(); i-- > 0;) {
                 result.add(p.getKey());

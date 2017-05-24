@@ -10,17 +10,16 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.swt.graphics.Image;
 
-import com.google.common.collect.Maps;
-
 public class OverlayImageProposalProcessor extends ProposalProcessor {
 
-    private final Map<Image, Image> cache = Maps.newHashMap();
+    private final Map<Image, Image> cache = new HashMap<>();
     private final ImageDescriptor overlay;
     private final int decorationCorner;
 

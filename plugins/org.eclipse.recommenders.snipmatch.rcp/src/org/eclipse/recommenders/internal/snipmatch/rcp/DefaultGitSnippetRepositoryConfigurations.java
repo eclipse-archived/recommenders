@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,14 +24,11 @@ import org.eclipse.recommenders.snipmatch.rcp.model.EclipseGitSnippetRepositoryC
 import org.eclipse.recommenders.snipmatch.rcp.model.SnipmatchRcpModelFactory;
 import org.eclipse.recommenders.utils.Logs;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 public class DefaultGitSnippetRepositoryConfigurations {
 
     public static List<EclipseGitSnippetRepositoryConfiguration> fetchDefaultConfigurations() {
-        List<EclipseGitSnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
-        Set<String> addedUrls = Sets.newHashSet();
+        List<EclipseGitSnippetRepositoryConfiguration> defaultConfigurations = new ArrayList<>();
+        Set<String> addedUrls = new HashSet<>();
 
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 EXT_POINT_DEFAULT_GIT_SNIPPET_REPOSITORY_CONFIGURATIONS);

@@ -28,7 +28,6 @@ import org.eclipse.recommenders.internal.models.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.utils.Logs;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;

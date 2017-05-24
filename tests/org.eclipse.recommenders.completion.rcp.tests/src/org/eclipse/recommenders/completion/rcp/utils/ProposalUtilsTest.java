@@ -21,8 +21,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class ProposalUtilsTest {
 
@@ -83,7 +81,7 @@ public class ProposalUtilsTest {
 
     @Parameters(name = "{index}: {1}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         // @formatter:off
         scenarios.add(scenario("Method with no parameters",

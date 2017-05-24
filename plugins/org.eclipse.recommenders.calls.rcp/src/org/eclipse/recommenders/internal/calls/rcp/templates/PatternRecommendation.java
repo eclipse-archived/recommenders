@@ -10,12 +10,13 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp.templates;
 
+import java.util.Objects;
+
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -58,7 +59,7 @@ public class PatternRecommendation extends Recommendation<ImmutableSet<IMethodNa
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(type, getProposal());
+        return Objects.hash(type, getProposal());
     }
 
     @Override
@@ -69,7 +70,7 @@ public class PatternRecommendation extends Recommendation<ImmutableSet<IMethodNa
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("calls", getProposal()).add("prob", getRelevance()).add("type", type) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return com.google.common.base.Objects.toStringHelper(this).add("calls", getProposal()).add("prob", getRelevance()).add("type", type) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 .add("name", name).toString(); //$NON-NLS-1$
     }
 }

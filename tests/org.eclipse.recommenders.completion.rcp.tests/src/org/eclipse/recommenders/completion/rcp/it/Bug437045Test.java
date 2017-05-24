@@ -23,7 +23,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 /**
  * Test that Content Assist Favorites, i.e., static members that are always considered to be imported, are collected as
@@ -49,7 +48,7 @@ public class Bug437045Test {
 
     @Parameters(name = "{index}: favorites {2} => {1}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("sqrt", "java.lang.Math.sqrt"));
         scenarios.add(scenario("sqrt", "java.lang.Math.*"));

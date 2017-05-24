@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -52,7 +53,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 public class SnippetEditor extends FormEditor implements IResourceChangeListener {
@@ -102,7 +102,7 @@ public class SnippetEditor extends FormEditor implements IResourceChangeListener
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 Constants.EXT_POINT_PAGE_FACTORIES);
 
-        List<IFormPage> pages = Lists.newLinkedList();
+        List<IFormPage> pages = new LinkedList<>();
         for (final IConfigurationElement element : Ordering.natural()
                 .onResultOf(new Function<IConfigurationElement, Integer>() {
                     @Override

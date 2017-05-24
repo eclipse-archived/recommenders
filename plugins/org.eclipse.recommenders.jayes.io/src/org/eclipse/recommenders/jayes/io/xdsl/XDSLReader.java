@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io.xdsl;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.recommenders.jayes.io.xdsl.Constants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -123,11 +123,11 @@ public class XDSLReader implements IBayesNetReader {
 
             BayesNode bNode = net.getNode(getId(node.getParentNode()));
 
-            List<String> parentNames = newArrayList();
+            List<String> parentNames = new ArrayList<>();
             Iterables.addAll(parentNames,
                     Splitter.on(CharMatcher.WHITESPACE).omitEmptyStrings().split(node.getTextContent()));
 
-            List<BayesNode> parents = newArrayList();
+            List<BayesNode> parents = new ArrayList<>();
             for (String parentname : parentNames) {
                 parents.add(net.getNode(XMLUtil.unescape(parentname)));
             }
@@ -143,7 +143,7 @@ public class XDSLReader implements IBayesNetReader {
             BayesNode bNode = net.getNode(getId(node.getParentNode()));
 
             String table = node.getTextContent();
-            List<Double> probabilities = newArrayList();
+            List<Double> probabilities = new ArrayList<>();
 
             StringTokenizer tok = new StringTokenizer(table);
             while (tok.hasMoreTokens()) {

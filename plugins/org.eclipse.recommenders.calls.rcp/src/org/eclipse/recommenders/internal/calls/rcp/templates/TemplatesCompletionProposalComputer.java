@@ -20,6 +20,8 @@ import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,7 +80,6 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -191,7 +192,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
             if (model == null) {
                 return;
             }
-            model.setObservedCalls(Sets.<IMethodName>newHashSet());
+            model.setObservedCalls(new HashSet<IMethodName>());
             if (mode == CompletionMode.TYPE_NAME) {
                 handleTypeNameCompletionRequest(proposalBuilder);
             } else {
@@ -222,7 +223,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         for (Recommendation<String> p : callgroups) {
             String patternId = p.getProposal();
             model.setObservedPattern(patternId);
-            Collection<IMethodName> calls = Sets.newTreeSet();
+            Collection<IMethodName> calls = new TreeSet<>();
             for (Recommendation<IMethodName> r : top(model.recommendCalls(), 100, 0.1d)) {
                 calls.add(r.getProposal());
             }
@@ -274,23 +275,23 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private Collection<IMethodName> getCallsForDefinition(ICallModel model, IMethodName definition) {
         boolean constructorAdded = false;
 
-        TreeSet<IMethodName> calls = Sets.newTreeSet();
+        TreeSet<IMethodName> calls = new TreeSet<>();
         List<Recommendation<IMethodName>> rec = Recommendations.top(model.recommendCalls(), 100, 0.1d);
         if (rec.isEmpty()) {
-            return Lists.newLinkedList();
+            return new LinkedList<>();
         }
         if (requiresConstructor && definition.isInit()) {
             calls.add(definition);
             constructorAdded = true;
         }
         if (requiresConstructor && !constructorAdded) {
-            return Lists.newLinkedList();
+            return new LinkedList<>();
         }
         for (Recommendation<IMethodName> pair : rec) {
             calls.add(pair.getProposal());
         }
         if (!containsCallWithMethodPrefix(calls)) {
-            return Lists.newLinkedList();
+            return new LinkedList<>();
         }
         return calls;
     }
@@ -417,7 +418,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     public Set<IType> findTypesBySimpleName(char[] simpleTypeName) {
-        final Set<IType> result = Sets.newHashSet();
+        final Set<IType> result = new HashSet<>();
         try {
             final JavaProject project = (JavaProject) rCtx.getProject();
             SearchableEnvironment environment = project.newSearchableNameEnvironment(DefaultWorkingCopyOwner.PRIMARY);

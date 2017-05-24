@@ -7,6 +7,7 @@
  */
 package org.eclipse.recommenders.testing.rcp.completion.rules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,8 +16,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.rules.ExternalResource;
-
-import com.google.common.collect.Lists;
 
 /**
  * <p>Example of usage:</p>
@@ -75,7 +74,7 @@ public class TemporaryWorkspace extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         this.workspace = ResourcesPlugin.getWorkspace();
-        this.tempProjects = Lists.newArrayList();
+        this.tempProjects = new ArrayList<>();
     }
 
     @Override

@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,6 @@ import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurati
 import org.eclipse.recommenders.utils.Logs;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public final class RepositoryConfigurations {
 
@@ -90,7 +90,7 @@ public final class RepositoryConfigurations {
     }
 
     protected static List<SnippetRepositoryConfiguration> fetchDefaultConfigurations() {
-        List<SnippetRepositoryConfiguration> defaultConfigurations = Lists.newArrayList();
+        List<SnippetRepositoryConfiguration> defaultConfigurations = new ArrayList<>();
 
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 EXT_POINT_REGISTERED_EMF_PACKAGE);
@@ -129,7 +129,7 @@ public final class RepositoryConfigurations {
     }
 
     private static List<EClass> searchSubtypes(EPackage ePackage, EClass eClass) {
-        List<EClass> subTypes = Lists.newArrayList();
+        List<EClass> subTypes = new ArrayList<>();
         for (EClassifier eClassifier : ePackage.getEClassifiers()) {
             if (eClassifier instanceof EClass) {
                 EClass otherEClass = (EClass) eClassifier;

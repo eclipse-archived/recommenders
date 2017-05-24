@@ -11,6 +11,7 @@
  */
 package org.eclipse.recommenders.models.rcp.actions;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,6 @@ import org.eclipse.recommenders.internal.models.rcp.EclipseModelRepository;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 public class TriggerModelDownloadForProjectCoordinatesAction extends TriggerModelDownloadForModelCoordinatesAction {
@@ -28,7 +28,7 @@ public class TriggerModelDownloadForProjectCoordinatesAction extends TriggerMode
 
     private IModelIndex modelIndex;
 
-    private Set<ProjectCoordinate> pcs = Sets.newHashSet();
+    private Set<ProjectCoordinate> pcs = new HashSet<>();
 
     TriggerModelDownloadForProjectCoordinatesAction(String text, List<String> modelClassifier, IModelIndex modelIndex, EclipseModelRepository repo,
             EventBus bus) {
@@ -49,7 +49,7 @@ public class TriggerModelDownloadForProjectCoordinatesAction extends TriggerMode
     }
 
     public void triggerDownloadForProjectCoordinates(Set<ProjectCoordinate> pcs) {
-        Set<ModelCoordinate> mcs = Sets.newHashSet();
+        Set<ModelCoordinate> mcs = new HashSet<>();
         for (ProjectCoordinate pc : pcs) {
             for (String modelType : modelTypes) {
                 ModelCoordinate mc = modelIndex.suggest(pc, modelType).orNull();

@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 /**
  * Test that the <em>special</em> proposals like {@link EnableCompletionProposal} do not cause a NullPointerException
  * when in the following situation:
@@ -39,7 +37,7 @@ public class Bug425994Test {
     public static Collection<Object[]> proposals() {
         SharedImages images = new SharedImages();
 
-        LinkedList<Object[]> proposals = Lists.newLinkedList();
+        LinkedList<Object[]> proposals = new LinkedList<>();
 
         proposals.add(new Object[] { new DiscoveryCompletionProposal(images) });
         proposals.add(new Object[] { new EmptyCompletionProposal(0) });

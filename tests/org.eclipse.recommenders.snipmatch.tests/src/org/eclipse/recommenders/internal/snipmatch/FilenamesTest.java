@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class FilenamesTest {
 
@@ -27,7 +25,7 @@ public class FilenamesTest {
 
     @Parameters(name = "{index}: {0}")
     public static Iterable<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("null filename", null));
         scenarios.add(scenario("No extension", "name", "name"));

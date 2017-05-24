@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.testing.jdt;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,11 +19,10 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 
-import com.google.common.collect.Lists;
-
 @SuppressWarnings("restriction")
 public final class SimpleCompletionRequestor extends CompletionRequestor {
-    public List<CompletionProposal> proposals = Lists.newLinkedList();
+
+    public List<CompletionProposal> proposals = new LinkedList<>();
     public InternalCompletionContext context;
 
     public SimpleCompletionRequestor() {

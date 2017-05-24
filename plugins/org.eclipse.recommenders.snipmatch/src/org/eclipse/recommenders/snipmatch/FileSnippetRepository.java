@@ -24,6 +24,9 @@ import java.nio.channels.OverlappingFileLockException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,7 +84,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class FileSnippetRepository implements ISnippetRepository {
@@ -160,7 +162,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     private Analyzer createAnalyzer() {
         StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35, EMPTY_STOPWORDS);
-        Map<String, Analyzer> analyzers = Maps.newHashMap();
+        Map<String, Analyzer> analyzers = new HashMap<>();
         analyzers.put(F_NAME, standardAnalyzer);
         analyzers.put(F_DESCRIPTION, standardAnalyzer);
         analyzers.put(F_EXTRA_SEARCH_TERM, standardAnalyzer);
@@ -319,7 +321,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            List<Recommendation<ISnippet>> results = Lists.newLinkedList();
+            List<Recommendation<ISnippet>> results = new LinkedList<>();
 
             try {
                 Map<File, Float> snippetFiles = searchSnippetFiles(context, maxResults);
@@ -338,7 +340,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private Map<File, Float> searchSnippetFiles(ISearchContext context, int maxResults) {
-        Map<File, Float> results = Maps.newLinkedHashMap();
+        Map<File, Float> results = new LinkedHashMap<>();
         IndexSearcher searcher = null;
         try {
             BooleanQuery query = new BooleanQuery();

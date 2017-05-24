@@ -11,12 +11,12 @@
 package org.eclipse.recommenders.internal.apidocs.rcp;
 
 import static com.google.common.base.Optional.*;
-import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Pair.newPair;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,7 +63,7 @@ public class SubscriptionManager {
 
     private Set<Pair<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ApidocProvider provider) {
 
-        final Set<Pair<Method, JavaSelectionSubscriber>> methods = newLinkedHashSet();
+        final Set<Pair<Method, JavaSelectionSubscriber>> methods = new LinkedHashSet<>();
 
         final Class<?> clazz = provider.getClass();
         for (final Method m : clazz.getMethods()) {

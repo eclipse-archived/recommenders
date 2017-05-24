@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionContext;
@@ -24,8 +25,6 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.Constants;
-
-import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public class NoProposalCollectingCompletionRequestor extends CompletionRequestor {
@@ -76,6 +75,6 @@ public class NoProposalCollectingCompletionRequestor extends CompletionRequestor
     }
 
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals() {
-        return Maps.newHashMap();
+        return new HashMap<>();
     }
 }

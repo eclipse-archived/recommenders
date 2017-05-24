@@ -22,11 +22,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 
@@ -73,9 +76,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.ui.IEditorPart;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class SubwordsSessionProcessor extends SessionProcessor {
@@ -153,7 +154,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             int length = prefix.length();
             recContext.set(CompletionContextKey.COMPLETION_PREFIX, prefix);
 
-            Map<IJavaCompletionProposal, CompletionProposal> baseProposals = Maps.newHashMap();
+            Map<IJavaCompletionProposal, CompletionProposal> baseProposals = new HashMap<>();
 
             recContext.set(JAVA_PROPOSALS, baseProposals);
 
@@ -162,7 +163,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             SortedSet<Integer> triggerlocations = computeTriggerLocations(offset, completionNode, completionNodeParent,
                     length);
 
-            Set<String> sortkeys = Sets.newHashSet();
+            Set<String> sortkeys = new HashSet<>();
             for (int trigger : triggerlocations) {
                 Map<IJavaCompletionProposal, CompletionProposal> newProposals = getNewProposals(jdtContext, trigger);
                 testAndInsertNewProposals(recContext, baseProposals, sortkeys, newProposals);
@@ -188,7 +189,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         // assigned a base relevance that is as close as possible to that the JDT would assign without subwords
         // completion enabled.
         // TODO MB Need an example.
-        SortedSet<Integer> triggerlocations = Sets.newTreeSet(Ordering.natural().reverse());
+        SortedSet<Integer> triggerlocations = new TreeSet<>(Ordering.natural().reverse());
         int emptyPrefix = offset - length;
 
         // to make sure we get method stub creation proposals like exe --> private void exe()
@@ -216,7 +217,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             JavaContentAssistInvocationContext originalContext, int triggerOffset) {
         if (triggerOffset < 0) {
             // XXX not sure when this happens but is has happened in the past
-            return Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
+            return new HashMap<>();
         }
         ICompilationUnit cu = originalContext.getCompilationUnit();
         ITextViewer viewer = originalContext.getViewer();
@@ -226,7 +227,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
         setCompilationUnit(newJdtContext, cu);
         ProposalCollectingCompletionRequestor collector = computeProposals(cu, newJdtContext, triggerOffset);
         Map<IJavaCompletionProposal, CompletionProposal> proposals = collector.getProposals();
-        return proposals != null ? proposals : Maps.<IJavaCompletionProposal, CompletionProposal>newHashMap();
+        return proposals != null ? proposals : new HashMap<IJavaCompletionProposal, CompletionProposal>();
     }
 
     private void setCompilationUnit(JavaContentAssistInvocationContext newJdtContext, ICompilationUnit cu) {

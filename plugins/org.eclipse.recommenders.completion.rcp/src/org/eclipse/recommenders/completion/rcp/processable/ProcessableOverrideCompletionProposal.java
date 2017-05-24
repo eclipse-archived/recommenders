@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
@@ -31,13 +32,12 @@ import org.eclipse.swt.graphics.Image;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableOverrideCompletionProposal
         extends org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal implements IProcessableProposal {
 
-    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
     private ProposalProcessorManager mgr;

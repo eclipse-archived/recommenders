@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.recommenders.coordinates.DependencyInfo;
@@ -29,7 +30,6 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public class MappingProviderTest {
 
@@ -89,7 +89,7 @@ public class MappingProviderTest {
 
     @Test
     public void testSetStrategiesSetStrategiesCorrect() {
-        List<IProjectCoordinateAdvisor> strategies = Lists.newArrayList();
+        List<IProjectCoordinateAdvisor> strategies = new ArrayList<>();
         strategies.add(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
         strategies.add(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
         sut.setAdvisors(strategies);

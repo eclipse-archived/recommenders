@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.coordinates.rcp;
 import static java.lang.Math.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -36,8 +37,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-
-import com.google.common.collect.Lists;
 
 public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -177,7 +176,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
 
         private void load(String value) {
             List<AdvisorDescriptor> input = AdvisorDescriptors.load(value, AdvisorDescriptors.getRegisteredAdvisors());
-            List<AdvisorDescriptor> checkedElements = Lists.newArrayList();
+            List<AdvisorDescriptor> checkedElements = new ArrayList<>();
             for (AdvisorDescriptor descriptor : input) {
                 if (descriptor.isEnabled()) {
                     checkedElements.add(descriptor);

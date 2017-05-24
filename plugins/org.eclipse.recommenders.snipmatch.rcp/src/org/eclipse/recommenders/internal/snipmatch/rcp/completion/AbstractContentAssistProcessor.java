@@ -13,8 +13,10 @@ package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 import static org.eclipse.recommenders.internal.snipmatch.rcp.Constants.SNIPMATCH_CONTEXT_ID;
 import static org.eclipse.recommenders.utils.Logs.log;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -56,8 +58,6 @@ import org.eclipse.swt.graphics.Point;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvocationContext>
         implements IContentAssistProcessor {
@@ -119,9 +119,9 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
 
         SearchContext searchContext = new SearchContext(terms, getLocation(), filename, projectCoordinates);
 
-        LinkedList<ICompletionProposal> proposals = Lists.newLinkedList();
+        LinkedList<ICompletionProposal> proposals = new LinkedList<>();
 
-        List<SnippetRepositoryConfiguration> sortedConfigs = Lists.newArrayList();
+        List<SnippetRepositoryConfiguration> sortedConfigs = new ArrayList<>();
         sortedConfigs.addAll(configs.getRepos());
 
         Collections.sort(sortedConfigs, new Comparator<SnippetRepositoryConfiguration>() {
@@ -225,7 +225,7 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
 
     private static Set<ProjectCoordinate> tryResolve(IProjectCoordinateProvider pcProvider,
             Set<DependencyInfo> dependencyInfos) {
-        Set<ProjectCoordinate> result = Sets.newHashSet();
+        Set<ProjectCoordinate> result = new HashSet<>();
 
         for (DependencyInfo dependencyInfo : dependencyInfos) {
             ProjectCoordinate pc = pcProvider.tryResolve(dependencyInfo).or(null);

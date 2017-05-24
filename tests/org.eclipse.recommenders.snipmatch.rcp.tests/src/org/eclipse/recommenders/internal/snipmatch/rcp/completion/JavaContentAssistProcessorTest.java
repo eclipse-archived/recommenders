@@ -47,7 +47,6 @@ import org.junit.Test;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
 public class JavaContentAssistProcessorTest {
 
@@ -242,7 +241,7 @@ public class JavaContentAssistProcessorTest {
 
     private ISnippetRepository mockRepository(String name, int priority, String searchTerm, Location location,
             Set<ProjectCoordinate> dependencies, String... snippetNames) {
-        ArrayList<Recommendation<ISnippet>> recommendations = Lists.newArrayList();
+        ArrayList<Recommendation<ISnippet>> recommendations = new ArrayList<>();
         for (String snippetName : snippetNames) {
             recommendations.add(createRecommendation(snippetName));
         }

@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.coordinates.DependencyInfo.PROJECT_NAME;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
@@ -32,7 +33,6 @@ import org.eclipse.recommenders.coordinates.DependencyType;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 public final class DependencyInfos {
 
@@ -49,7 +49,7 @@ public final class DependencyInfos {
                 return absent();
             }
             File javaHome = vmInstall.getInstallLocation();
-            Map<String, String> hints = Maps.newHashMap();
+            Map<String, String> hints = new HashMap<>();
             if (executionEnvironmentId.isPresent()) {
                 hints.put(DependencyInfo.EXECUTION_ENVIRONMENT, executionEnvironmentId.get());
             }

@@ -21,6 +21,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -57,8 +58,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
@@ -151,7 +150,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     }
 
     private synchronized void removeDelegate(Pair<File, IModelIndex> delegate) {
-        HashMap<String, Pair<File, IModelIndex>> delegates = Maps.newHashMap(openDelegates);
+        HashMap<String, Pair<File, IModelIndex>> delegates = new HashMap<>(openDelegates);
         delegates.values().remove(delegate);
         openDelegates = new ImmutableMap.Builder<String, Pair<File, IModelIndex>>().putAll(delegates).build();
     }
@@ -244,7 +243,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
             log(INFO_SERVICE_NOT_RUNNING);
             return ImmutableSet.of();
         }
-        Set<ModelCoordinate> candidates = Sets.newHashSet();
+        Set<ModelCoordinate> candidates = new HashSet<>();
         for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
             candidates.addAll(addRepositoryUrlHint(index.suggestCandidates(pc, modelType), entry.getKey()));
@@ -259,7 +258,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
             log(INFO_SERVICE_NOT_RUNNING);
             return ImmutableSet.of();
         }
-        Set<ModelCoordinate> models = Sets.newHashSet();
+        Set<ModelCoordinate> models = new HashSet<>();
         for (Entry<String, Pair<File, IModelIndex>> entry : openDelegates.entrySet()) {
             IModelIndex index = entry.getValue().getSecond();
             models.addAll(addRepositoryUrlHint(index.getKnownModels(modelType), entry.getKey()));
@@ -368,7 +367,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     }
 
     public static Set<ModelCoordinate> addRepositoryUrlHint(Set<ModelCoordinate> modelCoordinates, String url) {
-        Set<ModelCoordinate> modelCoordinatesWithUrlHint = Sets.newHashSet();
+        Set<ModelCoordinate> modelCoordinatesWithUrlHint = new HashSet<>();
         for (ModelCoordinate modelCoordinate : modelCoordinates) {
             modelCoordinatesWithUrlHint.add(createCopyWithRepositoryUrlHint(modelCoordinate, url));
         }
@@ -376,7 +375,7 @@ public class EclipseModelIndex extends AbstractIdleService implements IModelInde
     }
 
     private static ModelCoordinate createCopyWithRepositoryUrlHint(ModelCoordinate mc, String url) {
-        Map<String, String> hints = Maps.newHashMap(mc.getHints());
+        Map<String, String> hints = new HashMap<>(mc.getHints());
         hints.put(ModelCoordinate.HINT_REPOSITORY_URL, url);
         ModelCoordinate copy = new ModelCoordinate(mc.getGroupId(), mc.getArtifactId(), mc.getClassifier(),
                 mc.getExtension(), mc.getVersion(), hints);
