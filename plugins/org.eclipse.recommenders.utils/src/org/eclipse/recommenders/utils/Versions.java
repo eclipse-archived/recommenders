@@ -12,7 +12,8 @@
 package org.eclipse.recommenders.utils;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,16 +32,15 @@ public final class Versions {
 
     public static Version findClosest(final Version startingPoint, Collection<Version> candidates) {
 
-        Collection<Version> closestCandidates = closestCandidates(candidates, new MajorDistance(startingPoint));
+        Set<Version> closestCandidates = closestCandidates(candidates, new MajorDistance(startingPoint));
         closestCandidates = closestCandidates(closestCandidates, new MinorDistance(startingPoint));
         closestCandidates = closestCandidates(closestCandidates, new PatchDistance(startingPoint));
 
         return Iterables.getOnlyElement(closestCandidates);
     }
 
-    private static Collection<Version> closestCandidates(Collection<Version> candidates,
-            Function<Version, Integer> metric) {
-        Collection<Version> closestCandidatesByMajorVersion = new LinkedList<>();
+    private static Set<Version> closestCandidates(Collection<Version> candidates, Function<Version, Integer> metric) {
+        Set<Version> closestCandidatesByMajorVersion = new HashSet<>();
         int closestDistance = Integer.MAX_VALUE;
         for (Version candidate : candidates) {
             int distance = metric.apply(candidate);
