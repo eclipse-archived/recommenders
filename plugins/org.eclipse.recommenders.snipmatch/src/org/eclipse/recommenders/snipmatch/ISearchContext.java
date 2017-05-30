@@ -20,6 +20,8 @@ public interface ISearchContext {
 
     Location getLocation();
 
+    boolean isRestrictedByFilename();
+
     String getFilename();
 
     boolean isRestrictedByDependencies();

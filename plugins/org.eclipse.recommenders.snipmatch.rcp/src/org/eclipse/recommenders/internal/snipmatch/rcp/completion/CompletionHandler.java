@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp.completion;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -33,6 +34,7 @@ import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -87,6 +89,13 @@ public class CompletionHandler extends AbstractHandler {
         if (persistable instanceof IPathEditorInput) {
             IPathEditorInput editorInput = (IPathEditorInput) persistable;
             filename = editorInput.getPath().toFile().getName();
+        } else if (persistable instanceof FileStoreEditorInput) {
+            FileStoreEditorInput editorInput = (FileStoreEditorInput) persistable;
+            try {
+                filename = new File(editorInput.getURI()).getName();
+            } catch (IllegalArgumentException e) {
+                // Not a file, ignore
+            }
         }
 
         SnipmatchCompletionEngine<? extends ContentAssistInvocationContext> engine;

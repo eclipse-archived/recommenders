@@ -73,8 +73,8 @@ import org.eclipse.recommenders.rcp.SharedImages.Images;
 import org.eclipse.recommenders.rcp.utils.Jobs;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
-import org.eclipse.recommenders.snipmatch.SearchContext;
 import org.eclipse.recommenders.snipmatch.Snippet;
+import org.eclipse.recommenders.snipmatch.UnrestrictedSearchContext;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.ISnippetRepositoryWizard;
 import org.eclipse.recommenders.snipmatch.rcp.SnippetEditor;
@@ -953,7 +953,8 @@ public class SnippetsView extends ViewPart implements IRcpService {
                         continue;
                     }
                     Set<KnownSnippet> knownSnippets = new HashSet<>();
-                    for (Recommendation<ISnippet> recommendation : repo.search(new SearchContext(searchTerm.trim()))) {
+                    for (Recommendation<ISnippet> recommendation : repo
+                            .search(new UnrestrictedSearchContext(searchTerm.trim()))) {
                         if (monitor.isCanceled()) {
                             return snippetsGroupedByRepositoryName;
                         }

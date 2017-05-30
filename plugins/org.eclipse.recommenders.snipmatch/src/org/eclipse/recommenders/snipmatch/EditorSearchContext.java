@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.snipmatch;
 
 import static java.util.Objects.requireNonNull;
-import static org.eclipse.recommenders.snipmatch.Location.NONE;
 
 import java.util.Set;
 
@@ -19,26 +18,19 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
-public class SearchContext implements ISearchContext {
+public class EditorSearchContext implements ISearchContext {
 
     private final String searchText;
     private final Location location;
     private final String filename;
     private final Set<ProjectCoordinate> availableDependencies;
 
-    public SearchContext(String searchText, Location location, String filename,
+    public EditorSearchContext(String searchText, Location location, String filename,
             Set<ProjectCoordinate> availableDependencies) {
         this.searchText = requireNonNull(searchText);
         this.location = requireNonNull(location);
-        this.filename = requireNonNull(filename);
-        this.availableDependencies = requireNonNull(availableDependencies);
-    }
-
-    public SearchContext(String searchText) {
-        this.searchText = requireNonNull(searchText);
-        this.location = NONE;
-        this.filename = null;
-        this.availableDependencies = null;
+        this.filename = filename;
+        this.availableDependencies = availableDependencies;
     }
 
     @Override
@@ -52,13 +44,18 @@ public class SearchContext implements ISearchContext {
     }
 
     @Override
+    public boolean isRestrictedByFilename() {
+        return filename != null;
+    }
+
+    @Override
     public String getFilename() {
         return filename;
     }
 
     @Override
     public boolean isRestrictedByDependencies() {
-        return availableDependencies != null;
+        return availableDependencies != null && !availableDependencies.isEmpty();
     }
 
     @Override

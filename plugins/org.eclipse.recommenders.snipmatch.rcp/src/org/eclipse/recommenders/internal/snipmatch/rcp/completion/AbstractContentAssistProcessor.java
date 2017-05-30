@@ -48,7 +48,7 @@ import org.eclipse.recommenders.rcp.SharedImages;
 import org.eclipse.recommenders.snipmatch.ISnippet;
 import org.eclipse.recommenders.snipmatch.ISnippetRepository;
 import org.eclipse.recommenders.snipmatch.Location;
-import org.eclipse.recommenders.snipmatch.SearchContext;
+import org.eclipse.recommenders.snipmatch.EditorSearchContext;
 import org.eclipse.recommenders.snipmatch.model.SnippetRepositoryConfiguration;
 import org.eclipse.recommenders.snipmatch.rcp.model.SnippetRepositoryConfigurations;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -117,7 +117,7 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
 
         Set<ProjectCoordinate> projectCoordinates = tryResolve(pcProvider, availableDependencies);
 
-        SearchContext searchContext = new SearchContext(terms, getLocation(), filename, projectCoordinates);
+        EditorSearchContext searchContext = new EditorSearchContext(terms, getLocation(), filename, projectCoordinates);
 
         LinkedList<ICompletionProposal> proposals = new LinkedList<>();
 
