@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="32">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Neon (4.6)" sequenceNumber="33">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -13,8 +13,8 @@
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.mylyn.tasks.ide.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable build for Neon.3 -->
-<repository location="http://download.eclipse.org/releases/neon/201703231000/"/>
+<!-- Stable build for Neon.3 respin -->
+<repository location="http://download.eclipse.org/releases/neon/201705151400/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
@@ -36,7 +36,7 @@
 <unit id="com.google.inject.multibindings" version="3.0.0.v201605172100"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5969 -->
 <unit id="javax.inject" version="1.0.0.v20091030"/>
-<!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7437 -->
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
@@ -44,7 +44,7 @@
 <unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
 <unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
-<!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
 <unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4759 -->
 <unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
