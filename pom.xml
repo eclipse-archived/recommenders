@@ -4,7 +4,7 @@
 
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders</artifactId>
-	<version>2.4.9</version>
+	<version>2.4.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -59,7 +59,7 @@
 	</distributionManagement>
 
 	<properties>
-		<recommendersVersion>2.4.9</recommendersVersion>
+		<recommendersVersion>2.4.10-SNAPSHOT</recommendersVersion>
 		<javaVersion>1.7</javaVersion>
 		<minimumMavenVersion>3.1.1</minimumMavenVersion>
 		<tychoVersion>1.0.0</tychoVersion>
