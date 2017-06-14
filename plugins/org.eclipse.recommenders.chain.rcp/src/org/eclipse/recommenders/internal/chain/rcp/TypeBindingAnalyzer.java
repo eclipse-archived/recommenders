@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,6 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public final class TypeBindingAnalyzer {
@@ -107,7 +106,7 @@ public final class TypeBindingAnalyzer {
 
     private static Collection<Binding> findFieldsAndMethods(final TypeBinding type, final InvocationSite invocationSite,
             final Scope scope, final Predicate<FieldBinding> fieldFilter, final Predicate<MethodBinding> methodFilter) {
-        final Map<String, Binding> tmp = Maps.newLinkedHashMap();
+        final Map<String, Binding> tmp = new LinkedHashMap<>();
         final TypeBinding receiverType = scope.classScope().referenceContext.binding;
         for (final ReferenceBinding cur : findAllSupertypesIncludeingArgument(type)) {
             for (final MethodBinding method : cur.methods()) {
@@ -137,8 +136,8 @@ public final class TypeBindingAnalyzer {
         if (!(base instanceof ReferenceBinding)) {
             return Collections.emptyList();
         }
-        final List<ReferenceBinding> supertypes = Lists.newLinkedList();
-        final LinkedList<ReferenceBinding> queue = Lists.newLinkedList();
+        final List<ReferenceBinding> supertypes = new LinkedList<>();
+        final LinkedList<ReferenceBinding> queue = new LinkedList<>();
         queue.add((ReferenceBinding) base);
         while (!queue.isEmpty()) {
             final ReferenceBinding superType = queue.poll();
@@ -174,7 +173,7 @@ public final class TypeBindingAnalyzer {
             if (base.isCompatibleWith(expectedType)) {
                 return true;
             }
-            final LinkedList<ReferenceBinding> supertypes = Lists.newLinkedList();
+            final LinkedList<ReferenceBinding> supertypes = new LinkedList<>();
             supertypes.add((ReferenceBinding) base);
             final String expectedSignature = String.valueOf(expectedType.signature());
             while (!supertypes.isEmpty()) {
@@ -206,7 +205,7 @@ public final class TypeBindingAnalyzer {
             final Scope scope) {
         final InternalCompletionContext context = (InternalCompletionContext) ctx.getJavaContext().getCoreContext();
         final ASTNode parent = context.getCompletionNodeParent();
-        final List<Optional<TypeBinding>> bindings = Lists.newLinkedList();
+        final List<Optional<TypeBinding>> bindings = new LinkedList<>();
         if (parent instanceof LocalDeclaration) {
             bindings.add(Optional.fromNullable(((LocalDeclaration) parent).type.resolvedType));
         } else if (parent instanceof ReturnStatement) {

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.snipmatch.rcp.util;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -26,11 +27,9 @@ import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.utils.Nullable;
 
-import com.google.common.collect.Sets;
-
 public class DependencyExtractor {
 
-    private final Set<ProjectCoordinate> dependencies = Sets.newHashSet();
+    private final Set<ProjectCoordinate> dependencies = new HashSet<>();
     private final ASTNode enclosingNode;
     private final IProjectCoordinateProvider pcProvider;
     private final Selection selection;

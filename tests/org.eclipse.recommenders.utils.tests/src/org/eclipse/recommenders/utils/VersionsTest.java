@@ -110,4 +110,10 @@ public class VersionsTest {
         assertThat(closest, is(equalTo(V_2_0_0)));
     }
 
+    @Test
+    public void testIdenticalCandidatesAllowed() {
+        Version closest = Versions.findClosest(V_2_0_0, Arrays.asList(V_2_0_0, V_2_0_0));
+
+        assertThat(closest, is(equalTo(V_2_0_0)));
+    }
 }

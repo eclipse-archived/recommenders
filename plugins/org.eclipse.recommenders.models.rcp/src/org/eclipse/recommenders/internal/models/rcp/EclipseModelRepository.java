@@ -48,7 +48,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -62,7 +61,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     private final IProxyService proxy;
     private final ModelsRcpPreferences prefs;
     private final EventBus bus;
-    private final List<Pair<String, ModelRepository>> delegates = Lists.newLinkedList();
+    private final List<Pair<String, ModelRepository>> delegates = new LinkedList<>();
 
     private boolean isOpen = false;
 
@@ -78,7 +77,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     @PostConstruct
     void open() throws Exception {
         String[] remoteUrls = prefs.remotes;
-        List<Pair<String, ModelRepository>> repositories = Lists.newLinkedList();
+        List<Pair<String, ModelRepository>> repositories = new LinkedList<>();
         for (String remoteUrl : remoteUrls) {
             File cache = new File(basedir, mangle(remoteUrl));
             cache.mkdirs();
@@ -113,7 +112,7 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     }
 
     private List<ModelRepository> searchDelegates(ModelCoordinate mc) {
-        LinkedList<ModelRepository> result = Lists.newLinkedList();
+        LinkedList<ModelRepository> result = new LinkedList<>();
 
         String repoUrl = mc.getHint(HINT_REPOSITORY_URL).orNull();
         for (Pair<String, ModelRepository> delegate : delegates) {

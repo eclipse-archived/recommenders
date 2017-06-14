@@ -21,8 +21,11 @@ import static org.eclipse.recommenders.rcp.SharedImages.Images.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -80,10 +83,7 @@ import org.eclipse.ui.progress.UIJob;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -325,7 +325,7 @@ public class ProjectCoordinatesView extends ViewPart {
         @Override
         protected CellEditor getCellEditor(Object element) {
             if (element instanceof Entry) {
-                Set<String> values = Sets.newHashSet();
+                Set<String> values = new HashSet<>();
                 Collection<Optional<ProjectCoordinate>> value = extractProjectCoordinates(element);
                 for (ProjectCoordinate pc : presentInstances(value)) {
                     values.add(pc.toString());
@@ -393,14 +393,14 @@ public class ProjectCoordinatesView extends ViewPart {
     class ContentProvider implements IStructuredContentProvider {
 
         private ListMultimap<DependencyInfo, Optional<ProjectCoordinate>> data;
-        private List<IProjectCoordinateAdvisor> strategies = Lists.newArrayList();
+        private List<IProjectCoordinateAdvisor> strategies = new ArrayList<>();
 
         public ContentProvider() {
-            Map<DependencyInfo, Collection<Optional<ProjectCoordinate>>> map = Maps.newHashMap();
+            Map<DependencyInfo, Collection<Optional<ProjectCoordinate>>> map = new HashMap<>();
             data = Multimaps.newListMultimap(map, new Supplier<List<Optional<ProjectCoordinate>>>() {
                 @Override
                 public List<Optional<ProjectCoordinate>> get() {
-                    return Lists.newArrayList();
+                    return new ArrayList<>();
                 }
             });
         }
@@ -660,7 +660,7 @@ public class ProjectCoordinatesView extends ViewPart {
             DependencyInfo dependencyInfo = entry.getKey();
             StringBuilder sb = new StringBuilder();
             List<IProjectCoordinateAdvisor> advisors = contentProvider.getStrategies();
-            List<Optional<ProjectCoordinate>> coordinates = Lists.newArrayList(entry.getValue());
+            List<Optional<ProjectCoordinate>> coordinates = new ArrayList<>(entry.getValue());
 
             for (int i = 0; i < advisors.size(); i++) {
                 IProjectCoordinateAdvisor advisor = advisors.get(i);

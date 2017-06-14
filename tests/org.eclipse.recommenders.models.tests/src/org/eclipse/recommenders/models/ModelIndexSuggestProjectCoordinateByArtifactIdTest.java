@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class ModelIndexSuggestProjectCoordinateByArtifactIdTest {
 
@@ -37,7 +35,7 @@ public class ModelIndexSuggestProjectCoordinateByArtifactIdTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario(EXPECTED, SYMBOLIC_NAME,
                 coordinateWithSymbolicName(new DefaultArtifact("org.example:project:1.0.0"), SYMBOLIC_NAME)));

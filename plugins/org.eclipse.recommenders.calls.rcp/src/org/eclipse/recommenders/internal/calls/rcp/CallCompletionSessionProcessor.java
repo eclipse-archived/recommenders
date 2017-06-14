@@ -24,6 +24,8 @@ import static org.eclipse.recommenders.utils.Recommendations.top;
 import static org.eclipse.recommenders.utils.Result.*;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,8 +62,6 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 
 @SuppressWarnings({ "restriction" })
@@ -102,7 +102,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     public boolean startSession(final IRecommendersCompletionContext context) {
         ctx = context;
 
-        recommendations = Lists.newLinkedList();
+        recommendations = new LinkedList<>();
 
         try {
             return isCompletionRequestSupported() && findReceiverTypeAndModel() && findRecommendations();
@@ -173,7 +173,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private void calculateProposalRelevanceBoostMap() {
-        recommendationsIndex = Maps.newHashMap();
+        recommendationsIndex = new HashMap<>();
         for (Recommendation<IMethodName> r : recommendations) {
             double rel = r.getRelevance() * 100;
             int score = 0;

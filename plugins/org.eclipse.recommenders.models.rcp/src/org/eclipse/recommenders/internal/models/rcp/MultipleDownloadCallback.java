@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -18,8 +19,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.DownloadCallback;
-
-import com.google.common.collect.Maps;
 
 /**
  * Callback to indicate progress on multiple sequential downloads. The callback works for a given number of downloads
@@ -29,7 +28,7 @@ import com.google.common.collect.Maps;
  */
 public class MultipleDownloadCallback extends DownloadCallback {
 
-    private final Map<String, IProgressMonitor> downloads = Maps.newHashMap();
+    private final Map<String, IProgressMonitor> downloads = new HashMap<>();
     private boolean downloadSucceeded;
     private long lastTransferred;
     private int finishedWorkUnits;

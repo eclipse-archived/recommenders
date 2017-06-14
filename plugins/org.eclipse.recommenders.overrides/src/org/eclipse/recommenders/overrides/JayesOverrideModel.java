@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +30,6 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
 
 public class JayesOverrideModel implements IOverrideModel {
@@ -64,7 +63,7 @@ public class JayesOverrideModel implements IOverrideModel {
     }
 
     private void createMethodNameMapping(List<BayesNode> methods) {
-        methodNodes = Maps.newHashMap();
+        methodNodes = new HashMap<>();
         for (final BayesNode methodNode : methods) {
             methodNodes.put(VmMethodName.get(methodNode.getName()), methodNode);
         }
@@ -100,7 +99,7 @@ public class JayesOverrideModel implements IOverrideModel {
 
     @Override
     public List<Recommendation<IMethodName>> recommendOverrides() {
-        final List<Recommendation<IMethodName>> recommendations = Lists.newLinkedList();
+        final List<Recommendation<IMethodName>> recommendations = new LinkedList<>();
         for (final BayesNode node : methodNodes.values()) {
             if (junctionTreeAlgorithm.getEvidence().containsKey(node)) {
                 continue;

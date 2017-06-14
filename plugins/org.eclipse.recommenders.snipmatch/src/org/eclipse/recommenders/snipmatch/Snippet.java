@@ -29,8 +29,6 @@ import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -49,17 +47,17 @@ public class Snippet implements ISnippet {
     @SerializedName("description")
     private String description;
     @SerializedName("extraSearchTerms")
-    private List<String> extraSearchTerms = Lists.newArrayList();
+    private List<String> extraSearchTerms = new ArrayList<>();
     @SerializedName("tags")
-    private List<String> tags = Lists.newArrayList();
+    private List<String> tags = new ArrayList<>();
     @SerializedName("code")
     private String code;
     @SerializedName("location")
     private Location location = FILE;
     @SerializedName("filenameRestrictions")
-    private List<String> filenameRestrictions = Lists.newArrayList();
+    private List<String> filenameRestrictions = new ArrayList<>();
     @SerializedName("dependencies")
-    private Set<ProjectCoordinate> neededDependencies = Sets.newHashSet();
+    private Set<ProjectCoordinate> neededDependencies = new HashSet<>();
 
     public Snippet() {
         this(UUID.randomUUID(), "", "", new ArrayList<String>(), new ArrayList<String>(), "", Location.NONE,

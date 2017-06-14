@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.snipmatch.rcp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +33,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
@@ -109,12 +109,12 @@ public class SnipmatchRcpModule extends AbstractModule {
     private SnippetRepositoryConfigurations updateDefaultConfigurations(SnippetRepositoryConfigurations configurations,
             List<SnippetRepositoryConfiguration> defaultConfigurations) {
 
-        Map<String, SnippetRepositoryConfiguration> mapping = Maps.newHashMap();
+        Map<String, SnippetRepositoryConfiguration> mapping = new HashMap<>();
         for (SnippetRepositoryConfiguration config : defaultConfigurations) {
             mapping.put(config.getId(), config);
         }
 
-        List<SnippetRepositoryConfiguration> configs = Lists.newArrayList();
+        List<SnippetRepositoryConfiguration> configs = new ArrayList<>();
 
         for (SnippetRepositoryConfiguration config : configurations.getRepos()) {
             if (!mapping.containsKey(config.getId())) {

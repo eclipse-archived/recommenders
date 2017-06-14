@@ -25,7 +25,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class TypeAdaptersTest {
@@ -40,7 +39,7 @@ public class TypeAdaptersTest {
 
     @Parameters
     public static Iterable<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario(NamesTest.STRING, ITypeName.class));
         scenarios.add(scenario(NamesTest.STRING, VmTypeName.class));

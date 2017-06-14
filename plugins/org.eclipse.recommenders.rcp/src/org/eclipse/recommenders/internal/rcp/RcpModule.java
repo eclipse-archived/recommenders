@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.internal.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -61,7 +62,6 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.Bundle;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
@@ -213,7 +213,7 @@ public class RcpModule extends AbstractModule {
     private void checkBundleResolution() {
         Bundle[] bundles = RcpPlugin.getDefault().getBundle().getBundleContext().getBundles();
 
-        final Collection<Bundle> unresolvedBundles = Lists.newArrayList();
+        final Collection<Bundle> unresolvedBundles = new ArrayList<>();
         for (Bundle bundle : bundles) {
             if (bundle.getSymbolicName().startsWith("org.eclipse.recommenders")) { //$NON-NLS-1$
                 if (bundle.getState() == Bundle.INSTALLED) {

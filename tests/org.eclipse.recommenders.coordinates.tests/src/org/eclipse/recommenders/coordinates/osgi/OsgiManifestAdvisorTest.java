@@ -38,7 +38,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class OsgiManifestAdvisorTest {
@@ -59,7 +58,7 @@ public class OsgiManifestAdvisorTest {
 
     @Parameters(name = "{index}: {0} ({1};bundle-version=\"{2}\")")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("One-part Bundle-SymbolicName becomes groupId", "example", "1.0.0",
                 new ProjectCoordinate("example", "example", "1.0.0")));

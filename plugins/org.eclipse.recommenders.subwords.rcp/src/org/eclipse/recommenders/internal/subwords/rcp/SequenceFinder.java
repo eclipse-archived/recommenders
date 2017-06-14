@@ -14,16 +14,15 @@ import static java.lang.Character.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 public class SequenceFinder {
 
     private static final int[] EMPTY_SEQUENCE = new int[0];
 
-    private List<int[]> curSequences = Lists.newLinkedList();
-    private List<int[]> nextSequences = Lists.newLinkedList();
+    private List<int[]> curSequences = new LinkedList<>();
+    private List<int[]> nextSequences = new LinkedList<>();
 
     private int pCompletion, pToken;
     private String completion, token;
@@ -70,7 +69,7 @@ public class SequenceFinder {
                 }
             }
             curSequences = nextSequences;
-            nextSequences = Lists.newLinkedList();
+            nextSequences = new LinkedList<>();
         }
 
         // filter

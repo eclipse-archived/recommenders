@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.completion.rcp;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +34,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class CompletionRcpPreferences extends AbstractPreferenceInitializer {
@@ -59,7 +60,7 @@ public class CompletionRcpPreferences extends AbstractPreferenceInitializer {
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 Constants.EXT_POINT_SESSION_PROCESSORS);
 
-        Set<SessionProcessorDescriptor> descriptors = Sets.newHashSet();
+        Set<SessionProcessorDescriptor> descriptors = new HashSet<>();
         for (final IConfigurationElement element : elements) {
             SessionProcessorDescriptor descriptor = new SessionProcessorDescriptor(element);
             descriptors.add(descriptor);
@@ -142,7 +143,7 @@ public class CompletionRcpPreferences extends AbstractPreferenceInitializer {
 
     private static Map<SessionProcessorDescriptor, Boolean> fromString(
             Iterable<SessionProcessorDescriptor> descriptors, String string) {
-        Map<SessionProcessorDescriptor, Boolean> result = Maps.newHashMap();
+        Map<SessionProcessorDescriptor, Boolean> result = new HashMap<>();
         for (SessionProcessorDescriptor descriptor : descriptors) {
             result.put(descriptor, true);
         }

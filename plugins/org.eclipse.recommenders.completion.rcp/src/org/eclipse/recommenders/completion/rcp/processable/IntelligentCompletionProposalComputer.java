@@ -20,6 +20,8 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +64,6 @@ import org.eclipse.ui.IEditorPart;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
@@ -87,8 +88,8 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
     private final Provider<IEditorPart> editorProvider;
     private final IProcessableProposalFactory proposalFactory = new ProcessableProposalFactory();
 
-    private final Set<SessionProcessor> processors = Sets.newLinkedHashSet();
-    private final Set<SessionProcessor> activeProcessors = Sets.newLinkedHashSet();
+    private final Set<SessionProcessor> processors = new LinkedHashSet<>();
+    private final Set<SessionProcessor> activeProcessors = new LinkedHashSet<>();
 
     // Set in storeContext
     public JavaContentAssistInvocationContext jdtContext;
@@ -141,7 +142,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 return Collections.emptyList();
             } else {
                 // JDT is inactive. Return all proposals JDT would have made.
-                List<ICompletionProposal> res = Lists.newLinkedList();
+                List<ICompletionProposal> res = new LinkedList<>();
                 for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
                     IJavaCompletionProposal jdtProposal = create(pair.getValue(), pair.getKey(), jdtContext,
                             proposalFactory);
@@ -163,7 +164,7 @@ public class IntelligentCompletionProposalComputer extends JavaAllCompletionProp
                 return ImmutableList.<ICompletionProposal>of(info, new EmptyCompletionProposal(offset));
             }
         } else {
-            List<ICompletionProposal> res = Lists.newLinkedList();
+            List<ICompletionProposal> res = new LinkedList<>();
             registerCompletionListener();
             crContext.set(ACTIVE_PROCESSORS, ImmutableSet.copyOf(activeProcessors));
             fireInitializeContext(crContext);

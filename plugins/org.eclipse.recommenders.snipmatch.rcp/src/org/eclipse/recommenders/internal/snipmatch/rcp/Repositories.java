@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +32,6 @@ import org.eclipse.recommenders.utils.Openable;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractIdleService;
@@ -41,7 +41,7 @@ public class Repositories extends AbstractIdleService implements IRcpService, Op
     private final SnippetRepositoryConfigurations configurations;
     private final SnipmatchRcpPreferences prefs;
 
-    private Set<ISnippetRepository> repositories = Sets.newHashSet();
+    private Set<ISnippetRepository> repositories = new HashSet<>();
 
     @Inject
     public Repositories(EventBus bus, SnippetRepositoryConfigurations configurations, SnipmatchRcpPreferences prefs) {

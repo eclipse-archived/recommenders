@@ -30,7 +30,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class JREDirectoryNameAdvisorTest {
@@ -45,7 +44,7 @@ public class JREDirectoryNameAdvisorTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
         // Real-world scenarios
         scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "1.6.0_45-b06-451.jdk", "Contents", "Home"),
                 "1.6.0"));

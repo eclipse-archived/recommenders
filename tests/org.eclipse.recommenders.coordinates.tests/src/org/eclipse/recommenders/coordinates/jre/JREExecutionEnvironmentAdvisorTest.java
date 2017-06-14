@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.recommenders.coordinates.DependencyInfo;
@@ -26,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 public class JREExecutionEnvironmentAdvisorTest {
 
@@ -41,7 +41,7 @@ public class JREExecutionEnvironmentAdvisorTest {
     }
 
     private static Map<String, String> createAttributesMapForExecutionEnvironment(final String executionEnvironment) {
-        Map<String, String> attributes = Maps.newHashMap();
+        Map<String, String> attributes = new HashMap<>();
         attributes.put(DependencyInfo.EXECUTION_ENVIRONMENT, executionEnvironment);
         return attributes;
     }

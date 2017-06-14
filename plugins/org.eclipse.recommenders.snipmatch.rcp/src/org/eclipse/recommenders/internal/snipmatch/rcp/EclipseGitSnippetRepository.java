@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -95,8 +97,6 @@ import org.eclipse.ui.PlatformUI;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.name.Names;
@@ -420,7 +420,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     public boolean share(Collection<UUID> uuids) {
         writeLock.lock();
         try {
-            Collection<ISnippet> snippets = Lists.newArrayList();
+            Collection<ISnippet> snippets = new ArrayList<>();
             for (UUID uuid : uuids) {
                 ISnippet snippet = delegate.getSnippet(uuid);
                 if (snippet != null) {
@@ -456,7 +456,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
     }
 
     private List<IResource> toResource(Collection<ISnippet> snippets, Workspace workspace) {
-        List<IResource> resources = Lists.newArrayList();
+        List<IResource> resources = new ArrayList<>();
         for (ISnippet snippet : snippets) {
             File snippetFile = delegate.getSnippetFile(snippet.getUuid());
             if (snippetFile == null) {
@@ -476,7 +476,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
 
     private boolean commit(Repository repo, IResource[] selectedResources, IResource workspace,
             Collection<ISnippet> snippets, Shell shell) {
-        files = Sets.newHashSet();
+        files = new HashSet<>();
         IndexDiff indexDiff = null;
         try {
             indexDiff = buildIndexHeadDiffList(delegate.getGitRepo(), new NullProgressMonitor());
@@ -495,7 +495,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
             return false;
         }
 
-        final Set<String> preselectedFiles = Sets.newHashSet();
+        final Set<String> preselectedFiles = new HashSet<>();
 
         getPreselectedFiles(selectedResources, preselectedFiles);
         if (preselectedFiles.isEmpty()) {
@@ -522,9 +522,9 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
             IndexDiff indexDiff = new IndexDiff(repo, org.eclipse.jgit.lib.Constants.HEAD, it);
             indexDiff.diff();
 
-            Set<String> indexChanges = Sets.newHashSet();
-            Set<String> notIndexed = Sets.newHashSet();
-            notTracked = Sets.newHashSet();
+            Set<String> indexChanges = new HashSet<>();
+            Set<String> notIndexed = new HashSet<>();
+            notTracked = new HashSet<>();
 
             includeList(indexDiff.getAdded(), indexChanges);
             includeList(indexDiff.getChanged(), indexChanges);

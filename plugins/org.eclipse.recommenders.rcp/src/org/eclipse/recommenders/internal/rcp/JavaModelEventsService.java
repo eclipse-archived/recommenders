@@ -14,6 +14,7 @@ package org.eclipse.recommenders.internal.rcp;
 import static org.eclipse.jdt.core.IJavaElementDelta.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -44,7 +45,6 @@ import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootRemove
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectClosed;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectOpened;
 
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
@@ -204,7 +204,7 @@ public class JavaModelEventsService implements IElementChangedListener {
     }
 
     private Set<IProject> getAllOpenProjects() {
-        final Set<IProject> result = Sets.newHashSet();
+        final Set<IProject> result = new HashSet<>();
         final IProject[] projects = workspace.getProjects();
         for (final IProject project : projects) {
             if (project.isAccessible()) {

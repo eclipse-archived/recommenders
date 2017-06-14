@@ -7,12 +7,12 @@
  */
 package org.eclipse.recommenders.testing.rcp.completion.rules;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static java.io.File.separator;
 import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,15 +37,13 @@ import org.eclipse.recommenders.utils.Nonnull;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.Zips;
 
-import com.google.common.collect.Sets;
-
 public class TemporaryProject {
 
     static final String BIN_FOLDER_NAME = "bin";
     static final String SRC_FOLDER_NAME = "src";
     static final String JAR_FOLDER_NAME = "jar";
 
-    private final Set<TemporaryFile> temporaryFiles = Sets.newHashSet();
+    private final Set<TemporaryFile> temporaryFiles = new HashSet<>();
     private final IWorkspace workspace;
     private final String name;
     private final IProject project;
@@ -149,7 +147,7 @@ public class TemporaryProject {
     }
 
     private void addToClasspath(@Nonnull final IClasspathEntry classpathEntry) throws JavaModelException {
-        final Set<IClasspathEntry> entries = newHashSet();
+        final Set<IClasspathEntry> entries = new HashSet<>();
 
         entries.addAll(asList(javaProject.getRawClasspath()));
         entries.add(classpathEntry);

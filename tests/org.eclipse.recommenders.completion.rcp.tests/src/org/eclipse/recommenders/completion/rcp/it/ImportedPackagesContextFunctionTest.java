@@ -23,7 +23,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class ImportedPackagesContextFunctionTest {
@@ -43,7 +42,7 @@ public class ImportedPackagesContextFunctionTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("import java.util.List;", JAVA_UTIL));
         scenarios.add(scenario("import java.util.*;", JAVA_UTIL));

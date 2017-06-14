@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*;
 import static org.eclipse.recommenders.jdt.AstBindings.toMethodName;
 import static org.eclipse.recommenders.utils.Checks.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -48,7 +49,6 @@ import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 public class AstDefUseFinder extends ASTVisitor {
@@ -58,7 +58,7 @@ public class AstDefUseFinder extends ASTVisitor {
 
     private IMethodName definingMethod;
     private DefinitionKind defKind = UNKNOWN;
-    private final List<IMethodName> calls = Lists.newLinkedList();
+    private final List<IMethodName> calls = new LinkedList<>();
     private final MethodDeclaration method;
     private final String varname;
 

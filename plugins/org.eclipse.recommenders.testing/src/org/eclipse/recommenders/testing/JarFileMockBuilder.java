@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -26,13 +27,11 @@ import java.util.jar.JarFile;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.google.common.collect.Lists;
-
 public class JarFileMockBuilder {
 
     private final JarFile jarFile = mock(JarFile.class);
 
-    private final List<JarEntry> mockedEntries = Lists.newLinkedList();
+    private final List<JarEntry> mockedEntries = new LinkedList<>();
 
     public JarFile build() {
         when(jarFile.entries()).thenAnswer(new Answer<Enumeration<JarEntry>>() {

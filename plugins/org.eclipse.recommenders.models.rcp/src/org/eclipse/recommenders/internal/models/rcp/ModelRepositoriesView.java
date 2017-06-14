@@ -23,8 +23,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -99,7 +101,6 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
@@ -110,7 +111,6 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -159,7 +159,7 @@ public class ModelRepositoriesView extends ViewPart {
         this.images = images;
         this.repo = repo;
         this.preferences = preferences;
-        this.modelClassifiers = Lists.newArrayList(modelClassifiers);
+        this.modelClassifiers = new ArrayList<>(modelClassifiers);
         Collections.sort(this.modelClassifiers);
         this.bus = bus;
     }
@@ -406,7 +406,7 @@ public class ModelRepositoriesView extends ViewPart {
         Multimap<ProjectCoordinate, ModelCoordinate> coordinatesGroupedByProjectCoordinate = groupByProjectCoordinate(
                 modelCoordinates);
 
-        List<KnownCoordinate> coordinates = Lists.newArrayList();
+        List<KnownCoordinate> coordinates = new ArrayList<>();
         for (ProjectCoordinate pc : coordinatesGroupedByProjectCoordinate.keySet()) {
             coordinates.add(new KnownCoordinate(url, pc, coordinatesGroupedByProjectCoordinate.get(pc)));
         }
@@ -478,7 +478,7 @@ public class ModelRepositoriesView extends ViewPart {
         private final String glob;
 
         private GlobMatcher(String glob) {
-            this.glob = "*" + Preconditions.checkNotNull(glob) + "*"; //$NON-NLS-1$ //$NON-NLS-2$
+            this.glob = "*" + Objects.requireNonNull(glob) + "*"; //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         @Override
@@ -506,7 +506,7 @@ public class ModelRepositoriesView extends ViewPart {
             public void menuAboutToShow(IMenuManager manager) {
                 if (isValidType(treeViewer.getSelection(), KnownCoordinate.class)) {
                     Set<KnownCoordinate> selectedValues = Selections.toSet(treeViewer.getSelection());
-                    Set<ModelCoordinate> selectedModelCoordinates = Sets.newHashSet();
+                    Set<ModelCoordinate> selectedModelCoordinates = new HashSet<>();
                     for (KnownCoordinate value : selectedValues) {
                         Collection<ModelCoordinate> mcs = value.mcs;
                         selectedModelCoordinates.addAll(mcs);

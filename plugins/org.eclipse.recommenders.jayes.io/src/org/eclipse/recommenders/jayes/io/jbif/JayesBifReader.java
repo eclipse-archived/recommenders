@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.jayes.io.jbif.Constants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,6 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.IBayesNetReader;
 
-import com.google.common.base.Charsets;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 
@@ -89,7 +89,7 @@ public class JayesBifReader implements IBayesNetReader {
 
         byte[] bytes = new byte[byteCount];
         buffer.get(bytes);
-        return new String(bytes, Charsets.UTF_8);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     private void readNodeDeclaration(BayesNet bayesNet, ByteBuffer buffer) {

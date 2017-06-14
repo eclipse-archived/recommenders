@@ -13,6 +13,7 @@ package org.eclipse.recommenders.models.rcp.actions;
 
 import static java.text.MessageFormat.format;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -23,14 +24,13 @@ import org.eclipse.recommenders.internal.models.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.rcp.utils.Jobs;
 
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 public class TriggerModelDownloadForModelCoordinatesAction extends Action {
 
     private EclipseModelRepository repo;
 
-    private Set<ModelCoordinate> mcs = Sets.newHashSet();
+    private Set<ModelCoordinate> mcs = new HashSet<>();
 
     private EventBus bus;
 
@@ -52,7 +52,7 @@ public class TriggerModelDownloadForModelCoordinatesAction extends Action {
     }
 
     public void triggerDownloadForModelCoordinates(Set<ModelCoordinate> mcs) {
-        Set<Job> jobs = Sets.newHashSet();
+        Set<Job> jobs = new HashSet<>();
         for (ModelCoordinate mc : mcs) {
             jobs.add(new DownloadModelArchiveJob(repo, mc, false, bus));
         }

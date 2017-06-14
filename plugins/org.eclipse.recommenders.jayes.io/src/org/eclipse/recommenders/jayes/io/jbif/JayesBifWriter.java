@@ -16,13 +16,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.io.IBayesNetWriter;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
@@ -138,7 +138,7 @@ public class JayesBifWriter implements IBayesNetWriter {
     }
 
     private void putName(String string, ByteBuffer buffer) {
-        final byte[] utf8 = string.getBytes(Charsets.UTF_8);
+        final byte[] utf8 = string.getBytes(StandardCharsets.UTF_8);
         Preconditions.checkArgument(utf8.length < 2 << Short.SIZE);
         final short byteCount = (short) utf8.length;
         buffer.putShort(byteCount);

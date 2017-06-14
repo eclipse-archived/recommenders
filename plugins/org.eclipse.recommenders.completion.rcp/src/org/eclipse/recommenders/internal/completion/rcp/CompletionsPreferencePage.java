@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 import static org.eclipse.recommenders.internal.completion.rcp.Constants.PREF_SESSIONPROCESSORS;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -57,7 +58,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 
 public class CompletionsPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -211,7 +211,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
         @Override
         protected void doLoad() {
             Set<SessionProcessorDescriptor> input = preferences.getAvailableSessionProcessors();
-            List<SessionProcessorDescriptor> checkedElements = Lists.newArrayList();
+            List<SessionProcessorDescriptor> checkedElements = new ArrayList<>();
             for (SessionProcessorDescriptor descriptor : input) {
                 if (preferences.isEnabled(descriptor)) {
                     checkedElements.add(descriptor);
@@ -233,7 +233,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
         @Override
         protected void doLoadDefault() {
             Set<SessionProcessorDescriptor> input = preferences.getAvailableSessionProcessors();
-            List<SessionProcessorDescriptor> checkedElements = Lists.newArrayList();
+            List<SessionProcessorDescriptor> checkedElements = new ArrayList<>();
             for (SessionProcessorDescriptor descriptor : input) {
                 if (descriptor.isEnabledByDefault()) {
                     checkedElements.add(descriptor);

@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Checks.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionContext;
@@ -35,12 +36,11 @@ import org.eclipse.swt.graphics.Image;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableParameterGuessingProposal extends ParameterGuessingProposal implements IProcessableProposal {
 
-    private final Map<IProposalTag, Object> tags = Maps.newHashMap();
+    private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
     private ProposalProcessorManager mgr;

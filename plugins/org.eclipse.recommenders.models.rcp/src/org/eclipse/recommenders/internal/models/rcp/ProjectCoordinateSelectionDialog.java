@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.models.rcp;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OBJ_JAR;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -37,7 +38,6 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDialog {
@@ -180,7 +180,7 @@ public class ProjectCoordinateSelectionDialog extends FilteredItemsSelectionDial
     }
 
     public Set<ProjectCoordinate> getSelectedElements() {
-        Set<ProjectCoordinate> selectedElements = Sets.newHashSet();
+        Set<ProjectCoordinate> selectedElements = new HashSet<>();
         Object[] result = getResult();
         if (result != null) {
             for (Object object : result) {

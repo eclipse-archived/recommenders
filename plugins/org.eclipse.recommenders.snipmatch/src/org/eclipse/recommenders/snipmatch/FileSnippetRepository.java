@@ -24,6 +24,9 @@ import java.nio.channels.OverlappingFileLockException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,7 +84,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class FileSnippetRepository implements ISnippetRepository {
@@ -160,7 +162,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
     private Analyzer createAnalyzer() {
         StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_35, EMPTY_STOPWORDS);
-        Map<String, Analyzer> analyzers = Maps.newHashMap();
+        Map<String, Analyzer> analyzers = new HashMap<>();
         analyzers.put(F_NAME, standardAnalyzer);
         analyzers.put(F_DESCRIPTION, standardAnalyzer);
         analyzers.put(F_EXTRA_SEARCH_TERM, standardAnalyzer);
@@ -319,7 +321,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         readLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            List<Recommendation<ISnippet>> results = Lists.newLinkedList();
+            List<Recommendation<ISnippet>> results = new LinkedList<>();
 
             try {
                 Map<File, Float> snippetFiles = searchSnippetFiles(context, maxResults);
@@ -338,7 +340,7 @@ public class FileSnippetRepository implements ISnippetRepository {
     }
 
     private Map<File, Float> searchSnippetFiles(ISearchContext context, int maxResults) {
-        Map<File, Float> results = Maps.newLinkedHashMap();
+        Map<File, Float> results = new LinkedHashMap<>();
         IndexSearcher searcher = null;
         try {
             BooleanQuery query = new BooleanQuery();
@@ -351,15 +353,14 @@ public class FileSnippetRepository implements ISnippetRepository {
                 query.add(new TermQuery(new Term(F_LOCATION, getIndexString(context.getLocation()))), Occur.MUST);
             }
 
-            String filename = context.getFilename();
-            if (filename != null) {
+            if (context.isRestrictedByFilename()) {
                 BooleanQuery filenameRestrictionsQuery = new BooleanQuery();
                 TermQuery noRestrictionQuery = new TermQuery(new Term(F_FILENAME_RESTRICTION, NO_FILENAME_RESTRICTION));
                 noRestrictionQuery.setBoost(NO_RESTRICTION_BOOST);
                 filenameRestrictionsQuery.add(noRestrictionQuery, Occur.SHOULD);
 
                 int i = 1;
-                for (String restriction : Filenames.getFilenameRestrictions(filename)) {
+                for (String restriction : Filenames.getFilenameRestrictions(context.getFilename())) {
                     TermQuery restrictionQuery = new TermQuery(
                             new Term(F_FILENAME_RESTRICTION, restriction.toLowerCase()));
                     float boost = (float) (0.5f + Math.pow(0.5, i));
@@ -459,7 +460,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         try {
             Preconditions.checkState(isOpen());
 
-            return !searchSnippetFiles(new SearchContext(F_UUID + ":" + uuid), Integer.MAX_VALUE).isEmpty();
+            return !searchSnippetFiles(new UnrestrictedSearchContext(F_UUID + ":" + uuid), Integer.MAX_VALUE).isEmpty();
         } finally {
             readLock.unlock();
         }
@@ -470,7 +471,7 @@ public class FileSnippetRepository implements ISnippetRepository {
         writeLock.lock();
         try {
             Preconditions.checkState(isOpen());
-            Map<File, Float> snippetFiles = searchSnippetFiles(new SearchContext(F_UUID + ":" + uuid),
+            Map<File, Float> snippetFiles = searchSnippetFiles(new UnrestrictedSearchContext(F_UUID + ":" + uuid),
                     Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 return false;
@@ -527,7 +528,7 @@ public class FileSnippetRepository implements ISnippetRepository {
 
             File file;
             Map<File, Float> snippetFiles = searchSnippetFiles(
-                    new SearchContext(F_UUID + ":" + importSnippet.getUuid()), Integer.MAX_VALUE);
+                    new UnrestrictedSearchContext(F_UUID + ":" + importSnippet.getUuid()), Integer.MAX_VALUE);
             if (snippetFiles.isEmpty()) {
                 file = new File(snippetsdir, importSnippet.getUuid() + DOT_JSON);
             } else {

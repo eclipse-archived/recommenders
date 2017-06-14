@@ -41,7 +41,7 @@
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4790 -->
 <unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
-<!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
 <unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4759 -->
 <unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
@@ -61,7 +61,7 @@
 <unit id="com.google.inject.multibindings" version="3.0.0.v201402270930"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
-<!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
 <unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>

@@ -19,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -30,7 +31,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
@@ -62,7 +62,7 @@ public class ApidocsRcpModule extends AbstractModule {
     private static List<ApidocProvider> instantiateProvidersFromRegistry() {
         final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
                 EXT_ID_PROVIDER);
-        final List<ApidocProvider> providers = Lists.newLinkedList();
+        final List<ApidocProvider> providers = new LinkedList<>();
 
         for (final IConfigurationElement element : elements) {
             final Optional<ApidocProvider> opt = createProvider(element);

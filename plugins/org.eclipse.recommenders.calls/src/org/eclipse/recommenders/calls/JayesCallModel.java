@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +49,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Lists;
 
 /**
  * A thin wrapper around a {@link BayesianNetwork} for recommending method calls.
@@ -231,7 +231,7 @@ public class JayesCallModel implements ICallModel {
 
     @Override
     public List<Recommendation<IMethodName>> recommendCalls() {
-        List<Recommendation<IMethodName>> recs = Lists.newLinkedList();
+        List<Recommendation<IMethodName>> recs = new LinkedList<>();
         for (Entry<IMethodName, BayesNode> entry : callNodes.entrySet()) {
             IMethodName method = entry.getKey();
             BayesNode bayesNode = entry.getValue();
@@ -248,7 +248,7 @@ public class JayesCallModel implements ICallModel {
 
     @Override
     public List<Recommendation<IMethodName>> recommendDefinitions() {
-        List<Recommendation<IMethodName>> recs = Lists.newLinkedList();
+        List<Recommendation<IMethodName>> recs = new LinkedList<>();
         double[] beliefs = junctionTree.getBeliefs(definedByNode);
         for (int i = definedByNode.getOutcomeCount(); i-- > 0;) {
             if (beliefs[i] > 0.01d) {
@@ -269,7 +269,7 @@ public class JayesCallModel implements ICallModel {
 
     @Override
     public List<Recommendation<String>> recommendPatterns() {
-        List<Recommendation<String>> recs = Lists.newLinkedList();
+        List<Recommendation<String>> recs = new LinkedList<>();
         double[] probs = junctionTree.getBeliefs(callgroupNode);
         for (String outcome : callgroupNode.getOutcomes()) {
             int probIndex = callgroupNode.getOutcomeIndex(outcome);

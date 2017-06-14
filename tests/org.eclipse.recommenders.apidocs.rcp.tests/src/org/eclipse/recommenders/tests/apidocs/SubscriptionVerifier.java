@@ -13,17 +13,16 @@ package org.eclipse.recommenders.tests.apidocs;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.utils.Throws;
 
-import com.google.common.collect.Maps;
-
 public class SubscriptionVerifier {
 
-    private Map<JavaElementSelectionEvent, Map<ApidocProvider, String>> subscriptions = Maps.newHashMap();
+    private Map<JavaElementSelectionEvent, Map<ApidocProvider, String>> subscriptions = new HashMap<>();
 
     public void addResult(JavaElementSelectionEvent selection, ApidocProvider provider, String actualMethodName) {
 
@@ -41,7 +40,7 @@ public class SubscriptionVerifier {
     private Map<ApidocProvider, String> get(JavaElementSelectionEvent selection) {
         Map<ApidocProvider, String> methodsByProvider = subscriptions.get(selection);
         if (methodsByProvider == null) {
-            methodsByProvider = Maps.newHashMap();
+            methodsByProvider = new HashMap<>();
             subscriptions.put(selection, methodsByProvider);
         }
         return methodsByProvider;

@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.internal.calls.rcp.l10n.LogMessages.*;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMethod;
@@ -34,13 +35,12 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.swt.graphics.Image;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class ProposalBuilder {
 
-    private List<PatternRecommendation> patterns = Lists.newLinkedList();
+    private List<PatternRecommendation> patterns = new LinkedList<>();
     private Image icon;
     private IRecommendersCompletionContext rCtx;
     private JavaContext documentContext;
@@ -92,7 +92,7 @@ public class ProposalBuilder {
         // 2. get rid of duplicates: yes, this happens!
         HashSet<PatternRecommendation> noDuplicates = Sets.newHashSet(patterns);
 
-        List<JavaTemplateProposal> result = Lists.newLinkedList();
+        List<JavaTemplateProposal> result = new LinkedList<>();
         for (PatternRecommendation pattern : noDuplicates) {
             try {
                 result.add(new JavaTemplateProposal(createTemplate(pattern), documentContext, icon, pattern));

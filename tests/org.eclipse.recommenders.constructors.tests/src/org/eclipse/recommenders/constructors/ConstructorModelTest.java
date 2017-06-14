@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class ConstructorModelTest {
@@ -47,7 +46,7 @@ public class ConstructorModelTest {
 
     @Parameters
     public static Iterable<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         ConstructorModel emptyObjectModel = new ConstructorModel(OBJECT, Collections.<IMethodName, Integer>emptyMap());
         ConstructorModel anotherEmptyObjectModel = new ConstructorModel(OBJECT,

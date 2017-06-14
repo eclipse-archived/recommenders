@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.CONTEXT;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
@@ -27,11 +28,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 public final class Proposals {
 
-    private static final Map<CacheKey, Image> CACHE = Maps.newHashMap();
+    private static final Map<CacheKey, Image> CACHE = new HashMap<>();
 
     private Proposals() {
         // Not meant to be instantiated

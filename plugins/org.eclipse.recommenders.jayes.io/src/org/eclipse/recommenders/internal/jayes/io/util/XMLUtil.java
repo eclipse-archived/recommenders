@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.jayes.io.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,17 +87,13 @@ public final class XMLUtil {
     }
 
     private static String toUTF8Hex(String string) {
-        try {
-            byte[] bytes = string.getBytes("UTF-8");
-            StringBuilder bldr = new StringBuilder(bytes.length * 3);
-            for (byte bt : bytes) {
-                bldr.append('_');
-                bldr.append(Integer.toHexString(bt & 0xFF).toUpperCase(Locale.US));
-            }
-            return bldr.toString();
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 encoding unsupported", e);
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+        StringBuilder bldr = new StringBuilder(bytes.length * 3);
+        for (byte bt : bytes) {
+            bldr.append('_');
+            bldr.append(Integer.toHexString(bt & 0xFF).toUpperCase(Locale.US));
         }
+        return bldr.toString();
     }
 
     public static String unescape(String text) {

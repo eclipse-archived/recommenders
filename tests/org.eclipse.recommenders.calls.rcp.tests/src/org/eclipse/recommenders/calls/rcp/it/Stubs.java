@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.coordinates.ProjectCoordinate.UNKNOWN;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,14 +48,13 @@ import org.mockito.stubbing.Answer;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 @SuppressWarnings({ "restriction", "rawtypes", "unchecked" })
 public class Stubs {
 
     private static final class CallModelSpy implements ICallModel {
 
-        private Set<IMethodName> observedCalls = Sets.newHashSet();
+        private Set<IMethodName> observedCalls = new HashSet<>();
         private IMethodName overriddenMethod;
         private IMethodName definedBy;
         private DefinitionKind defType;

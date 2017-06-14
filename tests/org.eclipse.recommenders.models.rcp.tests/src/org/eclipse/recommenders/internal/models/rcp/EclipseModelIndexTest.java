@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
@@ -36,7 +37,6 @@ import org.mockito.stubbing.Answer;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("unchecked")
@@ -85,7 +85,7 @@ public class EclipseModelIndexTest {
         EventBus bus = mock(EventBus.class);
         ModelsRcpPreferences prefs = new ModelsRcpPreferences(bus);
 
-        final Map<String, IModelIndex> map = Maps.newHashMap();
+        final Map<String, IModelIndex> map = new HashMap<>();
         String[] remotes = new String[configuration.length];
         for (int i = 0; i < configuration.length; i++) {
             Pair<String, ModelCoordinate[]> pair = configuration[i];

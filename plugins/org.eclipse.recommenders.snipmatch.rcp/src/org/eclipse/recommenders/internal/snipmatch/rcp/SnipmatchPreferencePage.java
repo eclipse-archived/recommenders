@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.internal.snipmatch.rcp.SnipmatchRcpModule
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -285,9 +286,9 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
         private List<SnippetRepositoryConfiguration> getTableInput() {
             List<SnippetRepositoryConfiguration> configurations = cast(tableViewer.getInput());
             if (configurations == null) {
-                return Lists.newArrayList();
+                return new ArrayList<>();
             }
-            return Lists.newArrayList(configurations);
+            return new ArrayList<>(configurations);
         }
 
         protected void addNewConfiguration() {
@@ -389,7 +390,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 return;
             }
             List<SnippetRepositoryConfiguration> oldconfigs = getTableInput();
-            List<SnippetRepositoryConfiguration> newConfigs = Lists.newArrayList();
+            List<SnippetRepositoryConfiguration> newConfigs = new ArrayList<>();
             for (SnippetRepositoryConfiguration config : oldconfigs) {
                 prefs.setRepositoryEnabled(config, tableViewer.getChecked(config));
                 newConfigs.add(config);

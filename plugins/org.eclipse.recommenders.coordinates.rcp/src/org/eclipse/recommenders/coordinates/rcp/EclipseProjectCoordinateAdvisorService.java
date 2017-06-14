@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +56,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
@@ -79,7 +79,7 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     private final File persistenceFile;
     private final Gson cacheGson;
 
-    private Map<IProjectCoordinateAdvisor, AdvisorDescriptor> descriptors = Maps.newHashMap();
+    private Map<IProjectCoordinateAdvisor, AdvisorDescriptor> descriptors = new HashMap<>();
 
     @Inject
     public EclipseProjectCoordinateAdvisorService(@Named(IDENTIFIED_PROJECT_COORDINATES) File persistenceFile,
@@ -189,10 +189,10 @@ public class EclipseProjectCoordinateAdvisorService extends AbstractIdleService
     }
 
     private List<IProjectCoordinateAdvisor> provideAdvisors(String advisorConfiguration) {
-        Map<IProjectCoordinateAdvisor, AdvisorDescriptor> newDescriptors = Maps.newHashMap();
+        Map<IProjectCoordinateAdvisor, AdvisorDescriptor> newDescriptors = new HashMap<>();
         List<AdvisorDescriptor> registeredAdvisors = AdvisorDescriptors.getRegisteredAdvisors();
         List<AdvisorDescriptor> loadedDescriptors = AdvisorDescriptors.load(advisorConfiguration, registeredAdvisors);
-        List<IProjectCoordinateAdvisor> advisors = Lists.newArrayListWithCapacity(loadedDescriptors.size());
+        List<IProjectCoordinateAdvisor> advisors = new ArrayList<>(loadedDescriptors.size());
         for (AdvisorDescriptor descriptor : loadedDescriptors) {
             try {
                 if (descriptor.isEnabled()) {

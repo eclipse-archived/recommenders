@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class SnippetSourceValidatorTest {
 
@@ -31,7 +29,7 @@ public class SnippetSourceValidatorTest {
 
     @Parameters(name = "{index}: {0}")
     public static Iterable<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         scenarios.add(scenario("Empty snippet", "", VALID, VALID));
         scenarios.add(scenario("Simple snippet", "Lorem ipsum dolor", VALID, VALID));

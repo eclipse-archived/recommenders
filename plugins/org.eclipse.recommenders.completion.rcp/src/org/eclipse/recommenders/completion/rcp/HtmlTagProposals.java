@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +21,12 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
-import com.google.common.collect.Maps;
-
 @SuppressWarnings("restriction")
 public class HtmlTagProposals {
 
     public static Map<IJavaCompletionProposal, CompletionProposal> computeHtmlTagProposals(
             HTMLTagCompletionProposalComputer htmlTagProposalComputer, JavaContentAssistInvocationContext coreContext) {
-        Map<IJavaCompletionProposal, CompletionProposal> result = Maps.newHashMap();
+        Map<IJavaCompletionProposal, CompletionProposal> result = new HashMap<>();
         htmlTagProposalComputer.sessionStarted();
         List<ICompletionProposal> htmlTagProposals = htmlTagProposalComputer.computeCompletionProposals(coreContext,
                 new NullProgressMonitor());
@@ -39,5 +38,4 @@ public class HtmlTagProposals {
         }
         return result;
     }
-
 }

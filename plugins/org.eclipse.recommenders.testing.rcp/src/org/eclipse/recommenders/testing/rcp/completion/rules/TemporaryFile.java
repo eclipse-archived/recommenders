@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,8 +37,6 @@ import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.testing.rcp.jdt.JavaContentAssistContextMock;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Pair;
-
-import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class TemporaryFile {
@@ -78,7 +77,7 @@ public class TemporaryFile {
     }
 
     private Pair<String, Set<Integer>> findMarkers(final CharSequence content, String marker) {
-        final Set<Integer> markers = Sets.newTreeSet();
+        final Set<Integer> markers = new TreeSet<>();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
         while ((pos = sb.indexOf(marker, pos)) != -1) {

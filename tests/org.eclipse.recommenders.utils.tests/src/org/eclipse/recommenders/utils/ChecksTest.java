@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ChecksTest {
@@ -130,7 +129,7 @@ public class ChecksTest {
 
     @Test
     public void testEnsureIsInstance_GotSubtype() {
-        ensureIsInstanceOf(Lists.newArrayList(), List.class);
+        ensureIsInstanceOf(new ArrayList<>(), List.class);
     }
 
     @Test(expected = IllegalArgumentException.class)

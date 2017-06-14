@@ -38,7 +38,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
 @RunWith(Parameterized.class)
@@ -91,7 +90,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         // @formatter:off
         scenarios.add(scenario("Methods of local variable",

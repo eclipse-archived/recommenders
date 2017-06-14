@@ -20,8 +20,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class VersionsValitidyTest {
 
@@ -35,7 +33,7 @@ public class VersionsValitidyTest {
 
     @Parameters
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
         scenarios.add(new Object[] { true, "0.100.1" });
         scenarios.add(new Object[] { false, "2.3" });
         scenarios.add(new Object[] { false, "2" });
@@ -53,5 +51,4 @@ public class VersionsValitidyTest {
     public void testCanonicalVersionWorksCorrect() {
         assertEquals(expected, Versions.isValidVersion(input));
     }
-
 }

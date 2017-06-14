@@ -10,18 +10,18 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.Beta;
-import com.google.common.collect.Sets;
 
 @Beta
 public class ProposalProcessorManager {
 
-    private final Set<ProposalProcessor> processors = Sets.newLinkedHashSet();
+    private final Set<ProposalProcessor> processors = new LinkedHashSet<>();
     private final IProcessableProposal proposal;
 
     public ProposalProcessorManager(IProcessableProposal proposal) {

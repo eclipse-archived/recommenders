@@ -318,7 +318,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
                 input.addAll(FeedDescriptors
                         .getFeeds(getPreferenceStore().getString(PreferenceConstants.CUSTOM_FEED_LIST_SORTED)));
             }
-            List<FeedDescriptor> checkedElements = Lists.newArrayList();
+            List<FeedDescriptor> checkedElements = new ArrayList<>();
             for (FeedDescriptor feed : input) {
                 if (feed.isEnabled()) {
                     checkedElements.add(feed);

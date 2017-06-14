@@ -62,12 +62,13 @@
          version="0.0.0"
          unpack="false"/>
 
-   <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8271 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13632 -->
    <plugin
          id="org.apache.commons.codec"
          download-size="0"
          install-size="0"
-         version="1.6.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7437 -->
@@ -95,7 +96,7 @@
          version="3.1.0.qualifier"
          unpack="false"/>
 
-   <!-- http://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
    <plugin
          id="org.apache.commons.logging"
          download-size="0"
@@ -120,19 +121,21 @@
          unpack="false"/>
 
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9005 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13624 -->
    <plugin
          id="org.apache.httpcomponents.httpclient"
          download-size="0"
          install-size="0"
-         version="4.3.6.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9004 -->
+   <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13623 -->
    <plugin
          id="org.apache.httpcomponents.httpcore"
          download-size="0"
          install-size="0"
-         version="4.3.3.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->

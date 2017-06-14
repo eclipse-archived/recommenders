@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 import static org.eclipse.jdt.core.CompletionProposal.*;
 import static org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages.ERROR_EXCEPTION_DURING_CODE_COMPLETION;
@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Field;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,6 @@ import org.eclipse.swt.graphics.Point;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 
 @SuppressWarnings("restriction")
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
@@ -50,7 +50,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     private static final Field F_PROPOSALS = Reflections
             .getDeclaredField(true, CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
 
-    private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
+    private final Map<IJavaCompletionProposal, CompletionProposal> proposals = new IdentityHashMap<>();
 
     private JavaContentAssistInvocationContext jdtuiContext;
     private CompletionProposalCollector collector;
@@ -58,8 +58,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx) {
         super(false);
-        checkNotNull(ctx);
-        jdtuiContext = ctx;
+        jdtuiContext = requireNonNull(ctx);
         initalizeCollector();
     }
 

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.utils;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,8 +35,6 @@ import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmMethodName;
-
-import com.google.common.collect.Lists;
 
 public class ASTStringUtils {
     @Inject
@@ -152,7 +151,7 @@ public class ASTStringUtils {
     }
 
     public static List<String> toSimpleTypesString(final Set<ITypeBinding> types) {
-        final List<String> result = Lists.newLinkedList();
+        final List<String> result = new LinkedList<>();
         for (final ITypeBinding b : types) {
             final String simpleName = toSimpleString(b);
             result.add(simpleName);
@@ -161,7 +160,7 @@ public class ASTStringUtils {
     }
 
     public static List<String> toSimpleMethodString(final Set<IMethodBinding> methods) {
-        final List<String> result = Lists.newLinkedList();
+        final List<String> result = new LinkedList<>();
         for (final IMethodBinding method : methods) {
             final String simpleName = toSimpleMethodString(method);
             result.add(simpleName);

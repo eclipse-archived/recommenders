@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.collect.Lists;
-
 @RunWith(Parameterized.class)
 public class PathUtilsTest {
 
@@ -39,7 +37,7 @@ public class PathUtilsTest {
 
     @Parameters(name = "\"{1}\" matches \"{0}\"? {2}!")
     public static Collection<Object[]> scenarios() {
-        LinkedList<Object[]> scenarios = Lists.newLinkedList();
+        LinkedList<Object[]> scenarios = new LinkedList<>();
 
         final String path = "/home/user/workspace/project/lib/example.jar";
 

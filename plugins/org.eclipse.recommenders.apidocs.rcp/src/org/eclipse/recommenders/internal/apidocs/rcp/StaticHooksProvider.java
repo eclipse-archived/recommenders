@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElement
 import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -56,7 +57,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
@@ -80,7 +80,7 @@ public class StaticHooksProvider extends ApidocProvider {
                 createLabel(container, Messages.PROVIDER_INTRO_NO_STATIC_HOOKS_FOUND, true);
             }
 
-            final List<StyleRange> typeRanges = Lists.newLinkedList();
+            final List<StyleRange> typeRanges = new LinkedList<>();
             final StringBuilder sb = new StringBuilder();
             for (final IType type : index.keySet()) {
                 final String typeLabel = type.getFullyQualifiedName();

@@ -21,6 +21,7 @@ import static org.eclipse.recommenders.utils.Logs.log;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -70,7 +71,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractFuture;
 import com.google.common.util.concurrent.AbstractIdleService;
 
@@ -187,7 +187,7 @@ public class ProjectTypesIndex extends AbstractIdleService implements IProjectTy
     }
 
     private Set<File> getIndexedRoots() throws IOException {
-        Set<File> res = Sets.newHashSet();
+        Set<File> res = new HashSet<>();
         IndexSearcher searcher = searchManager.acquire();
         try {
             TopDocs topDocs = searcher.search(TERM_QUERY_PACKAGE_FRAGMENT_ROOT_TYPE, Integer.MAX_VALUE);

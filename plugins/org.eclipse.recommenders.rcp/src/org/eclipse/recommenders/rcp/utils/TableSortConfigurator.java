@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.rcp.utils;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,13 +25,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 public final class TableSortConfigurator {
 
     private final TableViewer tableViewer;
     private final IAction refreshUiAction;
-    private final Map<TableColumn, Comparator<Object>> comparators = Maps.newHashMap();
+    private final Map<TableColumn, Comparator<Object>> comparators = new HashMap<>();
 
     private TableColumn initialSortingColumn = null;
     private int initialDirection = SWT.UP;
