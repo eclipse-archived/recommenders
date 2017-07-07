@@ -108,12 +108,12 @@
 						<repositories>
 							<repository>
 								<id>wtp-releng</id>
-								<url>http://download.eclipse.org/webtools/releng/repository</url>
+								<url>http://download.eclipse.org/webtools/releng/repository/</url>
 								<layout>p2</layout>
 							</repository>
 							<repository>
-								<id>neon</id>
-								<url>http://download.eclipse.org/releases/neon</url>
+								<id>oxygen</id>
+								<url>http://download.eclipse.org/releases/oxygen/</url>
 								<layout>p2</layout>
 							</repository>
 						</repositories>
