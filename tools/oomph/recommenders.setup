@@ -1459,7 +1459,8 @@
       <requirement
           name="org.eclipse.mylyn.git.feature.group"/>
       <requirement
-          name="com.mountainminds.eclemma.feature.feature.group"/>
+          name="org.eclipse.eclemma.feature.feature.group"
+          filter=""/>
       <requirement
           name="org.eclipse.emf.ecore.xcore.sdk.feature.group"
           versionRange="[1.2.1,2.0.0)"/>
@@ -1618,7 +1619,7 @@
       <requirement
           name="com.ctrlflow.codecity.pmd.rcp.feature.feature.group"/>
       <requirement
-          name="com.mountainminds.eclemma.feature.feature.group"
+          name="org.eclipse.eclemma.feature.feature.group"
           filter=""/>
       <requirement
           name="net.sourceforge.pmd.eclipse.feature.group"
