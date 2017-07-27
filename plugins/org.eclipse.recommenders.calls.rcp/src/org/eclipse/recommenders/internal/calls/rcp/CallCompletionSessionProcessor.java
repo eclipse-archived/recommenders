@@ -42,6 +42,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameRefere
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.calls.ICallModel;
+import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
@@ -144,17 +145,20 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findRecommendations() {
-        // set override-context:
-        IMethod overrides = ctx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
-        if (overrides != null) {
-            IMethodName crOverrides = pcProvider.get().toName(overrides)
+        IMethod firstMethod = ctx.get(ENCLOSING_METHOD_FIRST_DECLARATION, null);
+        IMethodName overriddenMethod = null;
+        if (firstMethod != null) {
+            overriddenMethod = pcProvider.get().toName(firstMethod)
                     .or(org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD);
-            model.setObservedOverrideContext(crOverrides);
+            model.setObservedOverrideContext(overriddenMethod);
         }
 
-        // set definition-type and defined-by
-        model.setObservedDefinitionKind(ctx.get(RECEIVER_DEF_TYPE, null));
-        model.setObservedDefiningMethod(ctx.get(RECEIVER_DEF_BY, null));
+        DefinitionKind definitionKind = ctx.get(RECEIVER_DEF_TYPE, null);
+        model.setObservedDefinitionKind(definitionKind);
+
+        model.setObservedDefiningMethod(
+                definitionKind == DefinitionKind.PARAM ? overriddenMethod : ctx.get(RECEIVER_DEF_BY, null));
+
         observedCalls = newHashSet(ctx.get(RECEIVER_CALLS, Collections.<IMethodName>emptyList()));
         model.setObservedCalls(observedCalls);
 
