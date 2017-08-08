@@ -21,6 +21,7 @@
 		<module>mars</module>
 		<module>neon</module>
 		<module>oxygen</module>
+		<module>photon</module>
 	</modules>
 
 	<build>

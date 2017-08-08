@@ -1,0 +1,6 @@
+# Consider this feature to be an update of both earlier versions of itself and
+# all previously deployed versions of org.eclipse.recommenders.feature.rcp, the
+# migration feature superseded by this p2.inf.
+update.matchExp = providedCapabilities.exists(iu | iu.namespace == 'org.eclipse.equinox.p2.iu' && \
+ ((iu.name == 'org.eclipse.recommenders.rcp.feature.feature.group' && iu.version ~= range('[0, $version$)')) || \
+  (iu.name == 'org.eclipse.recommenders.feature.rcp.feature.group' && iu.version ~= range('[0, 2.4.9)'))))

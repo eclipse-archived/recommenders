@@ -22,8 +22,6 @@
 		<module>org.eclipse.recommenders.rcp.feature</module>
 		<module>org.eclipse.recommenders.testing.rcp.feature</module>
 		<module>org.eclipse.recommenders.snipmatch.rcp.feature</module>
-		<!-- Features only needed for 1.x to 2.x migration -->
-		<module>org.eclipse.recommenders.feature.rcp</module>
 	</modules>
 
 	<build>
