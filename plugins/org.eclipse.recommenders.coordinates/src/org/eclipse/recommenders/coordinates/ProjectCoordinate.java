@@ -74,7 +74,10 @@ public final class ProjectCoordinate {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ProjectCoordinate)) {
+        if (this == other) {
+            return true;
+        }
+        if (this.getClass() != other.getClass()) {
             return false;
         }
         ProjectCoordinate that = (ProjectCoordinate) other;
