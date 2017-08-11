@@ -340,7 +340,7 @@ public class SnipmatchPreferencePage extends FieldEditorPreferencePage implement
                 }
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
-            tableViewer.setContentProvider(new ArrayContentProvider());
+            tableViewer.setContentProvider(ArrayContentProvider.getInstance());
             return tableViewer;
         }
 

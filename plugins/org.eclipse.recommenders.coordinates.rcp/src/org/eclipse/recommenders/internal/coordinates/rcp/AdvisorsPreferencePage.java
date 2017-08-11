@@ -84,7 +84,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
 
             tableViewer = getTableControl(parent);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(numColumns - 1, 1).grab(true, false)
-            .applyTo(tableViewer.getTable());
+                    .applyTo(tableViewer.getTable());
             tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 
                 @Override
@@ -164,7 +164,7 @@ public class AdvisorsPreferencePage extends FieldEditorPreferencePage implements
                 }
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
-            tableViewer.setContentProvider(new ArrayContentProvider());
+            tableViewer.setContentProvider(ArrayContentProvider.getInstance());
             return tableViewer;
         }
 

@@ -62,7 +62,7 @@ public final class SelectRepositoryDialog {
         ListDialog selectRepositoryDialog = new ListDialog(shell);
         selectRepositoryDialog.setTitle(Messages.SELECT_REPOSITORY_DIALOG_TITLE);
         selectRepositoryDialog.setMessage(Messages.SELECT_REPOSITORY_DIALOG_MESSAGE);
-        selectRepositoryDialog.setContentProvider(new ArrayContentProvider());
+        selectRepositoryDialog.setContentProvider(ArrayContentProvider.getInstance());
         selectRepositoryDialog.setInput(configurations);
 
         SnippetRepositoryConfiguration selectedElement = null;
