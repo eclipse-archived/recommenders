@@ -12,8 +12,6 @@ package org.eclipse.recommenders.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 public abstract class AbstractUniqueName<T> implements IUniqueName<T> {
@@ -46,10 +44,13 @@ public abstract class AbstractUniqueName<T> implements IUniqueName<T> {
         if (this == other) {
             return true;
         }
+        if (other == null) {
+            return false;
+        }
         if (this.getClass() != other.getClass()) {
             return false;
         }
-        AbstractUniqueName<T> that = (AbstractUniqueName<T>) other;
+        AbstractUniqueName<?> that = (AbstractUniqueName<?>) other;
         return Objects.equals(this.name, that.name) && Objects.equals(this.pc, that.pc);
     }
 

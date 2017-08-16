@@ -39,10 +39,10 @@ public final class ProjectCoordinate {
 
     /**
      * Creates a new coordinate. Note that <code>null</code> values are replaced with an empty string.
-     * 
+     *
      * @throws IllegalArgumentException
      *             If the coordinate parts have an invalid format.
-     * 
+     *
      * @see Versions#isValidVersion(String)
      * @see Coordinates#isValidId(String)
      */
@@ -76,6 +76,9 @@ public final class ProjectCoordinate {
     public boolean equals(Object other) {
         if (this == other) {
             return true;
+        }
+        if (other == null) {
+            return false;
         }
         if (this.getClass() != other.getClass()) {
             return false;

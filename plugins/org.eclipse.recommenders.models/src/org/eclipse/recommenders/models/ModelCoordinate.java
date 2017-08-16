@@ -120,7 +120,13 @@ public final class ModelCoordinate {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ModelCoordinate)) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (this.getClass() != other.getClass()) {
             return false;
         }
         ModelCoordinate that = (ModelCoordinate) other;
