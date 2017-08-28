@@ -25,7 +25,8 @@
         <feed id="org.eclipse.recommenders.news.rcp.marketplace"
             name="%feed.marketplace.name"
             uri="http://marketplace.eclipse.org/rss.xml"
-            pollingInterval="480"/>
+            pollingInterval="480"
+            enabledByDefault="false"/>
     </extension>
     <extension point="org.eclipse.mylyn.commons.notifications.ui.notifications">
         <category id="org.eclipse.recommenders.news"

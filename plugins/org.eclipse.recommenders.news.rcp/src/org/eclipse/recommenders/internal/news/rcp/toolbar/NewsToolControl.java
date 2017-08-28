@@ -35,7 +35,6 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,7 +51,6 @@ import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils.MessageAge;
 import org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences;
-import org.eclipse.recommenders.internal.news.rcp.PreferenceConstants;
 import org.eclipse.recommenders.internal.news.rcp.TopicConstants;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NotificationBridge;
@@ -68,6 +66,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
@@ -331,24 +331,31 @@ public class NewsToolControl {
     }
 
     private Map<FeedDescriptor, PollingResult> retrieveFeedContents(List<FeedDescriptor> feeds) {
-        List<PollingRequest> requests = new ArrayList<>(feeds.size());
-        for (FeedDescriptor feed : feeds) {
-            if (!feed.isEnabled()) {
-                continue;
-            }
-            requests.add(new PollingRequest(feed.getUri(), PollingPolicy.never()));
-        }
+        Collection<FeedDescriptor> enabledFeeds = Collections2.filter(feeds, new Predicate<FeedDescriptor>() {
 
-        if (requests.isEmpty()) {
+            @Override
+            public boolean apply(FeedDescriptor feed) {
+                return feed.isEnabled();
+            }
+        });
+        if (enabledFeeds.isEmpty()) {
             return Collections.emptyMap();
         }
+        Collection<PollingRequest> requests = Collections2.transform(enabledFeeds,
+                new Function<FeedDescriptor, PollingRequest>() {
+
+                    @Override
+                    public PollingRequest apply(FeedDescriptor feed) {
+                        return new PollingRequest(feed.getUri(), PollingPolicy.never());
+                    }
+                });
 
         Map<FeedDescriptor, PollingResult> feedContents = new HashMap<>();
         Collection<PollingResult> results = pollingService.poll(requests, null);
-        Iterator<FeedDescriptor> feedsIterator = feeds.iterator();
+        Iterator<FeedDescriptor> enabledFeedsIterator = enabledFeeds.iterator();
         Iterator<PollingResult> resultsIterator = results.iterator();
-        while (feedsIterator.hasNext() && resultsIterator.hasNext()) {
-            FeedDescriptor feed = feedsIterator.next();
+        while (enabledFeedsIterator.hasNext() && resultsIterator.hasNext()) {
+            FeedDescriptor feed = enabledFeedsIterator.next();
             PollingResult result = resultsIterator.next();
             feedContents.put(feed, result);
         }
