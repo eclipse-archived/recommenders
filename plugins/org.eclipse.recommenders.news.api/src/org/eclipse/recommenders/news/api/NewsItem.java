@@ -71,4 +71,9 @@ public final class NewsItem {
     public int hashCode() {
         return Objects.hash(title, date, uri, id);
     }
+
+    @Override
+    public String toString() {
+        return "'" + title + "' [" + id + "] @ <" + uri + "> on " + date;
+    }
 }

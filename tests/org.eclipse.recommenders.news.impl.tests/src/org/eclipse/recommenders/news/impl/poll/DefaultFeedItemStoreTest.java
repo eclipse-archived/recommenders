@@ -111,7 +111,8 @@ public class DefaultFeedItemStoreTest {
     }
 
     private static InputStream asInputStream(NewsItem... items) {
-        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+        // Format used by org.eclipse.mylyn.internal.commons.notifications.feed.FeedEntry.getDate(...)
+        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.US);
 
         StringBuilder rss = new StringBuilder();
         rss.append("<?xml version='1.0' encoding='UTF-8'?>");
