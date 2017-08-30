@@ -82,7 +82,7 @@ public class ModelRepositoriesFieldEditor extends FieldEditor {
 
     private TableViewer getTableControl(Composite parent) {
         final TableViewer tableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         tableViewer.setLabelProvider(new ColumnLabelProvider() {
             @Override

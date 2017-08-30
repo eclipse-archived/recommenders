@@ -302,7 +302,7 @@ public class NewsPreferencePage extends FieldEditorPreferencePage implements IWo
 
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
-            tableViewer.setContentProvider(new ArrayContentProvider());
+            tableViewer.setContentProvider(ArrayContentProvider.getInstance());
             return tableViewer;
         }
 

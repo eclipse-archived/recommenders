@@ -10,11 +10,9 @@
  */
 package org.eclipse.recommenders.models;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.eclipse.recommenders.coordinates.ProjectCoordinate;
+import java.util.Objects;
 
-import com.google.common.base.Objects;
+import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 
 public abstract class AbstractUniqueName<T> implements IUniqueName<T> {
 
@@ -38,16 +36,26 @@ public abstract class AbstractUniqueName<T> implements IUniqueName<T> {
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return Objects.hash(name, pc);
     }
 
     @Override
     public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (this.getClass() != other.getClass()) {
+            return false;
+        }
+        AbstractUniqueName<?> that = (AbstractUniqueName<?>) other;
+        return Objects.equals(this.name, that.name) && Objects.equals(this.pc, that.pc);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("name", getName()).add("qualifier", getProjectCoordinate()).toString();
+        return name.toString() + '@' + pc;
     }
 }

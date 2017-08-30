@@ -17,16 +17,6 @@
     <extension point="org.eclipse.core.runtime.preferences">
         <initializer class="org.eclipse.recommenders.internal.news.rcp.preferences.PreferenceInitializer"/>
     </extension>
-    <extension point="org.eclipse.recommenders.news.rcp.feed">
-        <feed id="org.eclipse.recommenders.news.rcp.planet.eclipse"
-            name="%feed.planet.eclipse.name"
-            uri="http://planeteclipse.org/planet/rss20.xml"
-            pollingInterval="480"/>
-        <feed id="org.eclipse.recommenders.news.rcp.marketplace"
-            name="%feed.marketplace.name"
-            uri="http://marketplace.eclipse.org/rss.xml"
-            pollingInterval="480"/>
-    </extension>
     <extension point="org.eclipse.mylyn.commons.notifications.ui.notifications">
         <category id="org.eclipse.recommenders.news"
             icon="icons/eview16/rss-active.png"

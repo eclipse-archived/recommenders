@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<fragment>
+    <extension point="org.eclipse.recommenders.news.rcp.feed">
+        <feed id="org.eclipse.recommenders.news.rcp.planet.eclipse"
+            name="Planet Eclipse"
+            uri="http://planeteclipse.org/planet/rss20.xml"
+            pollingInterval="480"/>
+        <feed id="org.eclipse.recommenders.news.rcp.marketplace"
+            name="Eclipse Marketplace"
+            uri="http://marketplace.eclipse.org/rss.xml"
+            pollingInterval="480"
+            enabledByDefault="false"/>
+    </extension>
+</fragment>

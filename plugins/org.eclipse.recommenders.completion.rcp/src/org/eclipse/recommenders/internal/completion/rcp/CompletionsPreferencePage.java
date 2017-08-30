@@ -143,7 +143,7 @@ public class CompletionsPreferencePage extends FieldEditorPreferencePage impleme
                 }
             });
             ColumnViewerToolTipSupport.enableFor(tableViewer);
-            tableViewer.setContentProvider(new ArrayContentProvider());
+            tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
             tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 

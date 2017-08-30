@@ -49,43 +49,38 @@
 
    <element name="feed">
       <complexType>
-         <choice minOccurs="0" maxOccurs="1">
-         </choice>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The ID of this feed. Must be unique.
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  feeds name
+                  The name of this feed, as shown in the UI.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="uri" type="string" use="required">
             <annotation>
                <documentation>
-                  Feed URI
+                  The URI of this feed, i.e., where to fetch the RSS from.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="pollingInterval" type="string">
             <annotation>
                <documentation>
-                  The polling interval in minutes. It determines how often the feed will be polled. Defaults to 480 minutes, i.e., 8 hours.
+                  The polling interval of this feed in minutes. Determines how often the feed will be polled. Defaults to 480 minutes, i.e., 8 hours.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="icon" type="string">
+         <attribute name="enabledByDefault" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
-                  16x16px icon
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="resource"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  feeds ID. It would be for the best if it&apos;s unique. You can follow the schema: YOUR_PLUGIN_ID.feed
+                  Whether this feed is enabled by default. Defaults to &quot;true&quot;.
                </documentation>
             </annotation>
          </attribute>
@@ -106,7 +101,7 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         Exmaple feed:
+         Example feed:
 &lt;p&gt;
 &lt;pre&gt;
     &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
@@ -120,36 +115,9 @@
    &lt;/pre&gt;
 &lt;/p&gt;
 
-Example feed with URL parameters, which are optional:
-&lt;p&gt;
-&lt;pre&gt;
-    &lt;extension point=&quot;org.eclipse.recommenders.news.rcp.feed&quot;&gt;
-      &lt;feed
-            id=&quot;org.eclipse.recommenders.news.rcp.planet.eclipse&quot;
-            name=&quot;Planet Eclipse&quot;
-            url=&quot;http://planeteclipse.org/planet/rss20.xml&quot;
-            pollingInterval=&quot;480&quot;&gt;
-      &lt;/feed&gt;
-   &lt;/extension&gt;
-   &lt;/pre&gt;
-&lt;/p&gt;
       </documentation>
    </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="apiinfo"/>
-      </appinfo>
-      <documentation>
-         &lt;dl&gt;Feeds extension point attributes:
-&lt;dt&gt;&lt;code&gt;id&lt;/code&gt; - unique identificator for your extension point, for example your plug-in id or your plug-in id with suffix &apos;.feed./dt&gt;
-&lt;dt&gt;&lt;code&gt;name&lt;/code&gt; - human-readable value that is displayed to users (via News menu and Preference page)/dt&gt;
-&lt;dt&gt;&lt;code&gt;url&lt;/code&gt; - absolute URL of RSS feed/dt&gt;
-&lt;dt&gt;&lt;code&gt;pollingInterval&lt;/code&gt; - interval at which feed will be polled, however it&apos;s secondary to user&apos;s preference/dt&gt;
-&lt;dt&gt;&lt;code&gt;urlParameters&lt;/code&gt; - list of URL parameters (key-value pairs)/dt&gt;
-&lt;dt&gt;&lt;code&gt;urlParameter&lt;/code&gt; - key - value pair which represents URL parameter for example: &apos;foo=bar&apos; (whole URL: &apos;https://www.eclipse.org/home/index.php?foo=bar&apos;) would be &lt;code&gt;&lt;urlParameter&gt; key=&quot;foo&quot; value=&quot;bar&quot; /&gt;/dt&gt; &lt;/dl&gt;
-      </documentation>
-   </annotation>
 
 
    <annotation>
@@ -161,8 +129,7 @@ Example feed with URL parameters, which are optional:
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
-&lt;a 
-href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+&lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
 

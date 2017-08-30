@@ -20,8 +20,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.recommenders.internal.news.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.base.Preconditions;
 
@@ -37,28 +35,21 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
     private final long pollingInterval;
 
     @Nullable
-    private final String description;
-
-    @Nullable
-    private final String iconPath;
-
-    @Nullable
     private final String contributedBy;
 
     private boolean enabled;
 
     public FeedDescriptor(FeedDescriptor that) {
         this(that.getId(), that.getUri().toString(), that.getName(), that.isEnabled(), that.isDefaultRepository(),
-                that.getPollingInterval(), that.getDescription(), that.getIconPath(), that.getContributedBy());
+                that.getPollingInterval(), that.getContributedBy());
     }
 
     public FeedDescriptor(String uri, String name, long pollingInterval) {
-        this(uri, uri, name, true, false, pollingInterval, null, null, null);
+        this(uri, uri, name, true, false, pollingInterval, null);
     }
 
     private FeedDescriptor(String id, String uri, String name, boolean enabled, boolean defaultRepository,
-            long pollingInterval, @Nullable String description, @Nullable String iconPath,
-            @Nullable String contributedBy) {
+            long pollingInterval, @Nullable String contributedBy) {
         Objects.requireNonNull(id);
         Preconditions.checkArgument(isUrlValid(uri), Messages.FEED_DESCRIPTOR_MALFORMED_URL);
 
@@ -68,8 +59,6 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
         this.enabled = enabled;
         this.defaultRepository = defaultRepository;
         this.pollingInterval = pollingInterval;
-        this.description = description;
-        this.iconPath = iconPath;
         this.contributedBy = contributedBy;
     }
 
@@ -91,11 +80,6 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
         return uri;
     }
 
-    @Nullable
-    public String getDescription() {
-        return description;
-    }
-
     public long getPollingInterval() {
         return pollingInterval;
     }
@@ -110,19 +94,6 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    @Nullable
-    public Image getIcon() {
-        if (iconPath != null) {
-            return AbstractUIPlugin.imageDescriptorFromPlugin(Constants.PLUGIN_ID, iconPath).createImage();
-        }
-        return null;
-    }
-
-    @Nullable
-    private String getIconPath() {
-        return iconPath;
     }
 
     @Override
@@ -171,8 +142,7 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
         return this.getName().compareTo(that.getName());
     }
 
-    public static FeedDescriptor fromConfigurationElement(IConfigurationElement config, boolean enabled,
-            String contributedBy) {
+    public static FeedDescriptor fromConfigurationElement(IConfigurationElement config, String contributedBy) {
         String id = config.getAttribute(ATTRIBUTE_ID);
         String uri = config.getAttribute(ATTRIBUTE_URI);
         String name = config.getAttribute(ATTRIBUTE_NAME);
@@ -183,9 +153,14 @@ public class FeedDescriptor implements Comparable<FeedDescriptor> {
         } else {
             pollingInterval = HOURS.toMinutes(8);
         }
-        String description = config.getAttribute(ATTRIBUTE_DESCRIPTION);
-        String icon = config.getAttribute(ATTRIBUTE_ICON);
+        String enabledByDefaultAttribute = config.getAttribute(Constants.ATTRIBUTE_ENABLED_BY_DEFAULT);
+        boolean enabledByDefault;
+        if (enabledByDefaultAttribute != null) {
+            enabledByDefault = Boolean.parseBoolean(enabledByDefaultAttribute);
+        } else {
+            enabledByDefault = true;
+        }
 
-        return new FeedDescriptor(id, uri, name, enabled, true, pollingInterval, description, icon, contributedBy);
+        return new FeedDescriptor(id, uri, name, enabledByDefault, true, pollingInterval, contributedBy);
     }
 }

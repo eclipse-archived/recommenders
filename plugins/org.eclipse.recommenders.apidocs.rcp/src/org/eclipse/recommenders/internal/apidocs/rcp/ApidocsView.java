@@ -179,7 +179,7 @@ public class ApidocsView extends ViewPart {
             }
         });
 
-        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setContentProvider(ArrayContentProvider.getInstance());
         viewer.setLabelProvider(new LabelProvider() {
 
             @Override

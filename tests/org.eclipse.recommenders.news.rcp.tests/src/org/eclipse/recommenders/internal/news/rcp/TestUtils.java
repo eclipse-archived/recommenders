@@ -22,7 +22,8 @@ public class TestUtils {
         when(config.getAttribute(ATTRIBUTE_ID)).thenReturn(id);
         when(config.getAttribute(ATTRIBUTE_NAME)).thenReturn(id);
         when(config.getAttribute(ATTRIBUTE_URI)).thenReturn(TEST_URL);
-        return FeedDescriptor.fromConfigurationElement(config, true, null);
+        when(config.getAttribute(ATTRIBUTE_ENABLED_BY_DEFAULT)).thenReturn(Boolean.TRUE.toString());
+        return FeedDescriptor.fromConfigurationElement(config, null);
     }
 
     public static FeedDescriptor disabled(String id) {
@@ -30,7 +31,8 @@ public class TestUtils {
         when(config.getAttribute(ATTRIBUTE_ID)).thenReturn(id);
         when(config.getAttribute(ATTRIBUTE_NAME)).thenReturn(id);
         when(config.getAttribute(ATTRIBUTE_URI)).thenReturn(TEST_URL);
-        return FeedDescriptor.fromConfigurationElement(config, false, null);
+        when(config.getAttribute(ATTRIBUTE_ENABLED_BY_DEFAULT)).thenReturn(Boolean.FALSE.toString());
+        return FeedDescriptor.fromConfigurationElement(config, null);
     }
 
     public static FeedDescriptor mockFeed(String name) {

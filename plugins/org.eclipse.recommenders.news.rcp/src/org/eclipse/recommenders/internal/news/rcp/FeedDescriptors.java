@@ -27,7 +27,11 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class FeedDescriptors {
+public final class FeedDescriptors {
+
+    private FeedDescriptors() {
+        throw new AssertionError();
+    }
 
     public static final char DISABLED_FLAG = '!';
     public static final char SEPARATOR = ';';
@@ -46,8 +50,7 @@ public class FeedDescriptors {
         });
         final List<FeedDescriptor> feeds = new LinkedList<>();
         for (final IConfigurationElement element : elements) {
-            boolean enabled = true;
-            FeedDescriptor feed = FeedDescriptor.fromConfigurationElement(element, enabled, Platform
+            FeedDescriptor feed = FeedDescriptor.fromConfigurationElement(element, Platform
                     .getBundle(element.getContributor().getName()).getHeaders().get(Constants.BUNDLE_HEADER_NAME));
             if (!feeds.contains(feed)) {
                 feeds.add(feed);

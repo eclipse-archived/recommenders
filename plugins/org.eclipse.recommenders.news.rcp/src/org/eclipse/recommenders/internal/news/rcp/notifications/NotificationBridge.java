@@ -25,8 +25,10 @@ import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.mylyn.commons.notifications.core.AbstractNotification;
 import org.eclipse.mylyn.commons.notifications.ui.NotificationsUi;
 import org.eclipse.mylyn.internal.commons.notifications.ui.popup.NotificationPopup;
+import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences;
+import org.eclipse.recommenders.internal.news.rcp.PollingResults;
 import org.eclipse.recommenders.internal.news.rcp.TopicConstants;
 import org.eclipse.recommenders.news.api.NewsItem;
 import org.eclipse.recommenders.news.api.poll.PollingResult;
@@ -69,7 +71,8 @@ public class NotificationBridge {
         for (PollingResult pollingResult : pollingResults) {
             for (FeedDescriptor feedDescriptor : feedDescriptors) {
                 if (feedDescriptor.isEnabled() && pollingResult.getFeedUri().equals(feedDescriptor.getUri())) {
-                    for (NewsItem newNewsItem : pollingResult.getNewNewsItems()) {
+                    for (NewsItem newNewsItem : PollingResults.getNewNewsItems(pollingResult,
+                            Constants.MAX_FEED_ITEMS)) {
                         notifications.add(new NewNewsItemsNotification(newNewsItem, feedDescriptor, token,
                                 commandService, handlerService));
                     }

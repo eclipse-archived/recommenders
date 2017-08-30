@@ -311,61 +311,65 @@ public class JayesCallModel implements ICallModel {
 
     @Override
     public boolean setObservedDefiningMethod(@Nullable final IMethodName newDefinition) {
+        junctionTree.removeEvidence(definedByNode);
+
         if (newDefinition == null) {
-            junctionTree.removeEvidence(definedByNode);
             return true;
+        } else {
+            String identifier = newDefinition.getIdentifier();
+            boolean contains = definedByNode.getOutcomes().contains(identifier);
+            if (contains) {
+                junctionTree.addEvidence(definedByNode, identifier);
+            }
+            return contains;
         }
-        // else:
-        String identifier = newDefinition.getIdentifier();
-        boolean contains = definedByNode.getOutcomes().contains(identifier);
-        if (contains) {
-            junctionTree.addEvidence(definedByNode, identifier);
-        }
-        return contains;
     }
 
     @Override
     public boolean setObservedOverrideContext(@Nullable final IMethodName newEnclosingMethod) {
+        junctionTree.removeEvidence(overridesNode);
+
         if (newEnclosingMethod == null) {
-            junctionTree.removeEvidence(overridesNode);
             return true;
+        } else {
+            String id = newEnclosingMethod.getIdentifier();
+            boolean contains = overridesNode.getOutcomes().contains(id);
+            if (contains) {
+                junctionTree.addEvidence(overridesNode, id);
+            }
+            return contains;
         }
-        // else:
-        String id = newEnclosingMethod.getIdentifier();
-        boolean contains = overridesNode.getOutcomes().contains(id);
-        if (contains) {
-            junctionTree.addEvidence(overridesNode, id);
-        }
-        return contains;
     }
 
     @Override
     public boolean setObservedDefinitionKind(@Nullable final DefinitionKind newDef) {
+        junctionTree.removeEvidence(defKindNode);
+
         if (newDef == null) {
-            junctionTree.removeEvidence(defKindNode);
             return true;
+        } else {
+            String identifier = newDef.toString();
+            boolean contains = defKindNode.getOutcomes().contains(identifier);
+            if (contains) {
+                junctionTree.addEvidence(defKindNode, identifier);
+            }
+            return contains;
         }
-        // else:
-        String identifier = newDef.toString();
-        boolean contains = defKindNode.getOutcomes().contains(identifier);
-        if (contains) {
-            junctionTree.addEvidence(defKindNode, identifier);
-        }
-        return contains;
     }
 
     @Override
     public boolean setObservedPattern(@Nullable final String patternName) {
+        junctionTree.removeEvidence(callgroupNode);
+
         if (patternName == null) {
-            junctionTree.removeEvidence(callgroupNode);
             return true;
+        } else {
+            boolean contains = callgroupNode.getOutcomes().contains(patternName);
+            if (contains) {
+                junctionTree.addEvidence(callgroupNode, patternName);
+            }
+            return contains;
         }
-        // else:
-        boolean contains = callgroupNode.getOutcomes().contains(patternName);
-        if (contains) {
-            junctionTree.addEvidence(callgroupNode, patternName);
-        }
-        return contains;
     }
 
     private boolean setCalled(final IMethodName m, @Nullable final String state) {
