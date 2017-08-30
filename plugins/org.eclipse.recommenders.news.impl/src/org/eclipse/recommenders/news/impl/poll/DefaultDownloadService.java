@@ -46,6 +46,8 @@ public class DefaultDownloadService implements IDownloadService {
     private static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
     private static final long SOCKET_TIMEOUT = TimeUnit.SECONDS.toMillis(5);
 
+    private final String userAgent;
+
     private final Executor executor = Executor.newInstance();
     private final Path downloadLocation;
 
@@ -56,6 +58,10 @@ public class DefaultDownloadService implements IDownloadService {
     @VisibleForTesting
     DefaultDownloadService(Path downloadLocation) {
         this.downloadLocation = downloadLocation;
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        String symbolicName = bundle.getSymbolicName();
+        String version = bundle.getVersion().toString();
+        this.userAgent = symbolicName + '/' + version;
     }
 
     private static Path getStateLocation() {
@@ -127,7 +133,7 @@ public class DefaultDownloadService implements IDownloadService {
     private InputStream openWebResourceAsStream(URI uri, SubMonitor monitor) throws IOException {
         SubMonitor progress = SubMonitor.convert(monitor, 1);
         try {
-            Request request = Request.Get(uri).viaProxy(Proxies.getProxyHost(uri))
+            Request request = Request.Get(uri).viaProxy(Proxies.getProxyHost(uri)).userAgent(userAgent)
                     .connectTimeout((int) CONNECTION_TIMEOUT).staleConnectionCheck(true)
                     .socketTimeout((int) SOCKET_TIMEOUT);
             Response response = Proxies.proxyAuthentication(executor, uri).execute(request);
