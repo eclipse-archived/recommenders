@@ -15,8 +15,6 @@
 	<name>Targets Definitions</name>
 
 	<modules>
-		<module>kepler</module>
-		<module>kepler-java8patch</module>
 		<module>luna</module>
 		<module>mars</module>
 		<module>neon</module>
