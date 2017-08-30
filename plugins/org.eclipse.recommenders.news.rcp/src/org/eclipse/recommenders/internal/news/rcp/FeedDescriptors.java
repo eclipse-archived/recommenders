@@ -27,7 +27,11 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class FeedDescriptors {
+public final class FeedDescriptors {
+
+    private FeedDescriptors() {
+        throw new AssertionError();
+    }
 
     public static final char DISABLED_FLAG = '!';
     public static final char SEPARATOR = ';';

@@ -51,6 +51,7 @@ import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.FeedDescriptor;
 import org.eclipse.recommenders.internal.news.rcp.MessageUtils.MessageAge;
 import org.eclipse.recommenders.internal.news.rcp.NewsRcpPreferences;
+import org.eclipse.recommenders.internal.news.rcp.PollingResults;
 import org.eclipse.recommenders.internal.news.rcp.TopicConstants;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
 import org.eclipse.recommenders.internal.news.rcp.notifications.NotificationBridge;
@@ -220,7 +221,7 @@ public class NewsToolControl {
     }
 
     private MenuManager createFeedMenu(FeedDescriptor feed, PollingResult result) {
-        List<NewsItem> items = result.getAllNewsItems();
+        List<NewsItem> items = PollingResults.getAllNewsItems(result, Constants.MAX_FEED_ITEMS);
 
         int numberOfUnreadMessages = getNumberOfUnreadMessages(items);
         String feedLabel;
@@ -394,7 +395,7 @@ public class NewsToolControl {
     private static Collection<NewsItem> getAllItems(Collection<PollingResult> results) {
         Collection<NewsItem> allItems = new ArrayList<>();
         for (PollingResult result : results) {
-            allItems.addAll(result.getAllNewsItems());
+            allItems.addAll(PollingResults.getAllNewsItems(result, Constants.MAX_FEED_ITEMS));
         }
         return allItems;
     }

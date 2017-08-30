@@ -28,4 +28,6 @@ public final class Constants {
     public static final String BUNDLE_HEADER_NAME = "Bundle-Name"; //$NON-NLS-1$
 
     public static final long DEFAULT_POLLING_INTERVAL = TimeUnit.HOURS.toMinutes(8);
+
+    public static final int MAX_FEED_ITEMS = 20;
 }
