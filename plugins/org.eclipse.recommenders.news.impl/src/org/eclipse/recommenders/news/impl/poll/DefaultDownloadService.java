@@ -13,6 +13,7 @@ package org.eclipse.recommenders.news.impl.poll;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -88,7 +89,18 @@ public class DefaultDownloadService implements IDownloadService {
         SubMonitor progress = SubMonitor.convert(monitor, 4);
 
         Path tempFile = null;
-        try (InputStream resourceStream = openWebResourceAsStream(uri, progress.newChild(1))) {
+        try (@Nullable InputStream resourceStream = openWebResourceAsStream(uri, progress.newChild(1))) {
+            if (resourceStream == null) {
+                progress.setWorkRemaining(0);
+
+                try {
+                    updateLastModifiedTime(targetFile);
+                    return;
+                } catch (IOException e) {
+                    throw new InvocationTargetException(e);
+                }
+            }
+
             Files.createDirectories(downloadLocation);
 
             tempFile = Files.createTempFile(downloadLocation, null, fileName);
@@ -99,19 +111,15 @@ public class DefaultDownloadService implements IDownloadService {
 
             Files.move(tempFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
             progress.worked(1);
+        } catch (InvocationTargetException e) {
+            throw (IOException) e.getTargetException();
         } catch (IOException e) {
             progress.setWorkRemaining(0);
 
             try {
-                Files.setLastModifiedTime(targetFile, FileTime.fromMillis(System.currentTimeMillis()));
-            } catch (IOException failedToSetLastModifiedTime) {
-                e.addSuppressed(failedToSetLastModifiedTime);
-
-                try {
-                    Files.createFile(targetFile);
-                } catch (IOException failedToCreateFile) {
-                    e.addSuppressed(failedToCreateFile);
-                }
+                updateLastModifiedTime(targetFile);
+            } catch (IOException e2) {
+                e.addSuppressed(e2);
             }
 
             throw e;
@@ -119,6 +127,19 @@ public class DefaultDownloadService implements IDownloadService {
             if (tempFile != null) {
                 Files.deleteIfExists(tempFile);
             }
+        }
+    }
+
+    private void updateLastModifiedTime(Path targetFile) throws IOException {
+        try {
+            Files.setLastModifiedTime(targetFile, FileTime.fromMillis(System.currentTimeMillis()));
+        } catch (IOException e) {
+            try {
+                Files.createFile(targetFile);
+            } catch (IOException e2) {
+                e.addSuppressed(e2);
+            }
+            throw e;
         }
     }
 
@@ -130,12 +151,31 @@ public class DefaultDownloadService implements IDownloadService {
         }
     }
 
+    /**
+     * @return an input stream for the Web resource at the given URI or <code>null</code>, if the Web resource has not
+     *         been modified since the {@linkplain #getLastAttemptDate(URI) last download attempt}.
+     */
+    @Nullable
     private InputStream openWebResourceAsStream(URI uri, SubMonitor monitor) throws IOException {
         SubMonitor progress = SubMonitor.convert(monitor, 1);
         try {
             Request request = Request.Get(uri).viaProxy(Proxies.getProxyHost(uri)).userAgent(userAgent)
                     .connectTimeout((int) CONNECTION_TIMEOUT).staleConnectionCheck(true)
                     .socketTimeout((int) SOCKET_TIMEOUT);
+            try {
+                // This errs if the last attempt was a failure but the web resource has been modified in the meantime.
+                // In that case, we will receive a 304 Not Modified, but won't have an up-to-date representation at
+                // head but only the representation (if any) retrieved prior to the failed attempt.
+                // This problem is relatively benign, however, and fixing it requires larger changes (keeping separate
+                // dates for successful and failed attempts).
+                Date lastAttemptDate = getLastAttemptDate(uri);
+                if (lastAttemptDate != null) {
+                    request.setIfModifiedSince(lastAttemptDate);
+                }
+            } catch (IOException e) {
+                // Ignore
+            }
+
             Response response = Proxies.proxyAuthentication(executor, uri).execute(request);
             HttpResponse returnResponse = response.returnResponse();
             StatusLine statusLine = returnResponse.getStatusLine();
@@ -144,6 +184,8 @@ public class DefaultDownloadService implements IDownloadService {
             }
             if (statusLine.getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
                 throw new IOException(statusLine.getReasonPhrase());
+            } else if (statusLine.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
+                return null;
             }
             HttpEntity entity = returnResponse.getEntity();
             if (entity == null || entity.getContentLength() == 0) {

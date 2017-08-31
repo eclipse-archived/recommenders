@@ -12,6 +12,7 @@ package org.eclipse.recommenders.news.impl.poll;
 
 import static org.eclipse.recommenders.news.api.poll.PollingResult.Status.*;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -115,7 +116,7 @@ public class DefaultNewsPollingService implements INewsPollingService {
         List<NewsItem> allItems;
         Status status;
 
-        try (InputStream stream = downloadService.download(feedUri, progress.newChild(1))) {
+        try (InputStream stream = new BufferedInputStream(downloadService.download(feedUri, progress.newChild(1)))) {
             newItems = feedItemStore.udpate(feedUri, stream, progress.newChild(1));
             allItems = feedItemStore.getNewsItems(feedUri);
             status = DOWNLOADED;
@@ -132,7 +133,7 @@ public class DefaultNewsPollingService implements INewsPollingService {
 
         InputStream in = downloadService.read(feedUri);
         if (in != null) {
-            feedItemStore.udpate(feedUri, in, progress.newChild(1));
+            feedItemStore.udpate(feedUri, new BufferedInputStream(in), progress.newChild(1));
             allItems = feedItemStore.getNewsItems(feedUri);
             status = DOWNLOADED;
         } else {
