@@ -19,6 +19,7 @@
 		<module>mars</module>
 		<module>neon</module>
 		<module>oxygen</module>
+		<module>oxygen-java9patch</module>
 		<module>photon</module>
 	</modules>
 
