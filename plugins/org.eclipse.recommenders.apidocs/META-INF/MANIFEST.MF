@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.apidocs
-Bundle-Version: 2.4.10.qualifier
+Bundle-Version: 2.4.11.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.recommenders.coordinates;bundle-version="[2.4.10,2.4.11)",
- org.eclipse.recommenders.models;bundle-version="[2.4.10,2.4.11)",
- org.eclipse.recommenders.utils;bundle-version="[2.4.10,2.4.11)"
+Require-Bundle: org.eclipse.recommenders.coordinates;bundle-version="[2.4.11,2.4.12)",
+ org.eclipse.recommenders.models;bundle-version="[2.4.11,2.4.12)",
+ org.eclipse.recommenders.utils;bundle-version="[2.4.11,2.4.12)"
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
  org.apache.commons.lang3.builder;version="[3.0.0,4.0.0)",
