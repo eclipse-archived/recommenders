@@ -611,7 +611,7 @@
 				<property>
 					<name>simrel</name>
 					<!-- This needs to mirror the value of ${env.MAINTENANCE_SIMREL}. -->
-					<value>neon</value>
+					<value>oxygen</value>
 				</property>
 			</activation>
 			<build>
