@@ -446,6 +446,10 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
                 @Override
                 public void acceptPackage(char[] packageName) {
                 }
+
+                // @Override only in JDT with Java 9 support
+                public void acceptModule(char[] moduleName) {
+                }
             });
         } catch (JavaModelException e) {
             Throws.throwUnhandledException(e);

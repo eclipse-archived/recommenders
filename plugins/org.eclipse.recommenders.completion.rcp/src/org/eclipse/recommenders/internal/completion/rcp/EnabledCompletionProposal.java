@@ -35,7 +35,7 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
     private static final Object DUMMY_INFO = new Object();
 
     private static final String HTTP_HOMEPAGE = "https://www.eclipse.org/recommenders/"; //$NON-NLS-1$
-    private static final String HTTP_MANUAL = "https://www.eclipse.org/recommenders/manual/#completion-engines"; //$NON-NLS-1$
+    private static final String HTTP_MANUAL = "https://www.eclipse.org/recommenders/manual/#intelligent-code-completion"; //$NON-NLS-1$
     private static final String PREFERENCE_PAGE_NAME = PreferencePages
             .createLinkLabelToPreferencePage(COMPLETION_PREFERENCE_PAGE_ID);
     private static final String PREFERENCE_PAGE_LINK = X_PREFERENCES + COMPLETION_PREFERENCE_PAGE_ID;
