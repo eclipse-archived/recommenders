@@ -122,18 +122,17 @@ public final class SharedImages implements IDisposable {
         OBJ_BULLET_YELLOW(obj16("bullet_yellow.png")), //$NON-NLS-1$
         OBJ_CHECK_GREEN(obj16("tick_small.png")), //$NON-NLS-1$
         OBJ_CROSS_RED(obj16("cross_small.png")), //$NON-NLS-1$
-        OBJ_MANUAL(obj16("manual.gif")), //$NON-NLS-1$
+        OBJ_MANUAL(obj16("manual.png")), //$NON-NLS-1$
         OBJ_FAVORITE_STAR(obj16("favorite_star.png")), //$NON-NLS-1$
         OBJ_HOMEPAGE(obj16("homepage.png")), //$NON-NLS-1$
-        OBJ_HOURGLASS(obj16("hourglass.png")), //$NON-NLS-1$
         OBJ_LIGHTBULB(obj16("lightbulb.png")), //$NON-NLS-1$
-        OBJ_NEWSLETTER(obj16("newsletter.png")), //$NON-NLS-1$
         OBJ_JAR(obj16("jar.gif")), //$NON-NLS-1$
         OBJ_JAVA_PROJECT(obj16("project.gif")), //$NON-NLS-1$
         OBJ_JRE(obj16("jre.gif")), //$NON-NLS-1$
         OBJ_REPOSITORY(obj16("repository.gif")), //$NON-NLS-1$
         OBJ_LOCKED_REPOSITORY(obj16("locked_repository.png")), //$NON-NLS-1$
         OBJ_TRANSPARENT(obj16("transparent.png")), //$NON-NLS-1$
+        OBJ_WAITING(obj16("waiting.png")), //$NON-NLS-1$
         OVR_STAR(ovr16("star.png")); //$NON-NLS-1$
         // @formatter:on
 

@@ -85,7 +85,7 @@ public abstract class AbstractContentAssistProcessor<T extends ContentAssistInvo
         this.configs = configs;
         this.dependencyListener = dependencyListener;
         this.pcProvider = pcProvider;
-        contextLoadingImage = images.getImage(SharedImages.Images.OBJ_HOURGLASS);
+        contextLoadingImage = images.getImage(SharedImages.Images.OBJ_WAITING);
         snippetImage = images.getImage(SharedImages.Images.OBJ_BULLET_BLUE);
     }
 
