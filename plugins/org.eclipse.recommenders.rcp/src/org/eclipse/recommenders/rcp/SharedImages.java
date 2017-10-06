@@ -133,6 +133,7 @@ public final class SharedImages implements IDisposable {
         OBJ_JRE(obj16("jre.gif")), //$NON-NLS-1$
         OBJ_REPOSITORY(obj16("repository.gif")), //$NON-NLS-1$
         OBJ_LOCKED_REPOSITORY(obj16("locked_repository.png")), //$NON-NLS-1$
+        OBJ_TRANSPARENT(obj16("transparent.png")), //$NON-NLS-1$
         OVR_STAR(ovr16("star.png")); //$NON-NLS-1$
         // @formatter:on
 
