@@ -30,6 +30,7 @@
 		<module>org.eclipse.recommenders.injection</module>
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.io</module>
+		<module>org.eclipse.recommenders.jayes.rcp</module>
 		<module>org.eclipse.recommenders.jayes.transformation</module>
 		<module>org.eclipse.recommenders.jdt</module>
 		<module>org.eclipse.recommenders.models</module>

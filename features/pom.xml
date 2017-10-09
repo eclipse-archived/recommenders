@@ -17,6 +17,7 @@
 	<modules>
 		<module>org.eclipse.recommenders.3rd.feature</module>
 		<module>org.eclipse.recommenders.jayes.feature</module>
+		<module>org.eclipse.recommenders.jayes.rcp.feature</module>
 		<module>org.eclipse.recommenders.mylyn.rcp.feature</module>
 		<module>org.eclipse.recommenders.news.rcp.feature</module>
 		<module>org.eclipse.recommenders.rcp.feature</module>
