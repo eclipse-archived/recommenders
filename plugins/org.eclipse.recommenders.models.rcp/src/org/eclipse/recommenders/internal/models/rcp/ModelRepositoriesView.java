@@ -533,12 +533,12 @@ public class ModelRepositoriesView extends ViewPart {
                         });
                         addAction(Messages.MENUITEM_REMOVE_REPOSITORY, ELCL_REMOVE_REPOSITORY, menuManager,
                                 new Action() {
-                            @Override
-                            public void run() {
-                                deleteRepository(url.get());
-                                refreshData();
-                            }
-                        });
+                                    @Override
+                                    public void run() {
+                                        deleteRepository(url.get());
+                                        refreshData();
+                                    }
+                                });
                     }
                 }
             }
@@ -591,8 +591,13 @@ public class ModelRepositoriesView extends ViewPart {
                     } else {
                         return images.getImage(OBJ_BULLET_BLUE);
                     }
+                } else {
+                    // Return an "icon" for every row to work around Bug 525676; otherwise, no icons are shown in the
+                    // classifier columns.
+                    // See <https://bugs.eclipse.org/bugs/show_bug.cgi?id=525676> and
+                    // <https://bugs.eclipse.org/bugs/show_bug.cgi?id=525678>
+                    return images.getImage(OBJ_TRANSPARENT);
                 }
-                return null;
             }
         });
     }

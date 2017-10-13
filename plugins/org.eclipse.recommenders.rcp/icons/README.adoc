@@ -3,11 +3,20 @@ See http://wiki.eclipse.org/User_Interface_Guidelines#Folder_Structure for namin
 obj16
 -----
 
+favorite_star::
+    selfmade, see icons-svg
+
 lightbulb::
     org.eclipse.jdt.ui/icons/full/obj16/quickfix_obj
+
+manual::
+    org.eclipse.ui.intro/icons/contents_view
+
+waiting::
+    org.eclipse.e4.ui.progress/icons/full/progress/waiting
 
 ovr16
 -----
 
 star::
-    selfmade
+    selfmade, see icons-svg

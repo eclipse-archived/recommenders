@@ -96,7 +96,7 @@ public final class Zips {
                 if (!entry.isDirectory()) {
                     final File file = new File(destFolder, entry.getName());
                     Files.createParentDirs(file);
-                    Files.asByteSink(file, FileWriteMode.APPEND).writeFrom(zis);
+                    Files.asByteSink(file).writeFrom(zis);
                 }
             }
         } finally {
