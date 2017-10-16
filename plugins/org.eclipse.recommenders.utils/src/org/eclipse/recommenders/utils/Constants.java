@@ -87,6 +87,8 @@ public final class Constants {
     public static final String CLASS_SELFC_MODEL = "selfc";
     /** {@value} */
     public static final String CLASS_SELFM_MODEL = "selfm";
+    /** {@value} */
+    public static final String CLASS_STATICS_MODEL = "statics";
 
     /*
      * Type and method name constants. Used in many different locations: analysis, networks, etc.
