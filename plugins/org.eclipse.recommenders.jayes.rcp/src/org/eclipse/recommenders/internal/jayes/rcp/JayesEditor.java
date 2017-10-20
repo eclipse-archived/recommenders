@@ -44,9 +44,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * Very basic <b>viewer</b> (also the extension point used is called editor) to display the contents of a Bayesian
@@ -67,9 +67,9 @@ public class JayesEditor extends EditorPart {
 
     private void setViewerInput() {
         IEditorInput input = getEditorInput();
-        if (input instanceof FileEditorInput) {
-            FileEditorInput fei = (FileEditorInput) input;
-            try (InputStream is = fei.getFile().getContents()) {
+        if (input instanceof IURIEditorInput) {
+            IURIEditorInput fei = (IURIEditorInput) input;
+            try (InputStream is = fei.getURI().toURL().openStream()) {
 
                 JayesBifReader r = new JayesBifReader(is);
                 net = r.read();
