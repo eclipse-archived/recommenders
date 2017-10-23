@@ -15,7 +15,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -68,8 +67,6 @@ public class JayesEditor extends EditorPart {
 
     private void setViewerInput() {
         IEditorInput input = getEditorInput();
-        MessageDialog.openConfirm(null, "editor Type", input.getClass().getName());
-        System.out.println(input.getClass());
         if (input instanceof IURIEditorInput) {
             IURIEditorInput fei = (IURIEditorInput) input;
             try (InputStream is = fei.getURI().toURL().openStream()) {
