@@ -15,6 +15,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -67,6 +68,8 @@ public class JayesEditor extends EditorPart {
 
     private void setViewerInput() {
         IEditorInput input = getEditorInput();
+        MessageDialog.openConfirm(null, "editor Type", input.getClass().getName());
+        System.out.println(input.getClass());
         if (input instanceof IURIEditorInput) {
             IURIEditorInput fei = (IURIEditorInput) input;
             try (InputStream is = fei.getURI().toURL().openStream()) {
@@ -256,8 +259,8 @@ public class JayesEditor extends EditorPart {
     }
 
     private final class ValueColumnLabelProvider extends ColumnLabelProvider {
-        DecimalFormat outcomeNumberFormat = new DecimalFormat("0.00#############");
-        DecimalFormat nodeNumberFormat = new DecimalFormat("0.000");
+        DecimalFormat outcomeNumberFormat = new DecimalFormat("0.0000");
+        DecimalFormat nodeNumberFormat = new DecimalFormat("0.0000");
 
         @Override
         public String getText(Object element) {
