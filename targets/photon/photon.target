@@ -61,7 +61,7 @@
 <unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13624 -->
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=14620 -->
 <unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20170210-0925"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13623 -->
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.6.v20170210-0925"/>
