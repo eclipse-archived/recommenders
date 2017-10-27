@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="4">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="5">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Photon M2 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M2-201709132000/"/>
+<!-- Stable platform build for Photon M3 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M3-201710252000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -85,8 +85,8 @@
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
 <unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
-<!-- Stable Orbit build for Photon M2 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20170912163609/repository/"/>
+<!-- Stable Orbit build for Photon M3 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20171020092454/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
