@@ -13,8 +13,11 @@ package org.eclipse.recommenders.internal.mylyn.rcp;
 import static java.lang.Math.round;
 import static java.text.MessageFormat.format;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.mylyn.context.core.ContextCore;
 import org.eclipse.mylyn.context.core.IInteractionContextManager;
 import org.eclipse.mylyn.context.core.IInteractionElement;
@@ -28,9 +31,14 @@ import org.eclipse.recommenders.internal.mylyn.rcp.l10n.Messages;
 @SuppressWarnings("restriction")
 public class MylynSessionProcessor extends SessionProcessor {
 
+    private IInteractionContextManager contextManager;
+    private float minInterest;
+
     @Override
     public boolean startSession(IRecommendersCompletionContext crContext) {
-        return ContextCore.getContextManager().isContextActive();
+        contextManager = ContextCore.getContextManager();
+        minInterest = ContextCore.getCommonContextScaling().getInteresting();
+        return contextManager.isContextActive();
     }
 
     @Override
@@ -43,16 +51,22 @@ public class MylynSessionProcessor extends SessionProcessor {
         if (javaElement == null) {
             return;
         }
-
         String handle = javaElement.getHandleIdentifier();
-        IInteractionContextManager mgr = ContextCore.getContextManager();
-        IInteractionElement interactionElement = mgr.getElement(handle);
+        IInteractionElement interactionElement = contextManager.getElement(handle);
+        if (interactionElement == null) {
+            return;
+        }
         float interest = interactionElement.getInterest().getValue();
-        if (interest > ContextCore.getCommonContextScaling().getInteresting()) {
+        if (interest > minInterest) {
             String label = format(Messages.PROPOSAL_LABEL_MYLYN_INTEREST, interest);
             ProposalProcessorManager proposalMgr = p.getProposalProcessorManager();
             SimpleProposalProcessor processor = new SimpleProposalProcessor(round(interest), label);
             proposalMgr.addProcessor(processor);
         }
+    }
+
+    @Override
+    public void endSession(List<ICompletionProposal> proposals) {
+        contextManager = null;
     }
 }
