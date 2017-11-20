@@ -18,6 +18,7 @@ import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextViewer;
@@ -69,6 +70,19 @@ public class EnabledCompletionProposal extends AbstractJavaCompletionProposal {
         setSortString(ENABLE_CODE_COMPLETION_SORT_STRING);
 
         setCursorPosition(0);
+    }
+
+    /**
+     * Disable substring highlighting for this proposal.
+     * 
+     * This has to be done in {@link AbstractJavaCompletionProposal#getPatternToEmphasizeMatch(IDocument, int)} rather
+     * than
+     * {@link org.eclipse.jface.text.contentassist.ICompletionProposalExtension7#getStyledDisplayString(IDocument, int, org.eclipse.jface.text.contentassist.BoldStylerProvider)}
+     * as the latter requires a type not available in all versions of Eclipse supported by Code Recommenders.
+     */
+    // TODO @Override - No override before Neon.0
+    protected String getPatternToEmphasizeMatch(IDocument document, int offset) {
+        return "";
     }
 
     @Override
