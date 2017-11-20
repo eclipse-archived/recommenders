@@ -10,29 +10,20 @@
  */
 package org.eclipse.recommenders.completion.rcp.utils;
 
-import static com.google.common.base.Throwables.propagate;
-
-import java.lang.reflect.Field;
-
 import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
-import org.eclipse.recommenders.utils.Reflections;
 
 @SuppressWarnings("restriction")
 public final class Asts {
-
-    private static final Field SHARED_AST_LEVEL = Reflections
-            .getDeclaredField(true, ASTProvider.class, "SHARED_AST_LEVEL") //$NON-NLS-1$
-            .orNull();
 
     private Asts() {
         // Not meant to be instantiated
     }
 
+    /**
+     * @deprecated Use {@linkplain ASTProvider#SHARED_AST_LEVEL} directly.
+     */
+    @Deprecated
     public static int getSharedAstLevel() {
-        try {
-            return (Integer) SHARED_AST_LEVEL.get(null);
-        } catch (Exception e) {
-            throw propagate(e);
-        }
+        return ASTProvider.SHARED_AST_LEVEL;
     }
 }
