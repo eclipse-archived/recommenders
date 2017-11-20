@@ -19,8 +19,8 @@ public final class PreferenceInitializer extends AbstractPreferenceInitializer {
     @Override
     public void initializeDefaultPreferences() {
         IEclipsePreferences node = DefaultScope.INSTANCE.getNode(BUNDLE_NAME);
-        node.putInt(PREF_MAX_NUMBER_OF_PROPOSALS, 7);
-        node.putInt(PREF_MIN_PROPOSAL_PERCENTAGE, 0);
+        node.putInt(PREF_MAX_NUMBER_OF_PROPOSALS, 3);
+        node.putInt(PREF_MIN_PROPOSAL_PERCENTAGE, 5);
         node.putBoolean(PREF_DECORATE_PROPOSAL_ICON, true);
         node.putBoolean(PREF_DECORATE_PROPOSAL_ICON, true);
         node.putBoolean(PREF_DECORATE_PROPOSAL_TEXT, true);
