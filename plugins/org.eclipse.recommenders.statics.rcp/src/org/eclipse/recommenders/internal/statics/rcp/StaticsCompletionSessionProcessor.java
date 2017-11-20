@@ -13,7 +13,9 @@ import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.*;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -46,12 +48,13 @@ import org.eclipse.recommenders.statics.IStaticsModelProvider;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.Names;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 
 public class StaticsCompletionSessionProcessor extends SessionProcessor {
 
@@ -81,6 +84,7 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
     @Override
     public boolean startSession(final IRecommendersCompletionContext context) {
         Multimap<TypeBinding, CompletionProposal> proposals = HashMultimap.create();
+
         recommendations = Maps.newHashMap();
 
         for (CompletionProposal proposal : context.getProposals().values()) {
@@ -134,6 +138,7 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
                     break;
                 }
             }
+            // First level of relevance filtering (top recommendations per type)
             Iterable<Recommendation<IMethodName>> recommendations = filterRelevance(
                     top(model.recommendCalls(), prefs.maxNumberOfProposals),
                     max(prefs.minProposalPercentage, 0.01) / 100);
@@ -142,7 +147,27 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
             }
             modelProvider.releaseModel(model);
         }
-        return !proposals.isEmpty();
+
+        if (recommendations.isEmpty()) {
+            return false;
+        } else if (recommendations.size() <= prefs.maxNumberOfProposals) {
+            return true;
+        } else {
+            // Second level of relevance filtering (top recommendations overall)
+            List<Entry<IMethodName, Double>> topRecommendations = Ordering.natural()
+                    .onResultOf(new Function<Map.Entry<IMethodName, Double>, Double>() {
+
+                        @Override
+                        public Double apply(Map.Entry<IMethodName, Double> recommendation) {
+                            return recommendation.getValue();
+                        }
+                    }).greatestOf(recommendations.entrySet(), prefs.maxNumberOfProposals);
+            recommendations.clear();
+            for (Entry<IMethodName, Double> entry : topRecommendations) {
+                recommendations.put(entry.getKey(), entry.getValue());
+            }
+            return true;
+        }
     }
 
     @SuppressWarnings("restriction")

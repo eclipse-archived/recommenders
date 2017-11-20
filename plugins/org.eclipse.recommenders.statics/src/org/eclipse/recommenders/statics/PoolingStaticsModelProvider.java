@@ -18,7 +18,6 @@ import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.models.UniqueTypeName;
-import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Zips;
 
 public class PoolingStaticsModelProvider extends PoolingModelProvider<UniqueTypeName, IStaticsModel>
