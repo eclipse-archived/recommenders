@@ -15,7 +15,6 @@
 	<name>Targets Definitions</name>
 
 	<modules>
-		<module>luna</module>
 		<module>mars</module>
 		<module>neon</module>
 		<module>oxygen</module>

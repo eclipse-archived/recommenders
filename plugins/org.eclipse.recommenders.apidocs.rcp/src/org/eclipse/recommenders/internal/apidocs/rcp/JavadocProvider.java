@@ -16,12 +16,10 @@ package org.eclipse.recommenders.internal.apidocs.rcp;
 import static org.eclipse.recommenders.internal.apidocs.rcp.l10n.LogMessages.ERROR_DURING_JAVADOC_SELECTION;
 import static org.eclipse.recommenders.internal.rcp.JavaElementSelections.resolveSelectionLocationFromJavaElement;
 import static org.eclipse.recommenders.utils.Logs.log;
-import static org.eclipse.recommenders.utils.Reflections.getDeclaredMethodWithAlternativeSignatures;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -64,17 +62,6 @@ import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends ApidocProvider {
-
-    /**
-     * Use of reflection made necessary due to a change in method signature of
-     * {@link JavadocContentAccess2#getHTMLContent(IMember, boolean)}. There now exists a second alternative signature
-     * of {@link JavadocContentAccess2#getHTMLContent(IJavaElement, boolean)}.
-     *
-     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=459519">Bug 459519</a>
-     */
-    private static final Method JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT = getDeclaredMethodWithAlternativeSignatures(
-            true, JavadocContentAccess2.class, "getHTMLContent", new Class[] { IMember.class, Boolean.TYPE }, //$NON-NLS-1$
-            new Class[] { IJavaElement.class, Boolean.TYPE }).orNull();
 
     private static final String FG_STYLE_SHEET = loadStyleSheet();
 
@@ -192,12 +179,8 @@ public final class JavadocProvider extends ApidocProvider {
     }
 
     private String findJavadoc(final IMember element) throws CoreException {
-        if (JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT == null) {
-            return ""; //$NON-NLS-1$
-        }
-
         try {
-            String html = (String) JAVADOC_CONTENT_ACCESS2_GET_HTML_CONTENT.invoke(null, element, true);
+            String html = JavadocContentAccess2.getHTMLContent(element, true);
             return extractJavadoc(html);
         } catch (Exception e) {
             return ""; //$NON-NLS-1$
