@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.3rd.feature"
       label="%label"
-      version="2.4.11.qualifier"
+      version="2.5.0.qualifier"
       provider-name="%provider-name"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

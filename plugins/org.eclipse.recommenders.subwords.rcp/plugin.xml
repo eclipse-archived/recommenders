@@ -7,9 +7,7 @@
 			preferencePage="org.eclipse.recommenders.subwords.rcp.preferencePages.subwords"
 			icon="icons/view16/sessionprocessor_subwords.png"
 			name="%sessionprocessors.subwords.name"
-			description="%sessionprocessors.subwords.description"
-			enabledByDefault="true">
-		</processor>
+			description="%sessionprocessors.subwords.description"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.subwords.rcp.preferencePages.subwords"
