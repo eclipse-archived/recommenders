@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <introContent>
 	<!-- Extension to the SDK Overview Page. -->
 	<extensionContent id="org.eclipse.recommenders.rcp"
@@ -8,7 +8,7 @@
 		path="overview/@">
 		<group style-id="content-group">
 			<link id="recommenders" style-id="content-link" label="Eclipse Code Recommenders" url="http://eclipse.org/recommenders">
-				<text>Learn about Eclipse’s new intelligent code-completion features and extended API documentation capabilities</text>
+				<text>Learn about Eclipse's new intelligent code-completion features and extended API documentation capabilities</text>
 			</link>
 		</group>
 	</extensionContent>
