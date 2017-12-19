@@ -31,6 +31,16 @@ import com.google.common.base.Optional;
 
 public final class Proposals {
 
+    /**
+     * Copied from {@link CompletionProposal#MODULE_DECLARATION}, as that constant is not defined before Oxygen.1.
+     */
+    public  static final int MODULE_DECLARATION = 28;
+
+    /**
+     * Copied from {@link CompletionProposal#MODULE_REF}, as that constant is not defined before Oxygen.1.
+     */
+    public static final int MODULE_REF = 29;
+
     private static final Map<CacheKey, Image> CACHE = new HashMap<>();
 
     private Proposals() {
@@ -179,6 +189,5 @@ public final class Proposals {
             }
             return true;
         }
-
     }
 }

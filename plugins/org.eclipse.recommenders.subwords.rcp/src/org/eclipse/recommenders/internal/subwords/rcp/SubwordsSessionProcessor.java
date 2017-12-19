@@ -66,6 +66,7 @@ import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.NoProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalCollectingCompletionRequestor;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.processable.Proposals;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.internal.subwords.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Checks;
@@ -311,7 +312,9 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             }
             case CompletionProposal.JAVADOC_PARAM_REF:
             case CompletionProposal.JAVADOC_BLOCK_TAG:
-            case CompletionProposal.JAVADOC_INLINE_TAG: {
+            case CompletionProposal.JAVADOC_INLINE_TAG:
+            case Proposals.MODULE_DECLARATION:
+            case Proposals.MODULE_REF: {
                 completionIdentifier = javaProposal.getDisplayString();
                 break;
             }

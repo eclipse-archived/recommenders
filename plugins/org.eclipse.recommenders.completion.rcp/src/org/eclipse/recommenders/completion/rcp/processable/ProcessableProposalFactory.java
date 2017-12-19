@@ -75,6 +75,13 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     private static Class<JavadocLinkTypeCompletionProposal> javadocLinkTypeCompletionProposalClass;
     private static Class<JavadocInlineTagCompletionProposal> javadocInlineTagCompletionProposalClass;
 
+    // Cannot use class literals like below, as LazyModuleCompletionProposal has only been introduced with Oxygen.1.
+    @SuppressWarnings("unchecked")
+    private static Class<? extends LazyJavaCompletionProposal> lazyModuleCompletionProposals = (Class<? extends LazyJavaCompletionProposal>) Reflections
+            .loadClass(false, ProcessableProposalFactory.class.getClassLoader(),
+                    "org.eclipse.jdt.internal.ui.text.java.LazyModuleCompletionProposal")
+            .orNull();
+
     private static Method proposalInfoMethod = Reflections
             .getDeclaredMethod(true, AbstractJavaCompletionProposal.class, "getProposalInfo").orNull(); //$NON-NLS-1$
 
@@ -178,77 +185,77 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
             if (javaMethodCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavaMethodCompletionProposal(coreProposal,
                         (JavaMethodCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (javaFieldWithCastedReceiverCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavaFieldWithCastedReceiverCompletionProposal(coreProposal,
                         (JavaFieldWithCastedReceiverCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (overrideCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newOverrideCompletionProposal(coreProposal,
                         (OverrideCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (anonymousTypeCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newAnonymousTypeCompletionProposal(coreProposal,
                         (AnonymousTypeCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (javaCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavaCompletionProposal(coreProposal,
                         (JavaCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (lazyGenericTypeProposalClass == c) {
                 IProcessableProposal res = factory.newLazyGenericTypeProposal(coreProposal,
                         (LazyGenericTypeProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (lazyJavaTypeCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newLazyJavaTypeCompletionProposal(coreProposal,
                         (LazyJavaTypeCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (filledArgumentNamesMethodProposalClass == c) {
                 IProcessableProposal res = factory.newFilledArgumentNamesMethodProposal(coreProposal,
                         (FilledArgumentNamesMethodProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (parameterGuessingProposalClass == c) {
                 IProcessableProposal res = factory.newParameterGuessingProposal(coreProposal,
                         (ParameterGuessingProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (methodDeclarationCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newMethodDeclarationCompletionProposal(coreProposal,
                         (MethodDeclarationCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (lazyPackageCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newLazyPackageCompletionProposal(coreProposal,
                         (LazyPackageCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (getterSetterCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newGetterSetterCompletionProposal(coreProposal,
                         (GetterSetterCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (javadocLinkTypeCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavadocLinkTypeCompletionProposal(coreProposal,
                         (JavadocLinkTypeCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             } else if (javadocInlineTagCompletionProposalClass == c) {
                 IProcessableProposal res = factory.newJavadocInlineTagCompletionProposal(coreProposal,
                         (JavadocInlineTagCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
-            } else if (lazyJavaCompletionProposaClass == c) {
-                IProcessableProposal res = factory.newLazyJavaCompletionProposa(coreProposal,
+            } else if (lazyJavaCompletionProposaClass == c || lazyModuleCompletionProposals == c) {
+                IProcessableProposal res = factory.newLazyJavaCompletionProposal(coreProposal,
                         (LazyJavaCompletionProposal) uiProposal, context);
-                setProposalInfo(res, uiProposal);
+                copyProposalInfo(uiProposal, res);
                 return res;
             }
 
@@ -285,16 +292,23 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
         }
     }
 
-    private static void setProposalInfo(IProcessableProposal crProposal, IJavaCompletionProposal uiProposal) {
+    /**
+     * Copies the proposal info from the original proposal to the processable proposal.
+     * 
+     * This is necessary as we cannot simply wrap the original {@link IJavaCompletionProposal} and delegate to
+     * {@link AbstractJavaCompletionProposal#getProposalInfo} as that method is {@code protected} and hence not visible
+     * to a wrapper.
+     */
+    private static void copyProposalInfo(IJavaCompletionProposal originalProposal, IProcessableProposal processableProposal) {
         // XXX this method should under no circumstances throw any exception
-        if (Checks.anyIsNull(proposalInfoMethod, crProposal, uiProposal)) {
+        if (Checks.anyIsNull(proposalInfoMethod, processableProposal, originalProposal)) {
             return;
         }
         try {
-            ProposalInfo info = (ProposalInfo) proposalInfoMethod.invoke(uiProposal);
-            crProposal.setProposalInfo(info);
+            ProposalInfo info = (ProposalInfo) proposalInfoMethod.invoke(originalProposal);
+            processableProposal.setProposalInfo(info);
         } catch (Exception e) {
-            Logs.log(LogMessages.ERROR_FAILED_TO_SET_PROPOSAL_INFO, e, crProposal);
+            Logs.log(LogMessages.ERROR_FAILED_TO_SET_PROPOSAL_INFO, e, processableProposal);
         }
     }
 
@@ -430,7 +444,7 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     }
 
     @Override
-    public IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
+    public IProcessableProposal newLazyJavaCompletionProposal(CompletionProposal coreProposal,
             LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
         return postConstruct(new ProcessableLazyJavaCompletionProposal(coreProposal, context), uiProposal);
     }

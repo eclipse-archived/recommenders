@@ -50,6 +50,25 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     private static final Field F_PROPOSALS = Reflections
             .getDeclaredField(true, CompletionProposalCollector.class, "fJavaProposals").orNull(); //$NON-NLS-1$
 
+    private static int lastKnownProposalKind;
+
+    static {
+        // The last proposal kind known to all versions of JDT supported by Code Recommenders, i.e., the lowest
+        // common denominator.
+        int lastKnownProposalKind = CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION;
+        try {
+            Field lastKindField = Reflections.getDeclaredField(true, CompletionProposal.class, "LAST_KIND").orNull(); //$NON-NLS-1$
+            if (lastKindField != null) {
+                lastKnownProposalKind = (int) lastKindField.get(null);
+            } else {
+                // Already logged by Reflections.getDeclaredField.
+            }
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            // Already logged by Reflections.getDeclaredField.
+        }
+        ProposalCollectingCompletionRequestor.lastKnownProposalKind = lastKnownProposalKind;
+    }
+
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = new IdentityHashMap<>();
 
     private JavaContentAssistInvocationContext jdtuiContext;
@@ -66,7 +85,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         if (shouldFillArgumentNames()) {
             collector = new FillArgumentNamesCompletionProposalCollector(jdtuiContext);
         } else {
-            collector = new CompletionProposalCollector(jdtuiContext.getCompilationUnit(), false);
+            collector = new CompletionProposalCollector(jdtuiContext.getCompilationUnit(), true);
         }
         configureInterestedProposalTypes();
         adjustProposalReplacementLength();
@@ -92,24 +111,24 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
             setIgnoreTypes(false);
         }
 
-        collector.setIgnored(JAVADOC_BLOCK_TAG, false);
-        collector.setIgnored(JAVADOC_FIELD_REF, false);
-        collector.setIgnored(JAVADOC_INLINE_TAG, false);
-        collector.setIgnored(JAVADOC_METHOD_REF, false);
-        collector.setIgnored(JAVADOC_PARAM_REF, false);
-        collector.setIgnored(JAVADOC_TYPE_REF, false);
-        collector.setIgnored(JAVADOC_VALUE_REF, false);
+        setIgnoredSafely(JAVADOC_BLOCK_TAG, false);
+        setIgnoredSafely(JAVADOC_FIELD_REF, false);
+        setIgnoredSafely(JAVADOC_INLINE_TAG, false);
+        setIgnoredSafely(JAVADOC_METHOD_REF, false);
+        setIgnoredSafely(JAVADOC_PARAM_REF, false);
+        setIgnoredSafely(JAVADOC_TYPE_REF, false);
+        setIgnoredSafely(JAVADOC_VALUE_REF, false);
 
-        collector.setAllowsRequiredProposals(FIELD_REF, TYPE_REF, true);
-        collector.setAllowsRequiredProposals(FIELD_REF, TYPE_IMPORT, true);
-        collector.setAllowsRequiredProposals(FIELD_REF, FIELD_IMPORT, true);
-        collector.setAllowsRequiredProposals(METHOD_REF, TYPE_REF, true);
-        collector.setAllowsRequiredProposals(METHOD_REF, TYPE_IMPORT, true);
-        collector.setAllowsRequiredProposals(METHOD_REF, METHOD_IMPORT, true);
-        collector.setAllowsRequiredProposals(CONSTRUCTOR_INVOCATION, TYPE_REF, true);
-        collector.setAllowsRequiredProposals(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, TYPE_REF, true);
-        collector.setAllowsRequiredProposals(ANONYMOUS_CLASS_DECLARATION, TYPE_REF, true);
-        collector.setAllowsRequiredProposals(TYPE_REF, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(FIELD_REF, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(FIELD_REF, TYPE_IMPORT, true);
+        setAllowsRequiredProposalsSafely(FIELD_REF, FIELD_IMPORT, true);
+        setAllowsRequiredProposalsSafely(METHOD_REF, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(METHOD_REF, TYPE_IMPORT, true);
+        setAllowsRequiredProposalsSafely(METHOD_REF, METHOD_IMPORT, true);
+        setAllowsRequiredProposalsSafely(CONSTRUCTOR_INVOCATION, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(ANONYMOUS_CLASS_DECLARATION, TYPE_REF, true);
+        setAllowsRequiredProposalsSafely(TYPE_REF, TYPE_REF, true);
 
         collector.setFavoriteReferences(getFavoriteStaticMembers());
         collector.setRequireExtendedContext(true);
@@ -128,26 +147,28 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     private void setIgnoreNonTypes(boolean ignored) {
-        collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, ignored);
-        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, ignored);
-        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, ignored);
-        collector.setIgnored(FIELD_REF, ignored);
-        collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, ignored);
-        collector.setIgnored(KEYWORD, ignored);
-        collector.setIgnored(LABEL_REF, ignored);
-        collector.setIgnored(LOCAL_VARIABLE_REF, ignored);
-        collector.setIgnored(METHOD_DECLARATION, ignored);
-        collector.setIgnored(METHOD_NAME_REFERENCE, ignored);
-        collector.setIgnored(METHOD_REF, ignored);
-        collector.setIgnored(CONSTRUCTOR_INVOCATION, ignored);
-        collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, ignored);
-        collector.setIgnored(PACKAGE_REF, ignored);
-        collector.setIgnored(POTENTIAL_METHOD_DECLARATION, ignored);
-        collector.setIgnored(VARIABLE_DECLARATION, ignored);
+        setIgnoredSafely(ANNOTATION_ATTRIBUTE_REF, ignored);
+        setIgnoredSafely(ANONYMOUS_CLASS_DECLARATION, ignored);
+        setIgnoredSafely(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, ignored);
+        setIgnoredSafely(FIELD_REF, ignored);
+        setIgnoredSafely(FIELD_REF_WITH_CASTED_RECEIVER, ignored);
+        setIgnoredSafely(KEYWORD, ignored);
+        setIgnoredSafely(LABEL_REF, ignored);
+        setIgnoredSafely(LOCAL_VARIABLE_REF, ignored);
+        setIgnoredSafely(METHOD_DECLARATION, ignored);
+        setIgnoredSafely(METHOD_NAME_REFERENCE, ignored);
+        setIgnoredSafely(METHOD_REF, ignored);
+        setIgnoredSafely(CONSTRUCTOR_INVOCATION, ignored);
+        setIgnoredSafely(METHOD_REF_WITH_CASTED_RECEIVER, ignored);
+        setIgnoredSafely(PACKAGE_REF, ignored);
+        setIgnoredSafely(POTENTIAL_METHOD_DECLARATION, ignored);
+        setIgnoredSafely(VARIABLE_DECLARATION, ignored);
+        setIgnoredSafely(Proposals.MODULE_DECLARATION, ignored);
+        setIgnoredSafely(Proposals.MODULE_REF, ignored);
     }
 
     private void setIgnoreTypes(boolean ignored) {
-        collector.setIgnored(TYPE_REF, ignored);
+        setIgnoredSafely(TYPE_REF, ignored);
     }
 
     @Override
@@ -156,8 +177,42 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     @Override
+    public void setIgnored(int completionProposalKind, boolean ignore) {
+        collector.setIgnored(completionProposalKind, ignore);
+    }
+
+    /**
+     * Safely set the ignored state for a completion proposal kind.
+     * 
+     * This method avoids any {@code IllegalArgumentException}s that our delegate's
+     * {@link CompletionRequestor#setIgnored(int, boolean)} might throw when facing proposal kinds introduced in a later
+     * JDT version.
+     */
+    private void setIgnoredSafely(int completionProposalKind, boolean ignore) {
+        if (completionProposalKind > lastKnownProposalKind) {
+            return;
+        }
+        collector.setIgnored(completionProposalKind, ignore);
+    }
+
+    @Override
     public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
         return collector.isAllowingRequiredProposals(proposalKind, requiredProposalKind);
+    }
+
+    @Override
+    public void setAllowsRequiredProposals(int proposalKind, int requiredProposalKind, boolean allow) {
+        collector.setAllowsRequiredProposals(proposalKind, requiredProposalKind, allow);
+    }
+
+    private void setAllowsRequiredProposalsSafely(int proposalKind, int requiredProposalKind, boolean allow) {
+        if (proposalKind > lastKnownProposalKind) {
+            return;
+        }
+        if (requiredProposalKind > lastKnownProposalKind) {
+            return;
+        }
+        collector.setAllowsRequiredProposals(proposalKind, requiredProposalKind, allow);
     }
 
     @Override
