@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.eclipse.recommenders.apidocs
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.apidocs
 Bundle-Version: 2.5.1.qualifier

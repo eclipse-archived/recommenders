@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.eclipse.recommenders.coordinates.tests
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.coordinates.tests
 Bundle-Version: 2.5.1.qualifier
