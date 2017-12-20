@@ -93,7 +93,7 @@ public class ModelsRcpModule extends AbstractModule {
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_BIND_FILE_NAME, fileName, e);
+            Logs.log(LogMessages.ERROR_BIND_FILE_NAME, e, fileName);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }
@@ -145,8 +145,8 @@ public class ModelsRcpModule extends AbstractModule {
                 String fileExtension = element.getAttribute(TRANSFORMER_FILE_EXTENSION_ATTRIBUTE);
                 builder.put(fileExtension, transformer);
             } catch (CoreException e) {
-                Logs.log(LogMessages.ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED,
-                        element.getAttribute(TRANSFORMER_CLASS_ATTRIBUTE), e);
+                Logs.log(LogMessages.ERROR_CREATE_EXECUTABLE_EXTENSION_FAILED, e,
+                        element.getAttribute(TRANSFORMER_CLASS_ATTRIBUTE));
             }
         }
         return builder.build();

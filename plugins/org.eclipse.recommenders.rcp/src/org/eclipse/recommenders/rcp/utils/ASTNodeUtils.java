@@ -229,8 +229,8 @@ public final class ASTNodeUtils {
             }
             final ASTNode node = NodeFinder.perform(cu, nameRange);
             return getClosestParent(node, MethodDeclaration.class);
-        } catch (final JavaModelException e) {
-            log(ERROR_FAILED_TO_RESOLVE_METHOD, method, cu, e);
+        } catch (JavaModelException e) {
+            log(ERROR_FAILED_TO_RESOLVE_METHOD, e, method, cu);
             return absent();
         }
     }

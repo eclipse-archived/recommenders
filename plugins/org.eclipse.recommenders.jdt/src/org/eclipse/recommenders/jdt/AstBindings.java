@@ -155,8 +155,8 @@ public final class AstBindings {
         IMethodName ref;
         try {
             ref = VmMethodName.get(sb.toString());
-        } catch (final Exception e1) {
-            log(ERROR_FAILED_TO_CREATE_METHODNAME, b, e1);
+        } catch (Exception e) {
+            log(ERROR_FAILED_TO_CREATE_METHODNAME, e, b);
             return absent();
         }
         return of(ref);
