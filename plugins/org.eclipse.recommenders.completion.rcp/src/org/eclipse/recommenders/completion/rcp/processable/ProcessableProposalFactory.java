@@ -16,12 +16,8 @@ import static org.eclipse.recommenders.utils.Logs.log;
 
 import java.lang.reflect.Method;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
@@ -40,14 +36,12 @@ import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocInlineTagCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocLinkTypeCompletionProposal;
-import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
-import org.eclipse.recommenders.utils.Throws;
 
 import com.google.common.base.Throwables;
 
@@ -299,7 +293,8 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
      * {@link AbstractJavaCompletionProposal#getProposalInfo} as that method is {@code protected} and hence not visible
      * to a wrapper.
      */
-    private static void copyProposalInfo(IJavaCompletionProposal originalProposal, IProcessableProposal processableProposal) {
+    private static void copyProposalInfo(IJavaCompletionProposal originalProposal,
+            IProcessableProposal processableProposal) {
         // XXX this method should under no circumstances throw any exception
         if (Checks.anyIsNull(proposalInfoMethod, processableProposal, originalProposal)) {
             return;
@@ -327,19 +322,9 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newParameterGuessingProposal(CompletionProposal coreProposal,
             ParameterGuessingProposal uiProposal, JavaContentAssistInvocationContext context) {
-        final boolean fillBestGuess = shouldFillArgumentNames();
-        return postConstruct(new ProcessableParameterGuessingProposal(coreProposal, context, fillBestGuess),
+        return postConstruct(
+                ProcessableParameterGuessingProposal.toProcessableProposal(uiProposal, coreProposal, context),
                 uiProposal);
-    }
-
-    private boolean shouldFillArgumentNames() {
-        try {
-            final boolean res = PreferenceConstants.getPreferenceStore()
-                    .getBoolean(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS);
-            return res;
-        } catch (final Exception e) {
-        }
-        return false;
     }
 
     @Override
@@ -405,22 +390,9 @@ public class ProcessableProposalFactory implements IProcessableProposalFactory {
     @Override
     public IProcessableProposal newMethodDeclarationCompletionProposal(CompletionProposal coreProposal,
             MethodDeclarationCompletionProposal uiProposal, JavaContentAssistInvocationContext context) {
-        try {
-            IJavaElement enclosingElement = context.getCoreContext().getEnclosingElement();
-            IType type = null;
-            if (enclosingElement instanceof IType) {
-                type = (IType) enclosingElement;
-            } else if (enclosingElement instanceof IMember) {
-                type = ((IMember) enclosingElement).getDeclaringType();
-            }
-            if (type == null) {
-                throw Throws.throwIllegalArgumentException("No type found for enclosing element %s", enclosingElement); //$NON-NLS-1$
-            }
-            return postConstruct(ProcessableMethodDeclarationCompletionProposal.newProposal(coreProposal, type,
-                    uiProposal.getRelevance()), uiProposal);
-        } catch (CoreException e) {
-            throw Throwables.propagate(e);
-        }
+        return postConstruct(
+                ProcessableMethodDeclarationCompletionProposal.toProcessableProposal(uiProposal, coreProposal, context),
+                uiProposal);
     }
 
     @Override

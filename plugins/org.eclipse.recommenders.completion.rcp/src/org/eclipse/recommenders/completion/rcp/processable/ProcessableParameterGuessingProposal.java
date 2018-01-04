@@ -40,6 +40,19 @@ import com.google.common.collect.ImmutableSet;
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableParameterGuessingProposal extends ParameterGuessingProposal implements IProcessableProposal {
 
+    private static final Field F_FILL_BEST_GUESS = Reflections
+            .getDeclaredField(true, ParameterGuessingProposal.class, "fFillBestGuess").orNull();
+
+    public static ProcessableParameterGuessingProposal toProcessableProposal(ParameterGuessingProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        try {
+            boolean fillBestGuess = (boolean) F_FILL_BEST_GUESS.get(proposal);
+            return new ProcessableParameterGuessingProposal(coreProposal, context, fillBestGuess);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -48,7 +61,7 @@ public class ProcessableParameterGuessingProposal extends ParameterGuessingPropo
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    protected ProcessableParameterGuessingProposal(final CompletionProposal proposal,
+    private ProcessableParameterGuessingProposal(final CompletionProposal proposal,
             final JavaContentAssistInvocationContext context, final boolean fillBestGuess) {
         super(proposal, context, context.getCoreContext(), fillBestGuess);
         coreProposal = proposal;

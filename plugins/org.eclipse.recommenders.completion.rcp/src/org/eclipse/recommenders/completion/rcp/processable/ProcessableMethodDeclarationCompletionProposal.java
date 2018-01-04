@@ -17,20 +17,19 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.internal.corext.util.JavaConventionsUtil;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.MethodDeclarationCompletionProposal;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.MethodHandleUtils;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
@@ -41,40 +40,29 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclarationCompletionProposal
         implements IProcessableProposal {
 
-    public static ProcessableMethodDeclarationCompletionProposal newProposal(CompletionProposal proposal, IType type,
-            int relevance) throws CoreException {
+    private static final Field F_TYPE = Reflections
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fType").orNull();
+    private static final Field F_METHOD_NAME = Reflections
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fMethodName").orNull();
+    private static final Field F_RETURN_TYPE_SIG = Reflections
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fReturnTypeSig").orNull();
+    private static final Field F_RELEVANCE = Reflections
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull();
 
-        String prefix = String.valueOf(proposal.getName());
-        int offset = proposal.getReplaceStart();
-        int length = proposal.getReplaceEnd() - offset;
-
-        IMethod[] methods = type.getMethods();
-        if (!type.isInterface()) {
-            String constructorName = type.getElementName();
-            if (constructorName.length() > 0 && constructorName.startsWith(prefix)
-                    && !hasMethod(methods, constructorName)) {
-                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, constructorName, null, offset,
-                        length, relevance + 500);
-            }
+    public static ProcessableMethodDeclarationCompletionProposal toProcessableProposal(MethodDeclarationCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        try {
+            IType type = (IType) F_TYPE.get(proposal);
+            String methodName = (String) F_METHOD_NAME.get(proposal);
+            String returnTypeSig = (String) F_RETURN_TYPE_SIG.get(proposal);
+            int replacementOffset = proposal.getReplacementOffset();
+            int replacementLength = proposal.getReplacementLength();
+            int relevance = (int) F_RELEVANCE.get(proposal);
+            return new ProcessableMethodDeclarationCompletionProposal(type, methodName, returnTypeSig, replacementOffset,
+                    replacementLength, relevance, coreProposal);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw Throwables.propagate(e);
         }
-
-        if (prefix.length() > 0 && !"main".equals(prefix) && !hasMethod(methods, prefix)) { //$NON-NLS-1$
-            if (!JavaConventionsUtil.validateMethodName(prefix, type).matches(IStatus.ERROR)) {
-                return new ProcessableMethodDeclarationCompletionProposal(proposal, type, prefix, Signature.SIG_VOID,
-                        offset, length, relevance);
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasMethod(IMethod[] methods, String name) {
-        for (int i = 0; i < methods.length; i++) {
-            IMethod curr = methods[i];
-            if (curr.getElementName().equals(name) && curr.getParameterTypes().length == 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private final Map<IProposalTag, Object> tags = new HashMap<>();
@@ -86,8 +74,8 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
     private StyledString initialDisplayString;
     private Image decoratedImage;
 
-    public ProcessableMethodDeclarationCompletionProposal(CompletionProposal proposal, IType type, String methodName,
-            String returnTypeSig, int start, int length, int relevance) {
+    private ProcessableMethodDeclarationCompletionProposal(IType type, String methodName, String returnTypeSig,
+            int start, int length, int relevance, CompletionProposal proposal) {
         super(type, methodName, returnTypeSig, start, length, relevance);
         coreProposal = proposal;
     }
