@@ -87,11 +87,14 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
 
         recommendations = Maps.newHashMap();
 
-        for (CompletionProposal proposal : context.getProposals().values()) {
-            if (!isStaticMethodCallInternalCompletionProposal(proposal)) {
+        for (CompletionProposal coreProposal : context.getProposals().values()) {
+            if (coreProposal == null) {
                 continue;
             }
-            InternalCompletionProposal internalProposal = (InternalCompletionProposal) proposal;
+            if (!isStaticMethodCallInternalCompletionProposal(coreProposal)) {
+                continue;
+            }
+            InternalCompletionProposal internalProposal = (InternalCompletionProposal) coreProposal;
             Binding binding = internalProposal.getBinding();
             if (!(binding instanceof MethodBinding)) {
                 continue;
@@ -100,7 +103,7 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
             if (methodBinding.declaringClass == null) {
                 continue;
             }
-            proposals.put(methodBinding.declaringClass, proposal);
+            proposals.put(methodBinding.declaringClass, coreProposal);
         }
 
         for (TypeBinding typeBinding : proposals.keySet()) {
