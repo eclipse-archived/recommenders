@@ -36,6 +36,11 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableJavadocLinkTypeCompletionProposal extends JavadocLinkTypeCompletionProposal
         implements IProcessableProposal {
 
+    public static ProcessableJavadocLinkTypeCompletionProposal toProcessableProposal(JavadocLinkTypeCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableJavadocLinkTypeCompletionProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -44,8 +49,8 @@ public class ProcessableJavadocLinkTypeCompletionProposal extends JavadocLinkTyp
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    protected ProcessableJavadocLinkTypeCompletionProposal(final CompletionProposal coreProposal,
-            final JavaContentAssistInvocationContext context) {
+    private ProcessableJavadocLinkTypeCompletionProposal(CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }

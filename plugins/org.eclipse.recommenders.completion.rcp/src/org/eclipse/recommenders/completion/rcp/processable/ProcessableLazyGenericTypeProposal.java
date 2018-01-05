@@ -35,6 +35,11 @@ import com.google.common.collect.ImmutableSet;
 @SuppressWarnings({ "restriction", "unchecked" })
 public class ProcessableLazyGenericTypeProposal extends LazyGenericTypeProposal implements IProcessableProposal {
 
+    public static ProcessableLazyGenericTypeProposal toProcessableProposal(LazyGenericTypeProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableLazyGenericTypeProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -43,8 +48,8 @@ public class ProcessableLazyGenericTypeProposal extends LazyGenericTypeProposal 
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    public ProcessableLazyGenericTypeProposal(final CompletionProposal coreProposal,
-            final JavaContentAssistInvocationContext context) {
+    private ProcessableLazyGenericTypeProposal(CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }

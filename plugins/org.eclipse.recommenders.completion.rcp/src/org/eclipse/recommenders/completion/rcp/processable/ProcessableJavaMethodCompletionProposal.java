@@ -41,6 +41,11 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletionProposal
         implements IProcessableProposal {
 
+    public static ProcessableJavaMethodCompletionProposal toProcessableProposal(JavaMethodCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableJavaMethodCompletionProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -49,8 +54,8 @@ public class ProcessableJavaMethodCompletionProposal extends JavaMethodCompletio
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    protected ProcessableJavaMethodCompletionProposal(final CompletionProposal coreProposal,
-            final JavaContentAssistInvocationContext context) {
+    private ProcessableJavaMethodCompletionProposal(CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }

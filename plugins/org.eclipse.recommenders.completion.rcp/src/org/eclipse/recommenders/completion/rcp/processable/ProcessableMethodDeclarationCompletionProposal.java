@@ -41,13 +41,13 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
         implements IProcessableProposal {
 
     private static final Field F_TYPE = Reflections
-            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fType").orNull();
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fType").orNull(); //$NON-NLS-1$
     private static final Field F_METHOD_NAME = Reflections
-            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fMethodName").orNull();
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fMethodName").orNull(); //$NON-NLS-1$
     private static final Field F_RETURN_TYPE_SIG = Reflections
-            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fReturnTypeSig").orNull();
+            .getDeclaredField(true, MethodDeclarationCompletionProposal.class, "fReturnTypeSig").orNull(); //$NON-NLS-1$
     private static final Field F_RELEVANCE = Reflections
-            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull();
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull(); //$NON-NLS-1$
 
     public static ProcessableMethodDeclarationCompletionProposal toProcessableProposal(MethodDeclarationCompletionProposal proposal,
             CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
@@ -57,7 +57,7 @@ public class ProcessableMethodDeclarationCompletionProposal extends MethodDeclar
             String returnTypeSig = (String) F_RETURN_TYPE_SIG.get(proposal);
             int replacementOffset = proposal.getReplacementOffset();
             int replacementLength = proposal.getReplacementLength();
-            int relevance = (int) F_RELEVANCE.get(proposal);
+            int relevance = F_RELEVANCE.getInt(proposal);
             return new ProcessableMethodDeclarationCompletionProposal(type, methodName, returnTypeSig, replacementOffset,
                     replacementLength, relevance, coreProposal);
         } catch (IllegalArgumentException | IllegalAccessException e) {

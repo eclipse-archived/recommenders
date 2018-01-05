@@ -36,6 +36,11 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableJavadocInlineTagCompletionProposal extends JavadocInlineTagCompletionProposal
         implements IProcessableProposal {
 
+    public static ProcessableJavadocInlineTagCompletionProposal toProcessableProposal(JavadocInlineTagCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableJavadocInlineTagCompletionProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -44,7 +49,7 @@ public class ProcessableJavadocInlineTagCompletionProposal extends JavadocInline
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    public ProcessableJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
+    private ProcessableJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
             JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
