@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.calls.rcp;
+package org.eclipse.recommenders.utils.names;
 
 import static org.eclipse.recommenders.utils.names.VmMethodName.get;
 import static org.hamcrest.CoreMatchers.*;
@@ -7,8 +7,6 @@ import static org.junit.Assert.assertThat;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.eclipse.recommenders.internal.calls.rcp.ProposalMatcher;
-import org.eclipse.recommenders.utils.names.IMethodName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

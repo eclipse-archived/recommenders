@@ -472,7 +472,7 @@ class CompletionSmokeTest {
             when(mp.acquireModel(anyObject())).thenReturn(Optional.<IOverrideModel>of(NullOverrideModel.INSTANCE))
             val mpp = mock(Provider)
             when(mpp.get).thenReturn(mp)
-            return new OverrideCompletionSessionProcessor(pcp, mpp, jer, new SharedImages,
+            return new OverrideCompletionSessionProcessor(pcp, mpp, new ProposalNameProvider, jer, new SharedImages,
                new OverridesRcpPreferences)
          }
          case "subwords": {

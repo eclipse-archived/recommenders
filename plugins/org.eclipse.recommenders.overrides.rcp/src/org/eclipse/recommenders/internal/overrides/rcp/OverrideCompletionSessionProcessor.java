@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-import static java.lang.String.valueOf;
 import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
@@ -28,6 +27,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.recommenders.completion.rcp.IProposalNameProvider;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.OverlayImageProposalProcessor;
@@ -48,6 +48,7 @@ import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ProposalMatcher;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
 @SuppressWarnings({ "restriction" })
@@ -55,6 +56,7 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
     private final Provider<IProjectCoordinateProvider> pcProvider;
     private final Provider<IOverrideModelProvider> modelProvider;
+    private final IProposalNameProvider methodNameProvider;
     private final JavaElementResolver jdtCache;
     private final OverridesRcpPreferences prefs;
     private final OverlayImageProposalProcessor overlayProcessor;
@@ -68,10 +70,11 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
     @Inject
     public OverrideCompletionSessionProcessor(Provider<IProjectCoordinateProvider> pcProvider,
-            Provider<IOverrideModelProvider> modelProvider, JavaElementResolver cache, SharedImages images,
-            OverridesRcpPreferences prefs) {
+            Provider<IOverrideModelProvider> modelProvider, IProposalNameProvider methodNameProvider,
+            JavaElementResolver cache, SharedImages images, OverridesRcpPreferences prefs) {
         this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
+        this.methodNameProvider = methodNameProvider;
         this.jdtCache = cache;
         this.prefs = prefs;
         this.overlayProcessor = new OverlayImageProposalProcessor(images.getDescriptor(OVR_STAR), IDecoration.TOP_LEFT);
@@ -149,41 +152,38 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
         if (coreProposal == null) {
             return;
         }
-        final String prefix = ctx.getPrefix();
-        switch (coreProposal.getKind()) {
-        case CompletionProposal.METHOD_DECLARATION:
-            final String signature = valueOf(coreProposal.getSignature()).replace('.', '/');
-            final String name = valueOf(coreProposal.getName());
-            final String propSignature = (name + signature).replaceAll("<\\.>", ""); //$NON-NLS-1$ //$NON-NLS-2$
-            for (final Recommendation<IMethodName> r : recommendations) {
-                IMethodName rMethod = r.getProposal();
-                if (!rMethod.getName().startsWith(prefix)) {
-                    continue;
-                }
-
-                final String recSignature = rMethod.getSignature();
-                if (!recSignature.equals(propSignature)) {
-                    continue;
-                }
-
-                // XXX rather high value but otherwise the default constructor shows up between the overrides
-                // proposals
-                final int boost = prefs.changeProposalRelevance ? 1000 + asPercentage(r) : 0;
-                final String label = prefs.decorateProposalText
-                        ? format(Messages.PROPOSAL_LABEL_PERCENTAGE, r.getRelevance()) : ""; //$NON-NLS-1$
-
-                if (boost > 0) {
-                    // TODO Shouldn't this convey the real boost?
-                    proposal.setTag(RECOMMENDERS_SCORE, asPercentage(r));
-                }
-
-                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-                mgr.addProcessor(new SimpleProposalProcessor(boost, label));
-                if (prefs.decorateProposalIcon) {
-                    mgr.addProcessor(overlayProcessor);
-                }
-                return;
+        if (coreProposal.getKind() != CompletionProposal.METHOD_DECLARATION) {
+            return;
+        }
+        IMethodName proposedMethod = methodNameProvider.toMethodName(coreProposal).orNull();
+        if (proposedMethod == null) {
+            return;
+        }
+        final ProposalMatcher matcher = new ProposalMatcher(proposedMethod);
+        for (final Recommendation<IMethodName> recommendation : recommendations) {
+            IMethodName recommendedMethod = recommendation.getProposal();
+            if (!matcher.match(recommendedMethod)) {
+                continue;
             }
+
+            // XXX rather high value but otherwise the default constructor shows up between the overrides
+            // proposals
+            final int boost = prefs.changeProposalRelevance ? 1000 + asPercentage(recommendation) : 0;
+            final String label = prefs.decorateProposalText
+                    ? format(Messages.PROPOSAL_LABEL_PERCENTAGE, recommendation.getRelevance())
+                    : ""; //$NON-NLS-1$
+
+            if (boost > 0) {
+                // TODO Shouldn't this convey the real boost?
+                proposal.setTag(RECOMMENDERS_SCORE, asPercentage(recommendation));
+            }
+
+            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+            mgr.addProcessor(new SimpleProposalProcessor(boost, label));
+            if (prefs.decorateProposalIcon) {
+                mgr.addProcessor(overlayProcessor);
+            }
+            break;
         }
     }
 }
