@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.eclipse.recommenders.discovery.content
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.discovery.content;singleton:=true
 Bundle-Version: 2.6.0.qualifier

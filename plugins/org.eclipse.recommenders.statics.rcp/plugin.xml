@@ -7,8 +7,7 @@
 			preferencePage="org.eclipse.recommenders.statics.rcp.preferencePages.statics"
 			icon="icons/view16/sessionprocessor_statics.png"
 			name="%sessionprocessors.statics.name"
-			description="%sessionprocessors.statics.description"
-			enabledByDefault="false"/>
+			description="%sessionprocessors.statics.description"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page id="org.eclipse.recommenders.statics.rcp.preferencePages.statics"

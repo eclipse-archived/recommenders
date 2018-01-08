@@ -8,11 +8,9 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.calls.rcp;
+package org.eclipse.recommenders.utils.names;
 
 import org.eclipse.recommenders.utils.Nullable;
-import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
 
 public class ProposalMatcher {
 

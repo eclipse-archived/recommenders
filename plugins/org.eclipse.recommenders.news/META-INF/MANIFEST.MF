@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.eclipse.recommenders.news
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.news;singleton:=true
 Bundle-Version: 2.6.0.qualifier

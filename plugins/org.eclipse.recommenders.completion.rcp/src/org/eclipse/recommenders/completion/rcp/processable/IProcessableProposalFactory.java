@@ -75,6 +75,6 @@ public interface IProcessableProposalFactory {
     IProcessableProposal newJavadocInlineTagCompletionProposal(CompletionProposal coreProposal,
             JavadocInlineTagCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 
-    IProcessableProposal newLazyJavaCompletionProposa(CompletionProposal coreProposal,
+    IProcessableProposal newLazyJavaCompletionProposal(CompletionProposal coreProposal,
             LazyJavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context);
 }

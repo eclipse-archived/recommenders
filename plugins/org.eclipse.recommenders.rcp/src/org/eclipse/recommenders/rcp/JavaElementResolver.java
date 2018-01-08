@@ -252,8 +252,8 @@ public class JavaElementResolver {
                 final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
-            } catch (final Exception e) {
-                log(ERROR_FAILED_TO_RESOLVE_METHOD, jdtMethod, e.getMessage(), e);
+            } catch (Exception e) {
+                log(ERROR_FAILED_TO_RESOLVE_METHOD, e, jdtMethod, e.getMessage());
                 return absent();
             }
         }
@@ -301,8 +301,8 @@ public class JavaElementResolver {
                 }
             }
             return absent();
-        } catch (final Exception e) {
-            log(ERROR_FAILED_TO_RESOLVE_METHOD, recMethod, e.getMessage(), e);
+        } catch (Exception e) {
+            log(ERROR_FAILED_TO_RESOLVE_METHOD, e, recMethod, e.getMessage());
             return absent();
         }
     }

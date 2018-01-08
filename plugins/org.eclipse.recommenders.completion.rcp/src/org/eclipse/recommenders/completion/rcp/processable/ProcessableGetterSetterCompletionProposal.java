@@ -17,16 +17,20 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.GetterSetterCompletionProposal;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.MethodHandleUtils;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
@@ -37,6 +41,29 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableGetterSetterCompletionProposal extends GetterSetterCompletionProposal
         implements IProcessableProposal {
 
+    private static final Field F_FIELD = Reflections
+            .getDeclaredField(true, GetterSetterCompletionProposal.class, "fField").orNull(); //$NON-NLS-1$
+    private static final Field F_IS_GETTER = Reflections
+            .getDeclaredField(true, GetterSetterCompletionProposal.class, "fIsGetter").orNull(); //$NON-NLS-1$
+    private static final Field F_RELEVANCE = Reflections
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull(); //$NON-NLS-1$
+
+    public static ProcessableGetterSetterCompletionProposal toProcessableProposal(
+            GetterSetterCompletionProposal proposal, CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
+        try {
+            IField field = (IField) F_FIELD.get(proposal);
+            int replacementOffset = proposal.getReplacementOffset();
+            int replacementLength = proposal.getReplacementLength();
+            boolean isGetter = F_IS_GETTER.getBoolean(proposal);
+            int relevance = F_RELEVANCE.getInt(proposal);
+            return new ProcessableGetterSetterCompletionProposal(field, replacementOffset, replacementLength, isGetter,
+                    relevance, coreProposal);
+        } catch (IllegalArgumentException | IllegalAccessException | JavaModelException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -46,10 +73,9 @@ public class ProcessableGetterSetterCompletionProposal extends GetterSetterCompl
     private StyledString initialDisplayString;
     private Image decoratedImage;
 
-    public ProcessableGetterSetterCompletionProposal(CompletionProposal coreProposal, IField field, boolean isGetter,
-            int relevance) throws JavaModelException {
-        super(field, coreProposal.getReplaceStart(), coreProposal.getReplaceEnd() - coreProposal.getReplaceStart(),
-                isGetter, relevance);
+    private ProcessableGetterSetterCompletionProposal(IField field, int start, int length, boolean isGetter,
+            int relevance, CompletionProposal coreProposal) throws JavaModelException {
+        super(field, start, length, isGetter, relevance);
         this.coreProposal = coreProposal;
     }
 

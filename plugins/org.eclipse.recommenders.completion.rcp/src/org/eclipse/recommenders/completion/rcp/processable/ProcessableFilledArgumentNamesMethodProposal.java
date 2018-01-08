@@ -39,6 +39,11 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableFilledArgumentNamesMethodProposal extends FilledArgumentNamesMethodProposal
         implements IProcessableProposal {
 
+    public static ProcessableFilledArgumentNamesMethodProposal toProcessableProposal(FilledArgumentNamesMethodProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableFilledArgumentNamesMethodProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -47,8 +52,8 @@ public class ProcessableFilledArgumentNamesMethodProposal extends FilledArgument
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    public ProcessableFilledArgumentNamesMethodProposal(final CompletionProposal coreProposal,
-            final JavaContentAssistInvocationContext context) {
+    private ProcessableFilledArgumentNamesMethodProposal(CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;
     }

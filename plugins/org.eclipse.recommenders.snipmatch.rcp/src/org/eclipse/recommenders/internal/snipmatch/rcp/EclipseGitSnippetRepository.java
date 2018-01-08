@@ -483,7 +483,7 @@ public class EclipseGitSnippetRepository implements ISnippetRepository {
         } catch (OperationCanceledException e) {
             return false;
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_CREATING_INDEX_HEAD_DIFF, delegate.getRepositoryLocation());
+            Logs.log(LogMessages.ERROR_CREATING_INDEX_HEAD_DIFF, e, delegate.getRepositoryLocation());
             return false;
         }
         if (indexDiff == null) {

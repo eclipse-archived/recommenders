@@ -36,6 +36,11 @@ import com.google.common.collect.ImmutableSet;
 
 public class ProcessableLazyJavaCompletionProposal extends LazyJavaCompletionProposal implements IProcessableProposal {
 
+    public static ProcessableLazyJavaCompletionProposal toProcessableProposal(LazyJavaCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        return new ProcessableLazyJavaCompletionProposal(coreProposal, context);
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -44,7 +49,7 @@ public class ProcessableLazyJavaCompletionProposal extends LazyJavaCompletionPro
     private String lastPrefixStyled;
     private StyledString initialDisplayString;
 
-    protected ProcessableLazyJavaCompletionProposal(CompletionProposal coreProposal,
+    private ProcessableLazyJavaCompletionProposal(CompletionProposal coreProposal,
             JavaContentAssistInvocationContext context) {
         super(coreProposal, context);
         this.coreProposal = coreProposal;

@@ -61,7 +61,7 @@ public class CoordinatesRcpModule extends AbstractModule {
         try {
             Files.createParentDirs(file);
         } catch (IOException e) {
-            Logs.log(LogMessages.ERROR_BIND_FILE_NAME, fileName, e);
+            Logs.log(LogMessages.ERROR_BIND_FILE_NAME, e, fileName);
         }
         bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }

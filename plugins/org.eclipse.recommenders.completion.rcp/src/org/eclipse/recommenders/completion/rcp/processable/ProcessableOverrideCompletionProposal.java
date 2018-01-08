@@ -17,16 +17,20 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.MethodHandleUtils;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
@@ -34,8 +38,40 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public class ProcessableOverrideCompletionProposal
-        extends org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal implements IProcessableProposal {
+public class ProcessableOverrideCompletionProposal extends OverrideCompletionProposal implements IProcessableProposal {
+
+    private static final Field F_METHOD_NAME = Reflections
+            .getDeclaredField(true, OverrideCompletionProposal.class, "fMethodName").orNull(); //$NON-NLS-1$
+    private static final Field F_PARAM_TYPES = Reflections
+            .getDeclaredField(true, OverrideCompletionProposal.class, "fParamTypes").orNull(); //$NON-NLS-1$
+    private static final Field F_RELEVANCE = Reflections
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull(); //$NON-NLS-1$
+
+    public static ProcessableOverrideCompletionProposal toProcessableProposal(OverrideCompletionProposal proposal,
+            CompletionProposal coreProposal, JavaContentAssistInvocationContext context) {
+        try {
+            IJavaProject jproject = context.getProject();
+            ICompilationUnit cu = context.getCompilationUnit();
+            String methodName = (String) F_METHOD_NAME.get(proposal);
+            String[] paramTypes = (String[]) F_PARAM_TYPES.get(proposal);
+            int start = proposal.getReplacementOffset();
+            int length = proposal.getReplacementLength();
+            StyledString displayName = proposal.getStyledDisplayString();
+            String completionProposal = proposal.getReplacementString();
+            ProcessableOverrideCompletionProposal processableProposal = new ProcessableOverrideCompletionProposal(
+                    jproject, cu, methodName, paramTypes, start, length, displayName, completionProposal, coreProposal);
+
+            // CompletionProposalCollector.createMethodDeclarationProposal calls setImage/setRelevance in a separate
+            // step on the freshly created object. Mimic this behavior.
+            int relevance = F_RELEVANCE.getInt(proposal);
+            processableProposal.setImage(proposal.getImage());
+            processableProposal.setRelevance(relevance);
+
+            return processableProposal;
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw Throwables.propagate(e);
+        }
+    }
 
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
@@ -46,24 +82,11 @@ public class ProcessableOverrideCompletionProposal
     private StyledString initialDisplayString;
     private Image decoratedImage;
 
-    public ProcessableOverrideCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
-            JavaContentAssistInvocationContext context) {
-        super(context.getProject(), context.getCompilationUnit(), String.valueOf(coreProposal.getName()),
-                computeParamTypes(coreProposal), coreProposal.getReplaceStart(), uiProposal.getReplacementLength(),
-                uiProposal.getStyledDisplayString(), String.valueOf(coreProposal.getCompletion()));
+    private ProcessableOverrideCompletionProposal(IJavaProject jproject, ICompilationUnit cu, String methodName,
+            String[] paramTypes, int start, int length, StyledString displayName, String completionProposal,
+            CompletionProposal coreProposal) {
+        super(jproject, cu, methodName, paramTypes, start, length, displayName, completionProposal);
         this.coreProposal = coreProposal;
-        final Image image = uiProposal.getImage();
-        setImage(image);
-        setRelevance(uiProposal.getRelevance());
-    }
-
-    private static String[] computeParamTypes(CompletionProposal proposal) {
-        // parameter types do not contain any ; and don't start with L:
-        String[] paramTypes = Signature.getParameterTypes(String.valueOf(proposal.getSignature()));
-        for (int index = 0; index < paramTypes.length; index++) {
-            paramTypes[index] = Signature.toString(paramTypes[index]);
-        }
-        return paramTypes;
     }
 
     @Override

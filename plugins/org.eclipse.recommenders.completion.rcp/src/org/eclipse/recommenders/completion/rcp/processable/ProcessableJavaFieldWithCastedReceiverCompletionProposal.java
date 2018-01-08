@@ -17,17 +17,19 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.MethodHandleUtils;
+import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
@@ -38,6 +40,29 @@ import com.google.common.collect.ImmutableSet;
 public class ProcessableJavaFieldWithCastedReceiverCompletionProposal
         extends JavaFieldWithCastedReceiverCompletionProposal implements IProcessableProposal {
 
+    private static final Field F_RELEVANCE = Reflections
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fRelevance").orNull(); //$NON-NLS-1$
+    private static final Field F_IS_IN_JAVADOC = Reflections
+            .getDeclaredField(true, AbstractJavaCompletionProposal.class, "fIsInJavadoc").orNull(); //$NON-NLS-1$
+
+    public static ProcessableJavaFieldWithCastedReceiverCompletionProposal toProcessableProposal(
+            JavaFieldWithCastedReceiverCompletionProposal proposal, CompletionProposal coreProposal,
+            JavaContentAssistInvocationContext context) {
+        try {
+            String completion = proposal.getReplacementString();
+            int start = proposal.getReplacementOffset();
+            int length = proposal.getReplacementLength();
+            Image image = proposal.getImage();
+            StyledString label = proposal.getStyledDisplayString();
+            int relevance = F_RELEVANCE.getInt(proposal);
+            boolean inJavadoc = F_IS_IN_JAVADOC.getBoolean(proposal);
+            return new ProcessableJavaFieldWithCastedReceiverCompletionProposal(completion, start, length, image, label,
+                    relevance, inJavadoc, context, coreProposal);
+        } catch (IllegalArgumentException | IllegalAccessException | JavaModelException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private final Map<IProposalTag, Object> tags = new HashMap<>();
     private final CompletionProposal coreProposal;
 
@@ -47,11 +72,11 @@ public class ProcessableJavaFieldWithCastedReceiverCompletionProposal
     private StyledString initialDisplayString;
     private Image decoratedImage;
 
-    protected ProcessableJavaFieldWithCastedReceiverCompletionProposal(CompletionProposal coreProposal,
-            JavaCompletionProposal uiProposal, JavaContentAssistInvocationContext context) throws JavaModelException {
-        super(uiProposal.getReplacementString(), uiProposal.getReplacementOffset(), uiProposal.getReplacementLength(),
-                uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context,
-                coreProposal);
+    private ProcessableJavaFieldWithCastedReceiverCompletionProposal(String completion, int start, int length,
+            Image image, StyledString label, int relevance, boolean inJavadoc,
+            JavaContentAssistInvocationContext invocationContext, CompletionProposal coreProposal)
+            throws JavaModelException {
+        super(completion, start, length, image, label, relevance, inJavadoc, invocationContext, coreProposal);
         this.coreProposal = coreProposal;
     }
 
