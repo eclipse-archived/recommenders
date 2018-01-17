@@ -69,8 +69,6 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<configuration>
-						<!-- Use ${tycho.testArgLine} as set by jacoco-maven-plugin. -->
-						<argLine>${tycho.testArgLine} -XX:MaxPermSize=128m</argLine>
 						<systemProperties>
 							<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
 						</systemProperties>
