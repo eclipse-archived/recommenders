@@ -31,7 +31,7 @@ fi
 echo "Publishing '${REPOSITORY}' repository of '${SIMREL}'/'${TOOLCHAIN}' configuration at http://${DOWNLOAD_PATH}"
 echo
 
-SOURCE=${HUDSON_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/axis-toolchain/${TOOLCHAIN}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
+SOURCE=${JENKINS_HOME}/jobs/${PROMOTED_JOB_NAME}/configurations/axis-simrel/${SIMREL}/axis-toolchain/${TOOLCHAIN}/builds/${PROMOTED_ID}/archive/repositories/${REPOSITORY}/target/repository
 TARGET=/home/data/httpd/${DOWNLOAD_PATH}
 
 mkdir -p ${TARGET}
