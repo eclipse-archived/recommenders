@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="7">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="8">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -37,8 +37,8 @@
 <repository location="http://download.eclipse.org/cbi/updates/license"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12370 -->
-<unit id="com.google.gson" version="2.7.0.v20170129-0911"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=15430 -->
+<unit id="com.google.gson" version="2.8.2.v20180104-1110"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
@@ -85,8 +85,8 @@
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
 <unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
-<!-- Stable Orbit build for Photon M4 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20171130170529/repository/"/>
+<!-- Stable Orbit build for Photon M5 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20180119201206/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
