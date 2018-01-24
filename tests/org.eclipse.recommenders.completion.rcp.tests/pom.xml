@@ -25,6 +25,10 @@
 					<useUIHarness>true</useUIHarness>
 					<dependencies>
 						<dependency>
+							<artifactId>org.eclipse.e4.rcp</artifactId>
+							<type>eclipse-feature</type>
+						</dependency>
+						<dependency>
 							<artifactId>org.eclipse.jdt.core</artifactId>
 							<type>eclipse-plugin</type>
 						</dependency>
@@ -32,9 +36,10 @@
 							<artifactId>org.eclipse.jdt.launching</artifactId>
 							<type>eclipse-plugin</type>
 						</dependency>
+						<!-- Fragment of com.google.inject not included otherwise -->
 						<dependency>
-							<artifactId>org.eclipse.e4.rcp</artifactId>
-							<type>eclipse-feature</type>
+							<artifactId>com.google.inject.multibindings</artifactId>
+							<type>eclipse-plugin</type>
 						</dependency>
 					</dependencies>
 				</configuration>
