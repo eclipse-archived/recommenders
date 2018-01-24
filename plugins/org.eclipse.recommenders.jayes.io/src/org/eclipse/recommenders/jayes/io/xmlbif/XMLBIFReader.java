@@ -23,6 +23,8 @@ import java.util.StringTokenizer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.recommenders.internal.jayes.io.util.XPathUtil;
@@ -32,14 +34,13 @@ import org.eclipse.recommenders.jayes.io.IBayesNetReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.xpath.XPathEvaluator;
 import org.xml.sax.SAXException;
 
 import com.google.common.primitives.Doubles;
 
 /**
- * a Reader thats reads the XMLBIF v0.3 format (<a href="http://www.cs.cmu.edu/~fgcozman/Research/InterchangeFormat/"
- * >specification</a>)
+ * a Reader thats reads the XMLBIF v0.3 format
+ * (<a href="http://www.cs.cmu.edu/~fgcozman/Research/InterchangeFormat/" >specification</a>)
  */
 public class XMLBIFReader implements IBayesNetReader {
 
@@ -49,6 +50,7 @@ public class XMLBIFReader implements IBayesNetReader {
         this.in = in;
     }
 
+    @Override
     public BayesNet read() throws IOException {
         Document doc;
         try {
@@ -62,7 +64,8 @@ public class XMLBIFReader implements IBayesNetReader {
         return readFromDocument(doc);
     }
 
-    private Document obtainDocument(InputStream biffile) throws ParserConfigurationException, SAXException, IOException {
+    private Document obtainDocument(InputStream biffile)
+            throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setValidating(true);
         DocumentBuilder docBldr = docBuilderFactory.newDocumentBuilder();
@@ -91,7 +94,7 @@ public class XMLBIFReader implements IBayesNetReader {
 
         initializeNodes(doc, net);
 
-        XPathEvaluator xpath = getXPathEvaluator(doc);
+        XPath xpath = getXPathEvaluator();
 
         NodeList nodelist = doc.getElementsByTagName(DEFINITION);
         for (int i = 0; i < nodelist.getLength(); i++) {
@@ -109,7 +112,7 @@ public class XMLBIFReader implements IBayesNetReader {
     }
 
     private void initializeNodes(Document doc, BayesNet net) {
-        XPathEvaluator xpath = getXPathEvaluator(doc);
+        XPath xpath = getXPathEvaluator();
 
         NodeList nodelist = doc.getElementsByTagName(VARIABLE);
         for (int i = 0; i < nodelist.getLength(); i++) {
@@ -121,15 +124,14 @@ public class XMLBIFReader implements IBayesNetReader {
             for (Iterator<Node> it = XPathUtil.evalXPath(xpath, OUTCOME, node); it.hasNext();) {
                 bNode.addOutcome(StringEscapeUtils.unescapeXml(it.next().getTextContent()));
             }
-
         }
     }
 
-    private XPathEvaluator getXPathEvaluator(Document doc) {
-        return (XPathEvaluator) doc.getFeature("+XPath", null);
+    private XPath getXPathEvaluator() {
+        return XPathFactory.newInstance().newXPath();
     }
 
-    private void setParents(BayesNode bNode, BayesNet net, Node node, XPathEvaluator xpath) {
+    private void setParents(BayesNode bNode, BayesNet net, Node node, XPath xpath) {
         List<BayesNode> parents = new ArrayList<BayesNode>();
         for (Iterator<Node> it = XPathUtil.evalXPath(xpath, GIVEN, node); it.hasNext();) {
             parents.add(net.getNode(it.next().getTextContent()));
@@ -137,7 +139,7 @@ public class XMLBIFReader implements IBayesNetReader {
         bNode.setParents(parents);
     }
 
-    private void parseProbabilities(XPathEvaluator xpath, Node node, BayesNode bNode) {
+    private void parseProbabilities(XPath xpath, Node node, BayesNode bNode) {
         String table = XPathUtil.evalXPath(xpath, TABLE, node).next().getTextContent();
 
         List<Double> probabilities = new ArrayList<Double>();
@@ -152,6 +154,5 @@ public class XMLBIFReader implements IBayesNetReader {
     @Override
     public void close() throws IOException {
         in.close();
-
     }
 }
