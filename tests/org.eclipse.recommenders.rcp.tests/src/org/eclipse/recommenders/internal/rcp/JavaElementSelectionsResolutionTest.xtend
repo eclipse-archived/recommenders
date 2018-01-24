@@ -122,7 +122,7 @@ class JavaElementSelectionsResolutionTest {
         val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(), "test")
         val struct = fixture.createFileAndParseWithMarkers(code)
         val cu = struct.first;
-        if (cu == null) {
+        if (cu === null) {
             fail("cu is not allowed to be null!")
         }
         val pos = struct.second;
