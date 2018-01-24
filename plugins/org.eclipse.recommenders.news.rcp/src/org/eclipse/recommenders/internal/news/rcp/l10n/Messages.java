@@ -17,7 +17,7 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_TITLE;
     public static String PREFPAGE_DESCRIPTION;
-    public static String PREFPAGE_BUTTON_NEW;
+    public static String PREFPAGE_BUTTON_ADD;
     public static String PREFPAGE_BUTTON_EDIT;
     public static String PREFPAGE_BUTTON_REMOVE;
     public static String PREFPAGE_NOTIFICATION_ENABLEMENT;

@@ -16,7 +16,6 @@ import java.text.MessageFormat;
 
 import org.eclipse.recommenders.internal.news.rcp.Constants;
 import org.eclipse.recommenders.internal.news.rcp.l10n.Messages;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -78,7 +77,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithoutName() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(VALID_FEED_URL);
 
         // the space below is here because TitleAreaDialog also adds a space to messages
@@ -88,7 +87,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithoutURL() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
 
         assertThat(bot.text(" " + Messages.FEED_DIALOG_ERROR_EMPTY_URL), is(notNullValue())); //$NON-NLS-1$
@@ -97,7 +96,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithInvalidURL() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(INVALID_FEED_URL);
 
@@ -107,7 +106,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithInvalidPollingInterval() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(VALID_FEED_URL);
         bot.textWithLabel(Messages.FIELD_LABEL_POLLING_INTERVAL).setText(CHARACTERS_AND_DIGITS);
@@ -118,7 +117,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithDuplicateURL() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText("http://planeteclipse.org/planet/rss20.xml"); //$NON-NLS-1$
 
@@ -129,7 +128,7 @@ public class NewsPreferencePageUITest {
 
     @Test
     public void testAddCustomFeedWithInvalidProtocol() {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(INVALID_FEED_PROTOCOL);
 
@@ -270,7 +269,7 @@ public class NewsPreferencePageUITest {
     }
 
     private void addCustomFeed(SWTWorkbenchBot bot) {
-        bot.button(Messages.PREFPAGE_BUTTON_NEW).click();
+        bot.button(Messages.PREFPAGE_BUTTON_ADD).click();
         bot.textWithLabel(Messages.FIELD_LABEL_FEED_NAME).setText(VALID_FEED_NAME);
         bot.textWithLabel(Messages.FIELD_LABEL_URL).setText(VALID_FEED_URL);
         bot.button("OK").click();
