@@ -36,7 +36,6 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolControl;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -115,7 +114,6 @@ public class NewsToolControl {
         }
     };
 
-    private final MToolControl modelElement;
     private final NewsRcpPreferences preferences;
     private final INewsPollingService pollingService;
     private final IReadItemsStore readItemsStore;
@@ -126,10 +124,9 @@ public class NewsToolControl {
     private ToolBarManager toolBarManager;
 
     @Inject
-    public NewsToolControl(MToolControl modelElement, NewsRcpPreferences preferences,
+    public NewsToolControl(NewsRcpPreferences preferences,
             INewsPollingService pollingService, IReadItemsStore readItemsStore, ECommandService commandService,
             EHandlerService handlerService) {
-        this.modelElement = modelElement;
         this.preferences = preferences;
         this.pollingService = pollingService;
         this.readItemsStore = readItemsStore;

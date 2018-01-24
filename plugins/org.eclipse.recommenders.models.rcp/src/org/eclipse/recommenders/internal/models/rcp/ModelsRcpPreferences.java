@@ -14,8 +14,6 @@ import static org.apache.commons.lang3.ArrayUtils.isEquals;
 import static org.eclipse.recommenders.internal.models.rcp.Constants.PREF_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.inject.Inject;
 
