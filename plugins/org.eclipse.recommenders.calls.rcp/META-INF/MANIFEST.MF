@@ -24,6 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.injection;bundle-version="[2.5.1,2.5.2)",
  org.eclipse.recommenders.utils;bundle-version="[2.5.1,2.5.2)",
  org.eclipse.recommenders.rcp;bundle-version="[2.5.1,2.5.2)",
+ org.eclipse.recommenders.utils.rcp;bundle-version="[2.5.1,2.5.2)",
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",

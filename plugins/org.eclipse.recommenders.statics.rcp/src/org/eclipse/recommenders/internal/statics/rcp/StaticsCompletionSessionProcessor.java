@@ -12,7 +12,6 @@ import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.*;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,6 +48,7 @@ import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.eclipse.recommenders.utils.rcp.Formatting;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
@@ -57,9 +57,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 public class StaticsCompletionSessionProcessor extends SessionProcessor {
-
-    private final DecimalFormat percentFormatter = new DecimalFormat("0%");
-    private final DecimalFormat permilFormatter = new DecimalFormat("0.00%");
 
     private final Provider<IProjectCoordinateProvider> pcProvider;
     private final IStaticsModelProvider modelProvider;
@@ -195,7 +192,7 @@ public class StaticsCompletionSessionProcessor extends SessionProcessor {
         }
         ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
         int score = p < 0.01d ? 0 : 1 + (int) Math.rint(p * 100);
-        String text = p > 0.01d ? percentFormatter.format(p) : permilFormatter.format(p);
+        String text = Formatting.toPercentage(p);
         mgr.addProcessor(new SimpleProposalProcessor(score, text));
 
         if (prefs.decorateProposalIcon) {

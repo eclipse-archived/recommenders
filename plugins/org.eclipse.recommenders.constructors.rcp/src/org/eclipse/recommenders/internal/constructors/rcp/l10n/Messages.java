@@ -18,9 +18,6 @@ public final class Messages extends NLS {
 
     public static String PREFPAGE_DESCRIPTION_CONSTRUCTORS;
 
-    public static String PROPOSAL_LABEL_PROMILLE;
-    public static String PROPOSAL_LABEL_PERCENTAGE;
-
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }

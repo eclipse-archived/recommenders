@@ -17,8 +17,6 @@ public final class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.calls.rcp.l10n.messages"; //$NON-NLS-1$
 
     public static String PROPOSAL_LABEL_USED;
-    public static String PROPOSAL_LABEL_PERCENTAGE;
-    public static String PROPOSAL_LABEL_PROMILLE;
 
     public static String PREFPAGE_DESCRIPTION_CALLS;
 

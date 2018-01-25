@@ -16,8 +16,6 @@ public final class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.overrides.rcp.l10n.messages"; //$NON-NLS-1$
 
-    public static String PROPOSAL_LABEL_PERCENTAGE;
-
     public static String PREFPAGE_DESCRIPTION_OVERRIDES;
 
     public static String LOG_ERROR_FAILED_TO_COMPUTE_OVERRIDE_RECOMMENDATIONS;

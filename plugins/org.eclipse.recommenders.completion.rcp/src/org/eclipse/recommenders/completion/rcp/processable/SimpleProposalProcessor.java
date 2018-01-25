@@ -13,6 +13,8 @@ package org.eclipse.recommenders.completion.rcp.processable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.jface.viewers.StyledString.COUNTER_STYLER;
 
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.StyledString;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -65,17 +67,7 @@ public class SimpleProposalProcessor extends ProposalProcessor {
             return false;
         }
         SimpleProposalProcessor that = (SimpleProposalProcessor) other;
-        if (addon == null) {
-            if (that.addon != null) {
-                return false;
-            }
-        } else if (!addon.equals(that.addon)) {
-            return false;
-        }
-        if (increment != that.increment) {
-            return false;
-        }
-        return true;
+        return this.increment == that.increment && Objects.equals(this.addon, that.addon);
     }
 
     @Override
@@ -85,5 +77,10 @@ public class SimpleProposalProcessor extends ProposalProcessor {
         result = prime * result + (addon == null ? 0 : addon.hashCode());
         result = prime * result + increment;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("'%s' -> %+d", addon, increment);
     }
 }

@@ -61,6 +61,7 @@ import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.Result;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ProposalMatcher;
+import org.eclipse.recommenders.utils.rcp.Formatting;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
@@ -252,8 +253,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             String label = ""; //$NON-NLS-1$
             if (prefs.decorateProposalText) {
                 double relevance = call.getRelevance();
-                String format = relevance < 0.01d ? Messages.PROPOSAL_LABEL_PROMILLE
-                        : Messages.PROPOSAL_LABEL_PERCENTAGE;
+                String format = Formatting.toPercentage(relevance);
                 label = format(format, relevance);
             }
 
