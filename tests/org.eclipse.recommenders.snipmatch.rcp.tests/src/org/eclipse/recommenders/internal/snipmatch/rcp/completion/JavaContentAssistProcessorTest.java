@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
@@ -43,6 +45,7 @@ import org.eclipse.recommenders.utils.Result;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -79,7 +82,8 @@ public class JavaContentAssistProcessorTest {
     private JavaContentAssistProcessor sut;
     private ITextViewer viewer;
 
-    public void setUp(Document document, Point selectedRange, ImmutableSet<DependencyInfo> dependencies) {
+    public void setUp(Document document, Point selectedRange, ImmutableSet<DependencyInfo> dependencies)
+            throws Exception {
         IDependencyListener dependencyListener = mock(IDependencyListener.class);
 
         IProjectCoordinateProvider pcProvider = mock(IProjectCoordinateProvider.class);
@@ -87,12 +91,16 @@ public class JavaContentAssistProcessorTest {
         IJavaProject javaProject = mock(IJavaProject.class, RETURNS_DEEP_STUBS);
         when(javaProject.getProject().getLocation().toFile()).thenReturn(PROJECT_DIR);
         when(javaProject.getElementName()).thenReturn("example");
+        IClasspathEntry[] resolvedClasspath = new IClasspathEntry[0];
+        when(javaProject.getResolvedClasspath(Mockito.anyBoolean())).thenReturn(resolvedClasspath);
 
         when(pcProvider.tryResolve(PROJECT_INFO)).thenReturn(Result.of(EXAMPLE_COORDINATE));
         when(dependencyListener.getDependenciesForProject(PROJECT_INFO)).thenReturn(dependencies);
 
         ICompilationUnit compilationUnit = mock(ICompilationUnit.class);
         when(compilationUnit.getJavaProject()).thenReturn(javaProject);
+        IResource resource = mock(IResource.class);
+        when(compilationUnit.getResource()).thenReturn(resource);
 
         configs = SnipmatchRcpModelFactory.eINSTANCE.createSnippetRepositoryConfigurations();
 
@@ -113,7 +121,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testEmptySearchText() {
+    public void testEmptySearchText() throws Exception {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
         ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, ANY_SEARCH_TERM, Location.JAVA_FILE,
@@ -127,7 +135,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testSnippetIsFound() {
+    public void testSnippetIsFound() throws Exception {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
         ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
@@ -144,7 +152,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testSnippetsAreFound() {
+    public void testSnippetsAreFound() throws Exception {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
         ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
@@ -162,7 +170,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testSnippetsInTwoRepos() {
+    public void testSnippetsInTwoRepos() throws Exception {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
         ISnippetRepository repo1 = mockRepository(REPO_NAME_1, 20, SEARCH_TERM, Location.JAVA_FILE,
@@ -184,7 +192,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testLocationIsPassedToSearch() {
+    public void testLocationIsPassedToSearch() throws Exception {
         setUp(DOCUMENT, new Point(2, 0), NO_DEPENDENCIES);
 
         ISnippetRepository repo1 = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVADOC,
@@ -204,7 +212,7 @@ public class JavaContentAssistProcessorTest {
     }
 
     @Test
-    public void testSelection() {
+    public void testSelection() throws Exception {
         setUp(DOCUMENT, new Point(2, 2), NO_DEPENDENCIES);
 
         ISnippetRepository repo = mockRepository(REPO_NAME_1, 10, SEARCH_TERM, Location.JAVA_FILE,
