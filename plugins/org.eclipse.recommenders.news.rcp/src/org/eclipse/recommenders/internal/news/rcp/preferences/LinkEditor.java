@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
-public final class LinkEditor extends FieldEditor {
+final class LinkEditor extends FieldEditor {
 
     public LinkEditor(String message, String preferencePageId, Composite parent) {
         // this super constructor call use message and preference page id as preference name and label text, because it

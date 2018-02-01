@@ -35,7 +35,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
-public class FeedDialog extends TitleAreaDialog {
+class FeedDialog extends TitleAreaDialog {
 
     @VisibleForTesting
     static final List<String> ACCEPTED_PROTOCOLS = ImmutableList.of("http", "https"); //$NON-NLS-1$ , //$NON-NLS-2$

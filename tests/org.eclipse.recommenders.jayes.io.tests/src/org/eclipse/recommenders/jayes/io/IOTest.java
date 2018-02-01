@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 public class IOTest {
 
     @Test
-    public void XMLBIFreaderTest() throws IOException {
+    public void testXMLBIFReader() throws IOException {
         // tests whether parsing functions
         XMLBIFReader rdr = new XMLBIFReader(getClass().getResourceAsStream("/test/models/dog.xml"));
         BayesNet net = rdr.read();
@@ -53,7 +53,7 @@ public class IOTest {
      * @throws IOException
      */
     @Test
-    public void XDSLreaderTest() throws IOException {
+    public void testXDSLReader() throws IOException {
         XDSLReader rdr = new XDSLReader(getClass().getResourceAsStream("/test/models/rain.xdsl"));
 
         BayesNet net = rdr.read();
@@ -71,7 +71,7 @@ public class IOTest {
     }
 
     @Test
-    public void XDSLWriterTest() throws Exception {
+    public void testXDSLWriter() throws Exception {
         XDSLReader rdr = new XDSLReader(getClass().getResourceAsStream("/test/models/rain.xdsl"));
 
         BayesNet net = rdr.read();
@@ -92,5 +92,4 @@ public class IOTest {
         assertThat(doc.getDocumentElement(), hasXPath("//cpt"));
         assertThat(doc.getDocumentElement(), not(hasXPath("//cpt/cpt")));
     }
-
 }

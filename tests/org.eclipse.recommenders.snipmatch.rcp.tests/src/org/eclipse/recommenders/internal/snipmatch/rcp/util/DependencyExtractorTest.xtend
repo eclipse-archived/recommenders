@@ -6,7 +6,6 @@ import java.util.Collections
 import java.util.Set
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.ITypeRoot
-import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.NodeFinder
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility
@@ -16,14 +15,12 @@ import org.eclipse.recommenders.coordinates.ProjectCoordinate
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.testing.CodeBuilder
 import org.eclipse.recommenders.testing.jdt.JavaProjectFixture
-import org.hamcrest.Matcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
 import org.mockito.Mockito
 
-import static org.hamcrest.Matchers.*
 import static org.junit.Assert.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
@@ -50,11 +47,6 @@ class DependencyExtractorTest {
         when(pcProvider.resolve(argThat(new TypeMatcher("Object")))).thenReturn(Optional.of(JRE_1_7_0));
         when(pcProvider.resolve(argThat(new TypeMatcher("Foo")))).thenReturn(Optional.of(FOO_1_0_0));
         when(pcProvider.resolve(argThat(new TypeMatcher("Bar")))).thenReturn(Optional.absent());
-    }
-
-    private def Matcher<ITypeBinding> hasBindingWithName(String name) {
-        System.out.println("Has Binding with name: " + name);
-        return both(is(instanceOf(ITypeBinding))).and(hasProperty("name", equalTo(name)))
     }
 
     /*

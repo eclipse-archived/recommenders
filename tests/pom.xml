@@ -44,6 +44,13 @@
 		<module>org.eclipse.recommenders.utils.rcp.tests</module>
 	</modules>
 
+	<properties>
+		<!-- Possibly overridden in OS- <profiles> below. -->
+		<osTestArgLine/>
+		<!-- Possibly overridden in toolchain- <profiles> below. -->
+		<toolchainTestArgLine/>
+	</properties>
+
 	<dependencies>
 		<!-- This dependency is only visible to Sonar (not Tycho) and provides annotations not part of the javax.annotation bundle from Orbit. -->
 		<!-- See <http://dev.eclipse.org/mhonarc/lists/cbi-dev/msg01424.html>. -->
@@ -72,6 +79,7 @@
 						<systemProperties>
 							<org.eclipse.swtbot.screenshots.dir>${project.build.directory}/screenshots</org.eclipse.swtbot.screenshots.dir>
 						</systemProperties>
+						<argLine>${tycho.testArgLine} ${osTestArgLine} ${toolchainTestArgLine}</argLine>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -133,25 +141,27 @@
 
 	<profiles>
 		<profile>
-			<id>mac</id>
+			<id>os-mac</id>
 			<activation>
 				<os>
 					<family>mac</family>
 				</os>
 			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.eclipse.tycho</groupId>
-							<artifactId>tycho-surefire-plugin</artifactId>
-							<configuration>
-								<argLine>-XstartOnFirstThread ${tycho.testArgLine}</argLine>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
+			<properties>
+				<osTestArgLine>-XstartOnFirstThread</osTestArgLine>
+			</properties>
+		</profile>
+		<profile>
+			<id>toolchain-javase-9</id>
+			<activation>
+				<property>
+					<name>toolchain</name>
+					<value>JavaSE-9</value>
+				</property>
+			</activation>
+			<properties>
+				<toolchainTestArgLine>--add-modules=ALL-SYSTEM</toolchainTestArgLine>
+			</properties>
 		</profile>
 	</profiles>
 </project>

@@ -285,9 +285,6 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tychoVersion}</version>
-					<configuration>
-						<argLine>${tycho.test.jvmArgs}</argLine>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -350,7 +347,7 @@
 							</goals>
 							<configuration>
 								<encoding>${project.build.sourceEncoding}</encoding>
-								<header>header-codetrails-2017.txt</header>
+								<header>header-codetrails-2018.txt</header>
 								<validHeaders>
 									<validHeader>header-acurana-2016.txt</validHeader>
 									<validHeader>header-amann-2012.txt</validHeader>
@@ -358,6 +355,7 @@
 									<validHeader>header-codetrails-2014.txt</validHeader>
 									<validHeader>header-codetrails-2015.txt</validHeader>
 									<validHeader>header-codetrails-2016.txt</validHeader>
+									<validHeader>header-codetrails-2017.txt</validHeader>
 									<validHeader>header-faidherbe-2011.txt</validHeader>
 									<validHeader>header-henss-2010.txt</validHeader>
 									<validHeader>header-henss-2011.txt</validHeader>
@@ -574,7 +572,7 @@
 			</build>
 		</profile>
 		<profile>
-			<!-- Set the "toolchain" property (to "JavaSE-1.7", "JavaSE-1.8") if you have toolchains configured. (This is the case on hudson.eclipse.org.) -->
+			<!-- Set the "toolchain" property (to "JavaSE-1.7", "JavaSE-1.8", "JavaSE-9") if you have toolchains configured. (This is the case on ci.eclipse.org.) -->
 			<id>toolchain</id>
 			<activation>
 				<property>
@@ -610,7 +608,6 @@
 			<activation>
 				<property>
 					<name>simrel</name>
-					<!-- This needs to mirror the value of ${env.MAINTENANCE_SIMREL}. -->
 					<value>oxygen</value>
 				</property>
 			</activation>

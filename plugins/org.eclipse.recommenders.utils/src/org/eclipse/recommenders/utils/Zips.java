@@ -42,7 +42,6 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
-import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.OutputSupplier;

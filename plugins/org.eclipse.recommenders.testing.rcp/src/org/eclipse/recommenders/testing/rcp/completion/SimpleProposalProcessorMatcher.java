@@ -12,7 +12,10 @@ package org.eclipse.recommenders.testing.rcp.completion;
 
 import static org.mockito.Matchers.argThat;
 
+import java.util.Objects;
+
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
+import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
 
 public final class SimpleProposalProcessorMatcher extends ArgumentMatcher<SimpleProposalProcessor> {
@@ -20,7 +23,7 @@ public final class SimpleProposalProcessorMatcher extends ArgumentMatcher<Simple
     private final int boost;
     private final String label;
 
-    private SimpleProposalProcessorMatcher(Integer boost, String label) {
+    public SimpleProposalProcessorMatcher(Integer boost, String label) {
         this.boost = boost;
         this.label = label;
     }
@@ -39,14 +42,12 @@ public final class SimpleProposalProcessorMatcher extends ArgumentMatcher<Simple
             return false;
         }
         SimpleProposalProcessor processor = (SimpleProposalProcessor) argument;
-        if (boost != processor.getIncrement()) {
-            return false;
-        }
+        return boost == processor.getIncrement() && Objects.equals(label, processor.getAddon());
+    }
 
-        if (label == null) {
-            return label == processor.getAddon();
-        }
-
-        return label.equals(processor.getAddon());
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("Simple proposal processor: '").appendValue(label).appendText("' -> ")
+                .appendValue(boost);
     }
 }

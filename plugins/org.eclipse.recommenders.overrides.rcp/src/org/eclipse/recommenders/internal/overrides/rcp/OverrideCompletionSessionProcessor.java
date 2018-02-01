@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.overrides.rcp;
 
-import static java.text.MessageFormat.format;
 import static org.eclipse.recommenders.completion.rcp.processable.ProposalTag.RECOMMENDERS_SCORE;
 import static org.eclipse.recommenders.rcp.SharedImages.Images.OVR_STAR;
 import static org.eclipse.recommenders.utils.Recommendations.asPercentage;
@@ -36,7 +35,6 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.coordinates.ProjectCoordinate;
 import org.eclipse.recommenders.internal.overrides.rcp.l10n.LogMessages;
-import org.eclipse.recommenders.internal.overrides.rcp.l10n.Messages;
 import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.overrides.IOverrideModel;
@@ -50,6 +48,7 @@ import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ProposalMatcher;
 import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.eclipse.recommenders.utils.rcp.Formatting;
 
 @SuppressWarnings({ "restriction" })
 public class OverrideCompletionSessionProcessor extends SessionProcessor {
@@ -169,8 +168,8 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
             // XXX rather high value but otherwise the default constructor shows up between the overrides
             // proposals
             final int boost = prefs.changeProposalRelevance ? 1000 + asPercentage(recommendation) : 0;
-            final String label = prefs.decorateProposalText
-                    ? format(Messages.PROPOSAL_LABEL_PERCENTAGE, recommendation.getRelevance())
+
+            final String label = prefs.decorateProposalText ? Formatting.toPercentage(recommendation.getRelevance())
                     : ""; //$NON-NLS-1$
 
             if (boost > 0) {

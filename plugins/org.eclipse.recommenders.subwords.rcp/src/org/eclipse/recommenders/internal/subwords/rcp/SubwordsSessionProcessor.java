@@ -50,7 +50,6 @@ import org.eclipse.jdt.internal.ui.text.java.LazyJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer;
 import org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
@@ -485,15 +484,6 @@ public class SubwordsSessionProcessor extends SessionProcessor {
                 }
 
                 return relevanceBoost;
-            }
-
-            /**
-             * Some {@link IProcessableProposal}s are not produced by the {@link JavaCompletionProposalComputer}, but by
-             * some other {@link IJavaCompletionProposalComputer}, e.g., the {@link HTMLTagCompletionProposalComputer}.
-             * These proposals do not have a core proposal.
-             */
-            private boolean isFromJavaCompletionProposalComputer(final IProcessableProposal proposal) {
-                return proposal.getCoreProposal().isPresent();
             }
         });
     }

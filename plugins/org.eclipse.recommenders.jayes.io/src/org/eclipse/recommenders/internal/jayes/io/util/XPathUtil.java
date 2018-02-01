@@ -12,9 +12,12 @@ package org.eclipse.recommenders.internal.jayes.io.util;
 
 import java.util.Iterator;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Node;
-import org.w3c.dom.xpath.XPathEvaluator;
-import org.w3c.dom.xpath.XPathResult;
+import org.w3c.dom.NodeList;
 
 public final class XPathUtil {
 
@@ -22,30 +25,27 @@ public final class XPathUtil {
         // Not meant to be instantiated
     }
 
-    public static Iterator<Node> evalXPath(XPathEvaluator eval, String xpath, Node context) {
+    public static Iterator<Node> evalXPath(XPath xpath, String expression, Node context) {
 
-        final XPathResult result = (XPathResult) eval.evaluate(xpath, context, null, (short) 0, null);
+        final NodeList result;
+        try {
+            result = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new IllegalArgumentException(expression);
+        }
 
         return new Iterator<Node>() {
 
-            Node cache = null;
+            int next;
 
             @Override
             public boolean hasNext() {
-                if (cache == null) {
-                    cache = result.iterateNext();
-                }
-                return cache != null;
+                return next < result.getLength();
             }
 
             @Override
             public Node next() {
-                if (cache == null) {
-                    return result.iterateNext();
-                }
-                Node n = cache;
-                cache = null;
-                return n;
+                return result.item(next++);
             }
 
             @Override
