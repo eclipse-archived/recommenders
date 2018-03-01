@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="46">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Oxygen (4.7)" sequenceNumber="47">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
@@ -85,8 +85,8 @@
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
 <unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
-<!-- Stable Orbit build for Oxygen.3 RC1 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/M20180206163158/repository"/>
+<!-- Stable Orbit build for Oxygen.3 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180206163158/repository"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
