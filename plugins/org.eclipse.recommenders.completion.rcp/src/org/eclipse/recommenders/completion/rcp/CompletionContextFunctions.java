@@ -402,7 +402,7 @@ public final class CompletionContextFunctions {
                 return null;
             }
             ICompilationUnit cu = context.getCompilationUnit();
-            ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
+            ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext, cu);
             try {
                 cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
             } catch (JavaModelException e) {
