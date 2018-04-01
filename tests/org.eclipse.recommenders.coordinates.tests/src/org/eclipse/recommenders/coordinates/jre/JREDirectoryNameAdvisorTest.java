@@ -48,8 +48,8 @@ public class JREDirectoryNameAdvisorTest {
         // Real-world scenarios
         scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "1.6.0_45-b06-451.jdk", "Contents", "Home"),
                 "1.6.0"));
-        scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "jdk-9.jdk", "Contents", "Home"),
-                "1.9.0"));
+        scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "jdk-9.jdk", "Contents", "Home"), "1.9.0"));
+        scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "jdk-10.jdk", "Contents", "Home"), "1.10.0"));
         scenarios.add(jre(dir("Library", "Java", "JavaVirtualMachines", "jdk1.7.0_09.jdk", "Contents/Home"), "1.7.0"));
         scenarios.add(jre(dir("usr", "lib", "jvm", "java-1.7.0-openjdk-amd64", "jre"), "1.7.0"));
         scenarios.add(jre(dir("usr", "lib", "jvm", "java-1.5.0-gcj-4.6", "jre"), "1.5.0"));

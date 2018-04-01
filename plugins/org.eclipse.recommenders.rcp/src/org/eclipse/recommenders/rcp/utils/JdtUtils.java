@@ -28,6 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClasspathAttribute;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -75,6 +78,20 @@ import com.google.common.base.Predicate;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public final class JdtUtils {
+
+    /**
+     * Name of the "test" classpath attribute.
+     * 
+     * @see org.eclipse.jdt.core.IClasspathAttribute#TEST
+     */
+    private static final String TEST = "test";
+
+    /**
+     * Value for "test" classpath attribute.
+     * 
+     * @see org.eclipse.jdt.core.IClasspathAttribute#TEST
+     */
+    private static final String TRUE = "true";
 
     private JdtUtils() {
         // Not meant to be instantiated
@@ -721,5 +738,23 @@ public final class JdtUtils {
 
     public static boolean isInitializer(final IMethod m) {
         return m.getElementName().equals("<clinit>"); //$NON-NLS-1$
+    }
+
+    public static boolean isTestSource(ICompilationUnit cu) {
+        IPackageFragmentRoot packageFragmentRoot = (IPackageFragmentRoot) cu
+                .getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+        if (packageFragmentRoot != null) {
+            try {
+                IClasspathEntry classpathEntry = packageFragmentRoot.getResolvedClasspathEntry();
+                for (IClasspathAttribute attribute : classpathEntry.getExtraAttributes()) {
+                    if (TEST.equals(attribute.getName()) && TRUE.equals(attribute.getValue())) {
+                        return true;
+                    }
+                }
+            } catch (JavaModelException e) {
+                return false;
+            }
+        }
+        return false;
     }
 }

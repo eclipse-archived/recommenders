@@ -26,6 +26,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
@@ -37,6 +38,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.internal.completion.rcp.Constants;
 import org.eclipse.recommenders.internal.completion.rcp.l10n.LogMessages;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Logs;
 import org.eclipse.recommenders.utils.Reflections;
 import org.eclipse.swt.graphics.Point;
@@ -71,14 +73,23 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = new IdentityHashMap<>();
 
-    private JavaContentAssistInvocationContext jdtuiContext;
+    private final JavaContentAssistInvocationContext jdtuiContext;
+    private final boolean isTestCodeExcluded;
+
     private CompletionProposalCollector collector;
     private InternalCompletionContext compilerContext;
 
-    public ProposalCollectingCompletionRequestor(final JavaContentAssistInvocationContext ctx) {
+    public ProposalCollectingCompletionRequestor(JavaContentAssistInvocationContext ctx, ICompilationUnit cu) {
         super(false);
         jdtuiContext = requireNonNull(ctx);
         initalizeCollector();
+
+        isTestCodeExcluded = cu != null && !JdtUtils.isTestSource(cu);
+    }
+
+    // @Override since Eclipse Photon
+    public boolean isTestCodeExcluded() {
+        return isTestCodeExcluded;
     }
 
     private void initalizeCollector() {
@@ -183,7 +194,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     /**
      * Safely set the ignored state for a completion proposal kind.
-     * 
+     *
      * This method avoids any {@code IllegalArgumentException}s that our delegate's
      * {@link CompletionRequestor#setIgnored(int, boolean)} might throw when facing proposal kinds introduced in a later
      * JDT version.

@@ -336,7 +336,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
 
     private ProposalCollectingCompletionRequestor computeProposals(ICompilationUnit cu,
             JavaContentAssistInvocationContext coreContext, int offset) {
-        ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext);
+        ProposalCollectingCompletionRequestor collector = new ProposalCollectingCompletionRequestor(coreContext, cu);
         try {
             cu.codeComplete(offset, collector, new TimeDelimitedProgressMonitor(COMPLETION_TIME_OUT, MILLISECONDS));
         } catch (final Exception e) {
