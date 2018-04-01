@@ -6,8 +6,8 @@
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Oxygen.3 RC4 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.7-M-builds/M-4.7.3RC4-201803010715/"/>
+<!-- Stable platform build for Oxygen.3a RC2 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.7-M-builds/M-4.7.3aRC2-201803300640/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -85,8 +85,8 @@
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
 <unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
-<!-- Stable Orbit build for Oxygen.3 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180206163158/repository"/>
+<!-- Stable Orbit build for Oxygen.3a RC2 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/M20180330011457/repository"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
