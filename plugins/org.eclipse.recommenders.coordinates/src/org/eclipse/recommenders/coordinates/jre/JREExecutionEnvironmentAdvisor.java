@@ -51,7 +51,7 @@ public class JREExecutionEnvironmentAdvisor extends AbstractProjectCoordinateAdv
         result.put("JavaSE-1.7", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.7.0"));
         result.put("JavaSE-1.8", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.8.0"));
         result.put("JavaSE-9", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.9.0"));
-        result.put("JavaSE-10", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.9.0"));
+        result.put("JavaSE-10", new ProjectCoordinate(GROUP_ID, ARTIFACT_ID, "1.10.0"));
 
         return result;
     }
