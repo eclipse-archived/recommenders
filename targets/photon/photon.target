@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="11">
+<?pde version="3.8"?><target name="Target Definition for Eclipse Photon (4.8)" sequenceNumber="12">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<!-- Stable platform build for Photon M6 -->
-<repository location="http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M6-201803080630/"/>
+<!-- Stable platform build for Photon M7 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M7-201805092000/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
@@ -33,8 +33,8 @@
 <repository location="http://archive.eclipse.org/recommenders/3rd/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.license.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/cbi/updates/license"/>
+<unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
+<repository location="http://download.eclipse.org/cbi/updates/license/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=15430 -->
@@ -62,7 +62,7 @@
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
 <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=14620 -->
-<unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20170210-0925"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20180410-1551"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13623 -->
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.6.v20170210-0925"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
@@ -85,8 +85,8 @@
 <unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
 <!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
 <unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
-<!-- Stable Orbit build for Photon M6 -->
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20180302171354/repository/"/>
+<!-- Stable Orbit build for Photon M7 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20180504181223/repository/"/>
 </location>
 <!-- Needed for the code generated with Xtend 2.7.3 -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
