@@ -137,7 +137,7 @@ To release a new **maintenance version** (same major/minor version, different mi
 - `git clean -df`
 - `mvn -Dtycho.mode=maven clean`
 - `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=${MAINTENANCE_VERSION}`
-- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MAINTENANCE_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename -a plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MAINTENANCE_VERSION}-SNAPSHOT`
 - `mvn -Dtycho.mode=maven tidy:pom`
 - `git commit -a -m "[releng] ${MAINTENANCE_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.
@@ -188,7 +188,7 @@ Make sure that the [head of the `maintenance` branch](https://git.eclipse.org/c/
 - `git clean -df`
 - `mvn -Dtycho.mode=maven clean`
 - `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=${MASTER_VERSION}`
-- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
+- `mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -Dartifacts=$(basename -a plugins/*/ tests/*/ features/*/ | paste -sd "," - ) -DnewVersion=${MASTER_VERSION}-SNAPSHOT`
 - `mvn -Dtycho.mode=maven tidy:pom`
 - `git commit -a -m "[releng] ${MASTER_VERSION}"`
 - Make sure that a `Change-Id` and `Signed-off-by` header are part of the commit message.

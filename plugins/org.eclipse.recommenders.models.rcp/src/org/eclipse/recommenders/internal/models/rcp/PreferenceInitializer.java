@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    public static final String REPOSITORY_URL_LIST = "http://download.eclipse.org/recommenders/models/oxygen/"; //$NON-NLS-1$
+    public static final String REPOSITORY_URL_LIST = "http://download.eclipse.org/recommenders/models/photon/"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
