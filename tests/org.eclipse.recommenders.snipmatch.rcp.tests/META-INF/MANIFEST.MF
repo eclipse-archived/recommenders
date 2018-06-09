@@ -3,7 +3,7 @@ Automatic-Module-Name: org.eclipse.recommenders.snipmatch.rcp.tests
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.snipmatch.rcp.tests
 Fragment-Host: org.eclipse.recommenders.snipmatch.rcp
-Bundle-Version: 2.5.3.qualifier
+Bundle-Version: 2.5.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

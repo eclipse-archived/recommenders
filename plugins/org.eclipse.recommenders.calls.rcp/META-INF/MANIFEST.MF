@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.eclipse.recommenders.calls.rcp
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.recommenders.calls.rcp;singleton:=true
-Bundle-Version: 2.5.3.qualifier
+Bundle-Version: 2.5.4.qualifier
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -14,17 +14,17 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core;bundle-version="[3.9.0,4.0.0)",
  org.eclipse.jdt.ui;bundle-version="[3.9.0,4.0.0)",
  org.eclipse.jface.text,
- org.eclipse.recommenders.apidocs.rcp;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.calls;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.completion.rcp;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.coordinates;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.injection;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.jdt;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.models;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.models.rcp;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.rcp;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.utils;bundle-version="[2.5.3,2.5.4)",
- org.eclipse.recommenders.utils.rcp;bundle-version="[2.5.3,2.5.4)",
+ org.eclipse.recommenders.apidocs.rcp;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.calls;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.completion.rcp;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.coordinates;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.injection;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.jdt;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.models;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.models.rcp;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.rcp;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.utils;bundle-version="[2.5.4,2.5.5)",
+ org.eclipse.recommenders.utils.rcp;bundle-version="[2.5.4,2.5.5)",
  org.eclipse.ui
 Import-Package: com.google.common.annotations;version="[15.0.0,16.0.0)",
  com.google.common.base;version="[15.0.0,16.0.0)",
