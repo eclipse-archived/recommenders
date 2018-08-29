@@ -19,6 +19,7 @@
 		<module>neon</module>
 		<module>oxygen</module>
 		<module>photon</module>
+		<module>2018-09</module>
 	</modules>
 
 	<build>

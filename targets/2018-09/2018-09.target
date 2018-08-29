@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target name="Target Definition for Eclipse 2018-09 (4.9)" sequenceNumber="0">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.core.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+<!-- Stable platform build for 2018-09 M3 -->
+<repository location="http://download.eclipse.org/eclipse/updates/4.9milestones/S-4.9M3-201808230450/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/modeling/emf/emf/builds/milestone/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+<!-- See <https://wiki.eclipse.org/EGit/FAQ#Latest_builds_of_EGit> -->
+<repository location="http://download.eclipse.org/egit/updates-5.0/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.mylyn.commons.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.mylyn.context.sdk.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.mylyn.tasks.ide.feature.group" version="0.0.0"/>
+<unit id="org.apache.lucene.analyzers-common" version="0.0.0"/>
+<unit id="org.apache.lucene.core" version="0.0.0"/>
+<unit id="org.apache.lucene.queryparser" version="0.0.0"/>
+<repository location="http://download.eclipse.org/mylyn/drops/3.24.0/v20180613-1723/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.aether.maven.feature.feature.group" version="0.0.0"/>
+<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=514749 -->
+<repository location="http://archive.eclipse.org/recommenders/3rd/aether/maven-aether-provider/releases/3.1/3.1.0.20140706-2237/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
+<repository location="http://download.eclipse.org/cbi/updates/license/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=15430 -->
+<unit id="com.google.gson" version="2.8.2.v20180104-1110"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7766 -->
+<unit id="com.google.guava" version="15.0.0.v201403281430"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5058 -->
+<unit id="com.google.inject" version="3.0.0.v201605172100"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5060 -->
+<unit id="com.google.inject.multibindings" version="3.0.0.v201605172100"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5969 -->
+<unit id="javax.inject" version="1.0.0.v20091030"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13632 -->
+<unit id="org.apache.commons.codec" version="1.9.0.v20170208-1614"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7437 -->
+<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=9073 -->
+<unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5902 -->
+<unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=8273 -->
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=4759 -->
+<unit id="org.apache.commons.math" version="2.1.0.v201105210652"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=6495 -->
+<unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=14620 -->
+<unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20180410-1551"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13623 -->
+<unit id="org.apache.httpcomponents.httpcore" version="4.4.6.v20170210-0925"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=5907 -->
+<unit id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13012 -->
+<unit id="org.apache.maven.resolver.api" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13013 -->
+<unit id="org.apache.maven.resolver.connector.basic" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13014 -->
+<unit id="org.apache.maven.resolver.impl" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13015 -->
+<unit id="org.apache.maven.resolver.spi" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13016 -->
+<unit id="org.apache.maven.resolver.transport.file" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13017 -->
+<unit id="org.apache.maven.resolver.transport.http" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=13018 -->
+<unit id="org.apache.maven.resolver.util" version="1.0.3.v20170405-0725"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=7436 -->
+<unit id="org.apache.solr.client.solrj" version="3.5.0.v20150506-0844"/>
+<!-- https://dev.eclipse.org/ipzilla/show_bug.cgi?id=12191 -->
+<unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
+<!-- Recommended Orbit build for 2018-09 M3 -->
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20180820175350/repository/"/>
+</location>
+<!-- Needed for the code generated with Xtend 2.7.3 -->
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.xbase.lib" version="2.7.3.v201411190455"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201411190455/"/>
+</location>
+<!-- Tests-only dependencies -->
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+<unit id="org.hamcrest.integration" version="1.1.0.v201303031500"/>
+<unit id="org.hamcrest.library" version="1.1.0.v20090501071000"/>
+<unit id="org.hamcrest.text" version="1.1.0.v20090501071000"/>
+<unit id="org.junit" version="4.12.0.v201504281640"/>
+<unit id="org.mockito" version="1.9.5.v201605172210"/>
+<unit id="org.objenesis" version="1.0.0.v201505121915"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository/"/>
+</location>
+<!-- Needed for the SWTBot UI tests -->
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.swtbot.feature.group" version="2.5.0.201609021837"/>
+<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.5.0.201609021837"/>
+<unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
+<unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
+<unit id="org.hamcrest.library" version="1.3.0.v201505072020"/>
+<repository location="http://download.eclipse.org/technology/swtbot/releases/2.5.0/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.2.13.201508192117"/>
+<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.13.v20150730/"/>
+</location>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+</target>
