@@ -43,6 +43,8 @@ public class PollFeedsJob extends Job {
         this.preferences = preferences;
         this.pollingService = pollingService;
         this.eventBroker = eventBroker;
+        setSystem(true);
+        setUser(false);
     }
 
     @Override
